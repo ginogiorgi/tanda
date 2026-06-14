@@ -26,10 +26,11 @@ URL de Vercel viva mostrando una landing mínima con los tokens aplicados.
 
 Signup/login con **username + contraseña** (email sintético `username@users.tanda2026.com.ar`;
 tabla `profiles` con `username` único). Creador de **avatar 3D** (React Three Fiber +
-Quaternius CC0): personaje rotable arrastrando + 4 selectores (cabeza/pelo, remera,
-pantalón, zapatos) + 2 cuerpos base (♂/♀); guardado como JSON en `profiles.avatar`. El 3D
-va **code-splitteado** (solo en el creador). Pantalla de Perfil con **email real opcional**
-(`auth.updateUser`) para habilitar recuperación. Ver SPEC §8.2.
+**primitivas low-poly propias**, sin GLBs externos): personaje rotable arrastrando + 4
+selectores (cabeza/pelo, remera, pantalón, zapatos) + 2 cuerpos base (♂/♀); guardado como
+JSON en `profiles.avatar`. El 3D va **code-splitteado** (solo en el creador). Pantalla de
+Perfil con **email real opcional** (`auth.updateUser`) para habilitar recuperación. Ver
+SPEC §8.2.
 
 La pantalla de Perfil incluye la pestaña **Historial** (selección que tocó, fase de
 eliminación / título, resumen breve) y **stats agregadas** (títulos, win %, goles, mejor
@@ -117,8 +118,8 @@ asigna preguntas por dificultad de fase sin repetir ninguna.
 Pantalla de **penal** con **escena 3D** (R3F): cancha + arco + pelota + los **avatares**
 de pateador y arquero. Tarjeta de pregunta + 3 opciones **2D centrada** (respuesta
 cambiable hasta el final) con la escena 3D atenuada/desenfocada detrás; al resolver se
-oculta la tarjeta y se juega la animación **según la causa** (`goal` con colocación
-variable / `save` estirada / `miss_wide` afuera). **Barra de tiempo** (10s) roja + vibración
+oculta la tarjeta y se juega la animación **procedural según la causa** (`goal` con
+colocación variable / `save` estirada / `miss_wide` afuera). **Barra de tiempo** (10s) roja + vibración
 al final. El 3D va code-splitteado (solo acá y en el creador). Ver SPEC §8.2.
 **Bracket** estilo mundial con marcadores en vivo, **pre-partido** (país+bandera vs
 país+bandera), **resumen de fin de partido** (marcador + detalle penal a penal + naciones

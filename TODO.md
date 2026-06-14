@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1 y 2.2 LISTAS y verificadas E2E. Avatar redefinido a 3D (R3F + Quaternius CC0; ver SPEC §8.2). Decisión cerrada: en el penal el avatar va sin tintar por nación, la selección se lee solo en HUD/bandera (SPEC §8.3 #1). Próximo: 2.3 setup 3D (R3F/drei + pipeline de assets Quaternius).`
+`ESTADO ACTUAL: F2 — 2.1, 2.2 y 2.3 LISTAS. Avatar 3D con primitivas low-poly propias (sin GLBs externos; ver SPEC §8.2). Infra: lib/avatar (types+parts) + components/avatar (AvatarModel/AvatarCanvas/AvatarViewer code-split). typecheck/lint/build verdes, 5 tests. Próximo: 2.4 creador de avatar (página con AvatarViewer + 4 selectores + drag para rotar + toggle cuerpo + preview en vivo).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -32,8 +32,10 @@
       MCP, advisors security+performance en 0 lints
 - [x] 2.2 Pantallas signup / login — E2E verificado (signup→sesión, login→sesión, trigger
       crea el profile). Auth config: mailer_autoconfirm=true, secure_email_change=false
-- [ ] 2.3 Setup 3D: React Three Fiber + drei, code-split, pipeline de assets Quaternius
-      (cuerpos base ♂/♀ + outfits modulares + animaciones), validar partes intercambiables
+- [x] 2.3 Setup 3D: React Three Fiber + drei instalados; Canvas code-splitteado
+      (`AvatarViewer`→`AvatarCanvas` vía `next/dynamic` ssr:false); catálogo de partes
+      propio (`lib/avatar`) + `AvatarModel` (primitivas low-poly tintables). typecheck/lint/
+      build verdes; 5 tests del catálogo. Render visual se valida al montarlo en 2.4
 - [ ] 2.4 Creador de avatar 3D: personaje rotable (drag) + 4 selectores (cabeza/pelo,
       remera, pantalón, zapatos) + toggle cuerpo base + default + preview en vivo
 - [ ] 2.5 Guardar avatar (JSON en `profiles.avatar`); editar desde Perfil; chequeo de
@@ -90,7 +92,7 @@
       tarjeta de pregunta 2D centrada con la escena atenuada/desenfocada detrás
 - [ ] 8.3 Barra de tiempo (roja + vibración al final)
 - [ ] 8.4 Animaciones 3D por causa: `goal` / `save` (estirada) / `miss_wide` (afuera),
-      con variantes + colocación aleatoria por seed (Mixamo retarget o fallback procedural)
+      con variantes + colocación aleatoria por seed (procedurales: primitivas + pelota)
 - [ ] 8.5 Bracket estilo mundial con marcadores en vivo + pre-partido
 - [ ] 8.6 Resumen de fin de partido (marcador + penal a penal + "Jugar de nuevo"/"Inicio")
 - [ ] 8.7 Audio (silbato/multitud/gol/atajada + mute, desbloqueo por gesto)

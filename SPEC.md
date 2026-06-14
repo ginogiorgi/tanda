@@ -405,17 +405,20 @@ lobby ni en resultados, solo donde hay 3D.
 
 - **Tecnología:** React Three Fiber + drei sobre Three.js. El 3D se **code-splittea**
   (import dinámico) y se carga **solo** en la ruta del creador y en la escena de penal,
-  para que el resto de la app quede liviana. Estética **minimal low-poly** (corre bien en
-  mobile de gama media).
-- **Assets (CC0):** Quaternius — *Universal Base Characters* (cuerpos base hombre/mujer,
-  rig humanoide), *Modular Character Outfits* (62 partes modulares: cabeza/pelo, torso,
-  piernas, pies) y *Universal Animation Library* (compatible Mixamo). Variedad por
-  **malla intercambiable + tintado de color**. Formato glTF/GLB.
-- **Creador de avatar:** personaje 3D a la izquierda, **rotable arrastrando**
-  (OrbitControls, solo yaw); a la derecha 4 selectores verticales (cabeza/pelo, remera,
-  pantalón, zapatos) + toggle de cuerpo base (♂/♀). Default sensato, preview en vivo. Se
-  guarda en `profiles.avatar` (jsonb): `{ bodyType, head, hair{part,color}, top{part,
-  color}, bottom{part,color}, shoes{part,color} }`.
+  para que el resto de la app quede liviana. Estética **minimal low-poly / blocky** (corre
+  bien en mobile de gama media).
+- **Assets — primitivas propias (no externas):** el personaje se compone de **geometría
+  propia** (cápsulas/cajas low-poly) generada en runtime, sin GLBs externos. Cada categoría
+  intercambiable (cabeza/pelo, remera, pantalón, zapatos) es una malla simple **tintable**
+  por color. Motivo: el modular casual CC0 (Quaternius) no se parte limpio en estos 4
+  selectores y las primitivas propias son lo más liviano y 100% bajo nuestro control,
+  coherente con el estilo minimal. (Quaternius queda como upgrade opcional futuro detrás de
+  la misma interfaz `AvatarConfig`.)
+- **Creador de avatar:** personaje 3D a la izquierda, **rotable arrastrando** (solo yaw);
+  a la derecha 4 selectores verticales (cabeza/pelo, remera, pantalón, zapatos) + toggle de
+  cuerpo base (♂/♀). Default sensato, preview en vivo. Se guarda en `profiles.avatar`
+  (jsonb): `{ bodyType, head, hair{part,color}, top{part,color}, bottom{part,color},
+  shoes{part,color} }`. Los `part` son ids de un **catálogo propio** (`lib/avatar/parts`).
 - **Escena de penal (3D):** cancha + arco + pelota + **dos personajes = los avatares de
   los jugadores** (pateador y arquero), **tal cual los armó cada jugador** (sin tintar por
   nación; ver §8.3 #1). La identidad de selección se lee solo en HUD/bandera (pre-partido,
@@ -424,11 +427,10 @@ lobby ni en resultados, solo donde hay 3D.
   de la tarjeta, y al resolver se oculta la tarjeta y se juega la animación según el
   `reason` (§8.1): `goal` (con colocación variable), `save` (estirada) o `miss_wide`
   (afuera).
-- **Animaciones de personaje:** idle + patada + estirada + festejo, vía Universal
-  Animation Library / Mixamo retargeteadas al rig humanoide. **Riesgo principal** (ver
-  §8.3): si el retargeting de animaciones específicas (penal/arquero) resulta costoso,
-  fallback a **animación procedural** (trayectoria de pelota tweenada + movimiento simple
-  de los modelos), coherente con el estilo minimal.
+- **Animaciones de personaje:** **procedurales** (no hay rig importado). Idle + patada +
+  estirada de arquero + festejo se resuelven moviendo las primitivas por código
+  (rotaciones/posiciones tweenadas) + la trayectoria de la pelota. Coherente con el estilo
+  minimal y sin dependencia de retargeting.
 
 ### 8.3 Cabos abiertos del 3D
 
@@ -436,11 +438,11 @@ lobby ni en resultados, solo donde hay 3D.
    avatar tal cual lo armó el jugador**, sin tintar por nación. La identidad de selección
    se muestra solo en HUD/bandera (pre-partido, marcador, bracket), no en la ropa. El
    schema de `profiles.avatar` no lleva color de nación.
-2. **Animación (riesgo de esfuerzo):** conseguir patada de penal + estirada de arquero
-   prolijas es el mayor laburo/riesgo 3D. Plan: arrancar con clips de Mixamo
-   retargeteados; si se complica, fallback procedural. Validar al inicio de la integración.
-3. **Variedad real de piezas:** el mapeo exacto de las 62 partes a "~6 pelos / ~8 remeras
-   / ~4 pantalones / ~4 zapatos" se cierra cuando tenga el pack cargado (malla vs color).
+2. **Assets — RESUELTO:** primitivas low-poly propias, sin GLBs externos (ver §8.2). El
+   modular casual CC0 no se parte limpio en los 4 selectores; las primitivas son lo más
+   liviano y controlable. Quaternius queda como upgrade opcional futuro.
+3. **Animación — procedural:** la patada de penal + estirada de arquero + festejo se hacen
+   moviendo las primitivas por código (sin rig importado, sin retargeting). Se afina en F8.
 
 ---
 
