@@ -24,7 +24,7 @@ URL de Vercel viva mostrando una landing mínima con los tokens aplicados.
 
 ## F2 · Auth + Avatar + Perfil
 
-Signup/login con **username + contraseña** (email sintético `username@tanda.invalid`;
+Signup/login con **username + contraseña** (email sintético `username@users.tanda2026.com.ar`;
 tabla `profiles` con `username` único). Creador de **avatar SVG por capas** (sexo, pelo
 ~6, camiseta ~8, pantalón ~4, zapatos ~4), guardado como JSON en el perfil. Pantalla de
 Perfil con **email real opcional** (`auth.updateUser`) para habilitar recuperación.

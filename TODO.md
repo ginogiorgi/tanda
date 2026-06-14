@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F1 COMPLETA (deploy vivo en tanda-phi.vercel.app). Próximo: F2 — Auth + Avatar, tarea 2.1 (migración + RLS de profiles, auth username con email sintético).`
+`ESTADO ACTUAL: F2 — 2.1 lista (migración profiles aplicada y endurecida, advisors en 0). 2.2 (signup/login) construida y buildeando. ÚNICO bloqueante: Gino tiene que desactivar "Confirm email" en Supabase → Authentication; con eso corro el test E2E de registro/login (el dominio sintético es @users.tanda2026.com.ar). Después sigo con 2.3 avatar.`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -28,8 +28,10 @@
       (dominio final tanda2026.com.ar, DNS propagando)
 
 ## F2 · Auth + Avatar + Perfil
-- [ ] 2.1 Migración + RLS de `profiles`; auth username (email sintético)
-- [ ] 2.2 Pantallas signup / login
+- [x] 2.1 Migración + RLS de `profiles`; auth username (email sintético) — aplicada vía
+      MCP, advisors security+performance en 0 lints
+- [~] 2.2 Pantallas signup / login — construidas y buildeando; falta test E2E (bloqueado
+      por "Confirm email" del panel)
 - [ ] 2.3 Creador de avatar SVG por capas (sexo/pelo/camiseta/pantalón/zapatos) +
       default sensato + preview en vivo; chequeo de username disponible
 - [ ] 2.4 Guardado de avatar (JSON) y render en perfil

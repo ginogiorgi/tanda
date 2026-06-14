@@ -1,3 +1,7 @@
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+
 const ACCENTS = [
   "bg-accent-blue",
   "bg-accent-green",
@@ -7,7 +11,22 @@ const ACCENTS = [
   "bg-accent-teal",
 ] as const;
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let username: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+    username = profile?.username ?? null;
+  }
+
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
       <div className="flex flex-col items-center gap-4">
@@ -29,9 +48,29 @@ export default function Home() {
         ))}
       </div>
 
-      <p className="text-xs uppercase tracking-widest text-fg-subtle">
-        Scaffold F1 · en construcción
-      </p>
+      {username ? (
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-lg">
+            Hola, <span className="font-semibold text-gold">{username}</span> 👋
+          </p>
+          <LogoutButton />
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <Link
+            href="/register"
+            className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+          >
+            Crear cuenta
+          </Link>
+          <Link
+            href="/login"
+            className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+          >
+            Entrar
+          </Link>
+        </div>
+      )}
     </main>
   );
 }
