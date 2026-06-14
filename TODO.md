@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1, 2.2 y 2.3 LISTAS. Avatar 3D con primitivas low-poly propias (sin GLBs externos; ver SPEC §8.2). Infra: lib/avatar (types+parts) + components/avatar (AvatarModel/AvatarCanvas/AvatarViewer code-split). typecheck/lint/build verdes, 5 tests. Próximo: 2.4 creador de avatar (página con AvatarViewer + 4 selectores + drag para rotar + toggle cuerpo + preview en vivo).`
+`ESTADO ACTUAL: F2 — 2.1–2.4 LISTAS (código). Avatar 3D con primitivas low-poly propias. Creador en /avatar (drag + 4 selectores + paleta + toggle cuerpo). typecheck/lint/build verdes, 5 tests; route /avatar 307→login OK. PENDIENTE eyeball visual del render WebGL (Gino, logueado en browser). Próximo: 2.5 guardar avatar en profiles.avatar (Server Action/RPC) + editar desde Perfil + chequeo de username disponible en registro.`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -36,8 +36,10 @@
       (`AvatarViewer`→`AvatarCanvas` vía `next/dynamic` ssr:false); catálogo de partes
       propio (`lib/avatar`) + `AvatarModel` (primitivas low-poly tintables). typecheck/lint/
       build verdes; 5 tests del catálogo. Render visual se valida al montarlo en 2.4
-- [ ] 2.4 Creador de avatar 3D: personaje rotable (drag) + 4 selectores (cabeza/pelo,
-      remera, pantalón, zapatos) + toggle cuerpo base + default + preview en vivo
+- [x] 2.4 Creador de avatar 3D: `AvatarCreator` (drag para rotar yaw + 4 selectores
+      cabeza/pelo, remera, pantalón, zapatos con chips + paleta de color + toggle cuerpo
+      base) montado en `/avatar` (auth-gated). typecheck/lint/build verdes; route 307→login
+      OK. ⚠️ Falta eyeball visual del render WebGL logueado en browser (Gino)
 - [ ] 2.5 Guardar avatar (JSON en `profiles.avatar`); editar desde Perfil; chequeo de
       username disponible (en registro)
 - [ ] 2.6 Perfil: email real opcional (`auth.updateUser`) + recuperación
