@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F1 — Scaffold casi completa (1.1–1.6 ✓, verificación local en verde). Falta 1.7 deploy a Vercel (necesita cuenta de Gino).`
+`ESTADO ACTUAL: F1 COMPLETA (deploy vivo en tanda-phi.vercel.app). Próximo: F2 — Auth + Avatar, tarea 2.1 (migración + RLS de profiles, auth username con email sintético).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -24,7 +24,8 @@
 - [x] 1.4 Cliente Supabase (browser + server) y `.env.example`
 - [x] 1.5 ESLint + tsconfig estricto + scripts (`dev/build/lint/typecheck/test`)
 - [x] 1.6 CI GitHub Actions (typecheck + lint + build + test) — comandos verificados local
-- [ ] 1.7 Deploy "hello world" a Vercel (URL viva) — requiere cuenta Vercel de Gino
+- [x] 1.7 Deploy "hello world" a Vercel (URL viva) → https://tanda-phi.vercel.app
+      (dominio final tanda2026.com.ar, DNS propagando)
 
 ## F2 · Auth + Avatar + Perfil
 - [ ] 2.1 Migración + RLS de `profiles`; auth username (email sintético)
