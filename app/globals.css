@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/*
+ * Tanda — design tokens (Mundial 2026)
+ * Núcleo: negro / blanco / dorado. Acentos vibrantes por partido/selección.
+ * Ver SPEC §4. No reproducir marcas/emblemas oficiales: solo paleta y feel.
+ */
+:root {
+  /* Fondos */
+  --bg: #0a0a0a;
+  --bg-elevated: #121212;
+  --bg-overlay: #1a1a1a;
+
+  /* Texto */
+  --fg: #ffffff;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+
+  /* Dorado (trofeo) */
+  --gold: #d4af37;
+  --gold-deep: #c9a227;
+  --gold-soft: #e8cf7e;
+
+  /* Bordes / líneas */
+  --border: #262626;
+
+  /* Estados de juego */
+  --danger: #ef4444; /* barra de tiempo / últimos segundos */
+  --success: #22c55e; /* GOL */
+
+  /* Acentos vibrantes por partido/selección (SPEC §4.1) */
+  --accent-blue: #3b82f6;
+  --accent-green: #22e06b;
+  --accent-red: #ef4444;
+  --accent-magenta: #d946ef;
+  --accent-orange: #f97316;
+  --accent-teal: #14b8a6;
+
+  /* Acento activo del partido (se asigna en runtime; default dorado) */
+  --accent: var(--gold);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-overlay: var(--bg-overlay);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-soft: var(--gold-soft);
+
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --color-accent: var(--accent);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-green: var(--accent-green);
+  --color-accent-red: var(--accent-red);
+  --color-accent-magenta: var(--accent-magenta);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-teal: var(--accent-teal);
+
+  --font-sans: var(--font-outfit);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accesibilidad: respetar prefers-reduced-motion globalmente (SPEC §9/F9) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

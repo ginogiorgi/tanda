@@ -1,0 +1,55 @@
+# CLAUDE.md — TANDA
+
+Juego de trivia mundialista multijugador en tiempo real. Cada pregunta es un penal.
+Calidad "app oficial de FIFA". Producto en `docs/BRIEF.md` (fuente de verdad),
+arquitectura en `SPEC.md`, fases en `PLAN.md`, tareas en `TODO.md`.
+
+## Protocolo de trabajo (reanudable)
+- **Al iniciar cualquier sesión: leer `TODO.md` primero.** La línea `ESTADO ACTUAL`
+  dice dónde quedaste. Trabajar la primera tarea sin tildar; una a la vez; no saltear.
+- Al terminar una tarea: verificar con **output real** (typecheck/lint/build/tests),
+  tildar el checkbox, actualizar `ESTADO ACTUAL`, y commit descriptivo.
+- Antes de cualquier cambio de arquitectura grande: **parar y consultar a Gino**.
+- Cada fase es una rebanada vertical que compila y corre sola.
+
+## Stack
+Next.js (App Router) + TypeScript estricto · Supabase (Postgres/Auth/Realtime/Edge
+Functions/RLS) · Vercel · Tailwind · Framer Motion · Vitest. Gestor: **pnpm**.
+
+## Comandos
+```
+pnpm dev        # desarrollo
+pnpm build      # build de producción
+pnpm lint       # ESLint
+pnpm typecheck  # tsc --noEmit
+pnpm test       # Vitest (motor de juego y de torneo)
+```
+(Definir los scripts en F1; mantener estos nombres.)
+
+## Convenciones (Pyrux)
+- TS estricto: nunca `any`, `as any`, ni `@ts-ignore`.
+- Tailwind para todo, nunca CSS inline. Animaciones con Framer Motion, no `useEffect`.
+- Mobile-first en todos los componentes.
+- `"use client"` solo con interactividad real. `page.tsx` es Server Component que compone
+  directamente; no existe `*PageClient.tsx`.
+- UI en español rioplatense; identificadores y código en inglés.
+
+## Gotchas del proyecto (no negociables)
+- **Timing y evaluación SOLO en el servidor.** Cliente nunca decide resultados.
+- **`correct_index` NUNCA viaja al cliente** (ni por SELECT ni por Broadcast) hasta que
+  el penal está `resolved`.
+- **RLS habilitada en todas las tablas.** Escrituras de juego solo por RPC `SECURITY
+  DEFINER` que validan pertenencia y ventana de tiempo.
+- El **motor** (`lib/engine/`) es TS puro y determinista (aleatoriedad por seed) →
+  testeable sin red. Las Edge Functions son capa fina sobre el motor con `now()` server.
+- El penal **se resuelve recién a los 10s** (no antes); la respuesta es **cambiable** hasta
+  el final y la rapidez se mide por el `selected_at` de la última selección (server).
+- Resolución de penal **idempotente** (lock optimista `open→resolving`), solo con
+  `now()≥deadline`; se dispara por poke del cliente o `tick()` de `pg_cron`.
+- **Desconexión ≠ abandono**: desconexión → respuesta aleatoria hasta reconectar (no pasa a
+  bot); **Abandonar** (botón) → bot con dificultad de su nación. Sin auto-abandono.
+- Bot-vs-bot se **simula al instante**; solo partidos con ≥1 humano corren en realtime, con
+  **reloj de ronda** compartido para sincronizar a todos los humanos.
+- **Assets originales**: no reproducir emblemas/logos/mascotas/tipografías de FIFA. Solo
+  inspirarse en paleta y feel del Mundial 2026.
+- Sin secretos en el cliente (`service_role` solo en Edge/CI).
