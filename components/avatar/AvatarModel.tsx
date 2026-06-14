@@ -24,7 +24,7 @@ const SHOULDER = 1.48;
 const NECK_TOP = 1.6;
 const HEAD_CY = 1.71;
 const HEAD_R = 0.15;
-const EYE_Y = HEAD_CY + 0.04;
+const EYE_Y = HEAD_CY + 0.005; // cara un poco más abajo → más lugar para el pelo arriba
 
 interface BodyShape {
   scale: number;
@@ -37,7 +37,7 @@ interface BodyShape {
 
 const BODY: Record<BodyType, BodyShape> = {
   male: { scale: 1, shoulderR: 0.255, waistR: 0.17, hipR: 0.19, limbR: 0.076, bust: false },
-  female: { scale: 0.93, shoulderR: 0.165, waistR: 0.115, hipR: 0.21, limbR: 0.053, bust: true },
+  female: { scale: 0.93, shoulderR: 0.17, waistR: 0.112, hipR: 0.185, limbR: 0.055, bust: true },
 };
 
 /** Cilindro (low-poly) entre dos alturas, con radios top/bottom (permite ahusar). */
@@ -138,7 +138,7 @@ export function AvatarModel({ config }: AvatarModelProps) {
           {/* pantorrilla (rodilla sin esfera: los cilindros empalman al mismo radio) */}
           <Bone x={x} yBottom={ANKLE} yTop={KNEE} rBottom={shinBotR} rTop={b.limbR} color={shinColor} />
           {bs.tapered && <Joint x={x} y={ANKLE + 0.02} r={shinBotR * 1.25} color={bottom.color} scale={[1, 0.5, 1]} />}
-          <Shoe x={x} part={shoes.part} color={shoes.color} />
+          <Shoe x={x} part={shoes.part} color={shoes.color} limbR={b.limbR} />
         </group>
       ))}
 
@@ -150,9 +150,12 @@ export function AvatarModel({ config }: AvatarModelProps) {
         <Bone yBottom={WAIST} yTop={SHOULDER} rBottom={b.waistR} rTop={b.shoulderR} color={top.color} />
       </group>
 
-      {/* pecho femenino: una sola pieza (repisa ancha y suave al frente), no dos círculos */}
+      {/* pecho femenino: un polígono del torso levantado a la altura del busto (no un óvalo) */}
       {b.bust && (
-        <Joint y={1.34} z={b.waistR * 0.9} r={0.1} color={top.color} scale={[1.7, 0.55, 0.75]} />
+        <mesh position={[0, 1.36, b.shoulderR * 0.42]} rotation={[-0.5, 0, 0]}>
+          <boxGeometry args={[b.shoulderR * 1.5, 0.16, 0.12]} />
+          <meshStandardMaterial color={top.color} flatShading />
+        </mesh>
       )}
 
       {/* ── Brazos + hombro sobre el brazo (deltoides) ── */}
@@ -176,7 +179,7 @@ export function AvatarModel({ config }: AvatarModelProps) {
       <Bone yBottom={SHOULDER - 0.04} yTop={NECK_TOP} rBottom={0.078} rTop={0.066} color={SKIN} />
       <Joint y={HEAD_CY} r={HEAD_R} color={SKIN} scale={[0.92, 1.12, 1]} />
       {/* nariz */}
-      <mesh position={[0, HEAD_CY - 0.01, HEAD_R * 0.92]}>
+      <mesh position={[0, HEAD_CY - 0.045, HEAD_R * 0.92]}>
         <coneGeometry args={[0.035, 0.07, 4]} />
         <meshStandardMaterial color={SKIN} flatShading />
       </mesh>
@@ -200,20 +203,29 @@ interface HairMeshProps {
 }
 
 /**
- * Pelo como casquete esférico a radio mayor que la cabeza → no traspasa. El `thetaLength`
- * se acota para que el nacimiento del pelo quede **por encima de los ojos** (cualquier estilo).
+ * Pelo como casquete corto sobre la mitad superior de la cabeza, a radio mayor → no traspasa
+ * y **no baja más allá de la frente** (nada de barba). El nacimiento queda por encima de los
+ * ojos en todos los estilos.
  */
 function HairMesh({ part, color }: HairMeshProps) {
   if (part === "none") return null;
   const mat = <meshStandardMaterial color={color} flatShading />;
-  const r = HEAD_R + 0.02;
-  const HAIRLINE = Math.PI / 2.7; // ~1.16 rad: frente del casquete por encima de los ojos
+  const r = HEAD_R + 0.018;
+  const HAIRLINE = Math.PI / 2.5; // casquete corto: solo la parte de arriba de la cabeza
+
+  // Casquete superior común (cubre arriba + atrás, por encima de los ojos).
+  const cap = (
+    <mesh position={[0, HEAD_CY + 0.005, 0]} scale={[0.97, 1.12, 1]}>
+      <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
+      {mat}
+    </mesh>
+  );
 
   switch (part) {
     case "buzz":
       return (
-        <mesh position={[0, HEAD_CY, 0]} scale={[0.92, 1.12, 1]}>
-          <sphereGeometry args={[HEAD_R + 0.006, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
+        <mesh position={[0, HEAD_CY + 0.005, 0]} scale={[0.95, 1.12, 1]}>
+          <sphereGeometry args={[HEAD_R + 0.006, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.6]} />
           {mat}
         </mesh>
       );
@@ -227,67 +239,41 @@ function HairMesh({ part, color }: HairMeshProps) {
     case "bun":
       return (
         <group>
-          <mesh position={[0, HEAD_CY, 0]} scale={[0.95, 1.12, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
-            {mat}
-          </mesh>
-          {/* casquete trasero (nuca) + rodete */}
-          <mesh position={[0, HEAD_CY - 0.02, -0.02]} scale={[0.95, 1.05, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, Math.PI * 0.55, Math.PI * 0.45]} />
-            {mat}
-          </mesh>
-          <Joint y={HEAD_CY + HEAD_R * 0.9} z={-HEAD_R} r={0.07} color={color} />
+          {cap}
+          <Joint y={HEAD_CY + HEAD_R * 0.95} z={-HEAD_R * 0.9} r={0.065} color={color} />
         </group>
       );
     case "long":
       return (
         <group>
-          <mesh position={[0, HEAD_CY, 0]} scale={[0.98, 1.12, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
-            {mat}
-          </mesh>
-          {/* lados + melena por la espalda */}
-          <mesh position={[0, HEAD_CY - 0.05, -0.04]} scale={[1.02, 1.1, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5]} />
-            {mat}
-          </mesh>
-          <mesh position={[0, HEAD_CY - 0.24, -HEAD_R * 0.7]}>
-            <boxGeometry args={[0.22, 0.36, 0.06]} />
+          {cap}
+          {/* melena corta por detrás (sólo en -Z, no envuelve la cara) */}
+          <mesh position={[0, HEAD_CY - 0.12, -HEAD_R * 0.8]}>
+            <boxGeometry args={[0.22, 0.26, 0.05]} />
             {mat}
           </mesh>
         </group>
       );
     case "short":
     default:
-      return (
-        <group>
-          <mesh position={[0, HEAD_CY, 0]} scale={[0.96, 1.12, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
-            {mat}
-          </mesh>
-          {/* casquete trasero para cubrir la nuca */}
-          <mesh position={[0, HEAD_CY - 0.02, -0.02]} scale={[0.96, 1.06, 1]}>
-            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5]} />
-            {mat}
-          </mesh>
-        </group>
-      );
+      return cap;
   }
 }
 
 /** Zapato diferenciado por tipo. Puntera hacia +Z. */
-function Shoe({ x, part, color }: { x: number; part: string; color: string }) {
+function Shoe({ x, part, color, limbR }: { x: number; part: string; color: string; limbR: number }) {
   if (part === "boots") {
+    const shaftR = Math.max(0.088, limbR * 1.35); // siempre más ancho que la pierna → se ve la caña
     return (
       <group>
-        {/* caña hasta el tobillo */}
-        <mesh position={[x, ANKLE + 0.06, -0.01]}>
-          <cylinderGeometry args={[0.07, 0.075, 0.16, SEG]} />
+        {/* caña sobre la pierna (lo que los destaca) */}
+        <mesh position={[x, 0.2, -0.01]}>
+          <cylinderGeometry args={[shaftR * 0.92, shaftR, 0.28, SEG]} />
           <meshStandardMaterial color={color} flatShading />
         </mesh>
         {/* pie */}
-        <mesh position={[x, 0.04, 0.06]}>
-          <boxGeometry args={[0.13, 0.09, 0.27]} />
+        <mesh position={[x, 0.05, 0.06]}>
+          <boxGeometry args={[shaftR * 1.6, 0.1, 0.28]} />
           <meshStandardMaterial color={color} flatShading />
         </mesh>
       </group>
