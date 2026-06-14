@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1 y 2.2 LISTAS y verificadas E2E (auth username+password andando contra Supabase real). Próximo: 2.3 creador de avatar SVG por capas (sexo/pelo/camiseta/pantalón/zapatos) + default + preview + chequeo de username disponible.`
+`ESTADO ACTUAL: F2 — 2.1 y 2.2 LISTAS y verificadas E2E. Avatar redefinido a 3D (R3F + Quaternius CC0; ver SPEC §8.2). Decisión cerrada: en el penal el avatar va sin tintar por nación, la selección se lee solo en HUD/bandera (SPEC §8.3 #1). Próximo: 2.3 setup 3D (R3F/drei + pipeline de assets Quaternius).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -32,11 +32,14 @@
       MCP, advisors security+performance en 0 lints
 - [x] 2.2 Pantallas signup / login — E2E verificado (signup→sesión, login→sesión, trigger
       crea el profile). Auth config: mailer_autoconfirm=true, secure_email_change=false
-- [ ] 2.3 Creador de avatar SVG por capas (sexo/pelo/camiseta/pantalón/zapatos) +
-      default sensato + preview en vivo; chequeo de username disponible
-- [ ] 2.4 Guardado de avatar (JSON) y render en perfil
-- [ ] 2.5 Perfil: email real opcional (`auth.updateUser`) + recuperación
-- [ ] 2.6 Perfil: pestaña Historial (selección, fase de eliminación, resumen) + stats
+- [ ] 2.3 Setup 3D: React Three Fiber + drei, code-split, pipeline de assets Quaternius
+      (cuerpos base ♂/♀ + outfits modulares + animaciones), validar partes intercambiables
+- [ ] 2.4 Creador de avatar 3D: personaje rotable (drag) + 4 selectores (cabeza/pelo,
+      remera, pantalón, zapatos) + toggle cuerpo base + default + preview en vivo
+- [ ] 2.5 Guardar avatar (JSON en `profiles.avatar`); editar desde Perfil; chequeo de
+      username disponible (en registro)
+- [ ] 2.6 Perfil: email real opcional (`auth.updateUser`) + recuperación
+- [ ] 2.7 Perfil: pestaña Historial (selección, fase de eliminación, resumen) + stats
       agregadas (títulos, win %, goles, mejor posición, torneos jugados)
 
 ## F3 · Motor de partido (TS puro) + datos + tests
@@ -83,10 +86,11 @@
 
 ## F8 · UI / animaciones premium
 - [ ] 8.1 Menú principal con botón "Jugar" (quick-play) + crear/unirse por código
-- [ ] 8.2 Pantalla de penal (tarjeta centrada, respuesta cambiable + pateador/arquero blur)
+- [ ] 8.2 Escena de penal 3D (R3F): cancha + arco + pelota + avatares pateador/arquero;
+      tarjeta de pregunta 2D centrada con la escena atenuada/desenfocada detrás
 - [ ] 8.3 Barra de tiempo (roja + vibración al final)
-- [ ] 8.4 Animaciones por causa: `goal` / `save` (atajada épica) / `miss_wide` (afuera),
-      con varias variantes + colocación aleatoria por seed (duración fija)
+- [ ] 8.4 Animaciones 3D por causa: `goal` / `save` (estirada) / `miss_wide` (afuera),
+      con variantes + colocación aleatoria por seed (Mixamo retarget o fallback procedural)
 - [ ] 8.5 Bracket estilo mundial con marcadores en vivo + pre-partido
 - [ ] 8.6 Resumen de fin de partido (marcador + penal a penal + "Jugar de nuevo"/"Inicio")
 - [ ] 8.7 Audio (silbato/multitud/gol/atajada + mute, desbloqueo por gesto)

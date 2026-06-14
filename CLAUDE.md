@@ -50,6 +50,9 @@ pnpm test       # Vitest (motor de juego y de torneo)
   bot); **Abandonar** (botón) → bot con dificultad de su nación. Sin auto-abandono.
 - Bot-vs-bot se **simula al instante**; solo partidos con ≥1 humano corren en realtime, con
   **reloj de ronda** compartido para sincronizar a todos los humanos.
+- **3D solo en dos lugares**: creador de avatar y escena de penal (cancha/arco/arquero/
+  pateador/pelota). Todo lo demás es 2D. R3F code-splitteado; assets CC0 (Quaternius). El
+  avatar del jugador ES el pateador/arquero del penal. Ver SPEC §8.2.
 - **Assets originales**: no reproducir emblemas/logos/mascotas/tipografías de FIFA. Solo
   inspirarse en paleta y feel del Mundial 2026.
 - Sin secretos en el cliente (`service_role` solo en Edge/CI).
