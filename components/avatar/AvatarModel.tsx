@@ -1,52 +1,112 @@
 /**
- * Avatar low-poly humano compuesto por primitivas a partir de un {@link AvatarConfig}. Sin
- * assets externos. Mira hacia +Z (la cámara está en +Z): la **cara** (nariz + ojos) marca
- * el frente, así la rotación se nota. Proporciones ~7 cabezas. Dos cuerpos fijos
- * (hombre/mujer) por dimensiones. Se renderiza **dentro** de un `<Canvas>`. Ver SPEC §8.2.
+ * Avatar low-poly humano (estilo "malla decimada", facetado pero orgánico) compuesto por
+ * primitivas a partir de un {@link AvatarConfig}. Sin assets externos. Mira hacia +Z (cámara
+ * en +Z): la cara (nariz + ojos) marca el frente para que la rotación se note. Proporciones
+ * ~7 cabezas. Dos cuerpos con **silueta característica** (hombre en V, mujer reloj de arena)
+ * vía radios distintos, no solo escala. Ver SPEC §8.2.
  */
 
 import type { AvatarConfig, BodyType } from "@/lib/avatar/types";
 
-/** Tono de piel por defecto (el schema aún no expone color de piel). */
 const SKIN = "#d9a06b";
 const EYE = "#2a211b";
+const SEG = 6; // segmentos radiales bajos → facetado low-poly
 
-/** Mitad de la altura total del modelo (feet→cabeza ≈1.86), para centrarlo en el canvas. */
+/** Mitad de la altura total (~1.86), para centrar el modelo en el canvas. */
 const HALF_HEIGHT = 0.93;
+
+// Alturas de referencia (pies en y=0, hacia arriba).
+const ANKLE = 0.08;
+const KNEE = 0.5;
+const HIP = 0.92;
+const WAIST = 1.1;
+const SHOULDER = 1.48;
+const NECK_TOP = 1.6;
+const HEAD_CY = 1.71;
+const HEAD_R = 0.15;
 
 interface BodyShape {
   scale: number;
-  shoulderW: number;
-  waistW: number;
-  hipW: number;
-  depth: number;
+  shoulderR: number;
+  waistR: number;
+  hipR: number;
+  limbR: number;
+  bust: boolean;
 }
 
 const BODY: Record<BodyType, BodyShape> = {
-  male: { scale: 1, shoulderW: 0.5, waistW: 0.34, hipW: 0.38, depth: 0.26 },
-  female: { scale: 0.96, shoulderW: 0.4, waistW: 0.28, hipW: 0.44, depth: 0.24 },
+  male: { scale: 1, shoulderR: 0.255, waistR: 0.17, hipR: 0.19, limbR: 0.076, bust: false },
+  female: { scale: 0.93, shoulderR: 0.165, waistR: 0.115, hipR: 0.26, limbR: 0.053, bust: true },
 };
 
-// Alturas de referencia (pies en y=0, hacia arriba).
-const SHOE_H = 0.1;
-const SHIN_TOP = 0.55;
-const THIGH_TOP = 1.0;
-const HIP_TOP = 1.18;
-const CHEST_TOP = 1.5;
-const NECK_TOP = 1.6;
-const HEAD_H = 0.28;
-const HEAD_CY = NECK_TOP + HEAD_H / 2;
-
-/** La prenda inferior cubre la pantorrilla (pantalón/jogger) o la deja a piel (short). */
-function coversShin(part: string): boolean {
-  return part !== "shorts";
+/** Cilindro (low-poly) entre dos alturas, con radios top/bottom (permite ahusar). */
+function Bone({
+  x = 0,
+  z = 0,
+  yBottom,
+  yTop,
+  rBottom,
+  rTop,
+  color,
+}: {
+  x?: number;
+  z?: number;
+  yBottom: number;
+  yTop: number;
+  rBottom: number;
+  rTop: number;
+  color: string;
+}) {
+  return (
+    <mesh position={[x, (yBottom + yTop) / 2, z]}>
+      <cylinderGeometry args={[rTop, rBottom, yTop - yBottom, SEG]} />
+      <meshStandardMaterial color={color} flatShading />
+    </mesh>
+  );
 }
 
-/** Largo de manga de la prenda superior (0 = sin mangas). */
-function sleeveLength(part: string): number {
-  if (part === "tank") return 0;
-  if (part === "tee") return 0.15;
-  return 0.42; // longsleeve, hoodie
+/** Esfera low-poly (articulaciones, cabeza, etc.). */
+function Joint({
+  x = 0,
+  y,
+  z = 0,
+  r,
+  color,
+  scale,
+}: {
+  x?: number;
+  y: number;
+  z?: number;
+  r: number;
+  color: string;
+  scale?: [number, number, number];
+}) {
+  return (
+    <mesh position={[x, y, z]} scale={scale}>
+      <sphereGeometry args={[r, 8, 6]} />
+      <meshStandardMaterial color={color} flatShading />
+    </mesh>
+  );
+}
+
+function topStyle(part: string): { upperArm: boolean; foreArm: boolean; hood: boolean; bulk: number } {
+  switch (part) {
+    case "tank":
+      return { upperArm: false, foreArm: false, hood: false, bulk: 1 };
+    case "tee":
+      return { upperArm: true, foreArm: false, hood: false, bulk: 1 };
+    case "hoodie":
+      return { upperArm: true, foreArm: true, hood: true, bulk: 1.18 };
+    case "longsleeve":
+    default:
+      return { upperArm: true, foreArm: true, hood: false, bulk: 1 };
+  }
+}
+
+function bottomStyle(part: string): { coversShin: boolean; tapered: boolean } {
+  if (part === "shorts") return { coversShin: false, tapered: false };
+  if (part === "joggers") return { coversShin: true, tapered: true };
+  return { coversShin: true, tapered: false }; // pants: recto
 }
 
 interface AvatarModelProps {
@@ -55,109 +115,98 @@ interface AvatarModelProps {
 
 export function AvatarModel({ config }: AvatarModelProps) {
   const { bodyType, hair, top, bottom, shoes } = config;
-  const shape = BODY[bodyType];
-  const legX = shape.hipW * 0.28;
-  const sleeve = sleeveLength(top.part);
-  const shinColor = coversShin(bottom.part) ? bottom.color : SKIN;
+  const b = BODY[bodyType];
+  const ts = topStyle(top.part);
+  const bs = bottomStyle(bottom.part);
+
+  const legX = b.hipR * 0.5;
+  const shoulderX = b.shoulderR * 0.92 + b.limbR;
+  const elbow = 1.12;
+  const wrist = 0.82;
+  const shinColor = bs.coversShin ? bottom.color : SKIN;
+  const shinTopR = b.limbR;
+  const shinBotR = bs.tapered ? b.limbR * 0.62 : b.limbR; // jogger ahusa al tobillo
 
   return (
-    <group position={[0, -HALF_HEIGHT * shape.scale, 0]} scale={shape.scale}>
-      {/* Pies (puntera hacia +Z marca el frente) */}
+    <group position={[0, -HALF_HEIGHT * b.scale, 0]} scale={b.scale}>
+      {/* ── Piernas ── */}
       {[-legX, legX].map((x) => (
-        <mesh key={`shoe-${x}`} position={[x, SHOE_H / 2, 0.05]}>
-          <boxGeometry args={[0.14, SHOE_H, 0.26]} />
-          <meshStandardMaterial color={shoes.color} />
-        </mesh>
+        <group key={`leg-${x}`}>
+          {/* muslo (siempre prenda inferior) */}
+          <Bone x={x} yBottom={KNEE} yTop={HIP} rBottom={b.limbR} rTop={b.limbR * 1.25} color={bottom.color} />
+          <Joint x={x} y={KNEE} r={b.limbR} color={shinColor} />
+          {/* pantorrilla */}
+          <Bone x={x} yBottom={ANKLE} yTop={KNEE} rBottom={shinBotR} rTop={shinTopR} color={shinColor} />
+          {bs.tapered && <Joint x={x} y={ANKLE + 0.02} r={shinBotR * 1.25} color={bottom.color} scale={[1, 0.5, 1]} />}
+          {/* zapato */}
+          <Shoe x={x} part={shoes.part} color={shoes.color} />
+        </group>
       ))}
 
-      {/* Pantorrillas */}
-      {[-legX, legX].map((x) => (
-        <mesh key={`shin-${x}`} position={[x, (SHOE_H + SHIN_TOP) / 2, 0]}>
-          <boxGeometry args={[0.13, SHIN_TOP - SHOE_H, 0.15]} />
-          <meshStandardMaterial color={shinColor} />
-        </mesh>
+      {/* ── Cadera + torso (achatado en Z) ── */}
+      <group scale={[1, 1, 0.74]}>
+        {/* pelvis (prenda inferior) */}
+        <Bone yBottom={HIP - 0.04} yTop={WAIST} rBottom={b.hipR} rTop={b.waistR * 1.1} color={bottom.color} />
+        {/* torso ahusado cintura→hombros (prenda superior) */}
+        <Bone
+          yBottom={WAIST}
+          yTop={SHOULDER}
+          rBottom={b.waistR}
+          rTop={b.shoulderR * ts.bulk}
+          color={top.color}
+        />
+      </group>
+
+      {/* pecho femenino (fuera del achatado, para que proyecte al frente) */}
+      {b.bust &&
+        [-0.055, 0.055].map((x) => (
+          <Joint key={`bust-${x}`} x={x} y={1.36} z={b.waistR * 1.15} r={0.07} color={top.color} scale={[1, 0.85, 0.8]} />
+        ))}
+
+      {/* hombros redondeados (sutiles, no hombreras) */}
+      {[-1, 1].map((s) => (
+        <Joint key={`sh-${s}`} x={s * b.shoulderR * ts.bulk * 0.92} y={SHOULDER - 0.03} r={b.limbR * 0.95} color={ts.upperArm ? top.color : SKIN} />
       ))}
 
-      {/* Muslos (siempre prenda inferior) */}
-      {[-legX, legX].map((x) => (
-        <mesh key={`thigh-${x}`} position={[x, (SHIN_TOP + THIGH_TOP) / 2, 0]}>
-          <boxGeometry args={[0.16, THIGH_TOP - SHIN_TOP, 0.18]} />
-          <meshStandardMaterial color={bottom.color} />
-        </mesh>
-      ))}
-
-      {/* Cadera (prenda inferior) */}
-      <mesh position={[0, (THIGH_TOP + HIP_TOP) / 2, 0]}>
-        <boxGeometry args={[shape.hipW, HIP_TOP - THIGH_TOP, shape.depth]} />
-        <meshStandardMaterial color={bottom.color} />
-      </mesh>
-
-      {/* Torso ahusado: cintura (angosta) + pecho (ancho) — prenda superior */}
-      <mesh position={[0, HIP_TOP + (CHEST_TOP - HIP_TOP) * 0.27, 0]}>
-        <boxGeometry args={[shape.waistW, (CHEST_TOP - HIP_TOP) * 0.55, shape.depth * 0.92]} />
-        <meshStandardMaterial color={top.color} />
-      </mesh>
-      <mesh position={[0, HIP_TOP + (CHEST_TOP - HIP_TOP) * 0.76, 0]}>
-        <boxGeometry args={[shape.shoulderW, (CHEST_TOP - HIP_TOP) * 0.48, shape.depth]} />
-        <meshStandardMaterial color={top.color} />
-      </mesh>
-
-      {/* Brazos: hombro→mano, con manga (color de la prenda) y resto a piel */}
-      {[-1, 1].map((side) => {
-        const x = side * (shape.shoulderW / 2 + 0.07);
-        const armTop = CHEST_TOP - 0.02;
-        const armLen = 0.58;
-        const sleeveLen = Math.min(sleeve, armLen);
-        const skinLen = armLen - sleeveLen;
-        const handY = armTop - armLen - 0.05;
+      {/* ── Brazos ── */}
+      {[-1, 1].map((s) => {
+        const x = s * shoulderX;
         return (
-          <group key={`arm-${side}`}>
-            {sleeveLen > 0 && (
-              <mesh position={[x, armTop - sleeveLen / 2, 0]}>
-                <boxGeometry args={[0.11, sleeveLen, 0.12]} />
-                <meshStandardMaterial color={top.color} />
-              </mesh>
-            )}
-            {skinLen > 0 && (
-              <mesh position={[x, armTop - sleeveLen - skinLen / 2, 0]}>
-                <boxGeometry args={[0.1, skinLen, 0.11]} />
-                <meshStandardMaterial color={SKIN} />
-              </mesh>
-            )}
-            <mesh position={[x, handY, 0]}>
-              <boxGeometry args={[0.1, 0.1, 0.11]} />
-              <meshStandardMaterial color={SKIN} />
-            </mesh>
+          <group key={`arm-${s}`}>
+            <Bone x={x} yBottom={elbow} yTop={SHOULDER} rBottom={b.limbR * 0.85} rTop={b.limbR} color={ts.upperArm ? top.color : SKIN} />
+            <Joint x={x} y={elbow} r={b.limbR * 0.85} color={ts.foreArm ? top.color : SKIN} />
+            <Bone x={x} yBottom={wrist} yTop={elbow} rBottom={b.limbR * 0.7} rTop={b.limbR * 0.85} color={ts.foreArm ? top.color : SKIN} />
+            <Joint x={x} y={wrist - 0.03} r={b.limbR * 0.8} color={SKIN} />
           </group>
         );
       })}
 
-      {/* Cuello */}
-      <mesh position={[0, (CHEST_TOP + NECK_TOP) / 2, 0]}>
-        <cylinderGeometry args={[0.06, 0.07, NECK_TOP - CHEST_TOP, 8]} />
-        <meshStandardMaterial color={SKIN} />
+      {/* ── Cuello + cabeza ── */}
+      <Bone yBottom={SHOULDER - 0.04} yTop={NECK_TOP} rBottom={0.078} rTop={0.066} color={SKIN} />
+      <Joint y={HEAD_CY} r={HEAD_R} color={SKIN} scale={[0.92, 1.12, 1]} />
+      {/* nariz */}
+      <mesh position={[0, HEAD_CY - 0.01, HEAD_R * 0.92]}>
+        <coneGeometry args={[0.035, 0.07, 4]} />
+        <meshStandardMaterial color={SKIN} flatShading />
       </mesh>
-
-      {/* Cabeza (caja, no esfera) */}
-      <mesh position={[0, HEAD_CY, 0]}>
-        <boxGeometry args={[0.24, HEAD_H, 0.26]} />
-        <meshStandardMaterial color={SKIN} />
-      </mesh>
-      {/* Nariz (frente, +Z) */}
-      <mesh position={[0, HEAD_CY - 0.01, 0.14]}>
-        <boxGeometry args={[0.05, 0.06, 0.05]} />
-        <meshStandardMaterial color={SKIN} />
-      </mesh>
-      {/* Ojos (frente, +Z) */}
+      {/* ojos */}
       {[-0.06, 0.06].map((x) => (
-        <mesh key={`eye-${x}`} position={[x, HEAD_CY + 0.05, 0.13]}>
-          <boxGeometry args={[0.045, 0.045, 0.02]} />
+        <mesh key={`eye-${x}`} position={[x, HEAD_CY + 0.04, HEAD_R * 0.86]}>
+          <boxGeometry args={[0.04, 0.04, 0.02]} />
           <meshStandardMaterial color={EYE} />
         </mesh>
       ))}
 
-      {/* Pelo */}
+      {/* ── Pelo ── */}
       <HairMesh part={hair.part} color={hair.color} />
+
+      {/* ── Capucha (solo buzo) ── */}
+      {ts.hood && (
+        <mesh position={[0, NECK_TOP + 0.02, -0.06]} scale={[1, 1, 1.1]}>
+          <sphereGeometry args={[0.17, 8, 6, 0, Math.PI * 2, 0, Math.PI / 1.7]} />
+          <meshStandardMaterial color={top.color} flatShading side={2} />
+        </mesh>
+      )}
     </group>
   );
 }
@@ -167,68 +216,107 @@ interface HairMeshProps {
   color: string;
 }
 
-/** Pelo en cajas, coherente con la cabeza-caja. Posiciones relativas a `HEAD_CY`. */
+/** Pelo como casquete esférico a radio mayor que la cabeza → no traspasa. Deja la cara. */
 function HairMesh({ part, color }: HairMeshProps) {
   if (part === "none") return null;
-  const material = <meshStandardMaterial color={color} />;
-  const top = HEAD_CY + HEAD_H / 2; // y de la coronilla
+  const mat = <meshStandardMaterial color={color} flatShading />;
+  const r = HEAD_R + 0.02;
 
   switch (part) {
     case "buzz":
       return (
-        <mesh position={[0, top - 0.02, -0.01]}>
-          <boxGeometry args={[0.26, 0.06, 0.28]} />
-          {material}
+        <mesh position={[0, HEAD_CY, 0]} scale={[0.92, 1.12, 1]}>
+          <sphereGeometry args={[HEAD_R + 0.005, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.6]} />
+          {mat}
         </mesh>
       );
     case "mohawk":
       return (
-        <mesh position={[0, top + 0.05, 0]}>
-          <boxGeometry args={[0.05, 0.14, 0.26]} />
-          {material}
+        <mesh position={[0, HEAD_CY + HEAD_R * 1.0, 0]}>
+          <boxGeometry args={[0.05, 0.16, 0.24]} />
+          {mat}
         </mesh>
       );
     case "bun":
       return (
         <group>
-          <mesh position={[0, top - 0.03, -0.02]}>
-            <boxGeometry args={[0.26, 0.08, 0.28]} />
-            {material}
+          <mesh position={[0, HEAD_CY, 0]} scale={[0.95, 1.12, 1]}>
+            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.2]} />
+            {mat}
           </mesh>
-          <mesh position={[0, top, -0.18]}>
-            <boxGeometry args={[0.13, 0.13, 0.13]} />
-            {material}
-          </mesh>
+          <Joint y={HEAD_CY + HEAD_R * 0.9} z={-HEAD_R} r={0.07} color={color} />
         </group>
       );
     case "long":
       return (
         <group>
-          <mesh position={[0, top - 0.02, -0.01]}>
-            <boxGeometry args={[0.27, 0.1, 0.29]} />
-            {material}
+          <mesh position={[0, HEAD_CY, 0]} scale={[0.98, 1.12, 1]}>
+            <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, Math.PI / 1.9]} />
+            {mat}
           </mesh>
-          {/* Melena cayendo por la espalda */}
-          <mesh position={[0, HEAD_CY - 0.16, -0.15]}>
-            <boxGeometry args={[0.26, 0.34, 0.07]} />
-            {material}
+          {/* melena por la espalda */}
+          <mesh position={[0, HEAD_CY - 0.22, -HEAD_R * 0.7]}>
+            <boxGeometry args={[0.22, 0.36, 0.06]} />
+            {mat}
           </mesh>
         </group>
       );
     case "short":
     default:
       return (
-        <group>
-          {/* Casquete que cubre arriba y atrás, deja la cara */}
-          <mesh position={[0, top - 0.03, -0.01]}>
-            <boxGeometry args={[0.26, 0.1, 0.28]} />
-            {material}
-          </mesh>
-          <mesh position={[0, HEAD_CY + 0.02, -0.14]}>
-            <boxGeometry args={[0.26, 0.2, 0.05]} />
-            {material}
-          </mesh>
-        </group>
+        <mesh position={[0, HEAD_CY, 0]} scale={[0.96, 1.12, 1]}>
+          <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.05]} />
+          {mat}
+        </mesh>
       );
   }
+}
+
+/** Zapato diferenciado por tipo. Puntera hacia +Z. */
+function Shoe({ x, part, color }: { x: number; part: string; color: string }) {
+  if (part === "boots") {
+    return (
+      <group>
+        {/* caña hasta el tobillo */}
+        <mesh position={[x, ANKLE + 0.06, -0.01]}>
+          <cylinderGeometry args={[0.07, 0.075, 0.16, SEG]} />
+          <meshStandardMaterial color={color} flatShading />
+        </mesh>
+        {/* pie */}
+        <mesh position={[x, 0.04, 0.06]}>
+          <boxGeometry args={[0.13, 0.09, 0.27]} />
+          <meshStandardMaterial color={color} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+  if (part === "cleats") {
+    return (
+      <group>
+        {/* pie puntiagudo */}
+        <mesh position={[x, 0.05, 0.08]}>
+          <boxGeometry args={[0.12, 0.08, 0.3]} />
+          <meshStandardMaterial color={color} flatShading />
+        </mesh>
+        {/* suela/tapones */}
+        <mesh position={[x, 0.0, 0.08]}>
+          <boxGeometry args={[0.13, 0.03, 0.31]} />
+          <meshStandardMaterial color="#1d1d1d" flatShading />
+        </mesh>
+      </group>
+    );
+  }
+  // sneakers: bajo y redondeado
+  return (
+    <group>
+      <mesh position={[x, 0.05, 0.05]}>
+        <boxGeometry args={[0.14, 0.1, 0.25]} />
+        <meshStandardMaterial color={color} flatShading />
+      </mesh>
+      <mesh position={[x, 0.02, 0.06]}>
+        <boxGeometry args={[0.15, 0.04, 0.27]} />
+        <meshStandardMaterial color="#f1f1f1" flatShading />
+      </mesh>
+    </group>
+  );
 }
