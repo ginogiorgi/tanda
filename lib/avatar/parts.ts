@@ -38,7 +38,6 @@ export const TOP_PARTS: readonly PartOption[] = [
   { id: "tee", label: "Remera" },
   { id: "longsleeve", label: "Manga larga" },
   { id: "tank", label: "Musculosa" },
-  { id: "hoodie", label: "Buzo" },
 ] as const;
 
 export const BOTTOM_PARTS: readonly PartOption[] = [
