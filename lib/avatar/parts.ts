@@ -21,13 +21,8 @@ export interface PartOption {
 }
 
 export const BODY_TYPES: readonly { id: BodyType; label: string }[] = [
-  { id: "male", label: "Cuerpo A" },
-  { id: "female", label: "Cuerpo B" },
-] as const;
-
-export const HEAD_PARTS: readonly PartOption[] = [
-  { id: "round", label: "Redonda" },
-  { id: "block", label: "Cuadrada" },
+  { id: "male", label: "Hombre" },
+  { id: "female", label: "Mujer" },
 ] as const;
 
 export const HAIR_PARTS: readonly PartOption[] = [
@@ -60,7 +55,6 @@ export const SHOES_PARTS: readonly PartOption[] = [
 
 /** Catálogo por categoría, para iterar genéricamente en el creador (selectores). */
 export const PARTS: Record<PartCategory, readonly PartOption[]> = {
-  head: HEAD_PARTS,
   hair: HAIR_PARTS,
   top: TOP_PARTS,
   bottom: BOTTOM_PARTS,
@@ -88,7 +82,6 @@ function partExists(category: PartCategory, id: string): boolean {
 /** Avatar por defecto al abrir el creador por primera vez. */
 export const DEFAULT_AVATAR: AvatarConfig = {
   bodyType: "male",
-  head: "round",
   hair: { part: "short", color: "#1d1d1d" },
   top: { part: "tee", color: "#e63946" },
   bottom: { part: "shorts", color: "#264653" },
@@ -104,7 +97,6 @@ export function isValidAvatar(value: unknown): value is AvatarConfig {
   const a = value as Record<string, unknown>;
 
   if (a.bodyType !== "male" && a.bodyType !== "female") return false;
-  if (typeof a.head !== "string" || !partExists("head", a.head)) return false;
 
   const tinted: [PartCategory, unknown][] = [
     ["hair", a.hair],

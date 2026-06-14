@@ -414,11 +414,16 @@ lobby ni en resultados, solo donde hay 3D.
   selectores y las primitivas propias son lo más liviano y 100% bajo nuestro control,
   coherente con el estilo minimal. (Quaternius queda como upgrade opcional futuro detrás de
   la misma interfaz `AvatarConfig`.)
-- **Creador de avatar:** personaje 3D a la izquierda, **rotable arrastrando** (solo yaw);
-  a la derecha 4 selectores verticales (cabeza/pelo, remera, pantalón, zapatos) + toggle de
-  cuerpo base (♂/♀). Default sensato, preview en vivo. Se guarda en `profiles.avatar`
-  (jsonb): `{ bodyType, head, hair{part,color}, top{part,color}, bottom{part,color},
-  shoes{part,color} }`. Los `part` son ids de un **catálogo propio** (`lib/avatar/parts`).
+- **Modelo:** humano low-poly de proporciones ~7 cabezas (no stocky), con cuello y miembros
+  segmentados, mirando a +Z. La **cabeza es una caja con cara** (nariz + ojos al frente):
+  marca la orientación para que la rotación se note (una esfera no servía). **Dos cuerpos
+  fijos** (hombre/mujer) por dimensiones (hombros/cintura/cadera), no por mallas distintas.
+- **Creador de avatar:** personaje 3D a la izquierda, **rotable arrastrando** (solo yaw),
+  centrado y sin recuadro; a la derecha selectores verticales (pelo, remera, pantalón,
+  zapatos) + toggle de cuerpo (Hombre/Mujer). **No hay variantes de forma de cabeza**, solo
+  de pelo. Default sensato, preview en vivo. Se guarda en `profiles.avatar` (jsonb):
+  `{ bodyType, hair{part,color}, top{part,color}, bottom{part,color}, shoes{part,color} }`.
+  Los `part` son ids de un **catálogo propio** (`lib/avatar/parts`).
 - **Escena de penal (3D):** cancha + arco + pelota + **dos personajes = los avatares de
   los jugadores** (pateador y arquero), **tal cual los armó cada jugador** (sin tintar por
   nación; ver §8.3 #1). La identidad de selección se lee solo en HUD/bandera (pre-partido,

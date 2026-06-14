@@ -23,14 +23,11 @@ export interface TintedPart {
 }
 
 /**
- * Avatar serializable. `head` es solo una malla (sin color: la piel se deriva del cuerpo
- * base); el resto son piezas tintables. El selector "cabeza/pelo" del creador agrupa
- * `head` + `hair` en una sola columna de UI.
+ * Avatar serializable. La cabeza es fija por cuerpo (hombre/mujer): no hay variantes de
+ * forma de cabeza, solo de pelo. El resto son piezas tintables.
  */
 export interface AvatarConfig {
   bodyType: BodyType;
-  /** Malla de cabeza/cara (sin tintado propio). */
-  head: string;
   hair: TintedPart;
   /** Remera. */
   top: TintedPart;
@@ -40,7 +37,7 @@ export interface AvatarConfig {
 }
 
 /** Categorías de pieza intercambiable expuestas en el creador. */
-export type PartCategory = "head" | "hair" | "top" | "bottom" | "shoes";
+export type PartCategory = "hair" | "top" | "bottom" | "shoes";
 
 const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 

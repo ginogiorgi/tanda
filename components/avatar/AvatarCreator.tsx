@@ -18,7 +18,6 @@ import {
   BODY_TYPES,
   COLOR_PALETTE,
   DEFAULT_AVATAR,
-  HEAD_PARTS,
   PARTS,
   type PartOption,
 } from "@/lib/avatar/parts";
@@ -68,26 +67,21 @@ export function AvatarCreator({
   const setBodyType = (bodyType: BodyType) =>
     setAvatar((a) => ({ ...a, bodyType }));
 
-  const setHead = (head: string) => setAvatar((a) => ({ ...a, head }));
-
-  const setTintedPart = (category: Exclude<PartCategory, "head">, next: TintedPart) =>
+  const setTintedPart = (category: PartCategory, next: TintedPart) =>
     setAvatar((a) => ({ ...a, [category]: next }));
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 lg:flex-row lg:items-stretch">
-      {/* Viewer rotable */}
+      {/* Viewer rotable (sin recuadro, centrado) */}
       <div className="flex flex-col gap-3 lg:w-1/2">
         <div
-          className="relative aspect-square w-full cursor-grab touch-none select-none overflow-hidden rounded-2xl bg-gradient-to-b from-white/5 to-white/0 ring-1 ring-white/10 active:cursor-grabbing"
+          className="aspect-square w-full cursor-grab touch-none select-none active:cursor-grabbing"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
         >
           <AvatarViewer config={avatar} rotationY={rotationY} className="h-full w-full" />
-          <p className="pointer-events-none absolute bottom-3 left-0 right-0 text-center text-xs text-white/40">
-            Arrastrá para rotar
-          </p>
         </div>
 
         {/* Toggle de cuerpo base */}
@@ -111,13 +105,8 @@ export function AvatarCreator({
 
       {/* Selectores */}
       <div className="flex flex-col gap-4 lg:w-1/2">
-        {/* Cabeza / pelo (agrupado) */}
-        <Selector label="Cabeza / pelo">
-          <ChipRow
-            options={HEAD_PARTS}
-            selected={avatar.head}
-            onSelect={setHead}
-          />
+        {/* Pelo */}
+        <Selector label="Pelo">
           <ChipRow
             options={PARTS.hair}
             selected={avatar.hair.part}
@@ -188,7 +177,7 @@ function TintedSelector({
   onChange,
 }: {
   label: string;
-  category: Exclude<PartCategory, "head">;
+  category: PartCategory;
   value: TintedPart;
   onChange: (next: TintedPart) => void;
 }) {

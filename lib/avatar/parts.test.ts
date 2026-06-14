@@ -21,10 +21,18 @@ describe("avatar parts catalog", () => {
   });
 
   it("rechaza ids de pieza inexistentes", () => {
-    expect(isValidAvatar({ ...DEFAULT_AVATAR, head: "triangular" })).toBe(false);
     expect(
       isValidAvatar({ ...DEFAULT_AVATAR, top: { part: "capa", color: "#ffffff" } }),
     ).toBe(false);
+    expect(
+      isValidAvatar({ ...DEFAULT_AVATAR, shoes: { part: "alpargatas", color: "#fff000" } }),
+    ).toBe(false);
+  });
+
+  it("rechaza piezas tintables faltantes", () => {
+    const { hair: _hair, ...withoutHair } = DEFAULT_AVATAR;
+    void _hair;
+    expect(isValidAvatar(withoutHair)).toBe(false);
   });
 
   it("rechaza colores que no son hex #rrggbb", () => {

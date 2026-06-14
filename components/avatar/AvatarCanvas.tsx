@@ -18,9 +18,9 @@ interface AvatarCanvasProps {
 export function AvatarCanvas({ config, rotationY = 0.4 }: AvatarCanvasProps) {
   return (
     <Canvas
-      camera={{ position: [0, 0.2, 3.2], fov: 35 }}
+      camera={{ position: [0, 0, 3.8], fov: 35 }}
       dpr={[1, 2]}
-      gl={{ antialias: true }}
+      gl={{ antialias: true, alpha: true }}
     >
       <ambientLight intensity={0.7} />
       <directionalLight position={[2.5, 4, 2]} intensity={1.1} />
