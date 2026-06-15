@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { PlayMenu } from "@/components/lobby/PlayMenu";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -11,7 +12,21 @@ const ACCENTS = [
   "bg-accent-teal",
 ] as const;
 
-export default async function Home() {
+const AVISOS: Record<string, string> = {
+  room_not_found: "No existe una sala con ese código.",
+  room_cancelled: "Esa sala se canceló.",
+  already_started: "Esa partida ya arrancó.",
+  room_full: "Esa sala está llena.",
+};
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ aviso?: string }>;
+}) {
+  const { aviso } = await searchParams;
+  const avisoMsg = aviso ? AVISOS[aviso] : null;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -48,15 +63,18 @@ export default async function Home() {
         ))}
       </div>
 
+      {avisoMsg && <p className="text-sm text-danger">{avisoMsg}</p>}
+
       {username ? (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-6">
           <p className="text-lg">
             Hola, <span className="font-semibold text-gold">{username}</span> 👋
           </p>
+          <PlayMenu />
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/perfil"
-              className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
             >
               Mi perfil
             </Link>

@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 + F3 COMPLETAS, F4 4.1 LISTA. Modelo de datos (10 tablas) + motor TS puro (penalty/match/rng, 39 tests). F4 4.1: matchmaking por RPC SECURITY DEFINER (create_room/join_room/quick_play) + RLS de pertenencia (rooms/tournaments/participants), esquema de lobby (tournament 'pending', nation_id nullable), E2E real OK. Próximo: 4.2 lobby con Presence + countdown 2min + cancelar sala sin humanos. start_tournament (bots/naciones/grupos) queda para F5. PENDIENTE ops (recuperación en prod): cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: 4.2 Lobby con Presence + countdown 2 min + cancelar sala sin humanos. Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
+`ESTADO ACTUAL: F2 + F3 COMPLETAS, F4 4.1 + 4.2 LISTAS. Modelo de datos (10 tablas) + motor TS puro (penalty/match/rng, 39 tests). F4 4.1: matchmaking por RPC SECURITY DEFINER (create_room/join_room/quick_play) + RLS de pertenencia (rooms/tournaments/participants), esquema de lobby (tournament 'pending', nation_id nullable), E2E real OK. F4 4.2: lobby vivo — RPC leave_room (cancela sala al irse el último humano; abandono sucio = tick() backstop F5/4.7), ruta /sala/[code] (server: auth + join_room idempotente) → <Lobby> client con Presence (canal room:{code}, track {userId,username}) + countdown contra starts_at (offset al montar) + Salir/Copiar código; menú mínimo en home (<PlayMenu>: Jugar/Crear/Unirse) + aviso de links inválidos; helpers puros lib/lobby/presence.ts (6 tests). typecheck/lint/build verdes, 45 tests; E2E SQL real de la cancelación OK. PENDIENTE eyeball visual del lobby en browser (Gino). Próximo: 4.3 Broadcast penal:start (sin correcta) + suscripción cliente. start_tournament (bots/naciones/grupos) queda para F5. PENDIENTE ops (recuperación en prod): cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -98,7 +98,16 @@
       participants) vía helpers is_tournament_member/is_room_member. Esquema: tournament
       'pending' + nation_id nullable (lobby sin nación). E2E real OK (matchmaking + RLS
       bloquea ajeno). start_tournament (bots/naciones/grupos) = F5
-- [ ] 4.2 Lobby con Presence + countdown 2 min + cancelar sala sin humanos
+- [x] 4.2 Lobby con Presence + countdown 2 min + cancelar sala sin humanos. RPC `leave_room`
+      (SECURITY DEFINER): borra la fila del humano en lobby; si quedan 0 humanos → room
+      `cancelled` (abandono sucio = tick() backstop F5/4.7). Ruta `/sala/[code]` (server:
+      auth + `join_room` idempotente para links compartidos/refresh) → `<Lobby>` (client:
+      canal `room:{code}` con Presence track de `{userId,username}`, countdown contra
+      `starts_at` con offset estimado al montar, botón Salir/Copiar código). Menú mínimo en
+      el home (`<PlayMenu>`: Jugar/Crear/Unirse por código) + aviso de links inválidos.
+      Helpers puros `lib/lobby/presence.ts` (`formatRemaining`/`presenceMembers`, 6 tests).
+      typecheck/lint/build verdes, 45 tests; E2E SQL real: 2 humanos → u2 sale (lobby) → u1
+      sale (cancelled). ⚠️ Falta eyeball visual del lobby en browser (Gino, como el avatar)
 - [ ] 4.3 Broadcast `penal:start` (sin correcta) y suscripción cliente
 - [ ] 4.4 `select_option` (respuesta cambiable, timestamp server, validaciones)
 - [ ] 4.5 `resolve_penalty` a los 10s, idempotente, aleatoria a ausentes + encadenado
