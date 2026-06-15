@@ -70,6 +70,10 @@ humanos.
 se puede cambiar la respuesta hasta los 10s; el resultado lo decide el server a los 10s; un
 cliente que refresca retoma; un penal sin nadie se cierra por backstop.
 
+> **Modo invitado:** corre como **sesión de práctica local vs bots** (1 humano + 47 bots,
+> motor puro client-side), **no** entra al camino Realtime/RLS y no persiste nada. Ver
+> SPEC §8.4.
+
 ---
 
 ## F5 · Bots (server-side)
@@ -84,6 +88,9 @@ bot (con la dificultad de su nación) y el usuario vuelve al home; el torneo sig
 **Definición de terminado:** una sala con 1 humano se completa a 48 con bots, se asignan
 naciones aleatorias y se juega un partido humano-vs-bot con tiempos realistas; abandonar
 convierte al jugador en bot sin colgar el partido.
+
+> **Camiseta por nación:** la nación asignada define el color de la **camiseta** del avatar
+> (su `kit_primary`). El seed de `nations` (5.0) incluye colores de kit. Ver SPEC §8.3 #1.
 
 ---
 
@@ -129,6 +136,10 @@ no solo mobile-first). Paleta Mundial 2026. **Sin onboarding** (juego simple).
 
 **Definición de terminado:** flujo visual completo (menú → Jugar/lobby → bracket →
 pre-partido → penal → resumen) pulido, fluido, con audio, en mobile **y** desktop.
+
+> El menú incluye **"Jugar como invitado"** (nombre → práctica local vs bots, avatar male
+> default; SPEC §8.4). La escena de penal aplica el **color de nación a la camiseta** del
+> avatar (override `kitTop`; SPEC §8.2/§8.3 #1).
 
 ---
 

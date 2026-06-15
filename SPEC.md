@@ -423,11 +423,17 @@ lobby ni en resultados, solo donde hay 3D.
   zapatos) + toggle de cuerpo (Hombre/Mujer). **No hay variantes de forma de cabeza**, solo
   de pelo. Default sensato, preview en vivo. Se guarda en `profiles.avatar` (jsonb):
   `{ bodyType, hair{part,color}, top{part,color}, bottom{part,color}, shoes{part,color} }`.
-  Los `part` son ids de un **catálogo propio** (`lib/avatar/parts`).
+  Los `part` son ids de un **catálogo propio** (`lib/avatar/parts`). El color de remera
+  elegido acá es el look **fuera de partido** (creador/perfil); **en cualquier partido lo
+  reemplaza el color de la nación** asignada (ver escena de penal y §8.3 #1).
 - **Escena de penal (3D):** cancha + arco + pelota + **dos personajes = los avatares de
-  los jugadores** (pateador y arquero), **tal cual los armó cada jugador** (sin tintar por
-  nación; ver §8.3 #1). La identidad de selección se lee solo en HUD/bandera (pre-partido,
-  marcador, bracket), no en la ropa del muñeco. La tarjeta de pregunta y la UI siguen
+  los jugadores** (pateador y arquero), **tal cual los armó cada jugador salvo la
+  camiseta**: el `top` se **tiñe con el color primario de la nación** asignada en el lobby
+  (ver §8.3 #1). El resto (pelo/short/botines/cuerpo) va tal cual. La identidad de
+  selección se refuerza en HUD/bandera (pre-partido, marcador, bracket) **y** en la
+  camiseta. Técnicamente, el render del avatar acepta un **override opcional de color de
+  camiseta** (`kitTop`) que usa la escena de penal; default = el `top` del `AvatarConfig`
+  (no se persiste en el avatar). La tarjeta de pregunta y la UI siguen
   siendo **2D superpuestas**; durante los 10s la escena va **atenuada/desenfocada** detrás
   de la tarjeta, y al resolver se oculta la tarjeta y se juega la animación según el
   `reason` (§8.1): `goal` (con colocación variable), `save` (estirada) o `miss_wide`
@@ -439,15 +445,41 @@ lobby ni en resultados, solo donde hay 3D.
 
 ### 8.3 Cabos abiertos del 3D
 
-1. **Kit vs avatar en el penal — RESUELTO:** el pateador/arquero usan el **outfit del
-   avatar tal cual lo armó el jugador**, sin tintar por nación. La identidad de selección
-   se muestra solo en HUD/bandera (pre-partido, marcador, bracket), no en la ropa. El
-   schema de `profiles.avatar` no lleva color de nación.
+1. **Kit vs avatar en el penal — RESUELTO (actualizado 2026-06-15):** el pateador/arquero
+   usan el **outfit del avatar tal cual lo armó el jugador, salvo la camiseta**: el `top`
+   toma el **color primario de la nación** asignada en el lobby. El resto del avatar
+   (pelo/short/botines/cuerpo) no se tiñe. El schema de `profiles.avatar` **no cambia** (el
+   color de nación es un override de runtime —`kitTop`—, no se persiste en el avatar; sale
+   del `kit_primary` de la nación, ver §2 / F5). La identidad de selección se refuerza en
+   HUD/bandera **y** en la camiseta.
 2. **Assets — RESUELTO:** primitivas low-poly propias, sin GLBs externos (ver §8.2). El
    modular casual CC0 no se parte limpio en los 4 selectores; las primitivas son lo más
    liviano y controlable. Quaternius queda como upgrade opcional futuro.
 3. **Animación — procedural:** la patada de penal + estirada de arquero + festejo se hacen
    moviendo las primitivas por código (sin rig importado, sin retargeting). Se afina en F8.
+
+### 8.4 Modo invitado (práctica)
+
+Modo de prueba para jugar **sin cuenta**, ingresando solo un nombre.
+
+- **Entrada:** botón **"Jugar como invitado"** en el menú → pantalla que pide **un nombre**
+  (no único, sin password; trim, 2–20 chars). Se guarda en `localStorage`
+  (`tanda_guest_name`).
+- **Identidad — solo cliente:** **sin** usuario Supabase, **sin** fila en `profiles`,
+  **sin** `auth.uid()`. El invitado no escribe en ninguna tabla con RLS.
+- **Avatar:** fijo = `DEFAULT_AVATAR` (masculino), **no editable** (el invitado no entra al
+  creador). Igual recibe una **nación asignada** en su lobby, así que su camiseta toma el
+  color de esa nación (§8.3 #1).
+- **Qué juega — torneo de práctica local vs bots:** 1 humano (el invitado) + 47 bots.
+  Como **no hay otros humanos**, no hace falta **reloj de ronda compartido** ni Realtime; el
+  partido corre **del lado cliente sobre el motor puro** (`lib/engine`, determinista por
+  seed). **Nada se persiste**: sin Historial, sin stats, sin avatar guardado. El nombre se
+  muestra en HUD/bracket.
+- **Cierre:** al terminar, CTA **"Creá una cuenta para guardar tu avatar y tu historial."**
+- **Cabo abierto (a cerrar en F4):** esto **acota** la regla "evaluación/timing solo en
+  servidor" al caso invitado/práctica (sin stakes, sin persistencia, sin otros humanos →
+  nada que trampear). El camino autoritativo del servidor para partidos **con cuenta** queda
+  intacto. Confirmar el límite cliente/servidor del modo práctica al construir el realtime.
 
 ---
 
