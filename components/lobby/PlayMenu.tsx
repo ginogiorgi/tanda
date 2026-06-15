@@ -10,6 +10,7 @@ type RoomRef = { room_id: string; tournament_id: string; code: string };
 const JOIN_MESSAGES: Record<string, string> = {
   room_not_found: "No existe una sala con ese código.",
   room_cancelled: "Esa sala se canceló.",
+  room_closed: "Esa sala ya cerró: pasaron los 2 minutos.",
   already_started: "Esa partida ya arrancó.",
   room_full: "Esa sala está llena.",
 };

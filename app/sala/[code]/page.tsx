@@ -8,6 +8,7 @@ const JOIN_ERRORS = new Set([
   "room_full",
   "already_started",
   "room_cancelled",
+  "room_closed",
 ]);
 
 function reasonFromError(message: string): string {
