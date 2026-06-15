@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 COMPLETA + F3 3.1–3.3 LISTAS. Modelo de datos migrado (10 tablas, RLS deny-all hasta F4, advisors limpios). Motor del penal: lib/engine/penalty.ts + rng.ts, resolución pura/determinista (6 casos §5.2 + segunda chance), 15 tests (27 total verdes). Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: 3.4 lib/engine/match.ts (tanda de 5, alternancia kicker/keeper, muerte súbita). Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
+`ESTADO ACTUAL: F2 COMPLETA + F3 COMPLETA. Modelo de datos migrado (10 tablas, RLS deny-all hasta F4, advisors limpios). Motor TS puro/determinista: penalty.ts (6 casos §5.2 + segunda chance) + match.ts (tanda 5 por lado=10, alternancia, grupos/empate 3/1/0, corte de eliminación + muerte súbita) + rng.ts. 39 tests verdes. Decisión 5-por-lado fijada en SPEC §3.2. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: F4 — Realtime (4.1 create_room/join_room/quick_play + RLS de rooms/participants). Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -80,8 +80,13 @@
       "los dos mal" → `second_chance` quitando una opción incorrecta (la que ambos erraron, o
       una por seed); 2ª fase sin tercera chance (vuelven a errar / pateador no responde →
       gana el arquero). Tests incluidos. La ventana de 5s la impone el Edge en F4.
-- [ ] 3.4 `lib/engine/match.ts` (tanda de 5, alternancia, muerte súbita)
-- [ ] 3.5 Tests Vitest del motor (todas las filas §5.2 + súbita + alternancia)
+- [x] 3.4 `lib/engine/match.ts` (tanda de 5 por lado = 10, alternancia, muerte súbita).
+      `advanceMatch` puro: home patea impares / away pares; grupos juegan los 10 (puede
+      empatar, puntos 3/1/0); eliminación corta cuando está decidido + muerte súbita por
+      rondas. Decisión 5-por-lado fijada en SPEC §3.2. 12 tests.
+- [x] 3.5 Tests Vitest del motor: penalty.test (15, las 6 filas §5.2 + segunda chance +
+      determinismo) + match.test (12, alternancia + grupos/empate + corte + súbita). 39
+      tests totales verdes.
 
 ## F4 · Realtime
 

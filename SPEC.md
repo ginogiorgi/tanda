@@ -190,19 +190,24 @@ pending ──open──▶ open ──(resolución)──▶ resolved   (GOL | 
 ### 3.2 Partido (match)
 
 ```
-pending ──▶ in_progress (penal 1..5, kicker/keeper alternan) ──▶
+pending ──▶ in_progress (10 penales = 5 por lado, kicker/keeper alternan) ──▶
    ├─ grupos:        finished  (reparte 3 / 1 / 0 pts según resultado)
    └─ eliminación:   empate en goles ─▶ sudden_death ─▶ finished (1 avanza)
 ```
 
-- Alternancia: penal impar J1 patea / J2 ataja; penal par invertido (como Mundial real).
-- **Grupos**: la tanda de 5 **puede terminar empatada**. NO hay muerte súbita en grupos.
-  Se reparten puntos como partido real: **victoria = 3, empate = 1, derrota = 0** (esto
+- **Tamaño de la tanda (decisión 2026-06-15, resuelve §3.2 vs §5.3):** **5 penales por lado
+  = 10 en regulación**, alternados como en un Mundial real. `home` patea los índices impares
+  (1,3,5,7,9), `away` los pares (2,4,6,8,10). Solo el pateador puede convertir. La lógica
+  vive en `lib/engine/match.ts` (`advanceMatch`, pura/determinista).
+- **Grupos**: se juegan **los 10** (no se cortan); **puede terminar empatada**. NO hay muerte
+  súbita en grupos. Puntos como partido real: **victoria = 3, empate = 1, derrota = 0** (esto
   reemplaza la línea literal de §6.1 BRIEF "no hay empate" — aclaración del owner). Se
   persisten goles a favor/en contra para la diferencia de goles usada en desempates.
-- **Eliminación directa**: si tras 5 penales hay empate de goles → `sudden_death`: rondas
-  extra (un penal por lado, alternando) hasta que en la misma ronda uno meta y el otro no.
-  Solo acá se sigue pateando. Dificultad de la pregunta sigue la de la fase.
+- **Eliminación directa**: la tanda **se corta** apenas el resultado está matemáticamente
+  decidido (la perdedora no alcanza ni metiendo todo lo que le queda). Si tras los 5 de cada
+  uno hay empate de goles → `sudden_death`: rondas extra (un penal por lado, alternando) hasta
+  que en la misma ronda uno meta y el otro no. Solo acá se sigue pateando. Dificultad de la
+  pregunta sigue la de la fase.
 - `is_bot_only` → se resuelve por `simulate_bot_match` (instantáneo) en vez del flujo open.
 
 ### 3.3 Reloj de ronda y sincronización entre humanos
