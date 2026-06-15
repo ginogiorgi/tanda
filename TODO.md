@@ -117,7 +117,12 @@
 - [ ] 4.6 Reloj de ronda con barrier por penal (espera segunda chance) + posiciones en
       vivo en el tiempo muerto + animación de duración fija (≤5s)
 - [ ] 4.6b Offset de reloj cliente/servidor (barra fiel al `deadline`, no al reloj local)
-- [ ] 4.7 `tick()` por `pg_cron` (backstop de penales/rooms)
+- [ ] 4.7 `tick()` por `pg_cron` (backstop de penales/rooms). NOTA: pg_cron ya está habilitado
+      y existe un janitor `cleanup_stale_rooms()` agendado cada 15 min (cancela lobbies vencidos
+      + borra `cancelled` >1 día, cascada a tournaments/participants). Acá: (a) sumar a tick la
+      resolución de penales/bot_intents vencidos; (b) reemplazar en el janitor "lobby vencido →
+      cancelled" por "→ start_tournament si ≥1 humano, cancelar si no" (hoy es cancelar siempre
+      porque start_tournament es F5)
 - [ ] 4.8 Reconexión: `get_active_match` rehidrata tras refresh
 - [ ] 4.9 Animación GOL/ATAJADO disparada por `penal:result`
 
