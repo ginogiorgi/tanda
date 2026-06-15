@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 COMPLETA (2.1–2.7, código). Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: F3 — motor de partido (TS puro) + datos + tests. Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
+`ESTADO ACTUAL: F2 COMPLETA + F3 3.1 LISTA. Modelo de datos del juego migrado (10 tablas + 9 enums + índices/FKs, RLS deny-all hasta F4), advisors limpios. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: 3.2 lib/engine/penalty.ts (resolución pura, 6 casos §5.2). Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -66,7 +66,13 @@
 
 ## F3 · Motor de partido (TS puro) + datos + tests
 
-- [ ] 3.1 Migraciones del modelo de juego (§2 SPEC) + RLS
+- [x] 3.1 Migraciones del modelo de juego (§2 SPEC) + RLS. 10 tablas (nations, questions,
+      rooms, tournaments, participants, matches, penalties, penalty_answers, bot_intents,
+      tournament_questions) + 9 enums + índices (incl. cobertura de todas las FKs).
+      RLS auto-habilitada en las 10; `nations` SELECT para authenticated, `questions` sin
+      SELECT (correct_index server-only). Resto deny-all hasta F4 (políticas de pertenencia
+      + escrituras por RPC). Aplicada vía MCP; advisors sin ERROR/WARN nuevos (solo INFO
+      esperados: deny-all + unused_index sin tráfico)
 - [ ] 3.2 `lib/engine/penalty.ts` (resolución pura, 6 casos §5.2)
 - [ ] 3.3 Segunda chance ("los dos mal", 5s, 2 opciones)
 - [ ] 3.4 `lib/engine/match.ts` (tanda de 5, alternancia, muerte súbita)
