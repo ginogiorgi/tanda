@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 COMPLETA + F3 COMPLETA. Modelo de datos migrado (10 tablas, RLS deny-all hasta F4, advisors limpios). Motor TS puro/determinista: penalty.ts (6 casos §5.2 + segunda chance) + match.ts (tanda 5 por lado=10, alternancia, grupos/empate 3/1/0, corte de eliminación + muerte súbita) + rng.ts. 39 tests verdes. Decisión 5-por-lado fijada en SPEC §3.2. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: F4 — Realtime (4.1 create_room/join_room/quick_play + RLS de rooms/participants). Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
+`ESTADO ACTUAL: F2 + F3 COMPLETAS, F4 4.1 LISTA. Modelo de datos (10 tablas) + motor TS puro (penalty/match/rng, 39 tests). F4 4.1: matchmaking por RPC SECURITY DEFINER (create_room/join_room/quick_play) + RLS de pertenencia (rooms/tournaments/participants), esquema de lobby (tournament 'pending', nation_id nullable), E2E real OK. Próximo: 4.2 lobby con Presence + countdown 2min + cancelar sala sin humanos. start_tournament (bots/naciones/grupos) queda para F5. PENDIENTE ops (recuperación en prod): cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel. Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: 4.2 Lobby con Presence + countdown 2 min + cancelar sala sin humanos. Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -90,7 +90,14 @@
 
 ## F4 · Realtime
 
-- [ ] 4.1 `create_room` / `join_room` / `quick_play` + RLS de rooms/participants
+- [x] 4.1 `create_room` / `join_room` / `quick_play` + RLS de rooms/participants. RPCs
+      SECURITY DEFINER: create_room (crea room lobby + tournament pending + participante
+      host), join_room (por código, idempotente, errores room_not_found/room_full/
+      already_started/room_cancelled), quick_play (reanuda activo / cae en lobby con más
+      humanos / crea; advisory lock anti-carrera). RLS de pertenencia (rooms/tournaments/
+      participants) vía helpers is_tournament_member/is_room_member. Esquema: tournament
+      'pending' + nation_id nullable (lobby sin nación). E2E real OK (matchmaking + RLS
+      bloquea ajeno). start_tournament (bots/naciones/grupos) = F5
 - [ ] 4.2 Lobby con Presence + countdown 2 min + cancelar sala sin humanos
 - [ ] 4.3 Broadcast `penal:start` (sin correcta) y suscripción cliente
 - [ ] 4.4 `select_option` (respuesta cambiable, timestamp server, validaciones)
