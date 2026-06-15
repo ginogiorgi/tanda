@@ -3,11 +3,21 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
+import { getTournamentHistory } from "@/lib/profile/queries";
+import { aggregateStats } from "@/lib/profile/history";
+
+/** Posición final legible. `null` = todavía no terminó un torneo. */
+function placementLabel(placement: number | null): string {
+  if (placement === null) return "—";
+  if (placement === 1) return "Campeón";
+  return `#${placement}`;
+}
 
 /**
- * Perfil del usuario. Scaffold de F2 2.5/2.6: username, editar jugador y email de
- * recuperación. El 3D del avatar se edita en `/avatar` (no se renderiza acá: el 3D va solo
- * en creador y penal, SPEC §8.2). La pestaña Historial/stats (2.7) se agrega después.
+ * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
+ * estadísticas e historial. El 3D del avatar se edita en `/avatar` (no se renderiza acá: el
+ * 3D va solo en creador y penal, SPEC §8.2). El historial se nutre de datos de torneos
+ * (`getTournamentHistory`, stub hasta F3/F6): por ahora muestra estado vacío.
  */
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -26,6 +36,9 @@ export default async function PerfilPage() {
     .select("username")
     .eq("id", user.id)
     .single();
+
+  const history = await getTournamentHistory(supabase, user.id);
+  const stats = aggregateStats(history);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-6 py-12">
@@ -61,6 +74,56 @@ export default async function PerfilPage() {
         <RecoveryEmailForm initialEmail={recoveryEmail} />
       </section>
 
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
+          Estadísticas
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Títulos" value={stats.titles} />
+          <StatCard label="Torneos jugados" value={stats.tournamentsPlayed} />
+          <StatCard label="Victorias" value={`${Math.round(stats.winRate * 100)}%`} />
+          <StatCard label="Goles" value={stats.goals} />
+          <StatCard
+            label="Mejor posición"
+            value={placementLabel(stats.bestPlacement)}
+          />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
+          Historial
+        </h2>
+        {history.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+            <p className="text-sm text-fg-muted">
+              Todavía no jugaste ningún torneo. Tocá Jugar para arrancar tu primera tanda.
+            </p>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {history.map((h) => (
+              <li
+                key={h.tournamentId}
+                className="flex items-center justify-between rounded-xl border border-border bg-bg-elevated px-4 py-3"
+              >
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-fg">{h.nationName}</span>
+                  <span className="text-xs text-fg-subtle">
+                    {h.placement === 1
+                      ? "Campeón"
+                      : h.eliminatedPhase ?? "En curso"}
+                  </span>
+                </div>
+                <span className="text-sm font-semibold text-gold">
+                  {placementLabel(h.placement)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <div className="flex items-center justify-between">
         <Link href="/" className="text-sm font-medium text-fg-muted hover:text-fg">
           ← Inicio
@@ -68,5 +131,16 @@ export default async function PerfilPage() {
         <LogoutButton />
       </div>
     </main>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-xl border border-border bg-bg-elevated px-4 py-3">
+      <span className="text-2xl font-extrabold tracking-tight text-fg">{value}</span>
+      <span className="text-xs font-medium uppercase tracking-wide text-fg-subtle">
+        {label}
+      </span>
+    </div>
   );
 }

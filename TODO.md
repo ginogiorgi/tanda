@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1–2.6 LISTAS (código). Avatar persistente (saveAvatar→profiles.avatar), /perfil con editar jugador + email de recuperación, registro con RPC username_available. Recuperación de contraseña: email sintético intacto, recovery_email en user_metadata, flujo propio /forgot→/auth/confirm→/auth/reset (admin generateLink + Resend, anti-enumeración). typecheck/lint/build verdes, 6 tests; E2E real OK. PENDIENTE (ops Gino, ver supabase/README): SUPABASE_SECRET_KEY (vacío), RESEND_API_KEY + dominio verificado, NEXT_PUBLIC_SITE_URL — sin esto la recuperación no envía. PENDIENTE eyeball visual del avatar (Gino). Próximo: 2.7 Perfil pestaña Historial + stats agregadas. Capturados en docs (SPEC §8.2/§8.3/§8.4, F5.0, F8.1/8.2): camiseta por nación y modo invitado — se implementan en F4/F5/F8.`
+`ESTADO ACTUAL: F2 COMPLETA (2.1–2.7, código). Auth username, avatar 3D persistente, /perfil (editar jugador + email de recuperación + stats/historial), registro con username_available, recuperación de contraseña (email sintético intacto, recovery_email en user_metadata, /forgot→/auth/confirm→/auth/reset con admin generateLink + Resend). Historial usa stub getTournamentHistory hasta F3/F6. typecheck/lint/build verdes, 12 tests; E2E real OK (incl. admin generateLink con la secret key ya cargada). PENDIENTE antes de pushear (ops Gino): RESEND_API_KEY + verificar dominio en Resend (en progreso), NEXT_PUBLIC_SITE_URL en prod, SUPABASE_SECRET_KEY en Vercel. PENDIENTE eyeball visual del avatar. Próximo: F3 — motor de partido (TS puro) + datos + tests. Capturados en docs: camiseta por nación y modo invitado (F4/F5/F8).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -57,8 +57,12 @@
       "¿Olvidaste tu contraseña?". typecheck/lint/build verdes; E2E real: `recovery_email`
       persiste sin pisar `username`. ⚠️ Ops para que envíe (ver supabase/README): cargar
       `SUPABASE_SECRET_KEY` (hoy vacío), `RESEND_API_KEY` + verificar dominio, `NEXT_PUBLIC_SITE_URL`
-- [ ] 2.7 Perfil: pestaña Historial (selección, fase de eliminación, resumen) + stats
-      agregadas (títulos, win %, goles, mejor posición, torneos jugados)
+- [x] 2.7 Perfil: Historial + stats agregadas. Agregación pura y testeable
+      (`lib/profile/history.ts` `aggregateStats` → títulos, win %, goles, mejor posición,
+      torneos jugados; 6 tests). UI en /perfil: grid de stat cards + lista de historial con
+      estado vacío ("todavía no jugaste"). Fuente `getTournamentHistory` es **stub hasta
+      F3/F6** (las tablas de torneo no existen aún) → se enchufa sin tocar UI/agregación.
+      typecheck/lint/build verdes, 12 tests
 
 ## F3 · Motor de partido (TS puro) + datos + tests
 
