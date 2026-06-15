@@ -26,3 +26,16 @@ export function secretKey(): string {
   }
   return key;
 }
+
+/**
+ * URL pública del sitio, para armar links absolutos en mails (recuperación). En prod se
+ * setea `NEXT_PUBLIC_SITE_URL`; en dev cae a localhost.
+ */
+export function siteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+}
+
+/** API key de Resend (envío de mails). Solo servidor. `null` si todavía no se configuró. */
+export function resendApiKey(): string | null {
+  return process.env.RESEND_API_KEY ?? null;
+}

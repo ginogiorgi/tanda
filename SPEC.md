@@ -131,6 +131,23 @@ con `SECURITY DEFINER` que validan.
 - `penalty_answers`, `bot_intents`: sin SELECT directo del cliente; escritura solo por RPC.
 - Toda escritura de juego: vía RPC `SECURITY DEFINER` que revalida pertenencia y ventana.
 
+### 2.3 Auth: login por username + recuperación
+
+- **Login:** username + contraseña, mapeado a un email **sintético** inmutable
+  `<username>@users.tanda2026.com.ar` (`auth.users.email`). Ese email es la identidad de
+  login y **no se cambia nunca** (cambiarlo rompería el login por username).
+- **Username disponible:** RPC `username_available(text)` (`SECURITY DEFINER`, devuelve solo
+  un booleano; la RLS no deja leer perfiles ajenos). Ver F2 2.5.
+- **Email real opcional (recuperación):** se guarda en `auth.users.user_metadata.recovery_email`
+  (privado: solo la sesión propia y el service-role lo ven; **no** en `profiles`, para que no
+  lo lean co-participantes). No reemplaza el email de login. Ver §8.1.
+- **Reset de contraseña:** el usuario pide reset por **username** → server action (service-role)
+  llama `auth.admin.generateLink({type:'recovery'})`, toma el `hashed_token` y el
+  `recovery_email`, y envía por **Resend** un link a `/auth/confirm?token_hash=…&type=recovery`.
+  El route handler hace `verifyOtp` (deja sesión de recovery) y redirige a `/auth/reset`
+  (`updateUser({password})`). Respuesta **anti-enumeración**: el mismo mensaje exista o no la
+  cuenta/el email. Secretos (`SUPABASE_SECRET_KEY`, `RESEND_API_KEY`) solo en servidor.
+
 ---
 
 ## 3. Máquinas de estado del partido y del penal

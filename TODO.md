@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1–2.5 LISTAS (código). Avatar 3D persistente: creador en /avatar guarda en profiles.avatar (Server Action saveAvatar) y vuelve a /perfil; /perfil scaffold con "Editar jugador"; registro chequea username con RPC username_available (debounce) y lleva a /avatar. typecheck/lint/build verdes, 6 tests; E2E real (publishable key) OK. PENDIENTE eyeball visual del render WebGL (Gino, logueado en browser). Próximo: 2.6 email real opcional en Perfil (auth.updateUser) + recuperación. Capturados en docs (SPEC §8.2/§8.3/§8.4, F5.0, F8.1/8.2): camiseta por nación (override kitTop, solo el top) y modo invitado de práctica (nombre en cliente, avatar male default) — se implementan en F4/F5/F8.`
+`ESTADO ACTUAL: F2 — 2.1–2.6 LISTAS (código). Avatar persistente (saveAvatar→profiles.avatar), /perfil con editar jugador + email de recuperación, registro con RPC username_available. Recuperación de contraseña: email sintético intacto, recovery_email en user_metadata, flujo propio /forgot→/auth/confirm→/auth/reset (admin generateLink + Resend, anti-enumeración). typecheck/lint/build verdes, 6 tests; E2E real OK. PENDIENTE (ops Gino, ver supabase/README): SUPABASE_SECRET_KEY (vacío), RESEND_API_KEY + dominio verificado, NEXT_PUBLIC_SITE_URL — sin esto la recuperación no envía. PENDIENTE eyeball visual del avatar (Gino). Próximo: 2.7 Perfil pestaña Historial + stats agregadas. Capturados en docs (SPEC §8.2/§8.3/§8.4, F5.0, F8.1/8.2): camiseta por nación y modo invitado — se implementan en F4/F5/F8.`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -49,7 +49,14 @@
       chequeo de username disponible en el registro (RPC `username_available` SECURITY
       DEFINER + debounce). E2E real con publishable key: guarda/relee propio, RLS bloquea
       ajeno, RPC tomado/libre OK. typecheck/lint/build verdes, 6 tests
-- [ ] 2.6 Perfil: email real opcional (`auth.updateUser`) + recuperación
+- [x] 2.6 Perfil: email real opcional + recuperación. Email sintético del login INTACTO; el
+      real se guarda en `user_metadata.recovery_email` (`RecoveryEmailForm` → `updateUser`,
+      no toca `auth.email`). Flujo de reset propio: `/forgot` → server action
+      `requestPasswordReset` (admin `generateLink` + envío por Resend, anti-enumeración) →
+      `/auth/confirm` (`verifyOtp`) → `/auth/reset` (`updateUser({password})`). Login linkea
+      "¿Olvidaste tu contraseña?". typecheck/lint/build verdes; E2E real: `recovery_email`
+      persiste sin pisar `username`. ⚠️ Ops para que envíe (ver supabase/README): cargar
+      `SUPABASE_SECRET_KEY` (hoy vacío), `RESEND_API_KEY` + verificar dominio, `NEXT_PUBLIC_SITE_URL`
 - [ ] 2.7 Perfil: pestaña Historial (selección, fase de eliminación, resumen) + stats
       agregadas (títulos, win %, goles, mejor posición, torneos jugados)
 

@@ -71,6 +71,12 @@ export function LoginForm() {
         {loading ? "Entrando…" : "Entrar"}
       </button>
 
+      <p className="text-center text-sm">
+        <Link href="/forgot" className="font-medium text-fg-muted hover:text-fg hover:underline">
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </p>
+
       <p className="text-center text-sm text-fg-muted">
         ¿No tenés cuenta?{" "}
         <Link href="/register" className="font-medium text-gold hover:underline">

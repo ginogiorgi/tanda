@@ -2,11 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
 
 /**
- * Perfil del usuario. Scaffold de F2 2.5: username + acceso a editar el jugador. El 3D del
- * avatar se edita en `/avatar` (no se renderiza acá: el 3D va solo en creador y penal, SPEC
- * §8.2). Las pestañas de email (2.6) e Historial/stats (2.7) se agregan después.
+ * Perfil del usuario. Scaffold de F2 2.5/2.6: username, editar jugador y email de
+ * recuperación. El 3D del avatar se edita en `/avatar` (no se renderiza acá: el 3D va solo
+ * en creador y penal, SPEC §8.2). La pestaña Historial/stats (2.7) se agrega después.
  */
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -15,6 +16,10 @@ export default async function PerfilPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  const recoveryEmailRaw = user.user_metadata?.recovery_email;
+  const recoveryEmail =
+    typeof recoveryEmailRaw === "string" && recoveryEmailRaw ? recoveryEmailRaw : null;
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -47,6 +52,13 @@ export default async function PerfilPage() {
         >
           Editar jugador
         </Link>
+      </section>
+
+      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-bg-elevated p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
+          Email de recuperación
+        </h2>
+        <RecoveryEmailForm initialEmail={recoveryEmail} />
       </section>
 
       <div className="flex items-center justify-between">
