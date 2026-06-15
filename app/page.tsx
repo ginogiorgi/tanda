@@ -53,7 +53,15 @@ export default async function Home() {
           <p className="text-lg">
             Hola, <span className="font-semibold text-gold">{username}</span> 👋
           </p>
-          <LogoutButton />
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <Link
+              href="/perfil"
+              className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+            >
+              Mi perfil
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 sm:flex-row">

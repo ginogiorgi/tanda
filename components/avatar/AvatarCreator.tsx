@@ -2,12 +2,14 @@
 
 /**
  * Creador de avatar 3D. A la izquierda el personaje rotable **arrastrando**; a la derecha
- * 4 selectores (cabeza/pelo, remera, pantalón, zapatos) + toggle de cuerpo base. Preview en
- * vivo: todo cambio actualiza el `AvatarConfig` en estado y se refleja al instante. El
- * guardado en `profiles.avatar` es la tarea 2.5. Ver SPEC §8.2.
+ * 4 selectores (pelo, remera, pantalón, zapatos) + toggle de cuerpo base. Preview en vivo:
+ * todo cambio actualiza el `AvatarConfig` en estado y se refleja al instante. Con `onSave`
+ * (Server Action) persiste en `profiles.avatar` y, si hay `redirectTo`, navega al guardar.
+ * Ver SPEC §8.2.
  */
 
 import { useCallback, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   AvatarConfig,
   BodyType,
@@ -21,24 +23,52 @@ import {
   PARTS,
   type PartOption,
 } from "@/lib/avatar/parts";
+import type { SaveAvatarResult } from "@/app/avatar/actions";
 import { AvatarViewer } from "./AvatarViewer";
 
 interface AvatarCreatorProps {
   /** Avatar inicial (al editar desde Perfil). Por defecto, el avatar base. */
   initial?: AvatarConfig;
-  /** Se llama con el avatar actual cuando el usuario confirma (lo usa 2.5). */
-  onConfirm?: (avatar: AvatarConfig) => void;
-  /** Texto del botón de confirmación. */
-  confirmLabel?: string;
+  /** Server Action que persiste el avatar. Si falta, no se muestra el botón. */
+  onSave?: (avatar: AvatarConfig) => Promise<SaveAvatarResult>;
+  /** Texto del botón de guardado. */
+  saveLabel?: string;
+  /** Si se pasa, al guardar con éxito navega a esta ruta (p. ej. "/perfil"). */
+  redirectTo?: string;
 }
 
 export function AvatarCreator({
   initial = DEFAULT_AVATAR,
-  onConfirm,
-  confirmLabel = "Guardar avatar",
+  onSave,
+  saveLabel = "Guardar avatar",
+  redirectTo,
 }: AvatarCreatorProps) {
+  const router = useRouter();
   const [avatar, setAvatar] = useState<AvatarConfig>(initial);
   const [rotationY, setRotationY] = useState(0.4);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setSaving(true);
+    setSaveError(null);
+    setSaved(false);
+    const result = await onSave(avatar);
+    if (!result.ok) {
+      setSaving(false);
+      setSaveError(result.error ?? "No se pudo guardar.");
+      return;
+    }
+    if (redirectTo) {
+      router.push(redirectTo);
+      router.refresh();
+      return;
+    }
+    setSaving(false);
+    setSaved(true);
+  }, [onSave, avatar, redirectTo, router]);
 
   // Drag para rotar (solo yaw). Capturamos el puntero sobre el contenedor del viewer.
   const dragRef = useRef<{ active: boolean; lastX: number }>({
@@ -63,12 +93,16 @@ export function AvatarCreator({
     e.currentTarget.releasePointerCapture(e.pointerId);
   }, []);
 
-  // Helpers de actualización inmutable.
-  const setBodyType = (bodyType: BodyType) =>
+  // Helpers de actualización inmutable. Cualquier cambio invalida el "Guardado ✓".
+  const setBodyType = (bodyType: BodyType) => {
+    setSaved(false);
     setAvatar((a) => ({ ...a, bodyType }));
+  };
 
-  const setTintedPart = (category: PartCategory, next: TintedPart) =>
+  const setTintedPart = (category: PartCategory, next: TintedPart) => {
+    setSaved(false);
     setAvatar((a) => ({ ...a, [category]: next }));
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 lg:flex-row lg:items-stretch">
@@ -139,14 +173,18 @@ export function AvatarCreator({
           onChange={(next) => setTintedPart("shoes", next)}
         />
 
-        {onConfirm && (
-          <button
-            type="button"
-            onClick={() => onConfirm(avatar)}
-            className="mt-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white/90"
-          >
-            {confirmLabel}
-          </button>
+        {onSave && (
+          <div className="mt-2 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-50"
+            >
+              {saving ? "Guardando…" : saved ? "Guardado ✓" : saveLabel}
+            </button>
+            {saveError && <p className="text-sm text-danger">{saveError}</p>}
+          </div>
         )}
       </div>
     </div>

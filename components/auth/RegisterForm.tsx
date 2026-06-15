@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { isValidUsername, usernameToEmail } from "@/lib/auth";
+
+/** Estado del chequeo de disponibilidad del username (RPC `username_available`). */
+type Availability = "idle" | "checking" | "free" | "taken";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -12,6 +15,38 @@ export function RegisterForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [availability, setAvailability] = useState<Availability>("idle");
+
+  // Debounce + protección de carrera para el chequeo de disponibilidad, manejado desde el
+  // onChange (no en un effect). La RLS no deja leer perfiles ajenos, así que usamos el RPC
+  // `username_available` (SECURITY DEFINER, devuelve solo un booleano).
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reqIdRef = useRef(0);
+
+  function onUsernameChange(value: string) {
+    setUsername(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const name = value.trim();
+    const reqId = ++reqIdRef.current;
+
+    if (!isValidUsername(name)) {
+      setAvailability("idle");
+      return;
+    }
+    setAvailability("checking");
+    debounceRef.current = setTimeout(async () => {
+      const supabase = createClient();
+      const { data, error: rpcError } = await supabase.rpc("username_available", {
+        check_name: name,
+      });
+      if (reqId !== reqIdRef.current) return; // respuesta vieja, la ignoramos.
+      if (rpcError) {
+        setAvailability("idle"); // ante duda, dejamos seguir; el alta valida igual.
+        return;
+      }
+      setAvailability(data ? "free" : "taken");
+    }, 400);
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -19,6 +54,10 @@ export function RegisterForm() {
 
     if (!isValidUsername(username)) {
       setError("El usuario va de 3 a 20 caracteres: letras, números o guion bajo.");
+      return;
+    }
+    if (availability === "taken") {
+      setError("Ese usuario ya está tomado. Probá con otro.");
       return;
     }
     if (password.length < 6) {
@@ -39,15 +78,17 @@ export function RegisterForm() {
       setError("No se pudo crear la cuenta. Probá de nuevo en un momento.");
       return;
     }
-    // Supabase ofusca duplicados devolviendo identities vacío.
+    // Supabase ofusca duplicados devolviendo identities vacío (backstop del chequeo).
     if (data.user && data.user.identities && data.user.identities.length === 0) {
       setError("Ese usuario ya está tomado. Probá con otro.");
       return;
     }
 
-    router.push("/");
+    router.push("/avatar");
     router.refresh();
   }
+
+  const showAvailability = isValidUsername(username.trim());
 
   return (
     <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
@@ -57,11 +98,20 @@ export function RegisterForm() {
           type="text"
           autoComplete="username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => onUsernameChange(e.target.value)}
           className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="tu_usuario"
           autoFocus
         />
+        {showAvailability && availability === "checking" && (
+          <span className="text-xs text-fg-subtle">Chequeando…</span>
+        )}
+        {showAvailability && availability === "free" && (
+          <span className="text-xs text-success">Disponible ✓</span>
+        )}
+        {showAvailability && availability === "taken" && (
+          <span className="text-xs text-danger">Ese usuario ya está tomado.</span>
+        )}
       </label>
 
       <label className="flex flex-col gap-1.5 text-left">
@@ -80,7 +130,7 @@ export function RegisterForm() {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || availability === "taken"}
         className="mt-2 rounded-lg bg-gold px-4 py-3 font-semibold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Creando…" : "Crear cuenta"}

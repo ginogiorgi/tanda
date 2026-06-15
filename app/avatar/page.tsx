@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AvatarCreator } from "@/components/avatar/AvatarCreator";
+import { saveAvatar } from "./actions";
 import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
 import type { AvatarConfig } from "@/lib/avatar/types";
 
@@ -33,7 +34,7 @@ export default async function AvatarPage() {
           perfil.
         </p>
       </div>
-      <AvatarCreator initial={initial} />
+      <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo="/perfil" />
     </main>
   );
 }

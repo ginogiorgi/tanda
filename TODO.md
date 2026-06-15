@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-`ESTADO ACTUAL: F2 — 2.1–2.4 LISTAS (código). Avatar 3D con primitivas low-poly propias. Creador en /avatar (drag + 4 selectores + paleta + toggle cuerpo). typecheck/lint/build verdes, 5 tests; route /avatar 307→login OK. PENDIENTE eyeball visual del render WebGL (Gino, logueado en browser). Próximo: 2.5 guardar avatar en profiles.avatar (Server Action/RPC) + editar desde Perfil + chequeo de username disponible en registro. Capturados en docs (SPEC §8.2/§8.3/§8.4, F5.0, F8.1/8.2): camiseta por nación (override kitTop, solo el top) y modo invitado de práctica (nombre en cliente, avatar male default) — se implementan en F4/F5/F8, no cambian el próximo trabajo de código.`
+`ESTADO ACTUAL: F2 — 2.1–2.5 LISTAS (código). Avatar 3D persistente: creador en /avatar guarda en profiles.avatar (Server Action saveAvatar) y vuelve a /perfil; /perfil scaffold con "Editar jugador"; registro chequea username con RPC username_available (debounce) y lleva a /avatar. typecheck/lint/build verdes, 6 tests; E2E real (publishable key) OK. PENDIENTE eyeball visual del render WebGL (Gino, logueado en browser). Próximo: 2.6 email real opcional en Perfil (auth.updateUser) + recuperación. Capturados en docs (SPEC §8.2/§8.3/§8.4, F5.0, F8.1/8.2): camiseta por nación (override kitTop, solo el top) y modo invitado de práctica (nombre en cliente, avatar male default) — se implementan en F4/F5/F8.`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -43,8 +43,12 @@
       cabeza/pelo, remera, pantalón, zapatos con chips + paleta de color + toggle cuerpo
       base) montado en `/avatar` (auth-gated). typecheck/lint/build verdes; route 307→login
       OK. ⚠️ Falta eyeball visual del render WebGL logueado en browser (Gino)
-- [ ] 2.5 Guardar avatar (JSON en `profiles.avatar`); editar desde Perfil; chequeo de
-      username disponible (en registro)
+- [x] 2.5 Guardar avatar (JSON en `profiles.avatar`) vía Server Action `saveAvatar`
+      (revalida con `isValidAvatar`, escribe fila propia por RLS); `/perfil` (scaffold) con
+      "Editar jugador" → `/avatar` (carga el avatar guardado, guarda y vuelve al perfil);
+      chequeo de username disponible en el registro (RPC `username_available` SECURITY
+      DEFINER + debounce). E2E real con publishable key: guarda/relee propio, RLS bloquea
+      ajeno, RPC tomado/libre OK. typecheck/lint/build verdes, 6 tests
 - [ ] 2.6 Perfil: email real opcional (`auth.updateUser`) + recuperación
 - [ ] 2.7 Perfil: pestaña Historial (selección, fase de eliminación, resumen) + stats
       agregadas (títulos, win %, goles, mejor posición, torneos jugados)
