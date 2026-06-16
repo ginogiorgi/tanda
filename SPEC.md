@@ -357,7 +357,7 @@ Si un humano se desconecta, refresca o pasa la pestaña a segundo plano **sin** 
 | Canal | Mecanismo | Eventos |
 |---|---|---|
 | `room:{code}` | Presence + Broadcast | presence (conectados), `room:status`, `room:countdown` |
-| `match:{id}` | Broadcast | `penal:start` (pregunta+opciones, sin correcta), `penal:result` (GOL/ATAJADO+tiempos), `match:result` (marcador) |
+| `match:{id}` | Broadcast | `penal:start` (pregunta+opciones, sin correcta), `penal:second_chance` (2 opciones, 5s, al entrar en segunda chance), `penal:result` (GOL/ATAJADO+correcta+marcador), `match:result` (marcador final) |
 | `tournament:{id}` | Broadcast | `bracket:update` (fases, cruces, puntos), `score:live` (marcador de penales en vivo de partidos en curso) y `standings:live` (posiciones de grupos en vivo, para el tiempo muerto del barrier §3.3) |
 
 ---

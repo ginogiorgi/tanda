@@ -13,8 +13,9 @@ arquitectura en `SPEC.md`, fases en `PLAN.md`, tareas en `TODO.md`.
 - Cada fase es una rebanada vertical que compila y corre sola.
 
 ## Stack
-Next.js (App Router) + TypeScript estricto · Supabase (Postgres/Auth/Realtime/Edge
-Functions/RLS) · Vercel · Tailwind · Framer Motion · Vitest. Gestor: **pnpm**.
+Next.js (App Router) + TypeScript estricto · Supabase (Postgres/Auth/Realtime/RLS/pg_cron;
+lógica autoritativa en RPC plpgsql, sin Edge Functions en v1) · Vercel · Tailwind ·
+Framer Motion · Vitest. Gestor: **pnpm**.
 
 ## Comandos
 ```
@@ -41,11 +42,15 @@ pnpm test       # Vitest (motor de juego y de torneo)
 - **RLS habilitada en todas las tablas.** Escrituras de juego solo por RPC `SECURITY
   DEFINER` que validan pertenencia y ventana de tiempo.
 - El **motor** (`lib/engine/`) es TS puro y determinista (aleatoriedad por seed) →
-  testeable sin red. Las Edge Functions son capa fina sobre el motor con `now()` server.
+  testeable sin red. Es la **fuente de la regla** y corre el **modo invitado** (client-side,
+  §8.4). El **camino autoritativo multijugador corre en PLPGSQL** (RPC `SECURITY DEFINER`),
+  **NO en Edge Functions** (decisión por escalabilidad, SPEC §1.2/§1.3): las versiones SQL son
+  **ports fieles** del motor, verificados por **paridad** contra TS (RNG mulberry32 bit-perfect).
+  v1 no tiene Edge Functions.
 - El penal **se resuelve recién a los 10s** (no antes); la respuesta es **cambiable** hasta
   el final y la rapidez se mide por el `selected_at` de la última selección (server).
-- Resolución de penal **idempotente** (lock optimista `open→resolving`), solo con
-  `now()≥deadline`; se dispara por poke del cliente o `tick()` de `pg_cron`.
+- Resolución de penal **idempotente** (lock `FOR UPDATE SKIP LOCKED` sobre la fila del penal),
+  solo con `now()≥deadline`; se dispara por poke del cliente o `tick()` de `pg_cron`.
 - **Desconexión ≠ abandono**: desconexión → respuesta aleatoria hasta reconectar (no pasa a
   bot); **Abandonar** (botón) → bot con dificultad de su nación. Sin auto-abandono.
 - Bot-vs-bot se **simula al instante**; solo partidos con ≥1 humano corren en realtime, con
@@ -56,4 +61,4 @@ pnpm test       # Vitest (motor de juego y de torneo)
   del penal. Ver SPEC §8.2.
 - **Assets originales**: no reproducir emblemas/logos/mascotas/tipografías de FIFA. Solo
   inspirarse en paleta y feel del Mundial 2026.
-- Sin secretos en el cliente (`service_role` solo en Edge/CI).
+- Sin secretos en el cliente (`service_role`/`SUPABASE_SECRET_KEY` solo en servidor/CI).
