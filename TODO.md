@@ -199,7 +199,17 @@
       que el port a plpgsql en 5.3 sea directo (engine_mulberry32(seed)). Lo usa el modo
       invitado client-side (§8.4) y se portará a SQL para `bot_intents` (5.3). 4 tests
       (determinismo, delay en rango, tasa de acierto ≈ tier sobre 20k seeds, orden de tiers)
-- [ ] 5.2 Relleno de cupos con bots + naciones aleatorias + reparto de humanos 1 por grupo
+- [~] 5.2 Relleno de cupos con bots + naciones aleatorias + reparto de humanos 1 por grupo.
+      `start_tournament(p_room)` (plpgsql, no client-callable): claim optimista pending→ (lock
+      SKIP LOCKED, idempotente), 0 humanos→cancela sala; reparte humanos 1/grupo round-robin,
+      rellena bots hasta 4/grupo, asigna las 48 naciones (1 c/u sin repetir, sorteo por seed),
+      arma 12 grupos + fixture round-robin (72 matches, bracket_slot=jornada, is_bot_only si
+      ambos bots), pone tournament+room in_progress. E2E SQL (5 humanos): 48 part (5+43), 48
+      naciones distintas, 12 grupos de 4, humanos 1/grupo, 72 matches (6/grupo), bot_only=57
+      (verificado), idempotente. DEFERIDO (parcial): crear penales 1ª jornada (necesita banco
+      F7) + simular bot-only + abrir 1ª jornada (6.4). FALTA WIRING: llamar start_tournament
+      desde join_room (al llegar a 48) y desde el janitor/tick (countdown vencido, ≥1 humano →
+      arrancar / 0 → cancelar)
 - [ ] 5.3 `bot_intents` precomputados/materializados (incl. segunda chance y muerte súbita)
 - [ ] 5.4 Botón Abandonar (`abandon`): participante → bot (dificultad por nación),
       usuario vuelve al home, penales en curso se resuelven como bot
