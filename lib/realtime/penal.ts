@@ -9,10 +9,13 @@
 /** Dificultad de la pregunta (enum `difficulty` de la DB, SPEC §2.1). */
 export type Difficulty = "easy" | "medium" | "hard" | "very_hard";
 
+/** Familia de animación del resultado (mismo enum que el motor, `lib/engine/penalty.ts`). */
+export type PenaltyReason = "goal" | "save" | "miss_wide";
+
 /**
- * Payload del Broadcast `penal:start` que emite `open_penalty` (ver migración
- * `penal_broadcast`). **Nunca** incluye `correct_index` (anti-trampa, SPEC §7): la pregunta
- * viaja sin la respuesta correcta hasta que el penal está `resolved`.
+ * Payload de `penal:start` (emite `open_penalty`) y de `penal:second_chance` (emite
+ * `resolve_penalty` al entrar en segunda chance). **Nunca** incluye `correct_index`
+ * (anti-trampa, SPEC §7): la pregunta viaja sin la correcta hasta que el penal está `resolved`.
  */
 export type PenalStartPayload = {
   penalty_id: string;
@@ -20,13 +23,36 @@ export type PenalStartPayload = {
   idx: number;
   prompt: string;
   options: string[];
-  difficulty: Difficulty;
-  /** ISO timestamp (server) en que se abrió el penal. */
+  difficulty?: Difficulty;
+  /** ISO timestamp (server) en que se abrió la fase. */
   started_at: string;
-  /** ISO timestamp (server) límite de respuesta = `started_at + 10s`. */
+  /** ISO timestamp (server) límite de respuesta (= +10s en `first`, +5s en `second_chance`). */
   deadline: string;
   /** `now()` del server al emitir → para estimar el offset del reloj del cliente. */
   server_now: string;
+  /** Solo en `penal:second_chance`: opción incorrecta quitada (quedan 2). */
+  removed_option?: number;
+  phase?: "first" | "second_chance";
+};
+
+/**
+ * Payload de `penal:result` (emite `resolve_penalty` al cerrar el penal). Acá SÍ viaja
+ * `correct_index` + `explanation`: el penal ya está `resolved`, se revela la correcta (§8.11).
+ */
+export type PenalResultPayload = {
+  penalty_id: string;
+  match_id: string;
+  idx: number;
+  outcome: "resolved";
+  winner: "kicker" | "keeper";
+  scored: boolean;
+  reason: PenaltyReason;
+  variant: number;
+  phase: "first" | "second_chance";
+  correct_index: number;
+  explanation: string | null;
+  home_score: number;
+  away_score: number;
 };
 
 /**

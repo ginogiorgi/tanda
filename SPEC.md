@@ -41,8 +41,22 @@ mejores terceros, bracket, muerte súbita) viven como **funciones puras sin I/O*
 - Salida: nuevo estado / decisión. **Determinista**: la aleatoriedad entra como parámetro
   (seed), nunca `Math.random()` interno → testeable y reproducible.
 - Se testea con Vitest sin tocar la red ni la DB (F3 y F6).
-- Las Edge Functions son una capa fina: leen estado de Postgres, llaman al motor con
-  `now()` del servidor, persisten el resultado y emiten Broadcast.
+- Usos del motor TS: **(a)** modo invitado/práctica, que corre **client-side** sobre
+  `lib/engine` sin red (SPEC §8.4); **(b)** los tests; **(c)** referencia de la regla para el
+  camino autoritativo.
+
+**Dónde corre la resolución autoritativa (decisión 2026-06-16, escalabilidad):** la
+resolución del penal multijugador corre **dentro de Postgres en plpgsql** (RPC `SECURITY
+DEFINER`), NO en una Edge Function. Motivo: el reloj de ronda (§3.3) sincroniza a todos los
+humanos al mismo `deadline` → "poke" simultáneo de N clientes. Una RPC in-DB sobre el pool
+de PostgREST + lock optimista (las llamadas perdedoras son no-op instantáneo) escala mucho
+mejor que N invocaciones serverless, cada una abriendo conexión a Postgres (cuello de botella
+clásico). Además el backstop `tick()` (pg_cron) resuelve in-process, sin `pg_net`/HTTP. El
+anti-trampa es idéntico (server-authoritative, `correct_index` nunca al cliente).
+**Single source of truth = la regla §5.2**: la versión SQL es un **port fiel** de
+`lib/engine/penalty.ts` (incl. el RNG seeded mulberry32), **verificado por paridad** contra el
+motor TS. La regla §5.2 está congelada → bajo riesgo de drift. (Esto reemplaza la línea previa
+"las Edge Functions llaman al motor": en v1 no hay Edge Functions; todo es RPC plpgsql.)
 
 ### 1.3 Timing autoritativo (decisión cerrada)
 
