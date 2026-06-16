@@ -184,8 +184,14 @@
 
 ## F5 · Bots
 
-- [ ] 5.0 Seed de `nations`: 48 clasificados 2026 + `fifa_rank` + accent/flag +
-      `kit_primary` (color de camiseta) y `kit_secondary` (reservado a futuro)
+- [x] 5.0 Seed de `nations`: 48 + `fifa_rank` + accent/flag + `kit_primary`/`kit_secondary`.
+      Pool = top 48 del ranking FIFA (16 jun 2026, Argentina #1 → Venezuela #48). Decisión:
+      ranking FIFA como fuente (directiva de Gino) en vez de la lista literal de clasificados,
+      para que el dato sea verificable. `difficulty_tier` por banda §7.2: 10 elite (top 10) /
+      10 high (11-20) / 10 medium (21-30) / 18 low (31-48). `kit_primary`=camiseta titular
+      (tiñe el avatar en el penal), `accent_color`=kit_primary, `flag_asset`=ISO-2
+      (gb-eng/sct/wls para UK). Idempotente (on conflict code do nothing). Verificado: 48 filas,
+      tiers 10/10/10/18, códigos+ranks únicos
 - [ ] 5.1 Modelo de dificultad por nación/ranking FIFA (§7.2)
 - [ ] 5.2 Relleno de cupos con bots + naciones aleatorias + reparto de humanos 1 por grupo
 - [ ] 5.3 `bot_intents` precomputados/materializados (incl. segunda chance y muerte súbita)
