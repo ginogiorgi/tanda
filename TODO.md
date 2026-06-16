@@ -2,21 +2,19 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F7 banco de preguntas (7.1→7.4). 7.1 (tabla questions + tournament_questions)
-YA EXISTE (migración game_model). Hacer: 7.2 generar 200+ preguntas de trivia mundialista
-clasificadas por difficulty (easy/medium/hard/very_hard) y category, options jsonb de 3 con
-correct_index 0-2 + explanation; 7.3 seed script (migración insert idempotente, estilo
-seed_nations); 7.4 asignación 1 pregunta por (ronda, penal-index) compartida por todos los
-matches con humanos de la ronda, sin repetir intra-torneo vía tournament_questions; bot-only no
-consume. DECISIÓN YA TOMADA (consistente con naciones): las genero YO (es español rioplatense,
-calidad app-FIFA, sin marcas registradas), Gino revisa después — NO volver a preguntar el
-enfoque, arrancar directo. Dificultad por fase: §9.3 BRIEF.
+>>> PRÓXIMA TAREA: 5.3 bot_intents (PORT de lib/engine/bot.ts a SQL, parity-check como 4.5/5.1;
+materializa la intención del bot por penal/fase/muerte súbita en la tabla bot_intents; resolve_penalty
+debe usar bot_intents para los bots en vez de random; el tick() debe materializar intents vencidos —
+ya quedó anotado en 4.7). DESPUÉS 6.4: simulate_bot_match instantáneo + crear penales 1ª jornada
+(usando los primitivos de F7: tanda_penalty_difficulty + take_tournament_question, 1 pregunta por
+(ronda, penal-index) compartida por todos los matches con humanos; bot-only se simula y NO consume) +
+abrir 1ª jornada + advance_tournament con gate por fase. Luego 5.4 abandon; 6.5 score:live; 4.6/4.6b
+barrier de ronda + posiciones en vivo (ya con fixture/standings reales); 4.9 animación GOL/ATAJADO (F8).
 
-DESPUÉS de F7, para correr un torneo entero: 6.4 (simulate_bot_match instantáneo + abrir 1ª
-jornada + advance_tournament con gate por fase) — necesita 5.3; 5.3 bot_intents (PORT de
-lib/engine/bot.ts a SQL, parity-check como 4.5; resolve_penalty debe usar bot_intents para bots
-en vez de random); 5.4 abandon; 6.5 score:live; 4.6/4.6b barrier de ronda + posiciones en vivo
-(ya con fixture/standings reales); 4.9 animación GOL/ATAJADO (F8, hoy <PenalLive> muestra texto).
+F7 LISTA (banco de preguntas): 220 preguntas en la tabla questions (source_key 'wc-NNN', idempotente),
+regla de dificultad por fase en lib/engine/difficulty.ts + port SQL tanda_penalty_difficulty (paridad
+0 mismatches), y take_tournament_question (no-repeat intra-torneo + determinista + fallback). NO crea
+penales aún: eso lo cablea 6.4.
 
 LISTO Y VERIFICADO (todo commiteado, repo verde: typecheck/lint(2 warns viejos)/build OK, 78
 tests): F2+F3 completas. F4 realtime núcleo (4.1 matchmaking, 4.2 lobby+Presence, 4.3 Broadcast
@@ -285,10 +283,22 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
 
 ## F7 · Banco de preguntas
 
-- [ ] 7.1 Tabla `questions` + `tournament_questions` (no-repeat)
-- [ ] 7.2 Generar 200+ preguntas correctas por dificultad/categoría
-- [ ] 7.3 Seed script + asignación por fase (§9.3)
-- [ ] 7.4 Asignación 1 pregunta por (ronda, penal-index) compartida; bot-only no consume
+- [x] 7.1 Tabla `questions` + `tournament_questions` (no-repeat). Esquema ya existía (game_model);
+      + `questions.source_key` (única, nullable) para seed idempotente estilo `nations.code`.
+- [x] 7.2 Generar 200+ preguntas correctas por dificultad/categoría. 220 preguntas factuales (solo
+      Mundiales, hasta 2022), 6 categorías §9.1, distribución easy 60/medium 60/hard 55/very_hard 45.
+      `correct_index` rotado 0/1/2 (74/73/73) → sin patrón explotable. Sin marcas/mascotas FIFA.
+- [x] 7.3 Seed script + asignación por fase (§9.3). Migración insert idempotente
+      (`on conflict (source_key) do nothing`). Regla de dificultad por fase en `lib/engine/
+      difficulty.ts` (`penaltyDifficulty(phase, idx)`, fuente de la regla, 5 tests) + PORT SQL
+      `tanda_penalty_difficulty` verificado por PARIDAD (0 mismatches en 7 fases × idx 1-5).
+- [x] 7.4 Asignación 1 pregunta por (ronda, penal-index) compartida; bot-only no consume.
+      `take_tournament_question(tournament, difficulty, seed)` (SECURITY DEFINER, revoke a
+      public/anon/authenticated): elige pregunta no usada por el torneo (no-repeat vía
+      `tournament_questions`), determinista por seed, fallback a dificultad adyacente si se agota
+      el pool. NO crea penales todavía (eso es 6.4) — entrega el primitivo + contrato documentado.
+      E2E SQL: no-repeat OK, determinismo (mismo seed→misma secuencia), fallback sin error,
+      advisors sin WARN/ERROR nuevos. typecheck/lint/build verdes, 83 tests.
 
 ## F8 · UI / animaciones premium
 
