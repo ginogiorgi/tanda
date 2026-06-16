@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PenalLive } from "@/components/penal/PenalLive";
+import type { ActiveMatch } from "@/lib/realtime/penal";
 
 /**
- * Harness DEV (temporal, se reemplaza en F5/F8). Ejercita el flujo de la 4.3 sin
+ * Harness DEV (temporal, se reemplaza en F5/F8). Ejercita el flujo de penal sin
  * `start_tournament`: crea un penal de práctica (`dev_create_practice_penal`), monta
- * `<PenalLive>` suscrito al canal del match, y lo abre (`open_penalty`) para ver llegar el
- * Broadcast `penal:start` en vivo. NO es parte del flujo real del juego.
+ * `<PenalLive>` suscrito al canal del match, y lo abre (`open_penalty`). Tras refresh,
+ * `get_active_match` (4.8) re-monta el partido en curso. NO es parte del flujo real del juego.
  */
 type Practice = { matchId: string; penaltyId: string };
 
@@ -17,6 +18,22 @@ export function PenalDevHarness() {
   const [practice, setPractice] = useState<Practice | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Reconexión (4.8): al montar (p. ej. tras refresh) retomo el partido activo del caller.
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const { data } = await supabase.rpc("get_active_match");
+      if (!active) return;
+      const am = data as ActiveMatch | null;
+      if (am?.match_id) {
+        setPractice({ matchId: am.match_id, penaltyId: am.penal?.penalty_id ?? "" });
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
 
   async function onCreate() {
     setBusy(true);

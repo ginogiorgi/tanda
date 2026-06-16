@@ -8,6 +8,7 @@ import {
   remainingMs,
   type PenalStartPayload,
   type PenalResultPayload,
+  type ActiveMatch,
 } from "@/lib/realtime/penal";
 
 type PenalLiveProps = {
@@ -65,6 +66,16 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           setResult(payload as PenalResultPayload);
         })
         .subscribe();
+
+      // Rehidratación (4.8): tras refresh/reconexión, retomo el penal en curso con su deadline
+      // server y mi selección, sin esperar al próximo Broadcast (SPEC §5.2).
+      const { data } = await supabase.rpc("get_active_match");
+      if (!active) return;
+      const penalNow = (data as ActiveMatch | null)?.penal;
+      if (penalNow && penalNow.match_id === matchId) {
+        setPenal(penalNow);
+        setSelected(penalNow.my_option ?? null);
+      }
     }
 
     void subscribe();

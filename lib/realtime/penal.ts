@@ -33,6 +33,21 @@ export type PenalStartPayload = {
   /** Solo en `penal:second_chance`: opción incorrecta quitada (quedan 2). */
   removed_option?: number;
   phase?: "first" | "second_chance";
+  /** Solo al rehidratar (`get_active_match`): mi última selección, para restaurar el resaltado. */
+  my_option?: number | null;
+};
+
+/**
+ * Resultado de `get_active_match` (rehidratación tras refresh, SPEC §5.2). `null` si el caller
+ * no tiene partido activo. `penal` es `null` entre penales (match en curso sin penal abierto).
+ */
+export type ActiveMatch = {
+  tournament_id: string;
+  match_id: string;
+  phase: string;
+  home_score: number;
+  away_score: number;
+  penal: PenalStartPayload | null;
 };
 
 /**
