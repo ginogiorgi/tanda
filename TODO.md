@@ -2,16 +2,20 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F8 — UI/animaciones premium. El camino autoritativo del juego está COMPLETO y
-   verificado de punta a punta (un torneo real con humanos+bots corre solo: matchmaking → grupos con
-   reloj de ronda compartido → KO → campeón, + abandon + score:live). Lo que falta es la CARA: 3D del
-   penal (8.2), bracket (8.5), HUD (8.10), pantallas (resumen/campeón), y el modo invitado (8.1/8.1b,
-   corre lib/engine client-side sin red). Sugerencia de orden: 8.1/8.1b (menú + modo invitado: prueba
-   todo el motor sin tocar la DB, buen smoke test visual) → 8.2 (escena 3D del penal) → 8.5 (bracket
-   que consume `score:live` de 6.5 + poke `open_next_round` al terminar el tiempo muerto de 4.6) → 8.10
-   HUD → resto de F8. Las tareas realtime que quedan (4.6b offset, 4.9 animación) se cierran al construir
-   la pantalla de partido (necesitan la UI). OJO: la pantalla de partido real (que monta <PenalLive>)
-   todavía no existe — hoy <PenalLive> solo se usa en /dev/penal.
+>>> PRÓXIMA TAREA (PRIORIDAD): 9.0 — tests automáticos del camino autoritativo SQL/RPC + DB en CI.
+   El motor TS está bien testeado (88 Vitest) pero los PORTS PLPGSQL (resolución de penal, reloj de
+   ronda, bracket, anti-trampa) —lo más crítico y lo único que toca anti-trampa— solo se verificaron
+   con E2E manuales por SQL ya borrados: CERO regresión automática. Blindarlo ANTES de que F8 multiplique
+   la superficie. Ver 9.0 en F9. Tras 9.0: F8 (UI).
+
+>>> DESPUÉS (F8 — UI/animaciones premium): el camino autoritativo está COMPLETO y verificado a mano
+   (matchmaking → grupos con reloj de ronda → KO → campeón, + abandon + score:live). Falta la CARA: 3D
+   del penal (8.2), bracket (8.5), HUD (8.10), pantallas (resumen/campeón), modo invitado (8.1/8.1b,
+   corre lib/engine client-side sin red). Orden sugerido: 8.1/8.1b (menú + invitado: prueba el motor sin
+   DB, smoke test visual) → 8.2 (escena 3D) → 8.5 (bracket que consume score:live de 6.5 + poke
+   open_next_round del tiempo muerto de 4.6) → 8.10 HUD → resto. Las realtime que quedan (4.6b offset,
+   4.9 animación) se cierran al construir la pantalla de partido. OJO: la pantalla de partido real (que
+   monta <PenalLive>) todavía NO existe — hoy <PenalLive> solo se usa en /dev/penal.
 
 DONE este tramo (5 tareas): 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º) + 5.4 (abandon) +
    6.5 (score:live) + 4.6 (reloj de ronda + barrier, round-driven). Migraciones nuevas: 20260616220000
@@ -401,6 +405,25 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
 
 ## F9 · Pulido
 
+- [ ] 9.0 **(PRIORIDAD)** Tests automáticos del camino autoritativo SQL/RPC + DB en CI. Hoy los
+      ports PLPGSQL (lo más crítico) solo se probaron con E2E manuales por SQL ya borrados → cero
+      regresión automática. Codificar como suite repetible (pgTAP en `supabase/tests/` vía
+      `supabase db test`, o Vitest contra un Supabase local/branch efímero):
+      (a) **E2E de torneo**: `start_tournament` → drive (vencer deadlines + `tick`/`open_next_round`)
+          → campeón + 3er puesto; 72 grupos + 32 KO; reproducible.
+      (b) **Reloj de ronda compartido**: N humanos en grupos distintos → 1 solo `deadline` en la ronda.
+      (c) **abandon**: humano → bot (is_bot=true), intent de bot en penal abierto, `get_active_match`
+          deja de rehidratarlo, resuelve con `is_random=false`.
+      (d) **Paridad TS↔SQL** (automatizar lo verificado a mano): RNG mulberry32, `engine_bot_intent`,
+          `tanda_penalty_difficulty`, `engine_group_standings`/`buildRoundOf32` (no-cruce mismo grupo).
+      (e) **Anti-trampa (§ gotchas)**: `anon`/`authenticated` NO puede `select questions.correct_index`,
+          NO puede escribir tablas de juego (solo por RPC), NO puede leer broadcasts de otro match/torneo
+          (policies de realtime.messages). `correct_index` no viaja en `penal:start`/`score:live`.
+      (f) **CI**: levantar Supabase local, aplicar migraciones y correr (a)-(e) en GitHub Actions
+          (hoy CI solo corre typecheck/lint/build/test TS). Atrapa migraciones rotas antes del merge.
+      Side-effect útil: forzar reconciliar el historial de migraciones (squash) para que `db reset`
+      desde archivos == remoto (ver memoria `tanda-sql-migrations-canonical`). Generar tipos de la DB
+      (`supabase gen types`) para tipar las `supabase.rpc(...)` del cliente puede entrar acá o aparte.
 - [ ] 9.1 Auditoría RLS + anti-trampa (correct_index nunca al cliente)
 - [ ] 9.2 Estados carga / empty / error en cada vista
 - [ ] 9.3 Accesibilidad (`prefers-reduced-motion`) + performance
