@@ -26,6 +26,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
   const [remaining, setRemaining] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       channel
         .on("broadcast", { event: "penal:start" }, ({ payload }) => {
           setPenal(payload as PenalStartPayload);
+          setSelected(null); // penal nuevo → arranca sin selección
         })
         .subscribe();
     }
@@ -74,6 +76,20 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return () => clearInterval(id);
   }, [penal]);
 
+  // Elegir/cambiar opción: optimista en el cliente, autoritativo en el server. El server
+  // registra la ÚLTIMA selección con su `selected_at` (SPEC §1.3); se puede cambiar hasta el
+  // deadline. La resolución la decide el server a los 10s (4.5), no este click.
+  async function onSelect(option: number) {
+    if (!penal || remaining <= 0) return;
+    setSelected(option); // resaltado optimista
+    const { error } = await supabase.rpc("select_option", {
+      p_penalty: penal.penalty_id,
+      p_option: option,
+    });
+    // `out_of_window` (justo cerró la ventana): el server manda, revierto el resaltado.
+    if (error) setSelected(null);
+  }
+
   if (!penal) {
     return (
       <p className="text-sm text-fg-subtle">Esperando el penal…</p>
@@ -81,6 +97,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   }
 
   const seconds = Math.ceil(remaining / 1000);
+  const locked = remaining <= 0;
 
   return (
     <div className="flex w-full max-w-md flex-col gap-6">
@@ -98,18 +115,37 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       </p>
 
       <div className="flex flex-col gap-3">
-        {penal.options.map((option, i) => (
-          <button
-            key={i}
-            type="button"
-            disabled
-            className="rounded-xl border border-border bg-bg-elevated px-4 py-3 text-left font-medium text-fg disabled:opacity-90"
-          >
-            <span className="mr-3 font-mono text-fg-subtle">{i + 1}</span>
-            {option}
-          </button>
-        ))}
+        {penal.options.map((option, i) => {
+          const isSelected = selected === i;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onSelect(i)}
+              disabled={locked}
+              aria-pressed={isSelected}
+              className={`flex items-center rounded-xl border px-4 py-3 text-left font-medium transition-colors disabled:cursor-not-allowed ${
+                isSelected
+                  ? "border-gold bg-gold/15 text-fg"
+                  : "border-border bg-bg-elevated text-fg hover:border-fg-subtle"
+              } ${locked && !isSelected ? "opacity-50" : ""}`}
+            >
+              <span
+                className={`mr-3 font-mono ${isSelected ? "text-gold" : "text-fg-subtle"}`}
+              >
+                {i + 1}
+              </span>
+              {option}
+            </button>
+          );
+        })}
       </div>
+
+      {locked && (
+        <p className="text-center text-xs text-fg-subtle">
+          Se acabó el tiempo. Esperando la resolución…
+        </p>
+      )}
     </div>
   );
 }
