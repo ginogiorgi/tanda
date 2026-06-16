@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -26,11 +27,14 @@ type PenalLiveProps = {
  * gobierna la policy `match_broadcast_select` en `realtime.messages` (solo participantes).
  */
 export function PenalLive({ matchId }: PenalLiveProps) {
+  const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [confirmingAbandon, setConfirmingAbandon] = useState(false);
+  const [abandoning, setAbandoning] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const pokedRef = useRef<string | null>(null);
 
@@ -119,6 +123,18 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     if (error) setSelected(null); // p. ej. `out_of_window`: el server manda
   }
 
+  // Abandonar (5.4): el participante pasa a bot con la dificultad de su nación y el usuario vuelve
+  // al home; los penales en curso los completa el bot (server-authoritative). Confirma en dos toques.
+  async function onAbandon() {
+    if (!confirmingAbandon) {
+      setConfirmingAbandon(true);
+      return;
+    }
+    setAbandoning(true);
+    await supabase.rpc("abandon", { p_match: matchId });
+    router.push("/");
+  }
+
   if (!penal) {
     return <p className="text-sm text-fg-subtle">Esperando el penal…</p>;
   }
@@ -198,6 +214,22 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           Se acabó el tiempo. Esperando la resolución…
         </p>
       )}
+
+      <button
+        type="button"
+        onClick={onAbandon}
+        onBlur={() => setConfirmingAbandon(false)}
+        disabled={abandoning}
+        className={`mx-auto mt-2 text-xs font-medium transition-colors disabled:opacity-50 ${
+          confirmingAbandon ? "text-red-400" : "text-fg-subtle hover:text-fg-muted"
+        }`}
+      >
+        {abandoning
+          ? "Abandonando…"
+          : confirmingAbandon
+            ? "¿Seguro? Tocá de nuevo para abandonar"
+            : "Abandonar"}
+      </button>
     </div>
   );
 }

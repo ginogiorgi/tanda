@@ -2,17 +2,18 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 5.4 — botón Abandonar (`abandon`). RPC SECURITY DEFINER: el humano que abandona
-   → su participante pasa a bot con la dificultad de su nación; sus penales en curso se resuelven por
-   intent de bot (no random); vuelve al home. Sin auto-abandono (desconexión ≠ abandono: eso sigue
-   siendo random hasta reconectar, §3.1). Materializar intents del ahora-bot en los penales abiertos
-   de sus matches. Cliente: botón en `<PenalLive>` (o HUD) que llama `abandon` y navega a `/`.
+>>> PRÓXIMA TAREA: 6.5 — marcadores en vivo en el bracket (`score:live`). Emitir desde la DB (RPC
+   que cambia el marcador, p. ej. resolve_penalty / simulate_bot_match / advance_ko_round) un Broadcast
+   `score:live` con el estado del bracket/grupos (match_id, fase, marcador, ganador) a un canal del
+   torneo, para que la pantalla de bracket (F8 8.5) y las "posiciones en vivo" (4.6) se actualicen sin
+   polling. Definir el canal (`tournament:{id}` privado por pertenencia, policy en realtime.messages) y
+   el payload. OJO: el bracket UI todavía no existe (F8) — 6.5 deja el primitivo server + suscripción.
 
-6.4 COMPLETA (torneo entero jugable end-to-end: grupos → KO → campeón + 3er puesto, todo PLPGSQL
-   autoritativo, verificado por E2E SQL real con 1 humano + 47 bots). Migraciones: 20260616220000
-   (play_round, b) + 20260616230000 (advance_knockout, c). Ver detalle en el ítem 6.4 tildado abajo.
+DONE este tramo: 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º, PLPGSQL autoritativo) +
+   5.4 (abandon). Migraciones nuevas: 20260616220000 (play_round) + 20260616230000 (advance_knockout)
+   + 20260616240000 (abandon). Verificadas por E2E SQL real. Ver ítems tildados abajo.
 
-Después de 5.4: 6.5 score:live; 4.6/4.6b barrier + posiciones en vivo; 4.9 animación GOL/ATAJADO; F8.
+Después de 6.5: 4.6/4.6b barrier + posiciones en vivo; 4.9 animación GOL/ATAJADO; F8 (UI/animaciones).
 
 YA LISTO para 6.4: F7 (preguntas + asignación) y 5.3 (bot_intents) y 6.4(a) simulate_bot_match +
 engine_advance_match. Motor de torneo PURO (lib/engine/tournament.ts) testeado 48→campeón (F6).
@@ -265,8 +266,17 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       intents, resolve los materializa (random=0, opción coincide), "los dos mal" → 2ª chance con
       intents nuevos, tasas por tier ≈ §7.2 (elite .80/high .70/medium .60/low .50). typecheck/lint/
       build verdes, 83 tests, advisors sin WARN/ERROR nuevos.
-- [ ] 5.4 Botón Abandonar (`abandon`): participante → bot (dificultad por nación),
-      usuario vuelve al home, penales en curso se resuelven como bot
+- [x] 5.4 Botón Abandonar (`abandon`): participante → bot (dificultad por nación),
+      usuario vuelve al home, penales en curso se resuelven como bot. RPC `abandon(p_match)`
+      (SECURITY DEFINER, entra por match — el cliente ya tiene matchId): resuelve el torneo desde
+      el match, marca al participante del caller `is_bot=true` (de ahí el bot juega con el tier de su
+      nación §7.2, no random) y precomputa intents en sus penales abiertos (si ya respondió un penal,
+      su respuesta queda; el bot toma desde el próximo). `get_active_match` ahora filtra `is_bot=false`
+      → el que abandonó no se rehidrata (se queda en el home). Cliente: botón "Abandonar" en
+      `<PenalLive>` (confirmación en dos toques) → `abandon` + `router.push('/')`. E2E SQL (usuario
+      aislado): pasa a bot, penal abierto recibe intent de bot, get_active_match=null tras abandonar,
+      y al resolver el ahora-bot juega por intent (`is_random=false`). typecheck/lint/build verdes, 83
+      tests. (Desconexión ≠ abandono: la desconexión sigue siendo random hasta reconectar, §3.1.)
 
 ## F6 · Motor de torneo + tests
 
