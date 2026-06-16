@@ -2,18 +2,23 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 6.5 — marcadores en vivo en el bracket (`score:live`). Emitir desde la DB (RPC
-   que cambia el marcador, p. ej. resolve_penalty / simulate_bot_match / advance_ko_round) un Broadcast
-   `score:live` con el estado del bracket/grupos (match_id, fase, marcador, ganador) a un canal del
-   torneo, para que la pantalla de bracket (F8 8.5) y las "posiciones en vivo" (4.6) se actualicen sin
-   polling. Definir el canal (`tournament:{id}` privado por pertenencia, policy en realtime.messages) y
-   el payload. OJO: el bracket UI todavía no existe (F8) — 6.5 deja el primitivo server + suscripción.
+>>> PRÓXIMA TAREA: 4.6 — reloj de ronda con barrier por penal + posiciones en vivo en el tiempo
+   muerto + animación de duración fija (≤5s). Hoy cada humano poke-ea su propio penal a los 10s y el
+   match avanza enseguida; falta el RELOJ DE RONDA COMPARTIDO: todos los humanos de la jornada ven el
+   mismo deadline y, al resolverse un penal, hay un "tiempo muerto" (barrier) donde se muestran las
+   posiciones en vivo (grupos/bracket con `score:live` de 6.5) antes de abrir el siguiente penal —
+   esperando la 2ª chance si la hubo. 4.6b: offset de reloj cliente/servidor (la barra dibuja contra el
+   `deadline` server corregido por offset, ya hay helpers en lib/realtime/penal.ts). OJO: la
+   sincronización entre matches de una misma ronda es el núcleo (SPEC §1.3 reloj de ronda); evaluar si
+   el barrier vive en el server (abrir todos los penales idx N de la ronda al mismo tiempo) o se coordina
+   por broadcast. Decisión de diseño al arrancar — parar y pensarlo.
 
-DONE este tramo: 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º, PLPGSQL autoritativo) +
-   5.4 (abandon). Migraciones nuevas: 20260616220000 (play_round) + 20260616230000 (advance_knockout)
-   + 20260616240000 (abandon). Verificadas por E2E SQL real. Ver ítems tildados abajo.
+DONE este tramo: 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º) + 5.4 (abandon) + 6.5
+   (score:live, marcadores en vivo al canal del torneo). Migraciones nuevas: 20260616220000 (play_round)
+   + 230000 (advance_knockout) + 240000 (abandon) + 250000 (score_live). Verificadas por E2E SQL real.
 
-Después de 6.5: 4.6/4.6b barrier + posiciones en vivo; 4.9 animación GOL/ATAJADO; F8 (UI/animaciones).
+Después de 4.6/4.6b: 4.9 animación GOL/ATAJADO; F8 (UI/animaciones premium, incl. 8.5 bracket que
+   consume score:live y 8.1/8.1b modo invitado).
 
 YA LISTO para 6.4: F7 (preguntas + asignación) y 5.3 (bot_intents) y 6.4(a) simulate_bot_match +
 engine_advance_match. Motor de torneo PURO (lib/engine/tournament.ts) testeado 48→campeón (F6).
@@ -318,7 +323,19 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       R32, 32 clasificados distintos, 48 participantes contabilizados (placements 1-4 + eliminated_phase),
       desempate h2h verificado (P1=P2 en pts/DG/GF, P1 ganó h2h → P1 1º). typecheck/lint verdes, 83
       tests, advisors sin WARN/ERROR nuevos.
-- [ ] 6.5 Marcadores en vivo en bracket (`score:live`)
+- [x] 6.5 Marcadores en vivo en bracket (`score:live`). Canal privado `tournament:{id}` (policy
+      `tournament_broadcast_select` en realtime.messages vía `realtime_tournament_member`/
+      `is_tournament_member` → solo participantes del torneo). `emit_score_live(match)` emite el estado
+      del partido (fase, group_letter, bracket_slot, status, marcador, ganador + `participant_brief` de
+      cada lado: nación/código/bandera/kit) al canal del torneo; nada sensible. Cableado: `open_round`
+      (fixture al abrir la ronda para matches con humano), `simulate_bot_match` (marcador final bot-only),
+      `resolve_penalty` (penal a penal + cierre). Cliente: `lib/realtime/score.ts` (tipos `ScoreLivePayload`/
+      `ParticipantBrief` + reducer puro `applyScoreUpdate` último-gana por server_now + `matchesInPhase`,
+      5 tests) listo para que F8 8.5 se suscriba. E2E SQL: 25 `score:live` al topic del torneo en la
+      jornada 1, payload completo con naciones (ej. "POR 3-1 NGA [finished]"). typecheck/lint/build
+      verdes, 88 tests, advisors sin lints nuevos (solo `realtime_tournament_member`, espejo del de match).
+      Pendiente F8: la UI de bracket consume el canal; el RPC `get_bracket` (carga inicial de estructura)
+      se define con 8.5 cuando se conozcan las necesidades del render.
 - [x] 6.6 Tests Vitest del torneo (grupos, terceros, desempates, mapeo, bracket, campeón). 26
       tests en tournament.test.ts: fixture/puntos (6.1), desempates+terceros (6.2), bracket
       (6.3), + integral 6.6: torneo completo 48→12 grupos→32 clasificados→bracket 16→8→4→2→1→1
