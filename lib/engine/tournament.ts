@@ -184,3 +184,73 @@ export function bestThirds(
   });
   return { qualified: sorted.slice(0, 8), eliminated: sorted.slice(8) };
 }
+
+// ───────────────────────── 6.3: bracket de eliminación ─────────────────────────
+
+/** Posición de clasificación: 1 = ganador de grupo, 2 = segundo, 3 = mejor tercero. */
+export type QualifiedSlot = 1 | 2 | 3;
+
+/** Un clasificado a la fase final, con su grupo y posición (para el armado del bracket). */
+export interface Qualified {
+  team: string;
+  group: string;
+  slot: QualifiedSlot;
+}
+
+/** Fases de eliminación, en orden. */
+export const KO_PHASES = [
+  "round_of_32",
+  "round_of_16",
+  "quarters",
+  "semis",
+  "final",
+] as const;
+export type KoPhase = (typeof KO_PHASES)[number];
+
+/**
+ * Arma los 16 cruces de `round_of_32` a partir de los 32 clasificados (SPEC §4). Mapeo
+ * determinista por seed que **evita que dos del mismo grupo se crucen de entrada**: cada ganador
+ * de grupo enfrenta a un segundo/tercero de OTRO grupo; los restantes se emparejan también
+ * evitando el mismo grupo. El orden del array es el orden del bracket (el ganador del cruce `i`
+ * enfrenta al del `i+1` en la ronda siguiente; lo encadena `advanceBracket`).
+ *
+ * Nota: garantiza no-cruce de mismo grupo en `round_of_32`; la evitación en rondas más
+ * profundas (estilo tabla oficial 2026) queda como refinamiento futuro.
+ */
+export function buildRoundOf32(qualified: Qualified[], seed: number): Array<[Qualified, Qualified]> {
+  if (qualified.length !== 32) {
+    throw new Error(`buildRoundOf32 requiere 32 clasificados, recibió ${qualified.length}`);
+  }
+  const key = (q: Qualified) => drawKey(q.team, seed);
+  const winners = qualified.filter((q) => q.slot === 1).sort((a, b) => key(a) - key(b));
+  const pool = qualified.filter((q) => q.slot !== 1).sort((a, b) => key(a) - key(b));
+  const matches: Array<[Qualified, Qualified]> = [];
+
+  const takeDifferentGroup = (group: string): Qualified => {
+    const i = pool.findIndex((o) => o.group !== group);
+    return pool.splice(i >= 0 ? i : 0, 1)[0]!;
+  };
+
+  for (const w of winners) matches.push([w, takeDifferentGroup(w.group)]);
+  while (pool.length > 0) {
+    const a = pool.shift()!;
+    const b = takeDifferentGroup(a.group);
+    matches.push([a, b]);
+  }
+  return matches;
+}
+
+/**
+ * Encadena una fase de eliminación: dados los ganadores de la fase actual **en orden de
+ * bracket**, arma los cruces de la siguiente (el ganador del cruce `2k` vs el del `2k+1`).
+ */
+export function advanceBracket<T>(winnersInOrder: T[]): Array<[T, T]> {
+  if (winnersInOrder.length % 2 !== 0) {
+    throw new Error("advanceBracket requiere una cantidad par de ganadores");
+  }
+  const next: Array<[T, T]> = [];
+  for (let i = 0; i < winnersInOrder.length; i += 2) {
+    next.push([winnersInOrder[i]!, winnersInOrder[i + 1]!]);
+  }
+  return next;
+}

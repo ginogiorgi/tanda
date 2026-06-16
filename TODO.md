@@ -217,7 +217,13 @@
       `bestThirds(thirds, seed)`: rankea los 12 terceros por puntos→DG→GF→sorteo (sin h2h entre
       grupos), devuelve 8 qualified + 4 eliminated. Sorteo = `mulberry32(seed ^ fnv(id))` (último
       recurso, reproducible). 6 tests. (2 por grupo = los 2 primeros de rankGroup; lo arma 6.3)
-- [ ] 6.3 Mapeo determinista de terceros + bracket `round_of_32 → … → final` + `third_place`
+- [x] 6.3 Mapeo determinista de terceros + bracket `round_of_32 → … → final`. `buildRoundOf32`
+      (32 clasificados → 16 cruces; cada ganador de grupo vs un 2º/3º de OTRO grupo, restantes
+      emparejados evitando mismo grupo; determinista por seed; garantiza no-cruce de mismo grupo
+      en R32) + `advanceBracket<T>` (encadena fase: ganadores adyacentes 2k vs 2k+1) +
+      `KO_PHASES`/`Qualified`. 6 tests. NOTA: evita mismo-grupo en R32; la evitación en rondas
+      profundas (tabla oficial 2026) y el `third_place` (semifinalistas perdedores) quedan para
+      el cableado de advance_tournament (6.4)
 - [ ] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase
 - [ ] 6.5 Marcadores en vivo en bracket (`score:live`)
 - [ ] 6.6 Tests Vitest del torneo (grupos, terceros, desempates, mapeo, bracket, campeón)

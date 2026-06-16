@@ -4,8 +4,12 @@ import {
   tallyGroup,
   rankGroup,
   bestThirds,
+  buildRoundOf32,
+  advanceBracket,
   type GroupMatchResult,
   type Standing,
+  type Qualified,
+  type QualifiedSlot,
 } from "./tournament";
 
 describe("roundRobinSchedule", () => {
@@ -187,5 +191,48 @@ describe("bestThirds", () => {
     const q2 = bestThirds(thirds, 7).qualified.map((s) => s.team);
     expect(q1).toEqual(q2);
     expect(q1).toHaveLength(8);
+  });
+});
+
+describe("buildRoundOf32 + advanceBracket", () => {
+  // 32 clasificados: 12 ganadores (1) + 12 segundos (2) + 8 terceros (3).
+  const groups = "ABCDEFGHIJKL".split("");
+  const qualified: Qualified[] = [
+    ...groups.map((g) => ({ team: `1${g}`, group: g, slot: 1 as QualifiedSlot })),
+    ...groups.map((g) => ({ team: `2${g}`, group: g, slot: 2 as QualifiedSlot })),
+    ...groups.slice(0, 8).map((g) => ({ team: `3${g}`, group: g, slot: 3 as QualifiedSlot })),
+  ];
+
+  it("arma 16 cruces con los 32 equipos, cada uno una sola vez", () => {
+    const r32 = buildRoundOf32(qualified, 99);
+    expect(r32).toHaveLength(16);
+    const teams = r32.flat().map((q) => q.team);
+    expect(teams).toHaveLength(32);
+    expect(new Set(teams).size).toBe(32);
+  });
+
+  it("ningún cruce de round_of_32 enfrenta a dos del mismo grupo", () => {
+    const r32 = buildRoundOf32(qualified, 99);
+    for (const [a, b] of r32) expect(a.group).not.toBe(b.group);
+  });
+
+  it("es determinista por seed", () => {
+    expect(buildRoundOf32(qualified, 5)).toEqual(buildRoundOf32(qualified, 5));
+  });
+
+  it("rechaza un set distinto de 32", () => {
+    expect(() => buildRoundOf32(qualified.slice(0, 30), 1)).toThrow();
+  });
+
+  it("advanceBracket empareja ganadores adyacentes (16→8)", () => {
+    const winners = Array.from({ length: 16 }, (_, i) => `W${i}`);
+    const next = advanceBracket(winners);
+    expect(next).toHaveLength(8);
+    expect(next[0]).toEqual(["W0", "W1"]);
+    expect(next[7]).toEqual(["W14", "W15"]);
+  });
+
+  it("advanceBracket rechaza cantidad impar", () => {
+    expect(() => advanceBracket(["W0", "W1", "W2"])).toThrow();
   });
 });
