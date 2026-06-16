@@ -2,19 +2,23 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 5.3 bot_intents (PORT de lib/engine/bot.ts a SQL, parity-check como 4.5/5.1;
-materializa la intención del bot por penal/fase/muerte súbita en la tabla bot_intents; resolve_penalty
-debe usar bot_intents para los bots en vez de random; el tick() debe materializar intents vencidos —
-ya quedó anotado en 4.7). DESPUÉS 6.4: simulate_bot_match instantáneo + crear penales 1ª jornada
-(usando los primitivos de F7: tanda_penalty_difficulty + take_tournament_question, 1 pregunta por
-(ronda, penal-index) compartida por todos los matches con humanos; bot-only se simula y NO consume) +
-abrir 1ª jornada + advance_tournament con gate por fase. Luego 5.4 abandon; 6.5 score:live; 4.6/4.6b
-barrier de ronda + posiciones en vivo (ya con fixture/standings reales); 4.9 animación GOL/ATAJADO (F8).
+>>> PRÓXIMA TAREA: 6.4 — el cableado que finalmente corre un torneo entero. Es el gran paso:
+(a) `simulate_bot_match(match)`: resuelve un partido bot-only AL INSTANTE (sin realtime ni ventana
+de 10s; usa el motor — `advanceMatch`/`resolvePenalty` o su port SQL — para la tanda de 5 + súbita;
+los bot-only NO consumen preguntas del banco). (b) Crear los penales de una jornada para los matches
+CON humanos: 1 pregunta por (ronda, penal-index) compartida — pedir con `take_tournament_question`
+(dificultad = `tanda_penalty_difficulty(phase, idx)`, seed derivado del torneo+ronda+idx) y asignarla
+a los penales de todos esos matches; abrir el 1er penal (open_penalty ya precomputa bot_intents).
+(c) `advance_tournament`: gate por fase — cuando todos los matches de la jornada/fase terminaron,
+arma la siguiente (standings reales con lib/engine/tournament.ts 6.1-6.3; bracket en KO) hasta campeón
++ 3er puesto. Event-driven: lo dispara resolve_penalty al cerrar el último penal de un match, y el
+tick() como backstop. OJO: start_tournament (5.2) hoy deja matches 'pending' sin penales — 6.4 cierra
+ese deferido. Después: 5.4 abandon; 6.5 score:live; 4.6/4.6b barrier de ronda + posiciones en vivo;
+4.9 + resto de F8 (animaciones/UI).
 
-F7 LISTA (banco de preguntas): 220 preguntas en la tabla questions (source_key 'wc-NNN', idempotente),
-regla de dificultad por fase en lib/engine/difficulty.ts + port SQL tanda_penalty_difficulty (paridad
-0 mismatches), y take_tournament_question (no-repeat intra-torneo + determinista + fallback). NO crea
-penales aún: eso lo cablea 6.4.
+YA LISTO para que 6.4 lo use: F7 (tanda_penalty_difficulty + take_tournament_question + 220 preguntas)
+y 5.3 (bot_intents: open_penalty precomputa, resolve usa intent, tasas por tier verificadas). El motor
+de torneo PURO (lib/engine/tournament.ts, F6 6.1-6.3+6.6) ya está testeado 48→campeón.
 
 LISTO Y VERIFICADO (todo commiteado, repo verde: typecheck/lint(2 warns viejos)/build OK, 78
 tests): F2+F3 completas. F4 realtime núcleo (4.1 matchmaking, 4.2 lobby+Presence, 4.3 Broadcast
@@ -250,7 +254,20 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       de 2min + columnas calificadas (el OUT param `tournament_id` es ambiguo si no se califica).
       E2E SQL: join 48º→in_progress; tick lobby vencido c/humano→in_progress (72 matches); sin
       humanos→cancelled
-- [ ] 5.3 `bot_intents` precomputados/materializados (incl. segunda chance y muerte súbita)
+- [x] 5.3 `bot_intents` precomputados/materializados (incl. segunda chance y muerte súbita).
+      `engine_bot_intent(tier, seed)` = PORT FIEL de `lib/engine/bot.ts` (paridad bit-perfect: 0
+      mismatches en 40 casos = 4 tiers × 10 seeds, incl. bordes). `precompute_bot_intents(penalty)`
+      (lo llama `open_penalty` al abrir y `resolve_penalty` al entrar en 2ª chance): calcula por bot
+      del match cuándo responde (`scheduled_answer_at`, clamp al deadline), si acierta (% por tier
+      §7.2) y qué opción (correcta, o incorrecta seeded excluyendo la quitada en 2ª chance), en
+      `bot_intents`, determinista por seed del torneo. `materialize_bot_intents(penalty, force)`
+      vuelca intents → `penalty_answers` (las vencidas, o todas si force): la usan el `tick()`
+      (intents vencidos en la ventana) y `resolve_penalty` (force, al resolver). `resolve_penalty`
+      AHORA: bots por su intent (is_random=false), random SOLO a humanos ausentes/desconectados
+      (§3.1). Funciones internas con revoke a public/anon/authenticated. E2E SQL: precompute crea
+      intents, resolve los materializa (random=0, opción coincide), "los dos mal" → 2ª chance con
+      intents nuevos, tasas por tier ≈ §7.2 (elite .80/high .70/medium .60/low .50). typecheck/lint/
+      build verdes, 83 tests, advisors sin WARN/ERROR nuevos.
 - [ ] 5.4 Botón Abandonar (`abandon`): participante → bot (dificultad por nación),
       usuario vuelve al home, penales en curso se resuelven como bot
 
