@@ -2,23 +2,30 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 6.4 — el cableado que finalmente corre un torneo entero. Es el gran paso:
-(a) `simulate_bot_match(match)`: resuelve un partido bot-only AL INSTANTE (sin realtime ni ventana
-de 10s; usa el motor — `advanceMatch`/`resolvePenalty` o su port SQL — para la tanda de 5 + súbita;
-los bot-only NO consumen preguntas del banco). (b) Crear los penales de una jornada para los matches
-CON humanos: 1 pregunta por (ronda, penal-index) compartida — pedir con `take_tournament_question`
-(dificultad = `tanda_penalty_difficulty(phase, idx)`, seed derivado del torneo+ronda+idx) y asignarla
-a los penales de todos esos matches; abrir el 1er penal (open_penalty ya precomputa bot_intents).
-(c) `advance_tournament`: gate por fase — cuando todos los matches de la jornada/fase terminaron,
-arma la siguiente (standings reales con lib/engine/tournament.ts 6.1-6.3; bracket en KO) hasta campeón
-+ 3er puesto. Event-driven: lo dispara resolve_penalty al cerrar el último penal de un match, y el
-tick() como backstop. OJO: start_tournament (5.2) hoy deja matches 'pending' sin penales — 6.4 cierra
-ese deferido. Después: 5.4 abandon; 6.5 score:live; 4.6/4.6b barrier de ronda + posiciones en vivo;
-4.9 + resto de F8 (animaciones/UI).
+>>> PRÓXIMA TAREA: 6.4 (b) y (c) — terminar el cableado que corre un torneo entero. Ya está (a)
+`simulate_bot_match` (resuelve bot-only al instante, marcador en matches.status='finished'; con
+`engine_advance_match` port de match.ts + `bot_penalty_scored` §5.2 bot-vs-bot, deterministas).
+FALTA:
+(b) Abrir/jugar una jornada: para los matches CON humanos de la jornada actual, crear sus 5 penales
+   (kicker alterna home impares/away pares; difficulty = `tanda_penalty_difficulty(phase, idx)`;
+   1 pregunta POR (ronda, penal-index) COMPARTIDA por todos esos matches vía `take_tournament_question`
+   con seed derivado del torneo+phase+idx) y abrir el 1er penal de cada uno (`open_penalty` ya
+   precomputa bot_intents). Los matches bot-only de la jornada → `simulate_bot_match` de una.
+(c) `advance_tournament(tournament)`: gate por fase event-driven. Disparar desde `resolve_penalty`
+   al cerrar el ÚLTIMO penal de un match (encadenar el siguiente penal del match; si el match terminó,
+   chequear si toda la jornada/fase terminó → armar la siguiente). Grupos: 3 jornadas → standings con
+   lib/engine/tournament.ts (rankGroup/bestThirds) → 32 clasificados → bracket (buildRoundOf32) →
+   R16→QF→SF→(3er puesto)→final → campeón. Backstop por tick(). OJO: el encadenado de penales dentro
+   de un match (abrir el penal idx+1 al resolver idx) HOY NO EXISTE — es parte de (c)/4.6.
+Decisión a tomar al arrancar (c): ¿portar advanceMatch/standings a SQL para el camino humano, o que
+   advance_tournament corra el motor TS vía una RPC server-side? El camino autoritativo es PLPGSQL
+   (SPEC §1.2) → probablemente portar lo mínimo (advanceMatch ya está en engine_advance_match;
+   standings/bracket faltan portar o computar en SQL). Evaluar al empezar.
 
-YA LISTO para que 6.4 lo use: F7 (tanda_penalty_difficulty + take_tournament_question + 220 preguntas)
-y 5.3 (bot_intents: open_penalty precomputa, resolve usa intent, tasas por tier verificadas). El motor
-de torneo PURO (lib/engine/tournament.ts, F6 6.1-6.3+6.6) ya está testeado 48→campeón.
+Después de 6.4: 5.4 abandon; 6.5 score:live; 4.6/4.6b barrier + posiciones en vivo; 4.9 + F8.
+
+YA LISTO para 6.4: F7 (preguntas + asignación) y 5.3 (bot_intents) y 6.4(a) simulate_bot_match +
+engine_advance_match. Motor de torneo PURO (lib/engine/tournament.ts) testeado 48→campeón (F6).
 
 LISTO Y VERIFICADO (todo commiteado, repo verde: typecheck/lint(2 warns viejos)/build OK, 78
 tests): F2+F3 completas. F4 realtime núcleo (4.1 matchmaking, 4.2 lobby+Presence, 4.3 Broadcast
@@ -291,7 +298,20 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       `KO_PHASES`/`Qualified`. 6 tests. NOTA: evita mismo-grupo en R32; la evitación en rondas
       profundas (tabla oficial 2026) y el `third_place` (semifinalistas perdedores) quedan para
       el cableado de advance_tournament (6.4)
-- [ ] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase
+- [~] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase.
+      HECHO (a): `simulate_bot_match(match)` resuelve un partido bot-only al instante (sin realtime
+      ni preguntas del banco), persiste marcador/ganador en `matches` (status='finished').
+      `engine_advance_match` = PORT FIEL de lib/engine/match.ts (alternancia, corte por decidido en
+      KO, muerte súbita); `bot_penalty_scored` = §5.2 bot-vs-bot con `engine_bot_intent` (5.3),
+      determinista por seed del torneo. NO crea filas de penalties (bot-only no consume). Internas,
+      revoke a public/anon/authenticated. E2E SQL: grupo puede empatar/scores 0-5, idempotente +
+      determinista, final siempre con ganador; spot-checks de engine_advance_match calcan match.ts
+      (10×gol→5-5 null, corte 3-0 en n=6, empate→súbita n=11). typecheck/lint/build verdes, 83 tests.
+      PENDIENTE (b) crear penales de la 1ª jornada para matches CON humanos (take_tournament_question
+      + tanda_penalty_difficulty, 1 pregunta por (ronda, penal-index) compartida; abrir 1er penal) y
+      simular los bot-only de la jornada con simulate_bot_match; (c) advance_tournament con gate por
+      fase (standings/bracket reales con lib/engine/tournament.ts) hasta campeón + 3er puesto,
+      disparado por resolve_penalty al cerrar el último penal + tick() backstop.
 - [ ] 6.5 Marcadores en vivo en bracket (`score:live`)
 - [x] 6.6 Tests Vitest del torneo (grupos, terceros, desempates, mapeo, bracket, campeón). 26
       tests en tournament.test.ts: fixture/puntos (6.1), desempates+terceros (6.2), bracket
