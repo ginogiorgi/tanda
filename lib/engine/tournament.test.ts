@@ -236,3 +236,80 @@ describe("buildRoundOf32 + advanceBracket", () => {
     expect(() => advanceBracket(["W0", "W1", "W2"])).toThrow();
   });
 });
+
+describe("6.6 — torneo completo hasta el campeón (integración del motor)", () => {
+  // Helper de test: resultado determinista de un partido (no es parte del motor).
+  const strength = (team: string) => parseInt(team.slice(1), 10); // T00..T47 → 0..47
+  function playGroup(teams: string[]): GroupMatchResult<string>[] {
+    return roundRobinSchedule(teams)
+      .flat()
+      .map(([home, away]) => {
+        const d = strength(home) - strength(away);
+        return {
+          home,
+          away,
+          homeGoals: d > 0 ? 2 : d < 0 ? 0 : 1,
+          awayGoals: d < 0 ? 2 : d > 0 ? 0 : 1,
+        };
+      });
+  }
+  // Ganador de un cruce KO: el de mayor "strength" (determinista).
+  const koWinner = (a: string, b: string) =>
+    strength(a) >= strength(b) ? a : b;
+
+  function runTournament(seed: number) {
+    const teams = Array.from({ length: 48 }, (_, i) =>
+      `T${String(i).padStart(2, "0")}`,
+    );
+    const groupLetters = "ABCDEFGHIJKL".split("");
+    // Reparto round-robin: T_i → grupo i % 12 (cada grupo mezcla fuertes y débiles).
+    const groups = new Map<string, string[]>();
+    groupLetters.forEach((g) => groups.set(g, []));
+    teams.forEach((t, i) => groups.get(groupLetters[i % 12]!)!.push(t));
+
+    const winners: Qualified[] = [];
+    const runners: Qualified[] = [];
+    const thirds: Standing<string>[] = [];
+    const thirdGroupOf = new Map<string, string>();
+
+    for (const g of groupLetters) {
+      const gt = groups.get(g)!;
+      const ranked = rankGroup(gt, playGroup(gt), seed);
+      winners.push({ team: ranked[0]!.team, group: g, slot: 1 });
+      runners.push({ team: ranked[1]!.team, group: g, slot: 2 });
+      thirds.push(ranked[2]!);
+      thirdGroupOf.set(ranked[2]!.team, g);
+    }
+
+    const best = bestThirds(thirds, seed).qualified.map<Qualified>((s) => ({
+      team: s.team,
+      group: thirdGroupOf.get(s.team)!,
+      slot: 3,
+    }));
+
+    const qualified = [...winners, ...runners, ...best];
+    let round = buildRoundOf32(qualified, seed).map(
+      ([a, b]) => [a.team, b.team] as [string, string],
+    );
+    const roundSizes: number[] = [];
+    while (round.length > 1) {
+      roundSizes.push(round.length);
+      const w = round.map(([a, b]) => koWinner(a, b));
+      round = advanceBracket(w);
+    }
+    roundSizes.push(round.length);
+    const champion = koWinner(round[0]![0], round[0]![1]);
+    return { qualifiedCount: qualified.length, roundSizes, champion };
+  }
+
+  it("48 equipos → 32 clasificados → bracket 16→8→4→2→1 → un campeón", () => {
+    const r = runTournament(2026);
+    expect(r.qualifiedCount).toBe(32);
+    expect(r.roundSizes).toEqual([16, 8, 4, 2, 1]);
+    expect(r.champion).toMatch(/^T\d{2}$/);
+  });
+
+  it("es reproducible con el mismo seed", () => {
+    expect(runTournament(7)).toEqual(runTournament(7));
+  });
+});

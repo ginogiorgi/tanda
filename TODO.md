@@ -226,7 +226,10 @@
       el cableado de advance_tournament (6.4)
 - [ ] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase
 - [ ] 6.5 Marcadores en vivo en bracket (`score:live`)
-- [ ] 6.6 Tests Vitest del torneo (grupos, terceros, desempates, mapeo, bracket, campeón)
+- [x] 6.6 Tests Vitest del torneo (grupos, terceros, desempates, mapeo, bracket, campeón). 26
+      tests en tournament.test.ts: fixture/puntos (6.1), desempates+terceros (6.2), bracket
+      (6.3), + integral 6.6: torneo completo 48→12 grupos→32 clasificados→bracket 16→8→4→2→1→1
+      campeón, reproducible por seed. 78 tests totales verdes
 
 ## F7 · Banco de preguntas
 
