@@ -2,23 +2,21 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 4.6 — reloj de ronda con barrier por penal + posiciones en vivo en el tiempo
-   muerto + animación de duración fija (≤5s). Hoy cada humano poke-ea su propio penal a los 10s y el
-   match avanza enseguida; falta el RELOJ DE RONDA COMPARTIDO: todos los humanos de la jornada ven el
-   mismo deadline y, al resolverse un penal, hay un "tiempo muerto" (barrier) donde se muestran las
-   posiciones en vivo (grupos/bracket con `score:live` de 6.5) antes de abrir el siguiente penal —
-   esperando la 2ª chance si la hubo. 4.6b: offset de reloj cliente/servidor (la barra dibuja contra el
-   `deadline` server corregido por offset, ya hay helpers en lib/realtime/penal.ts). OJO: la
-   sincronización entre matches de una misma ronda es el núcleo (SPEC §1.3 reloj de ronda); evaluar si
-   el barrier vive en el server (abrir todos los penales idx N de la ronda al mismo tiempo) o se coordina
-   por broadcast. Decisión de diseño al arrancar — parar y pensarlo.
+>>> PRÓXIMA TAREA: F8 — UI/animaciones premium. El camino autoritativo del juego está COMPLETO y
+   verificado de punta a punta (un torneo real con humanos+bots corre solo: matchmaking → grupos con
+   reloj de ronda compartido → KO → campeón, + abandon + score:live). Lo que falta es la CARA: 3D del
+   penal (8.2), bracket (8.5), HUD (8.10), pantallas (resumen/campeón), y el modo invitado (8.1/8.1b,
+   corre lib/engine client-side sin red). Sugerencia de orden: 8.1/8.1b (menú + modo invitado: prueba
+   todo el motor sin tocar la DB, buen smoke test visual) → 8.2 (escena 3D del penal) → 8.5 (bracket
+   que consume `score:live` de 6.5 + poke `open_next_round` al terminar el tiempo muerto de 4.6) → 8.10
+   HUD → resto de F8. Las tareas realtime que quedan (4.6b offset, 4.9 animación) se cierran al construir
+   la pantalla de partido (necesitan la UI). OJO: la pantalla de partido real (que monta <PenalLive>)
+   todavía no existe — hoy <PenalLive> solo se usa en /dev/penal.
 
-DONE este tramo: 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º) + 5.4 (abandon) + 6.5
-   (score:live, marcadores en vivo al canal del torneo). Migraciones nuevas: 20260616220000 (play_round)
-   + 230000 (advance_knockout) + 240000 (abandon) + 250000 (score_live). Verificadas por E2E SQL real.
-
-Después de 4.6/4.6b: 4.9 animación GOL/ATAJADO; F8 (UI/animaciones premium, incl. 8.5 bracket que
-   consume score:live y 8.1/8.1b modo invitado).
+DONE este tramo (5 tareas): 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º) + 5.4 (abandon) +
+   6.5 (score:live) + 4.6 (reloj de ronda + barrier, round-driven). Migraciones nuevas: 20260616220000
+   (play_round) + 230000 (advance_knockout) + 240000 (abandon) + 250000 (score_live) + 260000
+   (round_clock). Todas verificadas por E2E SQL real (incl. torneo completo con 1 y 2 humanos).
 
 YA LISTO para 6.4: F7 (preguntas + asignación) y 5.3 (bot_intents) y 6.4(a) simulate_bot_match +
 engine_advance_match. Motor de torneo PURO (lib/engine/tournament.ts) testeado 48→campeón (F6).
@@ -202,9 +200,26 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       que no eligió = fallo seguro" vs "ausente = random"; eso necesita presence del match (aún
       no existe). NO abre el siguiente penal: el encadenado entre penales/matches lo orquesta el
       barrier (4.6)
-- [ ] 4.6 Reloj de ronda con barrier por penal (espera segunda chance) + posiciones en
-      vivo en el tiempo muerto + animación de duración fija (≤5s)
-- [ ] 4.6b Offset de reloj cliente/servidor (barra fiel al `deadline`, no al reloj local)
+- [x] 4.6 Reloj de ronda con barrier por penal (espera segunda chance) + posiciones en
+      vivo en el tiempo muerto + animación de duración fija (≤5s). SERVER (mig 20260616260000
+      round_clock): round-driven (decisión de Gino). Los penales de la ronda (mismo idx) de TODOS
+      los matches con humanos de la jornada/fase se abren JUNTOS en una transacción → comparten
+      `now()+10s` = reloj de ronda compartido (now() es constante por transacción). `open_round_penals`
+      (abre la ronda junta, reusa progress_match), `finalize_match` (resolve_penalty finaliza el match
+      sin abrir el próximo penal), `resolve_round` (barrier: al cerrar TODOS los penales de la ronda
+      —incl. 2ª chance— abre el tiempo muerto `tournaments.round_deadline=now()+5s`, o avanza si
+      terminaron todos), `open_next_round` (poke del cliente al terminar el tiempo muerto, serializado
+      por advisory lock + backstop en tick()). `open_round` simula bot-only + abre idx-1 junto.
+      E2E SQL: 2 humanos en grupos distintos → sus penales idx-1 tienen 1 solo deadline (compartido);
+      torneo completo (2 humanos + 46 bots) con barriers → campeón + 3º, 72 grupos + 32 KO, 0 sin
+      terminar. typecheck/lint verdes, 88 tests. PENDIENTE F8 (UI, no bloquea el server): el cliente
+      poke-ea `open_next_round` al terminar el tiempo muerto (hoy lo cubre tick() ≤10s) y muestra las
+      posiciones en vivo (score:live de 6.5) + la animación durante el tiempo muerto. Va con la pantalla
+      de partido/bracket (8.5/8.2). Reconexión durante el tiempo muerto: get_active_match devuelve
+      penal=null (correcto), retoma al abrir la próxima ronda.
+- [ ] 4.6b Offset de reloj cliente/servidor (barra fiel al `deadline`, no al reloj local).
+      Helpers ya en lib/realtime/penal.ts (`clockOffset`/`remainingMs`); falta enchufarlos en la
+      pantalla de partido real (F8) y aplicar el mismo criterio al tiempo muerto (`round_deadline`).
 - [x] 4.7 `tick()` por `pg_cron` (backstop de penales/rooms). `tick()` (SECURITY DEFINER,
       revoke a public/anon/authenticated) barre penales `open`/`second_chance` con
       `deadline<=now()` (límite 200/tick) y llama `resolve_penalty` por el camino backstop (uid
