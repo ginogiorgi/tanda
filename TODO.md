@@ -206,7 +206,11 @@
 
 ## F6 · Motor de torneo + tests
 
-- [ ] 6.1 `lib/engine/tournament.ts`: grupos, fixture, puntos (3/1/0, empate)
+- [x] 6.1 `lib/engine/tournament.ts`: fixture, puntos (3/1/0, empate). `roundRobinSchedule<T>`
+      (método del círculo: 4 equipos → 3 jornadas × 2 = 6 enfrentamientos, determinista) +
+      `tallyGroup<T>` (acumula played/won/drawn/lost/GF/GA/GD/points; 3/1/0; incluye equipos sin
+      jugar; NO ordena, eso es 6.2). 8 tests. La asignación a grupos (humanos 1/grupo) es de
+      start_tournament (5.2)
 - [ ] 6.2 Clasificación: 2 por grupo + 8 mejores terceros + desempates FIFA (+ sorteo seed)
 - [ ] 6.3 Mapeo determinista de terceros + bracket `round_of_32 → … → final` + `third_place`
 - [ ] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase
