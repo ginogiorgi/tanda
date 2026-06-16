@@ -211,7 +211,12 @@
       `tallyGroup<T>` (acumula played/won/drawn/lost/GF/GA/GD/points; 3/1/0; incluye equipos sin
       jugar; NO ordena, eso es 6.2). 8 tests. La asignación a grupos (humanos 1/grupo) es de
       start_tournament (5.2)
-- [ ] 6.2 Clasificación: 2 por grupo + 8 mejores terceros + desempates FIFA (+ sorteo seed)
+- [x] 6.2 Clasificación: 2 por grupo + 8 mejores terceros + desempates FIFA (+ sorteo seed).
+      `rankGroup(teams, results, seed)`: puntos→DG→GF→(entre empatados) h2h puntos→h2h DG→h2h
+      GF→sorteo determinista (mini-tabla h2h con solo los partidos entre los empatados).
+      `bestThirds(thirds, seed)`: rankea los 12 terceros por puntos→DG→GF→sorteo (sin h2h entre
+      grupos), devuelve 8 qualified + 4 eliminated. Sorteo = `mulberry32(seed ^ fnv(id))` (último
+      recurso, reproducible). 6 tests. (2 por grupo = los 2 primeros de rankGroup; lo arma 6.3)
 - [ ] 6.3 Mapeo determinista de terceros + bracket `round_of_32 → … → final` + `third_place`
 - [ ] 6.4 `simulate_bot_match` instantáneo + avance event-driven con gate por fase
 - [ ] 6.5 Marcadores en vivo en bracket (`score:live`)

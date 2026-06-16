@@ -7,6 +7,8 @@
  * 6.1: fixture round-robin de grupo + acumulación de puntos (victoria 3, empate 1, derrota 0).
  */
 
+import { makeRng } from "./rng";
+
 /** Resultado de un partido de grupo (goles = penales convertidos en la tanda). */
 export interface GroupMatchResult<T> {
   home: T;
@@ -107,4 +109,78 @@ export function tallyGroup<T>(teams: T[], results: GroupMatchResult<T>[]): Stand
     s.goalDiff = s.goalsFor - s.goalsAgainst;
   }
   return [...table.values()];
+}
+
+// ───────────────────────── 6.2: clasificación + desempates ─────────────────────────
+
+/** Hash string → uint32 (FNV-1a), para derivar el sorteo determinista por equipo. */
+function hashStr(s: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Sorteo determinista (último recurso, "drawing of lots" FIFA): clave [0,1) por equipo+seed. */
+function drawKey(id: string, seed: number): number {
+  return makeRng((seed ^ hashStr(id)) >>> 0)();
+}
+
+/** Comparador puntos → diferencia de gol → goles a favor (desc). 0 si empatan en los tres. */
+function compareOverall(a: Standing<string>, b: Standing<string>): number {
+  if (b.points !== a.points) return b.points - a.points;
+  if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
+  return b.goalsFor - a.goalsFor;
+}
+
+/**
+ * Ordena un grupo aplicando desempates FIFA (SPEC §4): puntos → dif. gol → goles a favor →
+ * (entre los empatados) h2h puntos → h2h dif. gol → h2h goles a favor → sorteo determinista por
+ * seed. El head-to-head se calcula con una mini-tabla de SOLO los partidos entre los empatados.
+ */
+export function rankGroup(
+  teams: string[],
+  results: GroupMatchResult<string>[],
+  seed: number,
+): Standing<string>[] {
+  const standings = tallyGroup(teams, results).sort(compareOverall);
+  const out: Standing<string>[] = [];
+
+  let i = 0;
+  while (i < standings.length) {
+    let j = i + 1;
+    while (j < standings.length && compareOverall(standings[i]!, standings[j]!) === 0) j++;
+    const tied = standings.slice(i, j);
+
+    if (tied.length > 1) {
+      const ids = tied.map((t) => t.team);
+      const h2h = results.filter((m) => ids.includes(m.home) && ids.includes(m.away));
+      const mini = new Map(tallyGroup(ids, h2h).map((s) => [s.team, s]));
+      tied.sort((a, b) => {
+        const c = compareOverall(mini.get(a.team)!, mini.get(b.team)!);
+        return c !== 0 ? c : drawKey(a.team, seed) - drawKey(b.team, seed);
+      });
+    }
+    out.push(...tied);
+    i = j;
+  }
+  return out;
+}
+
+/**
+ * Ranking de los 8 mejores terceros entre grupos (SPEC §4): puntos → dif. gol → goles a favor →
+ * sorteo determinista (no hay h2h entre grupos distintos). Recibe los 12 terceros (uno por
+ * grupo) y devuelve los 8 que clasifican + los 4 eliminados.
+ */
+export function bestThirds(
+  thirds: Standing<string>[],
+  seed: number,
+): { qualified: Standing<string>[]; eliminated: Standing<string>[] } {
+  const sorted = [...thirds].sort((a, b) => {
+    const c = compareOverall(a, b);
+    return c !== 0 ? c : drawKey(a.team, seed) - drawKey(b.team, seed);
+  });
+  return { qualified: sorted.slice(0, 8), eliminated: sorted.slice(8) };
 }

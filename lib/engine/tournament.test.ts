@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   roundRobinSchedule,
   tallyGroup,
+  rankGroup,
+  bestThirds,
   type GroupMatchResult,
+  type Standing,
 } from "./tournament";
 
 describe("roundRobinSchedule", () => {
@@ -84,5 +87,105 @@ describe("tallyGroup", () => {
     expect(() =>
       tallyGroup(teams, [{ home: "A", away: "Z", homeGoals: 1, awayGoals: 0 }]),
     ).toThrow();
+  });
+});
+
+describe("rankGroup (desempates FIFA)", () => {
+  const teams = ["A", "B", "C", "D"];
+
+  it("ordena por puntos cuando no hay empate", () => {
+    const results: GroupMatchResult<string>[] = [
+      { home: "A", away: "B", homeGoals: 1, awayGoals: 0 },
+      { home: "A", away: "C", homeGoals: 1, awayGoals: 0 },
+      { home: "A", away: "D", homeGoals: 1, awayGoals: 0 },
+      { home: "B", away: "C", homeGoals: 1, awayGoals: 0 },
+      { home: "B", away: "D", homeGoals: 1, awayGoals: 0 },
+      { home: "C", away: "D", homeGoals: 1, awayGoals: 0 },
+    ];
+    expect(rankGroup(teams, results, 1).map((s) => s.team)).toEqual([
+      "A",
+      "B",
+      "C",
+      "D",
+    ]);
+  });
+
+  it("empate en puntos se rompe por diferencia de gol y luego goles a favor", () => {
+    // A y B con 3 pts; A goleó (DG mayor) → A primero.
+    const results: GroupMatchResult<string>[] = [
+      { home: "A", away: "C", homeGoals: 5, awayGoals: 0 },
+      { home: "B", away: "D", homeGoals: 1, awayGoals: 0 },
+      { home: "A", away: "B", homeGoals: 0, awayGoals: 0 },
+      { home: "C", away: "D", homeGoals: 0, awayGoals: 0 },
+    ];
+    const order = rankGroup(teams, results, 1).map((s) => s.team);
+    expect(order[0]).toBe("A");
+    expect(order[1]).toBe("B");
+  });
+
+  it("empatados en todo lo global → manda el head-to-head", () => {
+    // A y B empatan pts/DG/GF globales, pero A le ganó a B → A primero.
+    const results: GroupMatchResult<string>[] = [
+      { home: "A", away: "B", homeGoals: 1, awayGoals: 0 }, // h2h: A gana
+      { home: "A", away: "C", homeGoals: 0, awayGoals: 1 },
+      { home: "B", away: "D", homeGoals: 1, awayGoals: 0 },
+      { home: "A", away: "D", homeGoals: 0, awayGoals: 1 },
+      { home: "B", away: "C", homeGoals: 0, awayGoals: 1 },
+      { home: "C", away: "D", homeGoals: 0, awayGoals: 0 },
+    ];
+    const order = rankGroup(teams, results, 1).map((s) => s.team);
+    expect(order.indexOf("A")).toBeLessThan(order.indexOf("B"));
+  });
+
+  it("empate total → sorteo determinista (mismo seed, mismo orden; estable)", () => {
+    const results: GroupMatchResult<string>[] = []; // todos 0 pts, todo igual
+    const o1 = rankGroup(teams, results, 42).map((s) => s.team);
+    const o2 = rankGroup(teams, results, 42).map((s) => s.team);
+    expect(o1).toEqual(o2);
+    expect([...o1].sort()).toEqual(["A", "B", "C", "D"]); // es una permutación
+  });
+});
+
+describe("bestThirds", () => {
+  function third(team: string, points: number, gd: number, gf: number): Standing<string> {
+    return {
+      team,
+      played: 3,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      goalsFor: gf,
+      goalsAgainst: gf - gd,
+      goalDiff: gd,
+      points,
+    };
+  }
+
+  it("toma los 8 mejores de 12 por puntos→DG→GF", () => {
+    const thirds = Array.from({ length: 12 }, (_, i) =>
+      third(`T${i}`, i, 0, 0),
+    ); // T11 mejor … T0 peor
+    const { qualified, eliminated } = bestThirds(thirds, 1);
+    expect(qualified).toHaveLength(8);
+    expect(eliminated).toHaveLength(4);
+    expect(qualified.map((s) => s.team)).toEqual([
+      "T11",
+      "T10",
+      "T9",
+      "T8",
+      "T7",
+      "T6",
+      "T5",
+      "T4",
+    ]);
+    expect(eliminated.map((s) => s.team).sort()).toEqual(["T0", "T1", "T2", "T3"]);
+  });
+
+  it("desempata por sorteo determinista cuando son idénticos", () => {
+    const thirds = Array.from({ length: 12 }, (_, i) => third(`T${i}`, 3, 0, 0));
+    const q1 = bestThirds(thirds, 7).qualified.map((s) => s.team);
+    const q2 = bestThirds(thirds, 7).qualified.map((s) => s.team);
+    expect(q1).toEqual(q2);
+    expect(q1).toHaveLength(8);
   });
 });
