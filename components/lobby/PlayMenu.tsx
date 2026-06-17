@@ -3,17 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
 
 /** Las RPC de matchmaking devuelven `TABLE(room_id, tournament_id, code)`. */
 type RoomRef = { room_id: string; tournament_id: string; code: string };
-
-const JOIN_MESSAGES: Record<string, string> = {
-  room_not_found: "No existe una sala con ese código.",
-  room_cancelled: "Esa sala se canceló.",
-  room_closed: "Esa sala ya cerró: pasaron los 2 minutos.",
-  already_started: "Esa partida ya arrancó.",
-  room_full: "Esa sala está llena.",
-};
 
 export function PlayMenu() {
   const router = useRouter();
@@ -31,15 +24,13 @@ export function PlayMenu() {
     const { data, error: rpcError } = await rpc();
     if (rpcError) {
       setBusy(null);
-      setError(
-        JOIN_MESSAGES[rpcError.message] ?? "No se pudo. Probá de nuevo en un momento.",
-      );
+      setError(roomErrorMessage(rpcError.message));
       return;
     }
     const ref = (data as RoomRef[])?.[0];
     if (!ref) {
       setBusy(null);
-      setError("No se pudo. Probá de nuevo en un momento.");
+      setError(GENERIC_RETRY_MESSAGE);
       return;
     }
     router.push(`/sala/${ref.code}`);

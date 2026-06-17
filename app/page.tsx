@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { GuestButton } from "@/components/lobby/GuestButton";
+import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -13,22 +14,13 @@ const ACCENTS = [
   "bg-accent-teal",
 ] as const;
 
-const AVISOS: Record<string, string> = {
-  room_not_found: "No existe una sala con ese código.",
-  room_cancelled: "Esa sala se canceló.",
-  room_closed: "Esa sala ya cerró: pasaron los 2 minutos.",
-  already_started: "Esa partida ya arrancó.",
-  room_full: "Esa sala está llena.",
-  no_match: "No tenés un partido en curso.",
-};
-
 export default async function Home({
   searchParams,
 }: {
   searchParams: Promise<{ aviso?: string }>;
 }) {
   const { aviso } = await searchParams;
-  const avisoMsg = aviso ? AVISOS[aviso] : null;
+  const avisoMsg = aviso ? ROOM_ERROR_MESSAGES[aviso] : null;
 
   const supabase = await createClient();
   const {

@@ -1,18 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Lobby } from "@/components/lobby/Lobby";
+import { isKnownRoomError } from "@/lib/errors";
 
-/** Errores que puede lanzar `join_room` → motivo para el aviso del home. */
-const JOIN_ERRORS = new Set([
-  "room_not_found",
-  "room_full",
-  "already_started",
-  "room_cancelled",
-  "room_closed",
-]);
-
+/** `join_room` devuelve un código en inglés → motivo para el aviso del home (genérico si no se conoce). */
 function reasonFromError(message: string): string {
-  return JOIN_ERRORS.has(message) ? message : "room_not_found";
+  return isKnownRoomError(message) ? message : "room_not_found";
 }
 
 export default async function SalaPage({

@@ -70,6 +70,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
   const [abandoning, setAbandoning] = useState(false);
+  const [abandonError, setAbandonError] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const pokedRef = useRef<string | null>(null);
   const vibratedRef = useRef<string | null>(null);
@@ -217,7 +218,16 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       return;
     }
     setAbandoning(true);
-    await supabase.rpc("abandon", { p_match: matchId });
+    setAbandonError(false);
+    const { error } = await supabase.rpc("abandon", { p_match: matchId });
+    if (error) {
+      // No navegamos: si abandon falla, el server te sigue tratando como humano (responderías
+      // random hasta reconectar). Mejor quedarse en el penal y reintentar que creer que abandonaste.
+      setAbandoning(false);
+      setConfirmingAbandon(false);
+      setAbandonError(true);
+      return;
+    }
     router.push("/");
   }
 
@@ -370,6 +380,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             ? "¿Seguro? Tocá de nuevo para abandonar"
             : "Abandonar"}
       </button>
+      {abandonError && (
+        <p className="text-center text-xs text-danger">
+          No se pudo abandonar. Probá de nuevo.
+        </p>
+      )}
       </div>
     </>
   );

@@ -2,7 +2,9 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — 9.1/9.2/9.3 HECHOS. Arrancar por 9.4
+>>> PRÓXIMA TAREA: F9 (pulido) — 9.1/9.2/9.3/9.4 HECHOS. Arrancar por 9.5 (rate-limit en quick_play/
+   select_option/abandon + resuscripción Realtime tras caída; el disclaimer "no afiliado a FIFA" YA
+   está en el home). Después 9.6 (verificación e2e §12 + DEPLOY final).
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -562,7 +564,13 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       mientras corre la animación → no quema 60fps de GPU con la escena estática (que es casi todo el
       tiempo). R3F ya estaba code-splitteado (PenalSceneViewer ssr:false). typecheck/lint/build verdes,
       100 unit.
-- [ ] 9.4 Manejo de errores robusto
+- [x] 9.4 Manejo de errores robusto. Las auth forms (login/register/forgot/reset) + GuestButton ya
+      tenían loading + errores mapeados (patrón sólido). Hecho: `lib/errors.ts` centraliza el mapa de
+      códigos de matchmaking (room_not_found/room_full/… + no_match) que vivía DUPLICADO en PlayMenu,
+      el home (avisos) y la page de sala → una fuente, sin drift (`roomErrorMessage`/`isKnownRoomError`/
+      `GENERIC_RETRY_MESSAGE`). Hardening: `<PenalLive>` ya NO navega al home si `abandon` falla (el
+      server te seguiría tratando como humano → responderías random hasta reconectar) → se queda en el
+      penal y muestra "No se pudo abandonar. Probá de nuevo." typecheck/lint/build verdes, 100 unit.
 - [ ] 9.5 Rate-limit (`quick_play`/`select_option`/`abandon`) + resuscripción Realtime
       automática tras caída + disclaimer "no afiliado a FIFA"
 - [ ] 9.6 Verificación end-to-end §12 + deploy final
