@@ -2,7 +2,9 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> ESTADO: F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
+>>> ESTADO: EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
+   agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
+>>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
    6 migraciones del tramo aplicadas a prod por MCP (prod==local), advisors corridos (perf 0; security
    solo lo esperado por diseño), dev harness borrado, OPS de Vercel/Resend/anon confirmado por Gino.
    >>> ÚNICO PENDIENTE DEL PROYECTO: el walkthrough visual de Gino en prod (§12.1-3: avatar, escena de
@@ -606,3 +608,48 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       Dev harness BORRADO (mig 20260617150000_drop_dev_harness: drop de la función, aplicada a prod por
       MCP; ruta /dev/penal + PenalDevHarness eliminados; sacado del allowlist de rls_audit). ⇒ TODO el
       código y el deploy de DB están HECHOS. ÚNICO pendiente: el walkthrough visual de Gino (§12.1-3).
+
+## F10 · Mejoras post-walkthrough (Gino, 2026-06-17)
+
+Batch de 13 mejoras tras probar prod. Orden de trabajo agrupado por capa (motor/datos primero,
+porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar, commit.
+
+- [ ] 10.1 Naciones = SOLO las 48 clasificadas al Mundial 2026 (no top-48 ranking FIFA). Hoy el seed
+      (5.0) usa el top 48 del ranking → aparecen no-clasificados (Italia). Reseed con la lista real
+      (web-search de la lista oficial de clasificados). Migración que reemplaza el seed de `nations`
+      (mantener `difficulty_tier` por banda de ranking entre los clasificados, kits, flag ISO-2).
+      Aplicar a prod por MCP. OJO: nada de datos reales aún → reseed seguro.
+- [ ] 10.2 Transición penal→penal DENTRO de un match: que no muestre el grupo ni trabe (hoy flashea el
+      bracket en el hueco y la animación tarda 1s de más). El grupo se muestra SOLO entre rondas (10.3).
+      `<TournamentLive>`: distinguir hueco intra-match (seguir en escena de penal, sin bracket) de
+      tiempo muerto entre rondas (round_deadline).
+- [ ] 10.3 Entre partido y partido (tiempo muerto): mostrar 3s el estado del grupo actual y después ir
+      al próximo. Hoy no muestra nada. Atar al `round_deadline` del reloj de ronda (tiempo muerto), que
+      pasa a ~3s, mostrando la tabla del grupo.
+- [ ] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
+      Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
+      + tests. Afecta cuántos penales se crean por match.
+- [ ] 10.5 Bots responden muy rápido: subir el delay MÍNIMO +2s en cada tier. `lib/engine/bot.ts`
+      TIER_MODEL + port SQL `engine_bot_intent` + paridad + tests.
+- [ ] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA (hoy toma la primera/opción 0).
+      Revisar `resolve_penalty` (camino del humano sin answer) → random seeded, no índice 0.
+- [ ] 10.7 Cuando empatan pero gana el más rápido, decir por qué perdiste ("<país> respondió más
+      rápido"). El payload de resultado debe llevar el motivo + los tiempos; el cliente lo muestra.
+- [ ] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
+      mete/ataja el RIVAL. Hoy es goal/save fijo sin perspectiva. Usar el rol del jugador (kicker/keeper)
+      + a quién favorece el resultado.
+- [ ] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
+      restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido"); aplicarlo
+      también a grupos con la nueva longitud (GD = penales convertidos al cortar). Va junto con 10.4.
+- [ ] 10.10 Historial roto: `getTournamentHistory` es un STUB (devuelve []) desde 2.7 → el perfil nunca
+      muestra nada. Implementarlo de verdad (query a participants/tournaments del usuario: nación,
+      placement/eliminated_phase, resultado). Perdí 1 + abandoné 1 y no aparecen.
+- [ ] 10.11 Respuesta NO cambiable + congelar el tiempo al elegir + mostrar el segundo exacto. CAMBIO DE
+      REGLA (revierte el gotcha "respuesta cambiable hasta el final"): al primer tap queda fija, el
+      timer del cliente se congela en ese instante. Si perdés por diferencia de tiempo, decir por cuánto
+      (mostrar ambos `selected_at`/delta). El penal igual resuelve a los 10s server. Actualizar SPEC.
+- [ ] 10.12 Tanteador estilo transmisión: círculos verde (gol) / rojo (erró) por penal, como tablero
+      detrás del arco un poco elevado, en vez del texto centrado actual ("Penal N · score"). Reusar el
+      concepto de PenalDots (RunSummary) para el HUD en vivo.
+- [ ] 10.13 Segunda chance (ambos erraron, reaparecen las 2 opciones): mensaje arriba explicando POR QUÉ
+      se volvieron a mostrar ("Erraron los dos: segunda chance"). Hoy solo dice "2ª chance".
