@@ -14,6 +14,7 @@ import {
 } from "@/lib/realtime/penal";
 import { resolveSceneRoles } from "@/lib/penal/scene";
 import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
+import { PenalHud } from "@/components/penal/PenalHud";
 
 type PenalLiveProps = {
   matchId: string;
@@ -35,6 +36,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
   const [scene, setScene] = useState<MatchScene | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
+  const [score, setScore] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
   const [remaining, setRemaining] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
@@ -82,7 +84,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         .on("broadcast", { event: "penal:start" }, onNewPhase)
         .on("broadcast", { event: "penal:second_chance" }, onNewPhase)
         .on("broadcast", { event: "penal:result" }, ({ payload }) => {
-          setResult(payload as PenalResultPayload);
+          const r = payload as PenalResultPayload;
+          setResult(r);
+          setScore({ home: r.home_score, away: r.away_score });
         })
         .subscribe();
 
@@ -97,10 +101,13 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       // server y mi selección, sin esperar al próximo Broadcast (SPEC §5.2).
       const { data } = await supabase.rpc("get_active_match");
       if (!active) return;
-      const penalNow = (data as ActiveMatch | null)?.penal;
-      if (penalNow && penalNow.match_id === matchId) {
-        setPenal(penalNow);
-        setSelected(penalNow.my_option ?? null);
+      const am = data as ActiveMatch | null;
+      if (am && am.match_id === matchId) {
+        setScore({ home: am.home_score, away: am.away_score });
+        if (am.penal) {
+          setPenal(am.penal);
+          setSelected(am.penal.my_option ?? null);
+        }
       }
     }
 
@@ -206,15 +213,31 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const seconds = Math.ceil(remaining / 1000);
   const locked = remaining <= 0;
   const isSecondChance = penal.phase === "second_chance";
+  const myId = scene?.my_participant_id ?? null;
+  const role: "kick" | "keep" | null =
+    myId == null
+      ? null
+      : myId === penal.kicker_participant_id
+        ? "kick"
+        : myId === penal.keeper_participant_id
+          ? "keep"
+          : null;
 
   return (
     <>
       {sceneBg(false)}
       <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
+      <PenalHud
+        home={scene?.home ?? null}
+        away={scene?.away ?? null}
+        homeScore={score.home}
+        awayScore={score.away}
+        idx={penal.idx}
+        role={role}
+      />
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium uppercase tracking-[0.2em] text-fg-subtle">
-          Penal {penal.idx}
-          {isSecondChance && " · 2ª chance"}
+          {isSecondChance ? "2ª chance" : "Elegí tu respuesta"}
         </span>
         <span className="font-mono text-2xl font-bold tabular-nums text-gold">
           {seconds}

@@ -448,7 +448,12 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
 - [ ] 8.7 Audio (silbato/multitud/gol/atajada + mute, desbloqueo por gesto)
 - [ ] 8.8 Responsive total (mobile + desktop) + transiciones entre pantallas
 - [ ] 8.9 Compartir sala con Web Share API (fallback copiar código)
-- [ ] 8.10 HUD de tanda (marcador, "Penal N de 5", pateás/atajás, opción resaltada)
+- [x] 8.10 HUD de tanda. `components/penal/PenalHud.tsx` montado sobre la tarjeta de `<PenalLive>`:
+      marcador en vivo (nación + color de kit + goles), "Penal N de 5" (`Math.ceil(idx/2)`; >10 =
+      "Muerte súbita") y badge PATEÁS/ATAJÁS (compara my_participant_id de get_match_scene con
+      kicker/keeper del penal). El marcador se trackea en PenalLive desde get_active_match (inicial) +
+      penal:result (home_score/away_score). El resaltado de la opción elegida ya estaba en PenalLive
+      (4.4). typecheck/lint/build verdes.
 - [ ] 8.11 Revelar correcta + `explanation` al resolver; "sos vos" en bracket/grupos
 - [ ] 8.12 Pantalla campeón (trofeo/confeti) + teclado desktop (1/2/3) + prefs persistentes
 - [ ] 8.13 Links de sala inválidos: mensaje claro + fallback a "Jugar"
