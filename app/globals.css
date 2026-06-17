@@ -95,6 +95,21 @@ body {
   animation: tanda-confetti linear infinite;
 }
 
+/* Transición de entrada entre pantallas (8.8). La neutraliza prefers-reduced-motion. */
+@keyframes tanda-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in {
+  animation: tanda-fade-in 0.25s ease-out both;
+}
+
 /* Accesibilidad: respetar prefers-reduced-motion globalmente (SPEC §9/F9) */
 @media (prefers-reduced-motion: reduce) {
   *,

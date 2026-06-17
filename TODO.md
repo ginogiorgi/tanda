@@ -466,7 +466,11 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       el penal, repique+multitud en gol, golpe en atajada. unlockAudio() en el primer gesto (onSelect)
       por la política del navegador. Mute persistente (lib/prefs) con botón 🔊/🔇 en la tarjeta de
       PenalLive. typecheck/lint/build verdes.
-- [ ] 8.8 Responsive total (mobile + desktop) + transiciones entre pantallas
+- [x] 8.8 Responsive total + transiciones entre pantallas. Transición `fade-in` (keyframe
+      tanda-fade-in en globals.css, neutralizada por reduced-motion) aplicada a las vistas que se
+      alternan: tarjeta de penal, resultado, bracket y resumen. Layout ya mobile-first (max-w-md
+      centrado, escena 3D full-bleed, bracket scrolleable). typecheck/lint/build verdes. (Ajustes
+      finos de breakpoints se pueden pulir a ojo en F9/9.3.)
 - [x] 8.9 Compartir sala con Web Share API (fallback copiar código). Botón "Compartir" en el Lobby:
       `navigator.share({title,text,url})` con la URL /sala/{code}; si no hay Web Share o se cancela,
       cae a copiar el código (onCopy). typecheck/lint/build verdes.

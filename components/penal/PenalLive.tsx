@@ -250,7 +250,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return (
       <>
         {sceneBg(true, { reason: result.reason, variant: result.variant })}
-        <div className="relative z-10 mt-auto flex w-full max-w-md flex-col items-center gap-3 pb-4 text-center">
+        <div className="fade-in relative z-10 mt-auto flex w-full max-w-md flex-col items-center gap-3 pb-4 text-center">
           <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
             Penal {result.idx} · {result.home_score}–{result.away_score}
           </span>
@@ -289,7 +289,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   return (
     <>
       {sceneBg(false)}
-      <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
+      <div className="fade-in relative z-10 flex w-full max-w-md flex-col gap-6">
       <PenalHud
         home={scene?.home ?? null}
         away={scene?.away ?? null}

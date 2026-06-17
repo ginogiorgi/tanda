@@ -172,7 +172,7 @@ export function Bracket({ view }: { view: BracketView }) {
     .filter((p) => p.matches.length > 0);
 
   return (
-    <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-5">
+    <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-5">
       {view.champion ? (
         <div className="flex flex-col items-center gap-1 text-center">
           <span className="text-3xl">🏆</span>

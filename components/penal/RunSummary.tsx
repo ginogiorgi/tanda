@@ -139,7 +139,7 @@ export function RunSummary({
   }
 
   return (
-    <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
+    <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
       {isChampion && <Confetti />}
       <div className="flex flex-col items-center gap-2">
         {isChampion && <span className="text-6xl">🏆</span>}
