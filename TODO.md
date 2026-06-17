@@ -462,7 +462,10 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       + "Jugar de nuevo" (quick_play→/sala/code) / "Inicio". Si es invitado, CTA "Creá una cuenta"
       (cierre del pendiente de 8.1). Campeón muestra versión base (trofeo/confeti dedicado = 8.12).
       typecheck/lint/build verdes, 100 unit + 34 db (get_match_penals: miembro vs ajeno).
-- [ ] 8.7 Audio (silbato/multitud/gol/atajada + mute, desbloqueo por gesto)
+- [x] 8.7 Audio. `lib/audio.ts` SINTETIZADO con Web Audio API (sin assets externos): silbato al abrir
+      el penal, repique+multitud en gol, golpe en atajada. unlockAudio() en el primer gesto (onSelect)
+      por la política del navegador. Mute persistente (lib/prefs) con botón 🔊/🔇 en la tarjeta de
+      PenalLive. typecheck/lint/build verdes.
 - [ ] 8.8 Responsive total (mobile + desktop) + transiciones entre pantallas
 - [ ] 8.9 Compartir sala con Web Share API (fallback copiar código)
 - [x] 8.10 HUD de tanda. `components/penal/PenalHud.tsx` montado sobre la tarjeta de `<PenalLive>`:

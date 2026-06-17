@@ -17,6 +17,14 @@ import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 import type { PenalAnimation } from "@/components/penal/PenalScene";
 import { PenalHud } from "@/components/penal/PenalHud";
 import { TimeBar } from "@/components/penal/TimeBar";
+import {
+  playGoal,
+  playSave,
+  playWhistle,
+  setMuted as setAudioMuted,
+  unlockAudio,
+} from "@/lib/audio";
+import { loadPrefs, savePrefs } from "@/lib/prefs";
 
 type PenalLiveProps = {
   matchId: string;
@@ -39,6 +47,25 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [scene, setScene] = useState<MatchScene | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
   const [score, setScore] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
+  const [muted, setMuted] = useState(false);
+
+  // Mute persistente (8.7/8.12): cargar la preferencia al montar. Estado inicial false (evita
+  // mismatch de hidratación, localStorage es client-only); el effect lo corrige tras montar.
+  useEffect(() => {
+    const m = loadPrefs().muted;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMuted(m);
+    setAudioMuted(m);
+  }, []);
+
+  function toggleMute() {
+    setMuted((m) => {
+      const next = !m;
+      setAudioMuted(next);
+      savePrefs({ muted: next });
+      return next;
+    });
+  }
   const [remaining, setRemaining] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
@@ -69,6 +96,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
 
       const onNewPhase = ({ payload }: { payload: unknown }) => {
         const next = payload as PenalStartPayload;
+        if (next.phase !== "second_chance") playWhistle(); // silbato al abrir el penal (8.7)
         // `penal:second_chance` no trae pateador/arquero (mismo penalty_id que el `penal:start`
         // previo): los arrastramos del penal en curso para no perder la colocación de avatares.
         setPenal((prev) =>
@@ -91,6 +119,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           const r = payload as PenalResultPayload;
           setResult(r);
           setScore({ home: r.home_score, away: r.away_score });
+          if (r.scored) playGoal();
+          else playSave();
         })
         .subscribe();
 
@@ -156,6 +186,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   // registra la ÚLTIMA selección con su `selected_at` (SPEC §1.3); cambiable hasta el deadline.
   async function onSelect(option: number) {
     if (!penal || remainingRef.current <= 0) return;
+    unlockAudio(); // primer gesto del usuario → habilita el audio
     setSelected(option); // resaltado optimista
     const { error } = await supabase.rpc("select_option", {
       p_penalty: penal.penalty_id,
@@ -271,9 +302,17 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         <span className="font-medium uppercase tracking-[0.2em] text-fg-subtle">
           {isSecondChance ? "2ª chance" : "Elegí tu respuesta"}
         </span>
-        <span className="font-mono text-2xl font-bold tabular-nums text-gold">
-          {seconds}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+            className="text-fg-subtle transition-colors hover:text-fg-muted"
+          >
+            {muted ? "🔇" : "🔊"}
+          </button>
+          <span className="font-mono text-2xl font-bold tabular-nums text-gold">{seconds}</span>
+        </div>
       </div>
       <TimeBar fraction={remaining / totalMs} />
 
