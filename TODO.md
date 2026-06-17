@@ -614,7 +614,7 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
 Batch de 13 mejoras tras probar prod. Orden de trabajo agrupado por capa (motor/datos primero,
 porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar, commit.
 
-- [ ] 10.1 Naciones = SOLO las 48 clasificadas al Mundial 2026 (no top-48 ranking FIFA). Hoy el seed
+- [~] 10.1 (código hecho, falta aplicar a prod) Naciones = SOLO las 48 clasificadas al Mundial 2026 (no top-48 ranking FIFA). Hoy el seed
       (5.0) usa el top 48 del ranking → aparecen no-clasificados (Italia). Reseed con la lista real
       (web-search de la lista oficial de clasificados). Migración que reemplaza el seed de `nations`
       (mantener `difficulty_tier` por banda de ranking entre los clasificados, kits, flag ISO-2).
@@ -626,7 +626,7 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [ ] 10.3 Entre partido y partido (tiempo muerto): mostrar 3s el estado del grupo actual y después ir
       al próximo. Hoy no muestra nada. Atar al `round_deadline` del reloj de ronda (tiempo muerto), que
       pasa a ~3s, mostrando la tabla del grupo.
-- [ ] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
+- [x] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
       Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
       + tests. Afecta cuántos penales se crean por match.
 - [ ] 10.5 Bots responden muy rápido: subir el delay MÍNIMO +2s en cada tier. `lib/engine/bot.ts`
@@ -638,7 +638,7 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [ ] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
       mete/ataja el RIVAL. Hoy es goal/save fijo sin perspectiva. Usar el rol del jugador (kicker/keeper)
       + a quién favorece el resultado.
-- [ ] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
+- [x] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
       restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido"); aplicarlo
       también a grupos con la nueva longitud (GD = penales convertidos al cortar). Va junto con 10.4.
 - [ ] 10.10 Historial roto: `getTournamentHistory` es un STUB (devuelve []) desde 2.7 → el perfil nunca

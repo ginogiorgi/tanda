@@ -4,10 +4,12 @@
  *
  *   | tier   | banda ranking | % acierto | velocidad |
  *   |--------|---------------|-----------|-----------|
- *   | elite  | top 10        | 80%       | 2–5 s     |
- *   | high   | 11–20         | 70%       | 2–6 s     |
- *   | medium | 21–30         | 60%       | 2–7 s     |
- *   | low    | resto         | 50%       | 2–8 s     |
+ *   | elite  | top 10        | 80%       | 4–7 s     |
+ *   | high   | 11–20         | 70%       | 4–8 s     |
+ *   | medium | 21–30         | 60%       | 4–9 s     |
+ *   | low    | resto         | 50%       | 4–10 s    |
+ *
+ * (F10 10.5: +2s al mínimo Y al máximo de cada tier — los bots respondían muy rápido.)
  *
  * Devuelve la "intención" de un bot para un penal: si va a acertar y a los cuántos ms responde.
  * La aleatoriedad entra por `seed` (reproducible/testeable). Se usa en el modo invitado
@@ -20,15 +22,15 @@ import { makeRng } from "./rng";
 /** Tier de dificultad (enum `difficulty_tier` de la DB, SPEC §2.1). */
 export type DifficultyTier = "elite" | "high" | "medium" | "low";
 
-/** Parámetros del modelo por tier (§7.2). `minDelayMs` es 2s para todos. */
+/** Parámetros del modelo por tier (§7.2). Ventana 4s..(7/8/9/10)s (F10 10.5: +2s a min y max). */
 export const TIER_MODEL: Record<
   DifficultyTier,
   { accuracy: number; minDelayMs: number; maxDelayMs: number }
 > = {
-  elite: { accuracy: 0.8, minDelayMs: 2000, maxDelayMs: 5000 },
-  high: { accuracy: 0.7, minDelayMs: 2000, maxDelayMs: 6000 },
-  medium: { accuracy: 0.6, minDelayMs: 2000, maxDelayMs: 7000 },
-  low: { accuracy: 0.5, minDelayMs: 2000, maxDelayMs: 8000 },
+  elite: { accuracy: 0.8, minDelayMs: 4000, maxDelayMs: 7000 },
+  high: { accuracy: 0.7, minDelayMs: 4000, maxDelayMs: 8000 },
+  medium: { accuracy: 0.6, minDelayMs: 4000, maxDelayMs: 9000 },
+  low: { accuracy: 0.5, minDelayMs: 4000, maxDelayMs: 10000 },
 };
 
 /** Intención de un bot para una fase del penal. */
