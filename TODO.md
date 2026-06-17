@@ -2,18 +2,17 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> ESTADO (handoff sesión 2026-06-17): EN F10 (13 mejoras, lista abajo). HECHO y verificado en LOCAL
-   (typecheck/lint/build + 47 db + 101 unit verdes): 10.4 (grupos 3 tandas/6 penales, elim 5/10),
-   10.5 (delay bots +2s min y max → 4..7/8/9/10s), 10.9 (corte anticipado en ambas fases). 10.1 (reseed
-   48 clasificadas) con CÓDIGO hecho. 10.6: el server YA es aleatorio (verificado) → se cierra visible
-   en 10.11. FALTAN: 10.2, 10.3, 10.7, 10.8, 10.10, 10.11, 10.12, 10.13 (cluster de respuesta/resultado
-   10.6/10.7/10.11/10.13 conviene hacerlo junto: tocan el payload de resolve_penalty + la pantalla).
-   >>> PENDIENTE PROD (al terminar F10, en UN lote, con OK de Gino): aplicar por MCP las migraciones
-   nuevas 20260617160000_seed_nations_qualified (DESTRUCTIVA: truncate rooms cascade + delete nations →
-   el auto-classifier la bloqueó, necesita OK explícito), 170000_match_length_by_phase, 180000_bot_delay_floor,
-   + las que sumen 10.7/10.11/etc. Los commits están LOCALES (sin pushear); pushear `main` deploya el
-   front por Vercel, pero las migraciones NO se auto-aplican (van por MCP).
-   >>> OJO 10.1: el reseed reemplaza naciones; cuando se aplique a prod borra los torneos de prueba.
+>>> ESTADO (handoff sesión 2026-06-17, cont.): EN F10. PASO 0 HECHO: las 3 migraciones pendientes
+   APLICADAS A PROD por MCP (160000_seed_nations_qualified [destructiva, OK de Gino], 170000_match_length_by_phase,
+   180000_bot_delay_floor); advisors corridos (performance 0; security solo lo esperado por diseño).
+   ⇒ 10.1, 10.4, 10.5, 10.9 cerradas (código + prod). 10.6: el server YA es aleatorio (verificado) → se
+   cierra VISIBLE en 10.11. FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
+   PASO 1 cluster payload+pantalla (10.7+10.11+10.13+10.6 visible: nueva mig resolve_penalty con
+   selected_at/participant ids/won_by_speed + reason second_chance + select_option first-tap-gana; cliente
+   congela timer/no cambiable/muestra segundo+delta+motivo; SPEC/CLAUDE gotcha). PASO 2 transiciones
+   (10.2+10.3). PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5 historial
+   real (10.10). Las migraciones NUEVAS de pasos 1/5 se aplican a prod al cerrar F10, en lote, con OK de
+   Gino. Commits LOCALES (sin pushear); pushear `main` deploya el front por Vercel.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
@@ -626,7 +625,7 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
 Batch de 13 mejoras tras probar prod. Orden de trabajo agrupado por capa (motor/datos primero,
 porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar, commit.
 
-- [~] 10.1 (código hecho, falta aplicar a prod) Naciones = SOLO las 48 clasificadas al Mundial 2026 (no top-48 ranking FIFA). Hoy el seed
+- [x] 10.1 Naciones = SOLO las 48 clasificadas al Mundial 2026 (no top-48 ranking FIFA). APLICADA A PROD (mig 160000_seed_nations_qualified). Hoy el seed
       (5.0) usa el top 48 del ranking → aparecen no-clasificados (Italia). Reseed con la lista real
       (web-search de la lista oficial de clasificados). Migración que reemplaza el seed de `nations`
       (mantener `difficulty_tier` por banda de ranking entre los clasificados, kits, flag ISO-2).
@@ -640,10 +639,10 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       pasa a ~3s, mostrando la tabla del grupo.
 - [x] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
       Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
-      + tests. Afecta cuántos penales se crean por match.
+      + tests. Afecta cuántos penales se crean por match. APLICADA A PROD (mig 170000_match_length_by_phase).
 - [x] 10.5 Bots responden muy rápido: +2s al mínimo Y al máximo de cada tier (ventana 4..7/8/9/10s).
       `lib/engine/bot.ts` TIER_MODEL + port SQL `engine_bot_intent` (mig 20260617180000) + paridad. (Gino
-      pidió mid-stream sumar también al máximo.) PENDIENTE prod.
+      pidió mid-stream sumar también al máximo.) APLICADA A PROD (mig 180000_bot_delay_floor).
 - [~] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA. HALLAZGO: el server YA lo hace
       (`resolve_penalty` inserta `engine_rand_int(seed#hash(part),3)`, is_random=true; distribución
       verificada 74/58/68 sobre 200 penales; sin default a 0 en el cliente). Lo que ve Gino ("toma la
