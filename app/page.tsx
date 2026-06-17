@@ -83,19 +83,27 @@ export default async function Home({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 sm:flex-row">
+        <div className="flex flex-col items-center gap-5">
           <Link
-            href="/register"
-            className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+            href="/invitado"
+            className="rounded-lg bg-gold px-6 py-4 text-lg font-bold text-bg transition-opacity hover:opacity-90"
           >
-            Crear cuenta
+            Jugar como invitado
           </Link>
-          <Link
-            href="/login"
-            className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
-          >
-            Entrar
-          </Link>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <Link
+              href="/register"
+              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+            >
+              Crear cuenta
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+            >
+              Entrar
+            </Link>
+          </div>
         </div>
       )}
     </main>
