@@ -33,45 +33,15 @@
    Guardrail verificado (romper una constante de paridad en una migración → suite roja). DIFERIDO: tipar
    el cliente con `supabase gen types` (Database generic) queda como tarea aparte (9.x).
 
->>> DESPUÉS (F8 — UI/animaciones premium): el camino autoritativo está COMPLETO y verificado a mano
-   (matchmaking → grupos con reloj de ronda → KO → campeón, + abandon + score:live). Falta la CARA: 3D
-   del penal (8.2), bracket (8.5), HUD (8.10), pantallas (resumen/campeón), modo invitado (8.1/8.1b,
-   corre lib/engine client-side sin red). Orden sugerido: 8.1/8.1b (menú + invitado: prueba el motor sin
-   DB, smoke test visual) → 8.2 (escena 3D) → 8.5 (bracket que consume score:live de 6.5 + poke
-   open_next_round del tiempo muerto de 4.6) → 8.10 HUD → resto. Las realtime que quedan (4.6b offset,
-   4.9 animación) se cierran al construir la pantalla de partido. OJO: la pantalla de partido real (que
-   monta <PenalLive>) todavía NO existe — hoy <PenalLive> solo se usa en /dev/penal.
-
-DONE este tramo (5 tareas): 6.4 (torneo entero end-to-end: grupos→KO→campeón+3º) + 5.4 (abandon) +
-   6.5 (score:live) + 4.6 (reloj de ronda + barrier, round-driven). Migraciones nuevas: 20260616220000
-   (play_round) + 230000 (advance_knockout) + 240000 (abandon) + 250000 (score_live) + 260000
-   (round_clock). Todas verificadas por E2E SQL real (incl. torneo completo con 1 y 2 humanos).
-
-YA LISTO para 6.4: F7 (preguntas + asignación) y 5.3 (bot_intents) y 6.4(a) simulate_bot_match +
-engine_advance_match. Motor de torneo PURO (lib/engine/tournament.ts) testeado 48→campeón (F6).
-
-LISTO Y VERIFICADO (todo commiteado, repo verde: typecheck/lint(2 warns viejos)/build OK, 78
-tests): F2+F3 completas. F4 realtime núcleo (4.1 matchmaking, 4.2 lobby+Presence, 4.3 Broadcast
-penal:start a canal privado match:{id}, 4.4 select_option, 4.5 resolve_penalty, 4.7 tick()
-backstop, 4.8 get_active_match). F5: 5.0 seed 48 naciones (top 48 ranking FIFA, tiers 10/10/10/18,
-kits), 5.1 lib/engine/bot.ts (modelo §7.2), 5.2 start_tournament (esqueleto: arma 48 part +
-naciones + 12 grupos + fixture 72 matches) + WIRING (join_room 48º / tick arranca-cancela lobbies
-vencidos / janitor solo retención). F6 motor de torneo PURO COMPLETO (lib/engine/tournament.ts:
-6.1 fixture+puntos, 6.2 desempates FIFA+terceros, 6.3 bracket, 6.6 integral 48→campeón).
-
-DECISIÓN DE ARQUITECTURA CLAVE (registrada en SPEC §1.2/§1.3): TODO el camino autoritativo va en
-PLPGSQL (no Edge Functions) por escalabilidad/anti-trampa. lib/engine (TS) = fuente de la regla +
-motor del modo invitado client-side (§8.4); las versiones SQL son PORTS FIELES verificados por
-PARIDAD contra TS (RNG mulberry32 bit-perfect). Mantener ese patrón en 5.3.
-
-DEFERIDO/SIMPLIFICACIONES anotadas: (a) start_tournament NO crea penales ni simula bot-only aún
-(eso es 6.4 + necesita F7); matches quedan 'pending'. (b) resolve_penalty hoy da random a TODO
-no-respondedor; falta distinguir "humano presente que no eligió = fallo seguro" (necesita presence
-del match, cerrar con 4.6/4.8). (c) dev harness (/dev/penal, dev_create_practice_penal) sirve para
-probar penales sueltos hasta que F7+6.4 permitan torneo entero — es temporal, se borra en F8.
+>>> CONTEXTO DURABLE (lo viejo de F2–F7 vive en el git log y en los checkboxes de abajo): el camino
+   autoritativo (matchmaking → grupos con reloj de ronda → KO → campeón + abandon + score:live) está
+   COMPLETO, en PLPGSQL (no Edge Functions; SPEC §1.2/§1.3) y blindado por la suite DB de 9.0. lib/engine
+   (TS) = fuente de la regla; las versiones SQL son ports fieles verificados por paridad. El dev harness
+   (/dev/penal, dev_create_practice_penal) es TEMPORAL (prueba penales sueltos) y se borra en F8 cuando
+   exista la pantalla de partido real.
 
 OPS PENDIENTE (Gino, no bloquea el código): cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/
-NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
+NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de recuperación).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
