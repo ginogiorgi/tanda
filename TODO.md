@@ -2,9 +2,10 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — 9.1–9.5 HECHOS. Queda 9.6 (verificación end-to-end §12 + DEPLOY
-   final). OJO: 9.6 incluye el DEPLOY, que necesita OPS de Gino (ver abajo) → consultarlo antes de
-   tocar prod. La verificación e2e local sí se puede arrancar.
+>>> PRÓXIMA TAREA: F9 — 9.1–9.5 HECHOS, 9.6 PARCIAL (verificación local toda en verde; falta el
+   walkthrough visual de Gino + el DEPLOY a prod, que necesita OPS de Gino). Es el único pendiente del
+   proyecto. NO tocar prod sin OK de Gino (env vars Vercel + migraciones a prod + anon toggle dashboard
+   + get_advisors). Cuando Gino dé el OK y haga su OPS, cerrar 9.6.
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -584,4 +585,12 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       corta al exceder, sin acceso del cliente a la tabla ni al helper, wiring real en quick_play 21º→
       corta) + enforce_rate_limit sumado a la denylist de rls_audit. typecheck/lint/build verdes,
       45 db + 100 unit.
-- [ ] 9.6 Verificación end-to-end §12 + deploy final
+- [~] 9.6 Verificación end-to-end §12 + deploy final. VERIFICACIÓN LOCAL HECHA: §12.6 (typecheck/lint/
+      build + 100 unit motor/torneo + 46 db) en verde; §12.4 (torneo por todas las fases → campeón+3º)
+      por tournament_e2e; §12.5 (varios torneos en simultáneo sin interferencia) por el NUEVO
+      concurrency.test.ts (2 torneos en paralelo: drivear uno no toca al otro, ambos terminan con sus
+      invariantes, sin solape de participantes, pertenencia aislada). PENDIENTE (necesita a Gino):
+      (a) walkthrough visual §12.1-3 (avatar, escena de penal + animaciones, bracket en un torneo real);
+      (b) DEPLOY a prod → OPS: aplicar las 5 migraciones nuevas a la DB de prod, cargar
+      SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend,
+      habilitar anonymous sign-ins en el dashboard de prod, y correr get_advisors(security) post-deploy.
