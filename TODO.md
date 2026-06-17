@@ -629,10 +629,15 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [x] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
       Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
       + tests. Afecta cuántos penales se crean por match.
-- [ ] 10.5 Bots responden muy rápido: subir el delay MÍNIMO +2s en cada tier. `lib/engine/bot.ts`
-      TIER_MODEL + port SQL `engine_bot_intent` + paridad + tests.
-- [ ] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA (hoy toma la primera/opción 0).
-      Revisar `resolve_penalty` (camino del humano sin answer) → random seeded, no índice 0.
+- [x] 10.5 Bots responden muy rápido: +2s al mínimo Y al máximo de cada tier (ventana 4..7/8/9/10s).
+      `lib/engine/bot.ts` TIER_MODEL + port SQL `engine_bot_intent` (mig 20260617180000) + paridad. (Gino
+      pidió mid-stream sumar también al máximo.) PENDIENTE prod.
+- [~] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA. HALLAZGO: el server YA lo hace
+      (`resolve_penalty` inserta `engine_rand_int(seed#hash(part),3)`, is_random=true; distribución
+      verificada 74/58/68 sobre 200 penales; sin default a 0 en el cliente). Lo que ve Gino ("toma la
+      primera") no sale del código actual → probablemente un tap tardío/rechazado o el reveal de
+      `correct_index` (que es 0 ~1/3). Se cierra haciéndolo VISIBLE en el rework de 10.11 ("No
+      respondiste → opción al azar" + mostrar tu pick vs la correcta). CONFIRMAR con Gino.
 - [ ] 10.7 Cuando empatan pero gana el más rápido, decir por qué perdiste ("<país> respondió más
       rápido"). El payload de resultado debe llevar el motivo + los tiempos; el cliente lo muestra.
 - [ ] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
