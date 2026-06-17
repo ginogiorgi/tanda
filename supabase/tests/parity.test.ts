@@ -7,6 +7,7 @@ import { getPool, closePool } from "./_db";
 import { makeRng } from "../../lib/engine/rng";
 import { botIntent, type DifficultyTier } from "../../lib/engine/bot";
 import { penaltyDifficulty, type Phase } from "../../lib/engine/difficulty";
+import { advanceMatch, type MatchKind } from "../../lib/engine/match";
 
 afterAll(closePool);
 
@@ -138,6 +139,82 @@ describe("paridad fnv32 (engine_fnv32 ↔ hashStr FNV-1a, tournament.ts:117)", (
         if (Number(rows[0]!.h) !== fnv1a(s)) mismatches++;
       }
       expect(mismatches).toBe(0);
+    } finally {
+      c.release();
+    }
+  });
+});
+
+describe("paridad advance_match (engine_advance_match ↔ advanceMatch, 10.4/10.9)", () => {
+  it("status/winner/next coinciden por fase × secuencia (grupos 3-por-lado, elim 5)", async () => {
+    // Enumeración completa de secuencias cortas (2^len ≤ 512) + muestreo determinista de las largas,
+    // para ambas fases. Cubre regulación (grupos n≤6, elim n≤10), corte anticipado y muerte súbita.
+    const cases: { kind: MatchKind; scored: boolean[] }[] = [];
+    for (const kind of ["group", "elimination"] as const) {
+      const reg = kind === "group" ? 6 : 10;
+      for (let len = 0; len <= reg + 2; len++) {
+        if (1 << len <= 512) {
+          for (let mask = 0; mask < 1 << len; mask++) {
+            const s: boolean[] = [];
+            for (let b = 0; b < len; b++) s.push(Boolean(mask & (1 << b)));
+            cases.push({ kind, scored: s });
+          }
+        } else {
+          for (let k = 0; k < 256; k++) {
+            const s: boolean[] = [];
+            let m = (k * 2654435761) >>> 0;
+            for (let b = 0; b < len; b++) {
+              s.push(Boolean(m & 1));
+              m = (m * 1103515245 + 12345) >>> 0;
+            }
+            cases.push({ kind, scored: s });
+          }
+        }
+      }
+    }
+
+    const kinds = cases.map((c) => c.kind);
+    const seqs = cases.map((c) => c.scored.map((x) => (x ? "T" : "F")).join(""));
+
+    const c = await getPool().connect();
+    try {
+      const { rows } = await c.query<{
+        i: number;
+        status: string;
+        winner: string | null;
+        next_index: number | null;
+        next_kicker: string | null;
+        home: number;
+        away: number;
+      }>(
+        `select g.i, r.status, r.winner, r.next_index, r.next_kicker, r.home, r.away
+           from generate_series(1, array_length($1::text[], 1)) g(i)
+           cross join lateral public.engine_advance_match(
+             ($1::text[])[g.i],
+             case when ($2::text[])[g.i] = '' then '{}'::boolean[]
+                  else (select array_agg(ch = 'T' order by o)
+                          from unnest(string_to_array(($2::text[])[g.i], null))
+                               with ordinality as u(ch, o)) end
+           ) r`,
+        [kinds, seqs],
+      );
+
+      let mismatches = 0;
+      for (const row of rows) {
+        const { kind, scored } = cases[row.i - 1]!;
+        const ts = advanceMatch(kind, scored);
+        if (ts.status !== row.status) {
+          mismatches++;
+          continue;
+        }
+        if (ts.status === "finished") {
+          const sqlWinner = row.winner ?? null;
+          if (ts.home !== row.home || ts.away !== row.away || ts.winner !== sqlWinner) mismatches++;
+        } else {
+          if (ts.nextIndex !== row.next_index || ts.nextKicker !== row.next_kicker) mismatches++;
+        }
+      }
+      expect({ cases: cases.length, mismatches }).toEqual({ cases: cases.length, mismatches: 0 });
     } finally {
       c.release();
     }

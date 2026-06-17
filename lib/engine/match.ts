@@ -4,12 +4,14 @@
  * `resolvePenalty` ni toca red: dado el marcador parcial, dice quién patea ahora, si el
  * partido sigue / se decidió / va a muerte súbita, y el resultado final. Ver SPEC §3.2 / §5.3.
  *
- * Formato (decisión 2026-06-15, resuelve la contradicción §3.2 vs §5.3): **5 penales por
- * lado = 10 en regulación**, alternados como en un Mundial real. `home` patea los índices
- * impares (1,3,5,7,9), `away` los pares (2,4,6,8,10). Solo el pateador puede convertir.
- *   - Grupos: se juegan los 10; puede terminar empatado (puntos 3/1/0).
- *   - Eliminación: corta apenas el resultado está matemáticamente decidido; si quedan iguales
- *     tras los 5 de cada uno → muerte súbita (rondas de a uno por lado hasta que se rompa).
+ * Formato (F10 10.4): **grupos = 3 penales por lado (6 en regulación); eliminación = 5 por lado
+ * (10 en regulación)**, alternados como en un Mundial real. `home` patea los índices impares
+ * (1,3,5,…), `away` los pares (2,4,6,…). Solo el pateador puede convertir.
+ *   - Grupos: se juegan los 6; puede terminar empatado (puntos 3/1/0).
+ *   - Eliminación: si quedan iguales tras los 5 de cada uno → muerte súbita (rondas de a uno por
+ *     lado hasta que se rompa).
+ *   - Ambas fases (F10 10.9): el partido CORTA apenas el resultado está matemáticamente decidido
+ *     (el que va perdiendo no alcanza ni convirtiendo todos los que le quedan).
  */
 
 /** Lado del partido. */
@@ -18,10 +20,14 @@ export type MatchSide = "home" | "away";
 /** Tipo de partido a efectos de reglas (grupos permite empate; eliminación define ganador). */
 export type MatchKind = "group" | "elimination";
 
-/** Penales por lado en regulación. */
-export const KICKS_PER_SIDE = 5;
-/** Penales de regulación (5 por lado). */
-export const REGULATION_PENALTIES = KICKS_PER_SIDE * 2;
+/** Penales por lado en regulación, por fase (10.4): grupos 3, eliminación 5. */
+export function kicksPerSide(kind: MatchKind): number {
+  return kind === "group" ? 3 : 5;
+}
+/** Penales de regulación (kicksPerSide × 2). */
+export function regulationPenalties(kind: MatchKind): number {
+  return kicksPerSide(kind) * 2;
+}
 
 /** Estado del partido tras los penales jugados hasta ahora. */
 export type MatchState =
@@ -81,31 +87,32 @@ function suddenDeath(n: number): MatchState {
  * (eliminación).
  */
 export function advanceMatch(kind: MatchKind, scored: readonly boolean[]): MatchState {
+  const kps = kicksPerSide(kind);
+  const regulation = kps * 2;
   const t = tally(scored);
   const n = scored.length;
 
   // Regulación todavía en curso.
-  if (n < REGULATION_PENALTIES) {
-    if (kind === "elimination") {
-      // Corte por resultado matemáticamente decidido (la perdedora no alcanza ni metiendo todo).
-      const homeRemaining = KICKS_PER_SIDE - t.homeKicks;
-      const awayRemaining = KICKS_PER_SIDE - t.awayKicks;
-      if (t.home > t.away + awayRemaining) return finished(t);
-      if (t.away > t.home + homeRemaining) return finished(t);
-    }
+  if (n < regulation) {
+    // Corte por resultado matemáticamente decidido (10.9), en AMBAS fases: la perdedora no
+    // alcanza ni convirtiendo todos los que le quedan.
+    const homeRemaining = kps - t.homeKicks;
+    const awayRemaining = kps - t.awayKicks;
+    if (t.home > t.away + awayRemaining) return finished(t);
+    if (t.away > t.home + homeRemaining) return finished(t);
     return { status: "in_progress", nextIndex: n + 1, nextKicker: kickerAt(n + 1) };
   }
 
-  // Fin de regulación (n === 10).
-  if (n === REGULATION_PENALTIES) {
+  // Fin de regulación (n === regulation).
+  if (n === regulation) {
     if (t.home !== t.away) return finished(t);
     if (kind === "group") return finished(t); // empate permitido en grupos
     return suddenDeath(n); // eliminación empatada → muerte súbita
   }
 
-  // Muerte súbita (n > 10, solo eliminación). Se decide al cerrar una ronda completa
+  // Muerte súbita (n > regulation, solo eliminación). Se decide al cerrar una ronda completa
   // (ambos patearon): si el marcador difiere, gana; si sigue igual, otra ronda.
-  const suddenDeathKicks = n - REGULATION_PENALTIES;
+  const suddenDeathKicks = n - regulation;
   const roundComplete = suddenDeathKicks % 2 === 0;
   if (roundComplete && t.home !== t.away) return finished(t);
   return suddenDeath(n);

@@ -1,15 +1,19 @@
 import { describe, it, expect } from "vitest";
 import { advanceMatch, kickerAt, groupPoints } from "./match";
 
-/** Arma una tanda de regulación interleaveando los 5 de home y los 5 de away. */
-function reg(home: boolean[], away: boolean[]): boolean[] {
+/** Interleavea los penales de home y away (1 home, 2 away, …). `n` por lado. */
+function interleave(home: boolean[], away: boolean[], n: number): boolean[] {
   const out: boolean[] = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < n; i++) {
     out.push(home[i]!);
     out.push(away[i]!);
   }
   return out;
 }
+/** Regulación de eliminación (5 por lado). */
+const reg = (home: boolean[], away: boolean[]) => interleave(home, away, 5);
+/** Regulación de grupos (3 por lado). */
+const reg3 = (home: boolean[], away: boolean[]) => interleave(home, away, 3);
 const T = true;
 const F = false;
 
@@ -31,20 +35,26 @@ describe("advanceMatch — arranque y regulación", () => {
     });
   });
 
-  it("grupos: se juegan los 10; gana el de más goles", () => {
-    const r = advanceMatch("group", reg([T, T, T, F, F], [T, T, F, F, F]));
+  it("grupos: 3 por lado (6 en regulación); gana el de más goles", () => {
+    const r = advanceMatch("group", reg3([T, T, T], [T, T, F]));
     expect(r).toEqual({ status: "finished", home: 3, away: 2, winner: "home" });
   });
 
   it("grupos: puede terminar empatado (winner null)", () => {
-    const r = advanceMatch("group", reg([T, T, F, F, F], [T, F, T, F, F]));
-    expect(r).toEqual({ status: "finished", home: 2, away: 2, winner: null });
+    const r = advanceMatch("group", reg3([T, F, F], [F, T, F]));
+    expect(r).toEqual({ status: "finished", home: 1, away: 1, winner: null });
   });
 
-  it("grupos NO cortan aunque la diferencia sea grande", () => {
-    // home 4 - away 0 tras 8 penales: igual sigue hasta el 10.
-    const r = advanceMatch("group", [T, F, T, F, T, F, T, F]);
-    expect(r).toMatchObject({ status: "in_progress", nextIndex: 9 });
+  it("grupos: corta apenas el resultado está decidido (10.9)", () => {
+    // home 2 - away 0 tras 4 penales (3 por lado): away no llega ni metiendo el que le queda.
+    const r = advanceMatch("group", [T, F, T, F]);
+    expect(r).toEqual({ status: "finished", home: 2, away: 0, winner: "home" });
+  });
+
+  it("grupos: no corta si todavía es alcanzable", () => {
+    // home 2 - away 1 tras 4: away puede empatar con su último → sigue.
+    const r = advanceMatch("group", [T, T, T, F]);
+    expect(r).toMatchObject({ status: "in_progress", nextIndex: 5 });
   });
 });
 
