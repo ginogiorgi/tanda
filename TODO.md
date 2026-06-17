@@ -2,11 +2,20 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA (PRIORIDAD): 9.0 — tests automáticos del camino autoritativo SQL/RPC + DB en CI.
-   El motor TS está bien testeado (88 Vitest) pero los PORTS PLPGSQL (resolución de penal, reloj de
-   ronda, bracket, anti-trampa) —lo más crítico y lo único que toca anti-trampa— solo se verificaron
-   con E2E manuales por SQL ya borrados: CERO regresión automática. Blindarlo ANTES de que F8 multiplique
-   la superficie. Ver 9.0 en F9. Tras 9.0: F8 (UI).
+>>> PRÓXIMA TAREA: F8 (UI/animaciones premium). 9.0 (blindaje SQL en CI) está HECHO.
+
+>>> 9.0 DONE: suite repetible del camino autoritativo PLPGSQL con Postgres local de Supabase (Docker)
+   + Vitest project `db` (pg directo) + job `db` en CI. 26 tests: paridad VIVA TS↔SQL (mulberry32/
+   bot_intent/penalty_difficulty/fnv32, sin golden hardcodeado), anti-trampa (correct_index ilegible
+   por anon/authenticated, escrituras solo por RPC, RPCs internas revocadas, broadcasts solo a
+   miembros), e2e torneo 48 (start→driver fast-forward→campeón+3º, 72 grupos+32 KO, 0 cruce mismo
+   grupo R32), reloj de ronda compartido (1 deadline), abandon (humano→bot, get_active_match deja de
+   rehidratar, resuelve is_random=false). `pnpm test` sigue unit-only (88, sin Docker); `pnpm db:start
+   && pnpm db:reset && pnpm test:db` para la suite DB. HALLAZGO arreglado: `db reset` desde archivos
+   fallaba — faltaba la migración del event trigger `ensure_rls`/`rls_auto_enable` (se había aplicado
+   out-of-band); agregada como 20260614090650 (idempotente, fiel al remoto) → historial autocontenido.
+   Guardrail verificado (romper una constante de paridad en una migración → suite roja). DIFERIDO: tipar
+   el cliente con `supabase gen types` (Database generic) queda como tarea aparte (9.x).
 
 >>> DESPUÉS (F8 — UI/animaciones premium): el camino autoritativo está COMPLETO y verificado a mano
    (matchmaking → grupos con reloj de ronda → KO → campeón, + abandon + score:live). Falta la CARA: 3D
@@ -405,7 +414,7 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
 
 ## F9 · Pulido
 
-- [ ] 9.0 **(PRIORIDAD)** Tests automáticos del camino autoritativo SQL/RPC + DB en CI. Hoy los
+- [x] 9.0 **(HECHO)** Tests automáticos del camino autoritativo SQL/RPC + DB en CI. Hoy los
       ports PLPGSQL (lo más crítico) solo se probaron con E2E manuales por SQL ya borrados → cero
       regresión automática. Codificar como suite repetible (pgTAP en `supabase/tests/` vía
       `supabase db test`, o Vitest contra un Supabase local/branch efímero):

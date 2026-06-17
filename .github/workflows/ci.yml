@@ -34,3 +34,31 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  # Camino autoritativo SQL/RPC contra el Postgres local de Supabase (9.0): paridad TS↔SQL,
+  # anti-trampa, e2e de torneo, reloj de ronda y abandon. Atrapa migraciones rotas antes del merge.
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Start Supabase (solo DB)
+        run: pnpm db:start
+
+      - name: Aplicar migraciones desde archivos
+        run: pnpm db:reset
+
+      - name: DB tests (SQL/RPC)
+        run: pnpm test:db

@@ -1,12 +1,29 @@
 # Supabase
 
-Acá viven las migraciones, políticas RLS, funciones RPC y Edge Functions.
+Acá viven las migraciones, políticas RLS y funciones RPC.
 
-- `migrations/` — esquema + RLS (se agregan desde F3). 
-- `functions/` — Edge Functions autoritativas (F4+).
+- `migrations/` — esquema + RLS + RPCs autoritativas (PLPGSQL). Fuente de verdad.
+- `tests/` — suite del camino autoritativo SQL/RPC (Vitest project `db`, ver abajo).
 
-El estado del juego es autoritativo del servidor; el cliente nunca decide resultados ni
-conoce `correct_index`. Ver SPEC §2 y §5.
+El camino autoritativo corre **en Postgres (PLPGSQL)**, no en Edge Functions (decisión por
+escalabilidad/anti-trampa, SPEC §1.2/§1.3 — v1 no tiene Edge Functions). El estado del juego es
+autoritativo del servidor; el cliente nunca decide resultados ni conoce `correct_index`. Ver SPEC §2 y §5.
+
+## Desarrollo local + tests del camino autoritativo (9.0)
+
+Los ports PLPGSQL se testean contra un Postgres local de Supabase (Docker), comparándolos en vivo
+contra el motor TS (`lib/engine`). Requiere Docker.
+
+```
+pnpm db:start    # levanta solo el contenedor de Postgres (supabase start -x <servicios>)
+pnpm db:reset    # aplica TODA la cadena de migraciones desde archivos (== remoto)
+pnpm test:db     # corre supabase/tests/** (paridad, anti-trampa, e2e torneo, reloj de ronda, abandon)
+pnpm db:stop
+```
+
+`pnpm test` sigue siendo unit-only (motor TS, sin Docker). En CI el job `db` hace start → reset →
+test:db, así una migración rota se atrapa antes del merge. Los `.sql` del repo son autocontenidos:
+`db reset` los aplica de cero (incl. el event trigger `ensure_rls` en `20260614090650`).
 
 ## Config de Auth (necesaria para login por username)
 
