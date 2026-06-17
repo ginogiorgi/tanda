@@ -8,6 +8,7 @@
 
 import dynamic from "next/dynamic";
 import type { SceneRole } from "@/lib/penal/scene";
+import type { PenalAnimation } from "./PenalScene";
 
 const PenalScene = dynamic(
   () => import("./PenalScene").then((m) => m.PenalScene),
@@ -24,13 +25,15 @@ const PenalScene = dynamic(
 interface PenalSceneViewerProps {
   kicker: SceneRole;
   keeper: SceneRole;
+  /** Animación del resultado (8.4/4.9); null/ausente = escena idle. */
+  result?: PenalAnimation | null;
   className?: string;
 }
 
-export function PenalSceneViewer({ kicker, keeper, className }: PenalSceneViewerProps) {
+export function PenalSceneViewer({ kicker, keeper, result, className }: PenalSceneViewerProps) {
   return (
     <div className={className}>
-      <PenalScene kicker={kicker} keeper={keeper} />
+      <PenalScene kicker={kicker} keeper={keeper} result={result} />
     </div>
   );
 }

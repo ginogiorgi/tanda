@@ -247,7 +247,8 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       su deadline server + selección, sin esperar Broadcast); `<PenalDevHarness>` re-monta el
       partido activo tras refresh. E2E SQL: rehidrata con my_option=2 y sin correct_index; penal
       null tras cierre terminal con match en curso; null sin partido
-- [ ] 4.9 Animación GOL/ATAJADO disparada por `penal:result`
+- [x] 4.9 Animación GOL/ATAJADO disparada por `penal:result` → HECHO junto con 8.4 (PenalScene
+      procedural por reason+variant). La pantalla 2D GOL/ATAJADO + revelar correcta ya estaba (4.5/8.11).
 
 ## F5 · Bots
 
@@ -425,8 +426,13 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       ya existentes → 4.6b cubierto para el penal); verde→ámbar→roja, pulsa en rojo en el último tramo
       (motion-safe). Vibración `navigator.vibrate(180)` una vez al entrar en los últimos 3s (guard de
       soporte). totalMs = deadline − started_at (10s 1ª fase / 5s 2ª chance). typecheck/lint/build verdes.
-- [ ] 8.4 Animaciones 3D por causa: `goal` / `save` (estirada) / `miss_wide` (afuera),
-      con variantes + colocación aleatoria por seed (procedurales: primitivas + pelota)
+- [x] 8.4 Animaciones 3D por causa (+ 4.9). Procedural en `PenalScene` con `useFrame` (sin rig):
+      al llegar `penal:result` se juega según `reason`+`variant` → `shotPlan` deriva la colocación
+      (izq/der × bajo/alto por variant) y la dirección de la estirada. `goal` = la pelota entra al
+      ángulo y el arquero vuela al lado equivocado; `save` = el arquero llega y la rechaza; `miss_wide`
+      = afuera del palo/por arriba. Pelota con arco (sin·π), pateador con pasito de aproximación,
+      arquero con estirada+salto+lean. PenalLive pasa `{reason,variant}` a PenalSceneViewer→PenalScene
+      y muestra la escena casi sin atenuar + GOL/ATAJADO. typecheck/lint/build verdes.
 - [x] 8.5 Bracket estilo mundial con marcadores en vivo + pre-partido. La pantalla de partido pasó a
       ser TOURNAMENT-SCOPED (`<TournamentLive>`, ruta /partido gateada por `get_active_tournament`):
       te sigue de grupos a la final y alterna entre la tarjeta de penal + escena 3D (cuando hay penal

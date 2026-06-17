@@ -14,6 +14,7 @@ import {
 } from "@/lib/realtime/penal";
 import { resolveSceneRoles } from "@/lib/penal/scene";
 import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
+import type { PenalAnimation } from "@/components/penal/PenalScene";
 import { PenalHud } from "@/components/penal/PenalHud";
 import { TimeBar } from "@/components/penal/TimeBar";
 
@@ -178,29 +179,31 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   }
 
   // Escena 3D detrás de la tarjeta: cancha/arco/pelota + avatares pateador/arquero (§8.2). Durante
-  // el penal va atenuada/desenfocada; al resolver (GOL/ATAJADO) menos atenuada. `null` si el partido
-  // no tiene datos de escena (p. ej. dev harness sin nación) → degrada a solo la tarjeta.
+  // el penal va atenuada/desenfocada; al resolver se juega la animación según el `reason` (8.4/4.9)
+  // con la escena casi sin atenuar. `null` si el partido no tiene datos de escena (p. ej. dev harness
+  // sin nación) → degrada a solo la tarjeta.
   const sceneRoles = resolveSceneRoles(penal, scene);
-  const sceneBg = (soft: boolean) =>
+  const sceneBg = (soft: boolean, anim: PenalAnimation | null = null) =>
     sceneRoles ? (
       <div className="fixed inset-0 z-0">
         <PenalSceneViewer
           kicker={sceneRoles.kicker}
           keeper={sceneRoles.keeper}
+          result={anim}
           className="h-full w-full"
         />
         <div
-          className={`absolute inset-0 ${soft ? "bg-bg/25" : "bg-bg/60 backdrop-blur-sm"}`}
+          className={`absolute inset-0 ${soft ? "bg-bg/15" : "bg-bg/60 backdrop-blur-sm"}`}
         />
       </div>
     ) : null;
 
-  // Resuelto: GOL/ATAJADO + revela la correcta + explicación (§8.11). La animación 3D es 4.9/F8.
+  // Resuelto: animación 3D goal/save/miss_wide (8.4/4.9) + GOL/ATAJADO + revela la correcta (§8.11).
   if (result) {
     return (
       <>
-        {sceneBg(true)}
-        <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-4 text-center">
+        {sceneBg(true, { reason: result.reason, variant: result.variant })}
+        <div className="relative z-10 mt-auto flex w-full max-w-md flex-col items-center gap-3 pb-4 text-center">
           <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
             Penal {result.idx} · {result.home_score}–{result.away_score}
           </span>
