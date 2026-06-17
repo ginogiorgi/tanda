@@ -2,7 +2,19 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> ESTADO: EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
+>>> ESTADO (handoff sesión 2026-06-17): EN F10 (13 mejoras, lista abajo). HECHO y verificado en LOCAL
+   (typecheck/lint/build + 47 db + 101 unit verdes): 10.4 (grupos 3 tandas/6 penales, elim 5/10),
+   10.5 (delay bots +2s min y max → 4..7/8/9/10s), 10.9 (corte anticipado en ambas fases). 10.1 (reseed
+   48 clasificadas) con CÓDIGO hecho. 10.6: el server YA es aleatorio (verificado) → se cierra visible
+   en 10.11. FALTAN: 10.2, 10.3, 10.7, 10.8, 10.10, 10.11, 10.12, 10.13 (cluster de respuesta/resultado
+   10.6/10.7/10.11/10.13 conviene hacerlo junto: tocan el payload de resolve_penalty + la pantalla).
+   >>> PENDIENTE PROD (al terminar F10, en UN lote, con OK de Gino): aplicar por MCP las migraciones
+   nuevas 20260617160000_seed_nations_qualified (DESTRUCTIVA: truncate rooms cascade + delete nations →
+   el auto-classifier la bloqueó, necesita OK explícito), 170000_match_length_by_phase, 180000_bot_delay_floor,
+   + las que sumen 10.7/10.11/etc. Los commits están LOCALES (sin pushear); pushear `main` deploya el
+   front por Vercel, pero las migraciones NO se auto-aplican (van por MCP).
+   >>> OJO 10.1: el reseed reemplaza naciones; cuando se aplique a prod borra los torneos de prueba.
+>>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
    6 migraciones del tramo aplicadas a prod por MCP (prod==local), advisors corridos (perf 0; security
