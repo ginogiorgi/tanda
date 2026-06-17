@@ -24,6 +24,7 @@ import type { Group, Mesh } from "three";
 import { AvatarModel } from "@/components/avatar/AvatarModel";
 import type { SceneRole } from "@/lib/penal/scene";
 import type { PenaltyReason } from "@/lib/realtime/penal";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const GRASS = "#2f7d3a";
 const GRASS_DARK = "#2a6f34";
@@ -112,10 +113,12 @@ function Actors({
   kicker,
   keeper,
   anim,
+  reducedMotion,
 }: {
   kicker: SceneRole;
   keeper: SceneRole;
   anim: PenalAnimation | null;
+  reducedMotion: boolean;
 }) {
   const kickerRef = useRef<Group>(null);
   const keeperRef = useRef<Group>(null);
@@ -148,7 +151,10 @@ function Actors({
     }
 
     if (startRef.current == null) startRef.current = state.clock.elapsedTime;
-    const t = state.clock.elapsedTime - startRef.current;
+    // Reduced motion (9.3): saltamos la animación temporal y mostramos directo la pose final
+    // (t grande → todas las interpolaciones quedan clampeadas a 1, sin trayectoria de la pelota
+    // ni vuelo del arquero). El render queda estático.
+    const t = reducedMotion ? 1000 : state.clock.elapsedTime - startRef.current;
 
     // ── Pateador: pasito de aproximación + plantada (0–0.35s) ──
     const approach = Math.min(1, t / 0.35);
@@ -197,8 +203,17 @@ interface PenalSceneProps {
 }
 
 export function PenalScene({ kicker, keeper, result = null }: PenalSceneProps) {
+  const reducedMotion = useReducedMotion();
+  // Perf: la escena es estática salvo durante la animación del remate → renderizamos on-demand
+  // (no a 60fps continuos) en idle y con reduced motion; solo "always" mientras corre la animación.
+  const frameloop = result && !reducedMotion ? "always" : "demand";
   return (
-    <Canvas dpr={[1, 2]} gl={{ antialias: true }} camera={{ fov: 42 }}>
+    <Canvas
+      frameloop={frameloop}
+      dpr={[1, 2]}
+      gl={{ antialias: true }}
+      camera={{ fov: 42 }}
+    >
       <SceneCamera />
       <color attach="background" args={["#0a0a0a"]} />
       <fog attach="fog" args={["#0a0a0a", 10, 22]} />
@@ -221,7 +236,7 @@ export function PenalScene({ kicker, keeper, result = null }: PenalSceneProps) {
       </mesh>
 
       <Goal />
-      <Actors kicker={kicker} keeper={keeper} anim={result} />
+      <Actors kicker={kicker} keeper={keeper} anim={result} reducedMotion={reducedMotion} />
     </Canvas>
   );
 }

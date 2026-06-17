@@ -2,8 +2,7 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — 9.1 y 9.2 HECHOS. Arrancar por 9.3 (accesibilidad: reduced-motion YA
-   global en globals.css + perf), 9.4
+>>> PRÓXIMA TAREA: F9 (pulido) — 9.1/9.2/9.3 HECHOS. Arrancar por 9.4
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -554,7 +553,15 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       de get_bracket → estado de error con reintento (refrescos posteriores fallidos se ignoran si ya
       hay snapshot). `<RunSummary>` ahora muestra el error de quick_play (antes silencioso).
       typecheck/lint/build verdes, 100 unit.
-- [ ] 9.3 Accesibilidad (`prefers-reduced-motion`) + performance
+- [x] 9.3 Accesibilidad (`prefers-reduced-motion`) + performance. El CSS global ya neutralizaba las
+      animaciones DOM (globals.css) y TimeBar ya usaba motion-safe + role=progressbar. Gap real: el
+      render WebGL (R3F/useFrame) corre fuera del CSS → hook `lib/useReducedMotion.ts`
+      (useSyncExternalStore, SSR-safe) consumido por `PenalScene`: con reduced-motion la animación del
+      remate salta a la pose final (sin trayectoria de pelota ni vuelo del arquero). PERF: el Canvas
+      ahora renderiza on-demand (`frameloop="demand"`) en idle y con reduced-motion, y solo "always"
+      mientras corre la animación → no quema 60fps de GPU con la escena estática (que es casi todo el
+      tiempo). R3F ya estaba code-splitteado (PenalSceneViewer ssr:false). typecheck/lint/build verdes,
+      100 unit.
 - [ ] 9.4 Manejo de errores robusto
 - [ ] 9.5 Rate-limit (`quick_play`/`select_option`/`abandon`) + resuscripción Realtime
       automática tras caída + disclaimer "no afiliado a FIFA"
