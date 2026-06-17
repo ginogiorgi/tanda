@@ -74,6 +74,7 @@ const INTERNAL_DENYLIST = [
   "gen_room_code",
   "participant_brief",
   "rls_auto_enable",
+  "enforce_rate_limit",
   // helpers puros del motor (paridad TS↔SQL): no sensibles, pero revocados por least-privilege
   "engine_fnv32",
   "engine_group_standings",

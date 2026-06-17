@@ -2,9 +2,9 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — 9.1/9.2/9.3/9.4 HECHOS. Arrancar por 9.5 (rate-limit en quick_play/
-   select_option/abandon + resuscripción Realtime tras caída; el disclaimer "no afiliado a FIFA" YA
-   está en el home). Después 9.6 (verificación e2e §12 + DEPLOY final).
+>>> PRÓXIMA TAREA: F9 (pulido) — 9.1–9.5 HECHOS. Queda 9.6 (verificación end-to-end §12 + DEPLOY
+   final). OJO: 9.6 incluye el DEPLOY, que necesita OPS de Gino (ver abajo) → consultarlo antes de
+   tocar prod. La verificación e2e local sí se puede arrancar.
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -29,10 +29,11 @@
    correct_index (cubiertas por match_scene/bracket tests) → review estático OK, sin cambios.
 
 >>> OPS ANTES DE PROBAR EN PROD: aplicar a la DB de prod las migraciones nuevas de este tramo
-   (20260617100000_match_scene, _110000_bracket, _120000_match_penals, _130000_rls_anticheat_hardening)
-   — hoy SOLO están en local (Docker) y verificadas por la suite db. Sin eso, /partido y el bracket no
-   andan en prod, y la superficie de funciones no queda blindada (la _130000 es least-privilege puro,
-   no rompe nada). Tras deployar: correr `get_advisors(security)` (9.6).
+   (20260617100000_match_scene, _110000_bracket, _120000_match_penals, _130000_rls_anticheat_hardening,
+   _140000_rate_limit) — hoy SOLO están en local (Docker) y verificadas por la suite db. Sin eso,
+   /partido y el bracket no andan en prod, la superficie de funciones no queda blindada (_130000,
+   least-privilege puro) y no hay rate-limit (_140000). Tras deployar: correr `get_advisors(security)`
+   (9.6).
 
 >>> HECHO este tramo (commits, F8 COMPLETO + 4.9): 8.2 escena de penal 3D + pantalla de partido real;
    8.5 bracket + pantalla TOURNAMENT-SCOPED (<TournamentLive>, gate get_active_tournament): alterna
@@ -571,6 +572,16 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       `GENERIC_RETRY_MESSAGE`). Hardening: `<PenalLive>` ya NO navega al home si `abandon` falla (el
       server te seguiría tratando como humano → responderías random hasta reconectar) → se queda en el
       penal y muestra "No se pudo abandonar. Probá de nuevo." typecheck/lint/build verdes, 100 unit.
-- [ ] 9.5 Rate-limit (`quick_play`/`select_option`/`abandon`) + resuscripción Realtime
-      automática tras caída + disclaimer "no afiliado a FIFA"
+- [x] 9.5 Rate-limit (`quick_play`/`select_option`/`abandon`) + resuscripción Realtime automática tras
+      caída + disclaimer "no afiliado a FIFA". RATE-LIMIT (mig 20260617140000): tabla `rate_limits`
+      (RLS deny-all, solo la escribe el helper) + `enforce_rate_limit(action,max,window)` interno
+      (ventana fija, tira `rate_limited`), cableado en quick_play (20/min), select_option (40/10s,
+      generoso porque la respuesta es cambiable), abandon (5/min) y create_room (10/min, vector real de
+      creación de salas). RESUSCRIPCIÓN: `<PenalLive>` resincroniza (get_active_match) al volver a
+      SUBSCRIBED tras una caída del canal (supabase-js 2.108 reaplica el auth del canal privado solo);
+      `<TournamentLive>` ya era resiliente por su polling de get_bracket/get_active_match c/5s y 1.5s.
+      DISCLAIMER "no afiliado a FIFA" ya estaba en el home (8.x). TESTS: rate_limit.test.ts (6: helper
+      corta al exceder, sin acceso del cliente a la tabla ni al helper, wiring real en quick_play 21º→
+      corta) + enforce_rate_limit sumado a la denylist de rls_audit. typecheck/lint/build verdes,
+      45 db + 100 unit.
 - [ ] 9.6 Verificación end-to-end §12 + deploy final

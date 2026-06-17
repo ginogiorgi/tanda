@@ -79,6 +79,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   useEffect(() => {
     let active = true;
 
+    let subscribedOnce = false;
+
     async function subscribe() {
       // Canal privado: el socket de Realtime necesita el access token del usuario para que
       // la policy de `realtime.messages` lo deje recibir.
@@ -94,6 +96,21 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         config: { private: true },
       });
       channelRef.current = channel;
+
+      // Rehidrata el estado del penal en curso desde el server (get_active_match): se usa al montar y
+      // tras una reconexión del canal, por si nos perdimos un Broadcast mientras estábamos caídos (9.5).
+      const hydrate = async () => {
+        const { data } = await supabase.rpc("get_active_match");
+        if (!active) return;
+        const am = data as ActiveMatch | null;
+        if (am && am.match_id === matchId) {
+          setScore({ home: am.home_score, away: am.away_score });
+          if (am.penal) {
+            setPenal(am.penal);
+            setSelected(am.penal.my_option ?? null);
+          }
+        }
+      };
 
       const onNewPhase = ({ payload }: { payload: unknown }) => {
         const next = payload as PenalStartPayload;
@@ -123,7 +140,14 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           if (r.scored) playGoal();
           else playSave();
         })
-        .subscribe();
+        .subscribe((status) => {
+          // Reconexión (9.5): al volver a SUBSCRIBED tras una caída, resincronizamos por si nos
+          // perdimos un Broadcast. supabase-js reaplica el auth del canal privado automáticamente.
+          if (status === "SUBSCRIBED") {
+            if (subscribedOnce) void hydrate();
+            subscribedOnce = true;
+          }
+        });
 
       // Datos estáticos de la escena 3D (naciones/kits + avatares de ambos): se piden una vez.
       const { data: sceneData } = await supabase.rpc("get_match_scene", {
@@ -132,18 +156,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       if (!active) return;
       setScene((sceneData as MatchScene | null) ?? null);
 
-      // Rehidratación (4.8): tras refresh/reconexión, retomo el penal en curso con su deadline
-      // server y mi selección, sin esperar al próximo Broadcast (SPEC §5.2).
-      const { data } = await supabase.rpc("get_active_match");
-      if (!active) return;
-      const am = data as ActiveMatch | null;
-      if (am && am.match_id === matchId) {
-        setScore({ home: am.home_score, away: am.away_score });
-        if (am.penal) {
-          setPenal(am.penal);
-          setSelected(am.penal.my_option ?? null);
-        }
-      }
+      // Rehidratación inicial (4.8): retomo el penal en curso con su deadline server y mi selección.
+      await hydrate();
     }
 
     void subscribe();
