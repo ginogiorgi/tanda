@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { PlayMenu } from "@/components/lobby/PlayMenu";
+import { GuestButton } from "@/components/lobby/GuestButton";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -84,12 +85,7 @@ export default async function Home({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-5">
-          <Link
-            href="/invitado"
-            className="rounded-lg bg-gold px-6 py-4 text-lg font-bold text-bg transition-opacity hover:opacity-90"
-          >
-            Jugar como invitado
-          </Link>
+          <GuestButton />
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/register"

@@ -1,4 +1,8 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+
+// Alias `@/` → raíz del repo (igual que tsconfig paths), para los tests que importan código de app.
+const alias = { "@": fileURLToPath(new URL(".", import.meta.url)) };
 
 // Dos proyectos:
 // - `unit`: el motor TS puro (lib/**). Rápido, sin red ni DB. Lo corre `pnpm test` y el CI base.
@@ -9,6 +13,7 @@ export default defineConfig({
   test: {
     projects: [
       {
+        resolve: { alias },
         test: {
           name: "unit",
           include: ["lib/**/*.test.ts"],
@@ -16,6 +21,7 @@ export default defineConfig({
         },
       },
       {
+        resolve: { alias },
         test: {
           name: "db",
           include: ["supabase/tests/**/*.test.ts"],

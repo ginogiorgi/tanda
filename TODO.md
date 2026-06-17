@@ -2,7 +2,17 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F8 (UI/animaciones premium). 9.0 (blindaje SQL en CI) está HECHO.
+>>> PRÓXIMA TAREA: F8. 9.0 (blindaje SQL en CI) HECHO. 8.1 casi cerrado (ver abajo).
+
+>>> PIVOT (Gino, jun 2026): el MODO INVITADO se redefinió — NO es un torneo client-side sobre
+   lib/engine, sino un USUARIO REAL EFÍMERO: sesión anónima de Supabase con username autoasignado
+   (invitado_<9díg>) + avatar default, que juega el camino competitivo REAL como cualquiera (sin
+   cuenta persistente). Motivo: bundlear el banco de preguntas al cliente expondría la clave de
+   respuestas → cheat en partidas reales. 8.1 implementado (GuestButton + lib/guest/anon +
+   enable_anonymous_sign_ins). 8.1b (torneo local) DESCARTADO. SPEC §8.4 reescrito. OPS PENDIENTE:
+   habilitar anonymous sign-ins en PROD. Próximo F8: 8.2 (escena 3D del penal), 8.5 (bracket), 8.10
+   (HUD), pantallas de partido/resumen/campeón. La pantalla de partido real (que monta <PenalLive>)
+   todavía NO existe.
 
 >>> 9.0 DONE: suite repetible del camino autoritativo PLPGSQL con Postgres local de Supabase (Docker)
    + Vitest project `db` (pg directo) + job `db` en CI. 26 tests: paridad VIVA TS↔SQL (mulberry32/
@@ -390,12 +400,19 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
 
 ## F8 · UI / animaciones premium
 
-- [ ] 8.1 Menú principal con botón "Jugar" (quick-play) + crear/unirse por código +
-      botón "Jugar como invitado" → pantalla de nombre (`tanda_guest_name` en localStorage)
-      → torneo de práctica vs bots con avatar masculino default; nada se persiste; CTA a
-      crear cuenta al terminar (SPEC §8.4)
-- [ ] 8.1b Modo práctica invitado: correr un torneo local sobre `lib/engine` (1 humano + 47
-      bots) sin Realtime ni escrituras RLS; nación asignada → camiseta (SPEC §8.4)
+- [~] 8.1 Menú principal con botón "Jugar" (quick-play) + crear/unirse por código (YA estaba en
+      `<PlayMenu>` de F4) + botón **"Jugar como invitado"**. REDEFINIDO (Gino, jun 2026): el invitado
+      es un **usuario real efímero** = **sesión anónima** de Supabase con username autoasignado
+      `invitado_<9 díg>` + avatar default (metadata → trigger arma el profile) y juega el **camino
+      competitivo real** (NO torneo client-side). Hecho: `lib/guest/anon.ts` (`generateGuestUsername`
+      +1 test, `signInAsGuest` con reintento) + `<GuestButton>` en el home (no logueados) +
+      `enable_anonymous_sign_ins=true` en config.toml. Verificado: trigger crea profile anónimo OK;
+      typecheck/lint/build, 89 unit + 26 db. Falta CTA "Creá una cuenta" al estilo cierre (con 8.6) +
+      gate de avatar-edit/perfil para anónimos. **OPS: habilitar anonymous sign-ins en PROD.**
+      SPEC §8.4 reescrito.
+- [x] 8.1b ~~Modo práctica invitado: torneo local sobre `lib/engine`~~ **DESCARTADO**: el invitado va
+      por el camino real (8.1). No se bundlea el banco de preguntas al cliente (expondría la clave de
+      respuestas → cheat en partidas reales). Tarea anulada.
 - [ ] 8.2 Escena de penal 3D (R3F): cancha + arco + pelota + avatares pateador/arquero;
       tarjeta de pregunta 2D centrada con la escena atenuada/desenfocada detrás; aplicar
       color de nación a la **camiseta** del avatar (override `kitTop`), resto tal cual

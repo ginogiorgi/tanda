@@ -494,28 +494,30 @@ lobby ni en resultados, solo donde hay 3D.
 3. **Animación — procedural:** la patada de penal + estirada de arquero + festejo se hacen
    moviendo las primitivas por código (sin rig importado, sin retargeting). Se afina en F8.
 
-### 8.4 Modo invitado (práctica)
+### 8.4 Modo invitado
 
-Modo de prueba para jugar **sin cuenta**, ingresando solo un nombre.
+> **Redefinido (Gino, jun 2026).** El invitado es un **usuario real efímero**, no un modo de
+> práctica client-side. Versión previa (torneo local sobre `lib/engine`, nombre libre en
+> localStorage, sin usuario Supabase) **descartada** para no exponer la clave de respuestas del
+> banco real al cliente (rompería el anti-trampa del multiplayer) y para no duplicar la lógica.
 
-- **Entrada:** botón **"Jugar como invitado"** en el menú → pantalla que pide **un nombre**
-  (no único, sin password; trim, 2–20 chars). Se guarda en `localStorage`
-  (`tanda_guest_name`).
-- **Identidad — solo cliente:** **sin** usuario Supabase, **sin** fila en `profiles`,
-  **sin** `auth.uid()`. El invitado no escribe en ninguna tabla con RLS.
-- **Avatar:** fijo = `DEFAULT_AVATAR` (masculino), **no editable** (el invitado no entra al
-  creador). Igual recibe una **nación asignada** en su lobby, así que su camiseta toma el
-  color de esa nación (§8.3 #1).
-- **Qué juega — torneo de práctica local vs bots:** 1 humano (el invitado) + 47 bots.
-  Como **no hay otros humanos**, no hace falta **reloj de ronda compartido** ni Realtime; el
-  partido corre **del lado cliente sobre el motor puro** (`lib/engine`, determinista por
-  seed). **Nada se persiste**: sin Historial, sin stats, sin avatar guardado. El nombre se
-  muestra en HUD/bracket.
-- **Cierre:** al terminar, CTA **"Creá una cuenta para guardar tu avatar y tu historial."**
-- **Cabo abierto (a cerrar en F4):** esto **acota** la regla "evaluación/timing solo en
-  servidor" al caso invitado/práctica (sin stakes, sin persistencia, sin otros humanos →
-  nada que trampear). El camino autoritativo del servidor para partidos **con cuenta** queda
-  intacto. Confirmar el límite cliente/servidor del modo práctica al construir el realtime.
+El invitado **puede hacer todo lo que hace un usuario normal** (entrar a salas competitivas, jugar
+el camino autoritativo real), **sin cuenta persistente ni progreso guardado**.
+
+- **Entrada:** botón **"Jugar como invitado"** en el home → **sesión anónima** de Supabase
+  (`signInAnonymously`) con **username autoasignado** `invitado_<9 dígitos>` (válido y único de
+  hecho) + **avatar default** en `user_metadata`. Cae en el home logueado y juega como cualquiera.
+- **Identidad — usuario real efímero:** SÍ hay `auth.users` (`is_anonymous=true`) y profile liviano
+  (lo arma el trigger `handle_new_user` desde el metadata) → otros humanos lo ven por su username en
+  sala/bracket/HUD. Sin password, sin recuperación, sin email.
+- **Camino de juego = el real:** server-authoritative, `correct_index` nunca al cliente, reloj de
+  ronda, Realtime, bots — todo idéntico a un usuario con cuenta. **No hay torneo client-side.**
+- **Avatar:** `DEFAULT_AVATAR` (masculino), no editable (el invitado no entra al creador).
+- **No se persiste nada útil:** sin Historial/stats significativos (sesión efímera).
+- **Cierre:** CTA **"Creá una cuenta"** para volverse permanente (linkear identidad email/password
+  a la sesión anónima → futura tarea 8.x).
+- **Ops:** requiere **`enable_anonymous_sign_ins = true`** en el proyecto (local en `config.toml`;
+  en prod hay que habilitarlo). Rate-limit de anónimos por IP en la config de auth.
 
 ---
 
