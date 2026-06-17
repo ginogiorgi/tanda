@@ -101,6 +101,7 @@ export function RunSummary({
   const [supabase] = useState(() => createClient());
   const [penals, setPenals] = useState<PenalRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const me = snapshot.participants.find((p) => p.participant_id === myParticipantId);
   const isChampion = me?.placement === 1;
@@ -128,11 +129,13 @@ export function RunSummary({
   }, [supabase, lastMatch]);
 
   async function playAgain() {
+    setError(null);
     setBusy(true);
-    const { data, error } = await supabase.rpc("quick_play");
+    const { data, error: rpcError } = await supabase.rpc("quick_play");
     const ref = (data as { code: string }[] | null)?.[0];
-    if (error || !ref) {
+    if (rpcError || !ref) {
       setBusy(false);
+      setError("No pudimos armar otra partida. Probá de nuevo en un momento.");
       return;
     }
     router.push(`/sala/${ref.code}`);
@@ -177,6 +180,7 @@ export function RunSummary({
         >
           {busy ? "Buscando…" : "Jugar de nuevo"}
         </button>
+        {error && <p className="text-sm text-danger">{error}</p>}
         {isGuest && (
           <Link
             href="/register"

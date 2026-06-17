@@ -2,8 +2,8 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — 9.1 HECHO. Arrancar por 9.2 (estados carga/empty/error: ya hay varios,
-   hacer pasada por vista), 9.3 (accesibilidad: reduced-motion YA global en globals.css + perf), 9.4
+>>> PRÓXIMA TAREA: F9 (pulido) — 9.1 y 9.2 HECHOS. Arrancar por 9.3 (accesibilidad: reduced-motion YA
+   global en globals.css + perf), 9.4
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -545,7 +545,15 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       era explotable). Las RPC nuevas de F8 ya validaban pertenencia y no filtran `correct_index`.
       `get_advisors(security)` se corre en 9.6 post-deploy (las migraciones nuevas no están en prod aún).
       39 db + 100 unit + typecheck + lint verdes; guardrail verificado.
-- [ ] 9.2 Estados carga / empty / error en cada vista
+- [x] 9.2 Estados carga / empty / error en cada vista. Pasada por todas las vistas: las server pages
+      ya redirigían con `?aviso=` (sala/[code], partido→no_match) y /perfil ya tenía empty state de
+      historial; PlayMenu/Lobby ya tenían loading + errores mapeados (patrón de referencia). Agregado:
+      `app/error.tsx` (boundary raíz: captura excepciones de render/RPC en cualquier ruta anidada →
+      fallback con Reintentar + Inicio, antes era pantalla en blanco) + `app/not-found.tsx` (404
+      amistoso). `<TournamentLive>` ya no queda en "Cargando…" para siempre si falla la carga inicial
+      de get_bracket → estado de error con reintento (refrescos posteriores fallidos se ignoran si ya
+      hay snapshot). `<RunSummary>` ahora muestra el error de quick_play (antes silencioso).
+      typecheck/lint/build verdes, 100 unit.
 - [ ] 9.3 Accesibilidad (`prefers-reduced-motion`) + performance
 - [ ] 9.4 Manejo de errores robusto
 - [ ] 9.5 Rate-limit (`quick_play`/`select_option`/`abandon`) + resuscripción Realtime

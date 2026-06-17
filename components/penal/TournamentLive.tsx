@@ -38,10 +38,13 @@ export function TournamentLive({
 }) {
   const [supabase] = useState(() => createClient());
   const [snapshot, setSnapshot] = useState<BracketSnapshot | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
   const [live, setLive] = useState<ScoreboardState>({});
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
   const [showPenal, setShowPenal] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasSnapshotRef = useRef(false);
 
   // Canal privado del torneo: marcadores en vivo (score:live, 6.5).
   useEffect(() => {
@@ -69,11 +72,24 @@ export function TournamentLive({
   }, [supabase, tournamentId]);
 
   // Foto del bracket: al montar y refrescada (placement/eliminated_phase no vienen por score:live).
+  // Si la carga INICIAL falla (red/RPC), mostramos un estado de error con reintento en vez de quedar
+  // en "Cargando…" para siempre; los refrescos posteriores que fallen se ignoran (ya hay snapshot).
   useEffect(() => {
     let active = true;
     const load = async () => {
-      const { data } = await supabase.rpc("get_bracket", { p_tournament: tournamentId });
-      if (active && data) setSnapshot(data as BracketSnapshot);
+      const { data, error } = await supabase.rpc("get_bracket", {
+        p_tournament: tournamentId,
+      });
+      if (!active) return;
+      if (data) {
+        hasSnapshotRef.current = true;
+        setSnapshot(data as BracketSnapshot);
+        setLoadError(false);
+      } else if (error && !hasSnapshotRef.current) {
+        // Solo la carga INICIAL fallida se muestra; un refresco que falle con snapshot ya en mano
+        // no rompe la pantalla.
+        setLoadError(true);
+      }
     };
     void load();
     const id = setInterval(() => void load(), 5000);
@@ -81,7 +97,7 @@ export function TournamentLive({
       active = false;
       clearInterval(id);
     };
-  }, [supabase, tournamentId]);
+  }, [supabase, tournamentId, retry]);
 
   // Detecta el penal abierto: si lo hay → pantalla de penal; si no → bracket (con linger tras el
   // resultado para que se vea GOL/ATAJADO antes de ceder al bracket en el tiempo muerto).
@@ -121,6 +137,27 @@ export function TournamentLive({
   }
 
   if (!snapshot) {
+    if (loadError) {
+      return (
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-balance text-sm text-fg-muted">
+            No pudimos cargar el torneo. Revisá tu conexión y probá de nuevo.
+          </p>
+          <button
+            onClick={() => {
+              setLoadError(false);
+              setRetry((n) => n + 1);
+            }}
+            className="rounded-lg bg-gold px-6 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+          >
+            Reintentar
+          </button>
+          <Link href="/" className="text-xs font-medium text-fg-subtle hover:text-fg-muted">
+            Volver al inicio
+          </Link>
+        </div>
+      );
+    }
     return <p className="text-sm text-fg-subtle">Cargando el torneo…</p>;
   }
 
