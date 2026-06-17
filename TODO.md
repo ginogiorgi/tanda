@@ -2,17 +2,23 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F8. 9.0 (blindaje SQL en CI) HECHO. 8.1 casi cerrado (ver abajo).
+>>> PRÓXIMA TAREA: 8.2 — escena de penal 3D (R3F). 9.0 y 8.1 (incl. invitado) están HECHOS y commiteados.
 
->>> PIVOT (Gino, jun 2026): el MODO INVITADO se redefinió — NO es un torneo client-side sobre
-   lib/engine, sino un USUARIO REAL EFÍMERO: sesión anónima de Supabase con username autoasignado
-   (invitado_<9díg>) + avatar default, que juega el camino competitivo REAL como cualquiera (sin
-   cuenta persistente). Motivo: bundlear el banco de preguntas al cliente expondría la clave de
-   respuestas → cheat en partidas reales. 8.1 implementado (GuestButton + lib/guest/anon +
-   enable_anonymous_sign_ins). 8.1b (torneo local) DESCARTADO. SPEC §8.4 reescrito. OPS PENDIENTE:
-   habilitar anonymous sign-ins en PROD. Próximo F8: 8.2 (escena 3D del penal), 8.5 (bracket), 8.10
-   (HUD), pantallas de partido/resumen/campeón. La pantalla de partido real (que monta <PenalLive>)
-   todavía NO existe.
+>>> ARRANCAR 8.2 ACÁ: escena de penal 3D (cancha/arco/pelota/avatares pateador+arquero, tarjeta de
+   pregunta 2D centrada con la escena atenuada detrás, color de nación en la camiseta). OJO CLAVE: la
+   PANTALLA DE PARTIDO REAL todavía NO existe — hoy <PenalLive> (components/penal/) solo se monta en
+   /dev/penal. 8.2 implica crear esa pantalla (ruta de partido que monta <PenalLive> + la escena 3D).
+   El 3D va SOLO en creador de avatar y penal (SPEC §8.2), code-splitteado, primitivas low-poly propias
+   (sin GLBs), animación procedural. Ver components/avatar/AvatarModel.tsx + AvatarCanvas.tsx como base
+   de R3F ya montada. Después de 8.2: 8.5 (bracket, consume score:live de 6.5), 8.10 (HUD), resto F8.
+
+>>> HECHO este tramo (commits): 9.0 (tests SQL/RPC + DB en CI; ver [[tanda-db-tests]]). 8.1 MODO
+   INVITADO redefinido (Gino): usuario real efímero = sesión anónima + username autoasignado
+   invitado_<9díg> + avatar default, juega el camino competitivo REAL (no torneo client-side; ver
+   [[tanda-guest-anon]]). GuestButton + lib/guest/anon + gate avatar/perfil + upgrade invitado→cuenta
+   (/register modo upgrade). 8.1b (torneo local) DESCARTADO. anon sign-ins YA HABILITADO en prod.
+   SPEC §8.4 reescrito. Para correr los tests DB: `pnpm db:start && pnpm db:reset && pnpm test:db`
+   (necesita Docker; el stack quedó frenado al cerrar la sesión anterior).
 
 >>> 9.0 DONE: suite repetible del camino autoritativo PLPGSQL con Postgres local de Supabase (Docker)
    + Vitest project `db` (pg directo) + job `db` en CI. 26 tests: paridad VIVA TS↔SQL (mulberry32/
