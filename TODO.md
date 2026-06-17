@@ -2,23 +2,33 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 8.2 — escena de penal 3D (R3F). 9.0 y 8.1 (incl. invitado) están HECHOS y commiteados.
+>>> PRÓXIMA TAREA: 8.5 — bracket estilo mundial con marcadores en vivo + pre-partido (consume el
+   canal privado `tournament:{id}` / `score:live` de 6.5; helpers ya en lib/realtime/score.ts:
+   applyScoreUpdate/matchesInPhase; el RPC get_bracket de carga inicial se define acá). Es 2D (el 3D
+   va SOLO en avatar+penal). Después: 8.10 (HUD de tanda), 8.3 (barra de tiempo), 8.6 (resumen fin de
+   partido + CTA cierre invitado), resto F8. OJO 4.6b/4.9 siguen pendientes (offset de reloj fiel y
+   animación GOL/ATAJADO 3D por penal:result — esta última se hace junto con 8.4).
 
->>> ARRANCAR 8.2 ACÁ: escena de penal 3D (cancha/arco/pelota/avatares pateador+arquero, tarjeta de
-   pregunta 2D centrada con la escena atenuada detrás, color de nación en la camiseta). OJO CLAVE: la
-   PANTALLA DE PARTIDO REAL todavía NO existe — hoy <PenalLive> (components/penal/) solo se monta en
-   /dev/penal. 8.2 implica crear esa pantalla (ruta de partido que monta <PenalLive> + la escena 3D).
-   El 3D va SOLO en creador de avatar y penal (SPEC §8.2), code-splitteado, primitivas low-poly propias
-   (sin GLBs), animación procedural. Ver components/avatar/AvatarModel.tsx + AvatarCanvas.tsx como base
-   de R3F ya montada. Después de 8.2: 8.5 (bracket, consume score:live de 6.5), 8.10 (HUD), resto F8.
+>>> HECHO este tramo (commit): 8.2 — ESCENA DE PENAL 3D + PANTALLA DE PARTIDO REAL. Ya existe la
+   pantalla real (`app/partido`, resuelve el match activo con get_active_match) que monta <PenalLive>;
+   la transición lobby→partido es polling al vencer el countdown + CTA "Volver al partido" en el home.
+   Escena 3D: components/penal/PenalScene (low-poly césped/arco/red/pelota + 2 AvatarModel, cámara
+   penal-cam clásica fija) code-splitteada vía PenalSceneViewer (next/dynamic ssr:false). AvatarModel
+   acepta `kitTop?` → tiñe SOLO la camiseta con kit_primary de la nación (§8.3 #1). <PenalLive> monta la
+   escena full-bleed detrás de la tarjeta atenuada/desenfocada. SERVER (mig 20260617100000_match_scene):
+   get_match_scene(match) (briefs+avatares, valida is_match_member) + kicker/keeper_participant_id en
+   penal:start y get_active_match (la 2ª chance arrastra roles en cliente). Helper puro lib/penal/scene.ts
+   (resolveSceneRoles). ALCANCE: escena estática; animaciones goal/save/miss_wide = 8.4/4.9 (no esta
+   tarea). /dev/penal SE MANTIENE como test aislado (sin nación → kitTop null usa el top del avatar);
+   se borra más adelante en F8. PENDIENTE de Gino (visual): chequear a ojo el render WebGL de la escena
+   (cancha/arco/2 avatares, camiseta teñida) — el resto está verificado (94 unit + 29 db verdes).
 
->>> HECHO este tramo (commits): 9.0 (tests SQL/RPC + DB en CI; ver [[tanda-db-tests]]). 8.1 MODO
-   INVITADO redefinido (Gino): usuario real efímero = sesión anónima + username autoasignado
-   invitado_<9díg> + avatar default, juega el camino competitivo REAL (no torneo client-side; ver
-   [[tanda-guest-anon]]). GuestButton + lib/guest/anon + gate avatar/perfil + upgrade invitado→cuenta
-   (/register modo upgrade). 8.1b (torneo local) DESCARTADO. anon sign-ins YA HABILITADO en prod.
-   SPEC §8.4 reescrito. Para correr los tests DB: `pnpm db:start && pnpm db:reset && pnpm test:db`
-   (necesita Docker; el stack quedó frenado al cerrar la sesión anterior).
+>>> PREVIO (commits): 9.0 (tests SQL/RPC + DB en CI; ver [[tanda-db-tests]]). 8.1 MODO INVITADO
+   redefinido (Gino): usuario real efímero = sesión anónima + username autoasignado invitado_<9díg> +
+   avatar default, juega el camino competitivo REAL (no torneo client-side; ver [[tanda-guest-anon]]).
+   GuestButton + lib/guest/anon + gate avatar/perfil + upgrade invitado→cuenta (/register modo upgrade).
+   8.1b (torneo local) DESCARTADO. anon sign-ins YA HABILITADO en prod. SPEC §8.4 reescrito. Para correr
+   los tests DB: `pnpm db:start && pnpm db:reset && pnpm test:db` (necesita Docker).
 
 >>> 9.0 DONE: suite repetible del camino autoritativo PLPGSQL con Postgres local de Supabase (Docker)
    + Vitest project `db` (pg directo) + job `db` en CI. 26 tests: paridad VIVA TS↔SQL (mulberry32/
@@ -394,9 +404,23 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
 - [x] 8.1b ~~Modo práctica invitado: torneo local sobre `lib/engine`~~ **DESCARTADO**: el invitado va
       por el camino real (8.1). No se bundlea el banco de preguntas al cliente (expondría la clave de
       respuestas → cheat en partidas reales). Tarea anulada.
-- [ ] 8.2 Escena de penal 3D (R3F): cancha + arco + pelota + avatares pateador/arquero;
-      tarjeta de pregunta 2D centrada con la escena atenuada/desenfocada detrás; aplicar
-      color de nación a la **camiseta** del avatar (override `kitTop`), resto tal cual
+- [x] 8.2 Escena de penal 3D (R3F) + **pantalla de partido real**. Cámara penal-cam clásica fija
+      (detrás del pateador → arco; arquero de frente), decisión de Gino. Escena estática (poses idle;
+      animaciones goal/save/miss_wide y barra de tiempo = 8.3/8.4/4.9). `components/penal/PenalScene`
+      (low-poly: césped/arco/red/pelota + 2 `AvatarModel`) code-splitteado vía `PenalSceneViewer`
+      (`next/dynamic` ssr:false, espejo de AvatarViewer). `AvatarModel` ahora acepta `kitTop?` →
+      tiñe SOLO la camiseta con el `kit_primary` de la nación (§8.3 #1; resto del avatar tal cual).
+      `<PenalLive>` monta la escena full-bleed detrás de la tarjeta atenuada/desenfocada (menos
+      atenuada al resolver). SERVER (mig 20260617100000_match_scene): `get_match_scene(match)`
+      (SECURITY DEFINER, GRANT authenticated, valida is_match_member; reusa `participant_brief` +
+      avatares de profiles; bot/sin user → avatar null → DEFAULT_AVATAR) + `kicker/keeper_participant_id`
+      en `penal:start` (open_penalty_internal) y en `get_active_match.penal` (la 2ª chance arrastra los
+      roles en el cliente, mismo penalty_id → no se tocó la enorme resolve_penalty). Helper puro
+      `lib/penal/scene.ts` (`resolveSceneRoles`, 5 tests). PANTALLA REAL: ruta `app/partido` (resuelve
+      el match activo con get_active_match), transición lobby→partido (polling al vencer el countdown
+      → router.push), CTA "Volver al partido" en el home. /dev/penal SE MANTIENE (test aislado; sin
+      nación → kitTop null usa el top del avatar). typecheck/lint/build verdes, 94 unit + 29 db
+      (get_match_scene rechaza no-miembro + no fuga correct_index; e2e confirma correct_index no viaja).
 - [ ] 8.3 Barra de tiempo (roja + vibración al final)
 - [ ] 8.4 Animaciones 3D por causa: `goal` / `save` (estirada) / `miss_wide` (afuera),
       con variantes + colocación aleatoria por seed (procedurales: primitivas + pelota)

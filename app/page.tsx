@@ -19,6 +19,7 @@ const AVISOS: Record<string, string> = {
   room_closed: "Esa sala ya cerró: pasaron los 2 minutos.",
   already_started: "Esa partida ya arrancó.",
   room_full: "Esa sala está llena.",
+  no_match: "No tenés un partido en curso.",
 };
 
 export default async function Home({
@@ -44,6 +45,13 @@ export default async function Home({
     username = profile?.username ?? null;
   }
   const isGuest = user?.is_anonymous === true;
+
+  // Partido en curso → ofrecer volver (rehidratación tras cerrar la pestaña / volver al home).
+  let hasActiveMatch = false;
+  if (user) {
+    const { data } = await supabase.rpc("get_active_match");
+    hasActiveMatch = Boolean((data as { match_id?: string } | null)?.match_id);
+  }
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
@@ -82,6 +90,14 @@ export default async function Home({
               </>
             )}
           </p>
+          {hasActiveMatch && (
+            <Link
+              href="/partido"
+              className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+            >
+              Volver al partido
+            </Link>
+          )}
           <PlayMenu />
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             {isGuest ? (

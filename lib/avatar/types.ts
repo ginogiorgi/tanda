@@ -2,7 +2,8 @@
  * Tipos del avatar 3D. El avatar es un objeto serializable que se guarda en
  * `profiles.avatar` (jsonb) y se usa para reconstruir el personaje en el creador y en la
  * escena de penal. NO lleva color de nación: en el penal el avatar va tal cual lo armó el
- * jugador; la selección se lee solo en HUD/bandera. Ver SPEC §8.2 / §8.3 #1.
+ * jugador SALVO la camiseta, que toma el `kit_primary` de la nación vía el override de runtime
+ * `kitTop` del render (no se persiste acá). Ver SPEC §8.2 / §8.3 #1.
  */
 
 /** Cuerpo base. Define el rig y la silueta; las piezas modulares se montan encima. */

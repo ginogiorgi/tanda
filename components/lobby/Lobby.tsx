@@ -64,6 +64,28 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     return () => clearInterval(id);
   }, [startsAt, serverNow]);
 
+  // Al vencer el countdown, el server arma el torneo (start_tournament, disparado por el 48º join o
+  // por tick()). Acá hacemos polling de `get_active_match` y, cuando aparece el partido, vamos a la
+  // pantalla de partido. Es el puente lobby → partido (8.2).
+  const started = remaining <= 0;
+  useEffect(() => {
+    if (!started) return;
+    let active = true;
+    const poll = async () => {
+      const { data } = await supabase.rpc("get_active_match");
+      if (!active) return;
+      if ((data as { match_id?: string } | null)?.match_id) {
+        router.push("/partido");
+      }
+    };
+    void poll();
+    const id = setInterval(() => void poll(), 1500);
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
+  }, [started, supabase, router]);
+
   async function onLeave() {
     setLeaving(true);
     if (channelRef.current) await supabase.removeChannel(channelRef.current);
@@ -81,8 +103,6 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
       // Sin clipboard (contexto inseguro): el código ya está visible en pantalla.
     }
   }
-
-  const started = remaining <= 0;
 
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-8">

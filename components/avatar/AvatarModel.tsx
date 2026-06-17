@@ -6,7 +6,7 @@
  * vía radios distintos, no solo escala. Ver SPEC §8.2.
  */
 
-import type { AvatarConfig, BodyType } from "@/lib/avatar/types";
+import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
 
 const SKIN = "#d9a06b";
 const EYE = "#2a211b";
@@ -104,10 +104,16 @@ function bottomStyle(part: string): { coversShin: boolean; tapered: boolean; sho
 
 interface AvatarModelProps {
   config: AvatarConfig;
+  /**
+   * Override del color de camiseta (SPEC §8.3 #1): en la escena de penal el `top` se tiñe con el
+   * `kit_primary` de la nación. Si no viene, se usa el `top.color` del avatar (creador/perfil).
+   */
+  kitTop?: HexColor;
 }
 
-export function AvatarModel({ config }: AvatarModelProps) {
-  const { bodyType, hair, top, bottom, shoes } = config;
+export function AvatarModel({ config, kitTop }: AvatarModelProps) {
+  const { bodyType, hair, bottom, shoes } = config;
+  const top = kitTop ? { ...config.top, color: kitTop } : config.top;
   const b = BODY[bodyType];
   const ts = topStyle(top.part);
   const bs = bottomStyle(bottom.part);

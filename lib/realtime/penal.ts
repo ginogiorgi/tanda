@@ -6,6 +6,9 @@
  * Patrón espejo de `lib/lobby/presence.ts`.
  */
 
+import type { AvatarConfig } from "@/lib/avatar/types";
+import type { ParticipantBrief } from "@/lib/realtime/score";
+
 /** Dificultad de la pregunta (enum `difficulty` de la DB, SPEC §2.1). */
 export type Difficulty = "easy" | "medium" | "hard" | "very_hard";
 
@@ -35,6 +38,14 @@ export type PenalStartPayload = {
   phase?: "first" | "second_chance";
   /** Solo al rehidratar (`get_active_match`): mi última selección, para restaurar el resaltado. */
   my_option?: number | null;
+  /**
+   * Participantes que patean/atajan ESTE penal (autoritativo, de la fila `penalties`). Vienen en
+   * `penal:start` y al rehidratar; en `penal:second_chance` NO cambian (mismo `penalty_id`) → el
+   * cliente arrastra los del penal en curso. Sirven para colocar los avatares en la escena 3D
+   * (§8.2) mapeándolos contra `home`/`away` de {@link MatchScene}.
+   */
+  kicker_participant_id?: string;
+  keeper_participant_id?: string;
 };
 
 /**
@@ -68,6 +79,22 @@ export type PenalResultPayload = {
   explanation: string | null;
   home_score: number;
   away_score: number;
+};
+
+/**
+ * Datos estáticos del partido para la escena 3D (RPC `get_match_scene`, SPEC §8.2). No cambia
+ * penal a penal: el cliente lo pide una vez al montar la pantalla. `home_avatar`/`away_avatar` son
+ * `null` para bots o usuarios sin avatar → el cliente cae a `DEFAULT_AVATAR`. La camiseta de cada
+ * avatar se tiñe con el `kit_primary` del brief de su nación (§8.3 #1).
+ */
+export type MatchScene = {
+  match_id: string;
+  /** Participante del caller (home o away), o `null` si no juega (no debería pasar). */
+  my_participant_id: string | null;
+  home: ParticipantBrief | null;
+  away: ParticipantBrief | null;
+  home_avatar: AvatarConfig | null;
+  away_avatar: AvatarConfig | null;
 };
 
 /**

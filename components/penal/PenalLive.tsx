@@ -10,7 +10,10 @@ import {
   type PenalStartPayload,
   type PenalResultPayload,
   type ActiveMatch,
+  type MatchScene,
 } from "@/lib/realtime/penal";
+import { resolveSceneRoles } from "@/lib/penal/scene";
+import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 
 type PenalLiveProps = {
   matchId: string;
@@ -30,6 +33,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
+  const [scene, setScene] = useState<MatchScene | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -58,7 +62,18 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       channelRef.current = channel;
 
       const onNewPhase = ({ payload }: { payload: unknown }) => {
-        setPenal(payload as PenalStartPayload);
+        const next = payload as PenalStartPayload;
+        // `penal:second_chance` no trae pateador/arquero (mismo penalty_id que el `penal:start`
+        // previo): los arrastramos del penal en curso para no perder la colocación de avatares.
+        setPenal((prev) =>
+          !next.kicker_participant_id && prev?.penalty_id === next.penalty_id
+            ? {
+                ...next,
+                kicker_participant_id: prev.kicker_participant_id,
+                keeper_participant_id: prev.keeper_participant_id,
+              }
+            : next,
+        );
         setSelected(null); // fase nueva → arranca sin selección
         setResult(null);
       };
@@ -70,6 +85,13 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           setResult(payload as PenalResultPayload);
         })
         .subscribe();
+
+      // Datos estáticos de la escena 3D (naciones/kits + avatares de ambos): se piden una vez.
+      const { data: sceneData } = await supabase.rpc("get_match_scene", {
+        p_match: matchId,
+      });
+      if (!active) return;
+      setScene((sceneData as MatchScene | null) ?? null);
 
       // Rehidratación (4.8): tras refresh/reconexión, retomo el penal en curso con su deadline
       // server y mi selección, sin esperar al próximo Broadcast (SPEC §5.2).
@@ -139,24 +161,45 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return <p className="text-sm text-fg-subtle">Esperando el penal…</p>;
   }
 
+  // Escena 3D detrás de la tarjeta: cancha/arco/pelota + avatares pateador/arquero (§8.2). Durante
+  // el penal va atenuada/desenfocada; al resolver (GOL/ATAJADO) menos atenuada. `null` si el partido
+  // no tiene datos de escena (p. ej. dev harness sin nación) → degrada a solo la tarjeta.
+  const sceneRoles = resolveSceneRoles(penal, scene);
+  const sceneBg = (soft: boolean) =>
+    sceneRoles ? (
+      <div className="fixed inset-0 z-0">
+        <PenalSceneViewer
+          kicker={sceneRoles.kicker}
+          keeper={sceneRoles.keeper}
+          className="h-full w-full"
+        />
+        <div
+          className={`absolute inset-0 ${soft ? "bg-bg/25" : "bg-bg/60 backdrop-blur-sm"}`}
+        />
+      </div>
+    ) : null;
+
   // Resuelto: GOL/ATAJADO + revela la correcta + explicación (§8.11). La animación 3D es 4.9/F8.
   if (result) {
     return (
-      <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-        <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
-          Penal {result.idx} · {result.home_score}–{result.away_score}
-        </span>
-        <p className="text-4xl font-extrabold tracking-tight text-gold">
-          {result.scored ? "¡GOL!" : "ATAJADO"}
-        </p>
-        <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
-        <p className="text-base font-semibold text-fg">
-          Correcta: {penal.options[result.correct_index]}
-        </p>
-        {result.explanation && (
-          <p className="text-balance text-sm text-fg-subtle">{result.explanation}</p>
-        )}
-      </div>
+      <>
+        {sceneBg(true)}
+        <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-4 text-center">
+          <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
+            Penal {result.idx} · {result.home_score}–{result.away_score}
+          </span>
+          <p className="text-4xl font-extrabold tracking-tight text-gold">
+            {result.scored ? "¡GOL!" : "ATAJADO"}
+          </p>
+          <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
+          <p className="text-base font-semibold text-fg">
+            Correcta: {penal.options[result.correct_index]}
+          </p>
+          {result.explanation && (
+            <p className="text-balance text-sm text-fg-subtle">{result.explanation}</p>
+          )}
+        </div>
+      </>
     );
   }
 
@@ -165,7 +208,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const isSecondChance = penal.phase === "second_chance";
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-6">
+    <>
+      {sceneBg(false)}
+      <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium uppercase tracking-[0.2em] text-fg-subtle">
           Penal {penal.idx}
@@ -230,6 +275,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             ? "¿Seguro? Tocá de nuevo para abandonar"
             : "Abandonar"}
       </button>
-    </div>
+      </div>
+    </>
   );
 }
