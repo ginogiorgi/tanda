@@ -35,8 +35,6 @@ const AUTH_ALLOWLIST = [
   "is_tournament_member",
   "realtime_match_member",
   "realtime_tournament_member",
-  // harness DEV (temporal; se borra al sacar /dev/penal)
-  "dev_create_practice_penal",
 ].sort();
 
 // `anon` (sesión sin login) solo necesita: username_available (form de registro) + los helpers de

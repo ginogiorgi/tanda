@@ -2,10 +2,13 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 — 9.1–9.5 HECHOS, 9.6 PARCIAL (verificación local toda en verde; falta el
-   walkthrough visual de Gino + el DEPLOY a prod, que necesita OPS de Gino). Es el único pendiente del
-   proyecto. NO tocar prod sin OK de Gino (env vars Vercel + migraciones a prod + anon toggle dashboard
-   + get_advisors). Cuando Gino dé el OK y haga su OPS, cerrar 9.6.
+>>> ESTADO: F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
+   6 migraciones del tramo aplicadas a prod por MCP (prod==local), advisors corridos (perf 0; security
+   solo lo esperado por diseño), dev harness borrado, OPS de Vercel/Resend/anon confirmado por Gino.
+   >>> ÚNICO PENDIENTE DEL PROYECTO: el walkthrough visual de Gino en prod (§12.1-3: avatar, escena de
+   penal + animaciones, bracket, en un torneo real). No hay más tareas de código. Al confirmar el
+   visual, tildar 9.6 y el proyecto queda cerrado. OJO: los commits de la sesión están LOCALES; pushear
+   a main dispara el deploy del front en Vercel (preguntar a Gino si quiere que se pushee).
    (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
    Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
    §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
@@ -598,3 +601,8 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       verificar dominio en Resend; habilitar anonymous sign-ins en el dashboard de prod. FOLLOW-UPS del
       advisor: borrar el dev harness de prod (dev_create_practice_penal + /dev/penal, ya sobra post-F8);
       opcional, activar leaked password protection en Auth.
+      >>> ACTUALIZACIÓN (Gino confirmó): env vars Vercel + dominio Resend + anonymous sign-ins YA estaban
+      verificados/habilitados (quedó viejo). Leaked password protection = feature premium, NO se activa.
+      Dev harness BORRADO (mig 20260617150000_drop_dev_harness: drop de la función, aplicada a prod por
+      MCP; ruta /dev/penal + PenalDevHarness eliminados; sacado del allowlist de rls_audit). ⇒ TODO el
+      código y el deploy de DB están HECHOS. ÚNICO pendiente: el walkthrough visual de Gino (§12.1-3).
