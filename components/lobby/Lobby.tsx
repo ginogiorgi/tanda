@@ -72,9 +72,9 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     if (!started) return;
     let active = true;
     const poll = async () => {
-      const { data } = await supabase.rpc("get_active_match");
+      const { data } = await supabase.rpc("get_active_tournament");
       if (!active) return;
-      if ((data as { match_id?: string } | null)?.match_id) {
+      if ((data as { tournament_id?: string } | null)?.tournament_id) {
         router.push("/partido");
       }
     };

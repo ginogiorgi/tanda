@@ -46,11 +46,11 @@ export default async function Home({
   }
   const isGuest = user?.is_anonymous === true;
 
-  // Partido en curso → ofrecer volver (rehidratación tras cerrar la pestaña / volver al home).
+  // Torneo en curso → ofrecer volver (rehidratación tras cerrar la pestaña / volver al home).
   let hasActiveMatch = false;
   if (user) {
-    const { data } = await supabase.rpc("get_active_match");
-    hasActiveMatch = Boolean((data as { match_id?: string } | null)?.match_id);
+    const { data } = await supabase.rpc("get_active_tournament");
+    hasActiveMatch = Boolean((data as { tournament_id?: string } | null)?.tournament_id);
   }
 
   return (
