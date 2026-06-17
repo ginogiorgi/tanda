@@ -36,6 +36,11 @@ export type PenalStartPayload = {
   /** Solo en `penal:second_chance`: opción incorrecta quitada (quedan 2). */
   removed_option?: number;
   phase?: "first" | "second_chance";
+  /**
+   * Solo en `penal:second_chance`: motivo por el que reaparecen las opciones (10.13). Hoy siempre
+   * `"both_missed"` (erraron los dos) → el cliente muestra "Erraron los dos: segunda chance".
+   */
+  reason?: "both_missed";
   /** Solo al rehidratar (`get_active_match`): mi última selección, para restaurar el resaltado. */
   my_option?: number | null;
   /**
@@ -79,6 +84,16 @@ export type PenalResultPayload = {
   explanation: string | null;
   home_score: number;
   away_score: number;
+  /**
+   * 10.7: el penal se decidió porque uno respondió MÁS RÁPIDO (ambos acertaron). El cliente lo usa
+   * para explicar el resultado ("X respondió más rápido") con el delta de los `*_selected_at`.
+   */
+  won_by_speed: boolean;
+  kicker_participant_id: string;
+  keeper_participant_id: string;
+  /** ISO timestamps (server) de la selección de cada lado en ESTE penal (para mostrar el delta). */
+  kicker_selected_at: string | null;
+  keeper_selected_at: string | null;
 };
 
 /**

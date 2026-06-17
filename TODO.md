@@ -6,13 +6,14 @@
    APLICADAS A PROD por MCP (160000_seed_nations_qualified [destructiva, OK de Gino], 170000_match_length_by_phase,
    180000_bot_delay_floor); advisors corridos (performance 0; security solo lo esperado por diseño).
    ⇒ 10.1, 10.4, 10.5, 10.9 cerradas (código + prod). 10.6: el server YA es aleatorio (verificado) → se
-   cierra VISIBLE en 10.11. FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
-   PASO 1 cluster payload+pantalla (10.7+10.11+10.13+10.6 visible: nueva mig resolve_penalty con
-   selected_at/participant ids/won_by_speed + reason second_chance + select_option first-tap-gana; cliente
-   congela timer/no cambiable/muestra segundo+delta+motivo; SPEC/CLAUDE gotcha). PASO 2 transiciones
-   (10.2+10.3). PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5 historial
-   real (10.10). Las migraciones NUEVAS de pasos 1/5 se aplican a prod al cerrar F10, en lote, con OK de
-   Gino. Commits LOCALES (sin pushear); pushear `main` deploya el front por Vercel.
+   cierra VISIBLE en 10.11. PASO 1 HECHO (commit): 10.6/10.7/10.11/10.13 — mig 190000_penal_result_detail
+   (resolve_penalty con won_by_speed + selected_at + participant ids + reason='both_missed'; select_option
+   PRIMER-TAP-GANA con already_answered) + PenalLive (congela timer, no cambiable, segundo+delta+motivo+
+   pick vs correcta) + SPEC/CLAUDE gotcha + test db select_option. Verde: typecheck/lint/build + 101 unit +
+   48 db. FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md): PASO 2
+   transiciones (10.2+10.3). PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5
+   historial real (10.10). Las migraciones NUEVAS de pasos 1/5 (190000 + la de historial) se aplican a prod
+   al cerrar F10, en lote, con OK de Gino. Commits LOCALES (sin pushear); pushear `main` deploya el front.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
@@ -643,14 +644,13 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [x] 10.5 Bots responden muy rápido: +2s al mínimo Y al máximo de cada tier (ventana 4..7/8/9/10s).
       `lib/engine/bot.ts` TIER_MODEL + port SQL `engine_bot_intent` (mig 20260617180000) + paridad. (Gino
       pidió mid-stream sumar también al máximo.) APLICADA A PROD (mig 180000_bot_delay_floor).
-- [~] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA. HALLAZGO: el server YA lo hace
-      (`resolve_penalty` inserta `engine_rand_int(seed#hash(part),3)`, is_random=true; distribución
-      verificada 74/58/68 sobre 200 penales; sin default a 0 en el cliente). Lo que ve Gino ("toma la
-      primera") no sale del código actual → probablemente un tap tardío/rechazado o el reveal de
-      `correct_index` (que es 0 ~1/3). Se cierra haciéndolo VISIBLE en el rework de 10.11 ("No
-      respondiste → opción al azar" + mostrar tu pick vs la correcta). CONFIRMAR con Gino.
-- [ ] 10.7 Cuando empatan pero gana el más rápido, decir por qué perdiste ("<país> respondió más
-      rápido"). El payload de resultado debe llevar el motivo + los tiempos; el cliente lo muestra.
+- [x] 10.6 Si el humano no selecciona nada → respuesta ALEATORIA. El server YA lo hacía (verificado).
+      Hecho VISIBLE en la pantalla de resultado (PenalLive): si no respondiste muestra "No respondiste →
+      se eligió una opción al azar"; si respondiste muestra tu pick vs la correcta. Cerrado junto a 10.11.
+- [x] 10.7 Cuando empatan pero gana el más rápido, decir por qué perdiste ("<país> respondió más
+      rápido"). HECHO: `penal:result` ahora lleva `won_by_speed` + `kicker/keeper_selected_at` +
+      participant ids (mig 190000_penal_result_detail); PenalLive muestra el motivo + el delta de tiempos
+      (perspectiva: "ganaste por velocidad" / "<nación> respondió X.Xs más rápido").
 - [ ] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
       mete/ataja el RIVAL. Hoy es goal/save fijo sin perspectiva. Usar el rol del jugador (kicker/keeper)
       + a quién favorece el resultado.
@@ -660,12 +660,15 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [ ] 10.10 Historial roto: `getTournamentHistory` es un STUB (devuelve []) desde 2.7 → el perfil nunca
       muestra nada. Implementarlo de verdad (query a participants/tournaments del usuario: nación,
       placement/eliminated_phase, resultado). Perdí 1 + abandoné 1 y no aparecen.
-- [ ] 10.11 Respuesta NO cambiable + congelar el tiempo al elegir + mostrar el segundo exacto. CAMBIO DE
-      REGLA (revierte el gotcha "respuesta cambiable hasta el final"): al primer tap queda fija, el
-      timer del cliente se congela en ese instante. Si perdés por diferencia de tiempo, decir por cuánto
-      (mostrar ambos `selected_at`/delta). El penal igual resuelve a los 10s server. Actualizar SPEC.
+- [x] 10.11 Respuesta NO cambiable + congelar el tiempo al elegir + mostrar el segundo exacto. HECHO:
+      `select_option` ahora es PRIMER-TAP-GANA (rechaza el cambio con `already_answered`, re-tap igual
+      idempotente; mig 190000) → regla AUTORITATIVA, no solo del cliente. PenalLive congela el contador/
+      barra al tap, bloquea los botones, muestra "Respondiste a los X.Xs" y, en el resultado, el delta de
+      tiempos (10.7). SPEC + CLAUDE gotcha actualizados (revertido "respuesta cambiable"). Test db nuevo
+      (select_option.test.ts: primer tap, re-tap idempotente, cambio rechazado, 1 sola fila).
 - [ ] 10.12 Tanteador estilo transmisión: círculos verde (gol) / rojo (erró) por penal, como tablero
       detrás del arco un poco elevado, en vez del texto centrado actual ("Penal N · score"). Reusar el
       concepto de PenalDots (RunSummary) para el HUD en vivo.
-- [ ] 10.13 Segunda chance (ambos erraron, reaparecen las 2 opciones): mensaje arriba explicando POR QUÉ
-      se volvieron a mostrar ("Erraron los dos: segunda chance"). Hoy solo dice "2ª chance".
+- [x] 10.13 Segunda chance (ambos erraron, reaparecen las 2 opciones): mensaje arriba explicando POR QUÉ
+      se volvieron a mostrar. HECHO: `penal:second_chance` lleva `reason='both_missed'` (mig 190000) y
+      PenalLive muestra "Erraron los dos: segunda chance — quedan 2 opciones".

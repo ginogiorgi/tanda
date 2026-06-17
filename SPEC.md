@@ -65,12 +65,14 @@ serverless). Cada penal abierto tiene `started_at` y `deadline = started_at + 10
 fijados por el servidor.
 
 **El penal SIEMPRE se resuelve recién al cumplirse los 10s** (no antes, aunque ambos ya
-hayan elegido). Durante la ventana, cada jugador puede **cambiar su elección las veces que
-quiera** con `select_option`; el server registra la **última** selección y su
-`selected_at` (timestamp server). Recién al vencer el `deadline` se "patea": la respuesta
-que vale es la última seleccionada, y la **rapidez** que decide GOL/ATAJA en caso de
-ambos-bien es el `selected_at` de esa última selección. Esto mantiene a los dos jugadores
-sincronizados (los dos ven la barra completa) y evita revelar el resultado antes.
+hayan elegido). La respuesta **NO es cambiable**: el **primer tap queda fijo** (F10/10.11;
+antes era cambiable hasta el final). `select_option` registra esa única selección con su
+`selected_at` (timestamp server) y **rechaza** un cambio posterior con `already_answered`;
+un re-tap de la misma opción es idempotente. El cliente **congela** el contador en el
+instante del tap. Recién al vencer el `deadline` se "patea": la respuesta que vale es la
+elegida, y la **rapidez** que decide GOL/ATAJA en caso de ambos-bien es el `selected_at` de
+esa selección. Esto mantiene a los dos jugadores sincronizados (los dos ven la barra hasta el
+final) y evita revelar el resultado antes.
 
 La resolución es **idempotente** y se dispara por cualquiera de:
 
@@ -128,7 +130,7 @@ con `SECURITY DEFINER` que validan.
 | `participants` | `id`, `tournament_id`, `user_id?` (null = bot), `nation_id`, `is_bot`, `group_letter`, `seed`, `eliminated_phase?`, `placement?` | 48 por torneo; `placement`/`eliminated_phase` para historial |
 | `matches` | `id`, `tournament_id`, `phase`, `bracket_slot`, `home_participant_id`, `away_participant_id`, `home_score`, `away_score`, `winner_participant_id`, `status` (ver §3), `is_bot_only` | |
 | `penalties` | `id`, `match_id`, `idx` (1..5 o súbita), `kicker_participant_id`, `keeper_participant_id`, `question_id`, `difficulty`, `started_at`, `deadline`, `status` (ver §3), `second_chance bool`, `removed_option int?`, `resolution jsonb` | timestamps server |
-| `penalty_answers` | `penalty_id`, `participant_id`, `option_index`, `selected_at` (server, última selección), `is_correct`, `is_random` (elegida por ausencia), `phase` (`first\|second_chance`) | una fila por (penalty, participant, phase); `option_index`/`selected_at` se actualizan en cada cambio |
+| `penalty_answers` | `penalty_id`, `participant_id`, `option_index`, `selected_at` (server), `is_correct`, `is_random` (elegida por ausencia), `phase` (`first\|second_chance`) | una fila por (penalty, participant, phase); **primer tap fijo** (F10/10.11), no se actualiza tras elegir |
 | `bot_intents` | `penalty_id`, `participant_id`, `phase` (`first\|second_chance`), `scheduled_answer_at`, `will_be_correct`, `chosen_option`, `materialized bool` | precomputado al abrir cada penal **y** al entrar en segunda chance / muerte súbita |
 | `tournament_questions` | `tournament_id`, `question_id` | PK compuesta → no-repeat intra-torneo |
 
@@ -176,9 +178,9 @@ pending ──open──▶ open ──(resolución)──▶ resolved   (GOL | 
 
 - `open`: server fija `started_at`, `deadline = +10s`, precomputa `bot_intents` de bots
   involucrados, emite Broadcast `penal:start` (pregunta + 3 opciones, **sin** correcta).
-  Durante la ventana cada humano puede cambiar su elección (`select_option`); se guarda la
-  última con su `selected_at`. Las elecciones de cada uno **no** se transmiten al rival
-  hasta resolver.
+  Durante la ventana cada humano elige UNA vez (`select_option`, primer tap fijo, no
+  cambiable — F10/10.11) con su `selected_at`. Las elecciones de cada uno **no** se
+  transmiten al rival hasta resolver.
 - Para un participante **ausente** (desconectado / pestaña oculta) sin selección, al
   resolver el server le asigna una **opción aleatoria de las 3** (seed determinista) — no
   se lo penaliza con fallo seguro (ver §5.2). Un humano **presente** que no elige nada =
@@ -315,7 +317,7 @@ Todas autoritativas, validan pertenencia y usan `now()` del servidor. Errores co
 | `quick_play()` | — | si el caller ya tiene torneo activo → lo **reanuda** (`get_active_match`). Si no, matchmaking: une a la sala en `lobby` que **más humanos** tenga con cupo; si no hay, crea una. Atómico (evita carreras) | `unauthenticated` |
 | `get_active_match()` | — | devuelve el torneo/partido/penal en curso del caller (para rehidratar tras refresh) o `null` | |
 | `start_tournament(room_id)` | room_id | rellena bots hasta 48, asigna naciones aleatorias, **reparte humanos uno por grupo** (round-robin) y completa con bots, arma 12 grupos + fixture, estado `in_progress`; simula bot-only de la 1ª jornada. Si 0 humanos → `cancelled` | `already_started` |
-| `select_option(penalty_id, option_index)` | ids | registra/actualiza la **última** selección con `selected_at=now()` server; valida ventana `[started_at, deadline]` y pertenencia. **No** resuelve (la resolución es a los 10s) | `out_of_window`, `not_participant`, `penalty_closed` |
+| `select_option(penalty_id, option_index)` | ids | registra la selección (PRIMER tap fijo, no cambiable — F10/10.11) con `selected_at=now()` server; valida ventana `[started_at, deadline]` y pertenencia; rechaza cambios. **No** resuelve (la resolución es a los 10s) | `out_of_window`, `not_participant`, `penalty_closed`, `already_answered` |
 | `resolve_penalty(penalty_id)` | id | idempotente, **solo** si `now()≥deadline`: asigna aleatoria a ausentes, materializa bot_intents, aplica motor, persiste, emite `penal:result`, agenda siguiente penal o cierra match | `too_early` / no-op si ya resuelto |
 | `advance_match(match_id)` | id | reparte puntos (grupos) o define ganador/súbita (elim.); dispara `advance_tournament` si corresponde | |
 | `advance_tournament(tournament_id)` | id | arma siguiente fase cuando la actual terminó; simula bot-only; emite bracket | |
@@ -367,8 +369,8 @@ Si un humano se desconecta, refresca o pasa la pestaña a segundo plano **sin** 
 - Timing y evaluación **solo server**; el cliente nunca recibe `correct_index` antes de
   `resolved`. Las elecciones del rival tampoco viajan hasta resolver.
 - `select_option` valida: dentro de `[started_at, deadline]`, el caller es participante del
-  match, penal `open`. Se puede llamar varias veces (cambio de respuesta); solo cuenta la
-  última y su `selected_at` lo pone el server.
+  match, penal `open`. **Primer tap fijo** (F10/10.11): un cambio posterior se rechaza con
+  `already_answered`; el `selected_at` lo pone el server.
 - La resolución solo ocurre con `now() ≥ deadline` (ni el poke ni nada la adelantan).
 - **RLS en todas las tablas**; columnas sensibles fuera del alcance de `authenticated`.
 - Sin secretos en el cliente (solo `NEXT_PUBLIC_SUPABASE_URL` y anon key; `service_role`
@@ -406,7 +408,7 @@ Si un humano se desconecta, refresca o pasa la pestaña a segundo plano **sin** 
 ### 8.1 Quality-of-life (cerradas como default)
 
 - **HUD durante la tanda:** marcador en vivo (ej. 2–1), "Penal N de 5" y si en este
-  **pateás o atajás**; resaltado de tu opción elegida (cambiable).
+  **pateás o atajás**; resaltado de tu opción elegida (primer tap fijo, no cambiable — F10/10.11).
 - **Animaciones de penal según la causa (no un clip único):** el `reason` de la resolución
   (§3.1) elige la familia, y dentro de cada una hay **varias variantes + colocación
   aleatoria** (izq/centro/der, alto/bajo, por `seed`) para que no patee siempre al mismo

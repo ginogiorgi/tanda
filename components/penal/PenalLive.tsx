@@ -68,6 +68,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   }
   const [remaining, setRemaining] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  // 10.11: ms restantes congelados en el instante del tap → la barra/contador quedan fijos al
+  // responder (el penal igual resuelve a los 10s server). `null` = todavía no respondí esta fase.
+  const [frozenRemaining, setFrozenRemaining] = useState<number | null>(null);
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
   const [abandoning, setAbandoning] = useState(false);
   const [abandonError, setAbandonError] = useState(false);
@@ -75,6 +78,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const pokedRef = useRef<string | null>(null);
   const vibratedRef = useRef<string | null>(null);
   const remainingRef = useRef(0);
+  // 10.11: respuesta NO cambiable. Ref (no estado) para que el guard sobreviva al closure stale
+  // del handler de teclado (que solo se re-crea al cambiar de fase, no al elegir).
+  const answeredRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -107,7 +113,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           setScore({ home: am.home_score, away: am.away_score });
           if (am.penal) {
             setPenal(am.penal);
-            setSelected(am.penal.my_option ?? null);
+            // 10.11: si ya había respondido (reconexión), retomo la selección y la dejo fija.
+            const mine = am.penal.my_option ?? null;
+            setSelected(mine);
+            answeredRef.current = mine != null;
           }
         }
       };
@@ -126,7 +135,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
               }
             : next,
         );
-        setSelected(null); // fase nueva → arranca sin selección
+        // Fase nueva → arranca sin selección y con la respuesta des-bloqueada (10.11).
+        setSelected(null);
+        setFrozenRemaining(null);
+        answeredRef.current = false;
         setResult(null);
       };
 
@@ -197,17 +209,25 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return () => clearInterval(id);
   }, [penal, supabase]);
 
-  // Elegir/cambiar opción: optimista en el cliente, autoritativo en el server. El server
-  // registra la ÚLTIMA selección con su `selected_at` (SPEC §1.3); cambiable hasta el deadline.
+  // 10.11: elegir opción. PRIMER TAP GANA (no cambiable): el server rechaza un cambio con
+  // `already_answered`. Optimista en el cliente; al tap congelo el contador (frozenRemaining) y
+  // bloqueo. El penal igual resuelve a los 10s server (la rapidez se mide por este `selected_at`).
   async function onSelect(option: number) {
-    if (!penal || remainingRef.current <= 0) return;
+    if (!penal || remainingRef.current <= 0 || answeredRef.current) return;
+    answeredRef.current = true;
     unlockAudio(); // primer gesto del usuario → habilita el audio
     setSelected(option); // resaltado optimista
+    setFrozenRemaining(remainingRef.current); // congela la barra/segundo en este instante
     const { error } = await supabase.rpc("select_option", {
       p_penalty: penal.penalty_id,
       p_option: option,
     });
-    if (error) setSelected(null); // p. ej. `out_of_window`: el server manda
+    if (error) {
+      // p. ej. `out_of_window`: el server manda → revierto y des-bloqueo.
+      answeredRef.current = false;
+      setSelected(null);
+      setFrozenRemaining(null);
+    }
   }
 
   // Teclado en desktop (8.12): 1/2/3 eligen la opción (salvo la quitada en 2ª chance).
@@ -269,8 +289,43 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       </div>
     ) : null;
 
+  // Mi rol en este penal (pateo/atajo), para el HUD, el audio por perspectiva (10.8) y el motivo
+  // del resultado (10.7). `null` si no juego este penal (no debería pasar con datos de escena).
+  const myId = scene?.my_participant_id ?? null;
+  const role: "kick" | "keep" | null =
+    myId == null
+      ? null
+      : myId === penal.kicker_participant_id
+        ? "kick"
+        : myId === penal.keeper_participant_id
+          ? "keep"
+          : null;
+  const briefFor = (pid: string | undefined | null) => {
+    if (!scene || pid == null) return null;
+    if (scene.home?.participant_id === pid) return scene.home;
+    if (scene.away?.participant_id === pid) return scene.away;
+    return null;
+  };
+
   // Resuelto: animación 3D goal/save/miss_wide (8.4/4.9) + GOL/ATAJADO + revela la correcta (§8.11).
   if (result) {
+    const iAnswered = selected != null;
+    const amWinner =
+      (role === "kick" && result.winner === "kicker") ||
+      (role === "keep" && result.winner === "keeper");
+    // 10.7: si se decidió por velocidad (ambos acertaron), explicar por qué con el delta de tiempos.
+    const winnerId =
+      result.winner === "kicker"
+        ? result.kicker_participant_id
+        : result.keeper_participant_id;
+    const winnerNation = briefFor(winnerId)?.nation_name ?? "El rival";
+    const deltaMs =
+      result.kicker_selected_at && result.keeper_selected_at
+        ? Math.abs(
+            new Date(result.kicker_selected_at).getTime() -
+              new Date(result.keeper_selected_at).getTime(),
+          )
+        : null;
     return (
       <>
         {sceneBg(true, { reason: result.reason, variant: result.variant })}
@@ -281,7 +336,26 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           <p className="text-4xl font-extrabold tracking-tight text-gold">
             {result.scored ? "¡GOL!" : "ATAJADO"}
           </p>
+          {/* 10.7: motivo cuando empatan en aciertos y gana el más rápido. */}
+          {result.won_by_speed && deltaMs != null && (
+            <p className="text-sm font-semibold text-fg-muted">
+              {amWinner
+                ? `Ganaste por velocidad: respondiste ${(deltaMs / 1000).toFixed(1)}s antes`
+                : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`}
+            </p>
+          )}
           <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
+          {/* 10.6 (visible): tu pick vs la correcta; si no respondiste, opción al azar. */}
+          {role != null &&
+            (iAnswered ? (
+              <p className="text-sm text-fg-subtle">
+                Tu respuesta: {penal.options[selected]}
+              </p>
+            ) : (
+              <p className="text-sm text-amber-400">
+                No respondiste → se eligió una opción al azar
+              </p>
+            ))}
           <p className="text-base font-semibold text-fg">
             Correcta: {penal.options[result.correct_index]}
           </p>
@@ -293,22 +367,18 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     );
   }
 
-  const seconds = Math.ceil(remaining / 1000);
-  const locked = remaining <= 0;
   const isSecondChance = penal.phase === "second_chance";
+  const answered = selected != null;
+  const locked = remaining <= 0;
   const totalMs = Math.max(
     1,
     new Date(penal.deadline).getTime() - new Date(penal.started_at).getTime(),
   );
-  const myId = scene?.my_participant_id ?? null;
-  const role: "kick" | "keep" | null =
-    myId == null
-      ? null
-      : myId === penal.kicker_participant_id
-        ? "kick"
-        : myId === penal.keeper_participant_id
-          ? "keep"
-          : null;
+  // 10.11: al responder, el contador/barra se congelan en el instante del tap (frozenRemaining).
+  const displayRemaining = frozenRemaining ?? remaining;
+  const seconds = Math.ceil(displayRemaining / 1000);
+  const answeredAtSec =
+    frozenRemaining != null ? (totalMs - frozenRemaining) / 1000 : null;
 
   return (
     <>
@@ -338,7 +408,21 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           <span className="font-mono text-2xl font-bold tabular-nums text-gold">{seconds}</span>
         </div>
       </div>
-      <TimeBar fraction={remaining / totalMs} />
+      <TimeBar fraction={displayRemaining / totalMs} />
+
+      {/* 10.13: explicar por qué reaparecen las opciones en segunda chance. */}
+      {isSecondChance && (
+        <p className="text-center text-sm font-medium text-amber-400">
+          Erraron los dos: segunda chance — quedan 2 opciones
+        </p>
+      )}
+
+      {/* 10.11: confirmación de que tu respuesta quedó fija + el segundo exacto. */}
+      {answered && !locked && answeredAtSec != null && (
+        <p className="text-center text-xs text-fg-subtle">
+          Respondiste a los {answeredAtSec.toFixed(1)}s · esperando el resto
+        </p>
+      )}
 
       <p className="text-balance text-center text-xl font-semibold text-fg">
         {penal.prompt}
@@ -349,18 +433,20 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           const isRemoved = penal.removed_option === i;
           if (isRemoved) return null; // en 2ª chance, la opción quitada no se muestra
           const isSelected = selected === i;
+          // 10.11: una vez que respondiste, los botones quedan bloqueados (no cambiable).
+          const disabled = locked || answered;
           return (
             <button
               key={i}
               type="button"
               onClick={() => onSelect(i)}
-              disabled={locked}
+              disabled={disabled}
               aria-pressed={isSelected}
               className={`flex items-center rounded-xl border px-4 py-3 text-left font-medium transition-colors disabled:cursor-not-allowed ${
                 isSelected
                   ? "border-gold bg-gold/15 text-fg"
                   : "border-border bg-bg-elevated text-fg hover:border-fg-subtle"
-              } ${locked && !isSelected ? "opacity-50" : ""}`}
+              } ${disabled && !isSelected ? "opacity-50" : ""}`}
             >
               <span
                 className={`mr-3 font-mono ${isSelected ? "text-gold" : "text-fg-subtle"}`}

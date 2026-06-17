@@ -47,8 +47,10 @@ pnpm test       # Vitest (motor de juego y de torneo)
   **NO en Edge Functions** (decisión por escalabilidad, SPEC §1.2/§1.3): las versiones SQL son
   **ports fieles** del motor, verificados por **paridad** contra TS (RNG mulberry32 bit-perfect).
   v1 no tiene Edge Functions.
-- El penal **se resuelve recién a los 10s** (no antes); la respuesta es **cambiable** hasta
-  el final y la rapidez se mide por el `selected_at` de la última selección (server).
+- El penal **se resuelve recién a los 10s** (no antes). La respuesta **NO es cambiable**: el
+  **primer tap queda fijo** (F10/10.11; `select_option` rechaza el cambio con `already_answered`)
+  y la rapidez se mide por el `selected_at` de esa única selección (server). El cliente congela el
+  contador en el instante del tap.
 - Resolución de penal **idempotente** (lock `FOR UPDATE SKIP LOCKED` sobre la fila del penal),
   solo con `now()≥deadline`; se dispara por poke del cliente o `tick()` de `pg_cron`.
 - **Desconexión ≠ abandono**: desconexión → respuesta aleatoria hasta reconectar (no pasa a
