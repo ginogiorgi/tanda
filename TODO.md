@@ -471,9 +471,16 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       kicker/keeper del penal). El marcador se trackea en PenalLive desde get_active_match (inicial) +
       penal:result (home_score/away_score). El resaltado de la opción elegida ya estaba en PenalLive
       (4.4). typecheck/lint/build verdes.
-- [ ] 8.11 Revelar correcta + `explanation` al resolver; "sos vos" en bracket/grupos
-- [ ] 8.12 Pantalla campeón (trofeo/confeti) + teclado desktop (1/2/3) + prefs persistentes
-- [ ] 8.13 Links de sala inválidos: mensaje claro + fallback a "Jugar"
+- [x] 8.11 Revelar correcta + `explanation` al resolver (PenalLive estado resuelto, 4.5) + "sos vos"
+      en bracket/grupos (Bracket: TeamChip isMe → color gold + "(vos)", filas de grupo resaltadas, 8.5).
+- [x] 8.12 Pantalla campeón (trofeo/confeti) + teclado desktop (1/2/3) + prefs persistentes.
+      RunSummary campeón: 🏆 grande + `<Confetti>` (piezas absolutas con keyframe tanda-confetti en
+      globals.css, posiciones deterministas; lo neutraliza prefers-reduced-motion). Teclado: PenalLive
+      escucha 1/2/3 → onSelect (guard de tiempo por remainingRef, respeta opción quitada en 2ª chance).
+      Prefs: `lib/prefs.ts` (mute en localStorage, defensivo SSR; lo consume el audio 8.7).
+      prefers-reduced-motion ya respetado globalmente en globals.css. typecheck/lint/build verdes.
+- [x] 8.13 Links de sala inválidos: mensaje claro + fallback a "Jugar" (sala/[code] redirige a
+      /?aviso=<motivo>; home muestra AVISOS + PlayMenu con "Jugar"; hecho en F4 4.2/4.1).
 
 ## F9 · Pulido
 

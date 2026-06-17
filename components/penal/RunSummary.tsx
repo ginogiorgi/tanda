@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Confetti } from "@/components/penal/Confetti";
 import type { MatchPhase, ParticipantBrief, ScoreLivePayload } from "@/lib/realtime/score";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 
@@ -102,6 +103,7 @@ export function RunSummary({
   const [busy, setBusy] = useState(false);
 
   const me = snapshot.participants.find((p) => p.participant_id === myParticipantId);
+  const isChampion = me?.placement === 1;
   // Mi último partido = el de fase más avanzada donde jugué y terminó.
   const myMatches = snapshot.matches
     .filter(
@@ -138,11 +140,13 @@ export function RunSummary({
 
   return (
     <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
+      {isChampion && <Confetti />}
       <div className="flex flex-col items-center gap-2">
+        {isChampion && <span className="text-6xl">🏆</span>}
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
-          Fin del torneo
+          {isChampion ? "Campeón del Mundial" : "Fin del torneo"}
         </span>
-        <p className="text-3xl font-extrabold tracking-tight text-gold">
+        <p className={`font-extrabold tracking-tight text-gold ${isChampion ? "text-4xl" : "text-3xl"}`}>
           {outcomeText(me?.placement ?? null, me?.eliminated_phase ?? null)}
         </p>
       </div>

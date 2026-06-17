@@ -46,6 +46,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const pokedRef = useRef<string | null>(null);
   const vibratedRef = useRef<string | null>(null);
+  const remainingRef = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -133,6 +134,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     const tick = () => {
       const r = remainingMs(penal.deadline, offset);
       setRemaining(r);
+      remainingRef.current = r;
       // Vibración una vez al entrar en los últimos 3s (8.3), si el dispositivo lo soporta.
       if (r > 0 && r <= 3000 && vibratedRef.current !== phaseKey) {
         vibratedRef.current = phaseKey;
@@ -153,7 +155,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   // Elegir/cambiar opción: optimista en el cliente, autoritativo en el server. El server
   // registra la ÚLTIMA selección con su `selected_at` (SPEC §1.3); cambiable hasta el deadline.
   async function onSelect(option: number) {
-    if (!penal || remaining <= 0) return;
+    if (!penal || remainingRef.current <= 0) return;
     setSelected(option); // resaltado optimista
     const { error } = await supabase.rpc("select_option", {
       p_penalty: penal.penalty_id,
@@ -161,6 +163,20 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     });
     if (error) setSelected(null); // p. ej. `out_of_window`: el server manda
   }
+
+  // Teclado en desktop (8.12): 1/2/3 eligen la opción (salvo la quitada en 2ª chance).
+  useEffect(() => {
+    if (!penal) return;
+    const handler = (e: KeyboardEvent) => {
+      const i = e.key === "1" ? 0 : e.key === "2" ? 1 : e.key === "3" ? 2 : -1;
+      if (i < 0 || penal.removed_option === i) return;
+      void onSelect(i);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+    // onSelect/penal estables dentro de la fase; el guard de tiempo usa remainingRef.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [penal]);
 
   // Abandonar (5.4): el participante pasa a bot con la dificultad de su nación y el usuario vuelve
   // al home; los penales en curso los completa el bot (server-authoritative). Confirma en dos toques.
