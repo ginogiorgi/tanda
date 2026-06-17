@@ -420,7 +420,11 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       → router.push), CTA "Volver al partido" en el home. /dev/penal SE MANTIENE (test aislado; sin
       nación → kitTop null usa el top del avatar). typecheck/lint/build verdes, 94 unit + 29 db
       (get_match_scene rechaza no-miembro + no fuga correct_index; e2e confirma correct_index no viaja).
-- [ ] 8.3 Barra de tiempo (roja + vibración al final)
+- [x] 8.3 Barra de tiempo (roja + vibración al final). `components/penal/TimeBar.tsx` montada en
+      <PenalLive>: se vacía contra el `deadline` server corregido por offset (clockOffset/remainingMs,
+      ya existentes → 4.6b cubierto para el penal); verde→ámbar→roja, pulsa en rojo en el último tramo
+      (motion-safe). Vibración `navigator.vibrate(180)` una vez al entrar en los últimos 3s (guard de
+      soporte). totalMs = deadline − started_at (10s 1ª fase / 5s 2ª chance). typecheck/lint/build verdes.
 - [ ] 8.4 Animaciones 3D por causa: `goal` / `save` (estirada) / `miss_wide` (afuera),
       con variantes + colocación aleatoria por seed (procedurales: primitivas + pelota)
 - [x] 8.5 Bracket estilo mundial con marcadores en vivo + pre-partido. La pantalla de partido pasó a

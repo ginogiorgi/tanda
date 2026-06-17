@@ -15,6 +15,7 @@ import {
 import { resolveSceneRoles } from "@/lib/penal/scene";
 import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 import { PenalHud } from "@/components/penal/PenalHud";
+import { TimeBar } from "@/components/penal/TimeBar";
 
 type PenalLiveProps = {
   matchId: string;
@@ -43,6 +44,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [abandoning, setAbandoning] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const pokedRef = useRef<string | null>(null);
+  const vibratedRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -130,6 +132,13 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     const tick = () => {
       const r = remainingMs(penal.deadline, offset);
       setRemaining(r);
+      // Vibración una vez al entrar en los últimos 3s (8.3), si el dispositivo lo soporta.
+      if (r > 0 && r <= 3000 && vibratedRef.current !== phaseKey) {
+        vibratedRef.current = phaseKey;
+        if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+          navigator.vibrate(180);
+        }
+      }
       if (r <= 0 && pokedRef.current !== phaseKey) {
         pokedRef.current = phaseKey;
         void supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id });
@@ -213,6 +222,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const seconds = Math.ceil(remaining / 1000);
   const locked = remaining <= 0;
   const isSecondChance = penal.phase === "second_chance";
+  const totalMs = Math.max(
+    1,
+    new Date(penal.deadline).getTime() - new Date(penal.started_at).getTime(),
+  );
   const myId = scene?.my_participant_id ?? null;
   const role: "kick" | "keep" | null =
     myId == null
@@ -243,6 +256,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           {seconds}
         </span>
       </div>
+      <TimeBar fraction={remaining / totalMs} />
 
       <p className="text-balance text-center text-xl font-semibold text-fg">
         {penal.prompt}
