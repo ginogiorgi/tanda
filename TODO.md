@@ -591,6 +591,10 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       concurrency.test.ts (2 torneos en paralelo: drivear uno no toca al otro, ambos terminan con sus
       invariantes, sin solape de participantes, pertenencia aislada). PENDIENTE (necesita a Gino):
       (a) walkthrough visual §12.1-3 (avatar, escena de penal + animaciones, bracket en un torneo real);
-      (b) DEPLOY a prod → OPS: aplicar las 5 migraciones nuevas a la DB de prod, cargar
-      SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend,
-      habilitar anonymous sign-ins en el dashboard de prod, y correr get_advisors(security) post-deploy.
+      (b) DEPLOY a prod. HECHO por MCP: las 5 migraciones nuevas aplicadas a la DB de prod (prod==local)
+      + get_advisors corrido (performance 0 lints; security solo lo esperado por diseño — RPCs SECURITY
+      DEFINER del modelo autoritativo, helpers de pertenencia, anon sign-ins §8.4, tablas deny-all).
+      FALTA OPS de Gino: cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel +
+      verificar dominio en Resend; habilitar anonymous sign-ins en el dashboard de prod. FOLLOW-UPS del
+      advisor: borrar el dev harness de prod (dev_create_practice_penal + /dev/penal, ya sobra post-F8);
+      opcional, activar leaked password protection en Auth.
