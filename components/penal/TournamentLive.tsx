@@ -16,6 +16,7 @@ import Link from "next/link";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { PenalLive } from "@/components/penal/PenalLive";
+import { RunSummary } from "@/components/penal/RunSummary";
 import { Bracket } from "@/components/bracket/Bracket";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
@@ -28,7 +29,13 @@ import type { ActiveMatch } from "@/lib/realtime/penal";
 /** Cuánto se mantiene la pantalla del penal tras resolver (GOL/ATAJADO) antes de ceder al bracket. */
 const RESULT_LINGER_MS = 3500;
 
-export function TournamentLive({ tournamentId }: { tournamentId: string }) {
+export function TournamentLive({
+  tournamentId,
+  isGuest,
+}: {
+  tournamentId: string;
+  isGuest: boolean;
+}) {
   const [supabase] = useState(() => createClient());
   const [snapshot, setSnapshot] = useState<BracketSnapshot | null>(null);
   const [live, setLive] = useState<ScoreboardState>({});
@@ -115,6 +122,18 @@ export function TournamentLive({ tournamentId }: { tournamentId: string }) {
 
   if (!snapshot) {
     return <p className="text-sm text-fg-subtle">Cargando el torneo…</p>;
+  }
+
+  // Mi corrida terminó (eliminado o coronado) → resumen de fin de torneo (8.6).
+  const me = snapshot.participants.find((p) => p.participant_id === snapshot.my_participant_id);
+  if (me && (me.eliminated_phase != null || me.placement != null)) {
+    return (
+      <RunSummary
+        snapshot={snapshot}
+        myParticipantId={snapshot.my_participant_id}
+        isGuest={isGuest}
+      />
+    );
   }
 
   return (

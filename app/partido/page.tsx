@@ -22,7 +22,10 @@ export default async function PartidoPage() {
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 px-6 py-12">
-      <TournamentLive tournamentId={active.tournament_id} />
+      <TournamentLive
+        tournamentId={active.tournament_id}
+        isGuest={user.is_anonymous === true}
+      />
     </main>
   );
 }

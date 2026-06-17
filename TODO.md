@@ -386,7 +386,7 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
 
 ## F8 · UI / animaciones premium
 
-- [~] 8.1 Menú principal con botón "Jugar" (quick-play) + crear/unirse por código (YA estaba en
+- [x] 8.1 Menú principal con botón "Jugar" (quick-play) + crear/unirse por código (YA estaba en
       `<PlayMenu>` de F4) + botón **"Jugar como invitado"**. REDEFINIDO (Gino, jun 2026): el invitado
       es un **usuario real efímero** = **sesión anónima** de Supabase con username autoasignado
       `invitado_<9 díg>` + avatar default (metadata → trigger arma el profile) y juega el **camino
@@ -398,8 +398,8 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       (sin editar avatar / sin recuperación / sin historial), y el home lo saluda como invitado con CTA a
       crear cuenta. UPGRADE anónimo→permanente HECHO: /register detecta sesión anónima y muestra modo
       upgrade (updateUser email sintético+password+username + update de profiles.username), mantiene
-      id/profile/avatar; /register ya no rebota al anónimo. Falta solo (menor, con 8.6): el CTA de cierre
-      al terminar un torneo. **OPS PENDIENTE (Gino, dashboard): habilitar anonymous sign-ins en PROD —
+      id/profile/avatar; /register ya no rebota al anónimo. CTA de cierre al terminar el torneo HECHO en
+      8.6 (RunSummary muestra "Creá una cuenta" al invitado). **OPS PENDIENTE (Gino, dashboard): habilitar anonymous sign-ins en PROD —
       NO por `config push` (pisaría site_url/SMTP de prod); toggle puntual.** SPEC §8.4 reescrito.
 - [x] 8.1b ~~Modo práctica invitado: torneo local sobre `lib/engine`~~ **DESCARTADO**: el invitado va
       por el camino real (8.1). No se bundlea el banco de preguntas al cliente (expondría la clave de
@@ -454,7 +454,14 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       build verdes, 100 unit + 33 db (get_bracket/get_active_tournament: miembro vs no-miembro, sin
       fuga correct_index). PENDIENTE de Gino (visual): mirar a ojo el bracket + la transición penal↔
       tiempo muerto en un torneo real.
-- [ ] 8.6 Resumen de fin de partido (marcador + penal a penal + "Jugar de nuevo"/"Inicio")
+- [x] 8.6 Resumen de fin de partido (+ CTA cierre invitado, cierra 8.1). `components/penal/RunSummary.tsx`:
+      lo muestra `<TournamentLive>` cuando mi corrida terminó (mi participante con eliminated_phase o
+      placement seteado en el snapshot de get_bracket). Marcador final del último partido (fase más
+      avanzada donde jugué) + penal a penal (RPC `get_match_penals(match)`, mig 20260617120000, dots
+      gol/erró por lado, valida is_match_member) + desenlace (Campeón/Subcampeón/3º/4º/Eliminado en X)
+      + "Jugar de nuevo" (quick_play→/sala/code) / "Inicio". Si es invitado, CTA "Creá una cuenta"
+      (cierre del pendiente de 8.1). Campeón muestra versión base (trofeo/confeti dedicado = 8.12).
+      typecheck/lint/build verdes, 100 unit + 34 db (get_match_penals: miembro vs ajeno).
 - [ ] 8.7 Audio (silbato/multitud/gol/atajada + mute, desbloqueo por gesto)
 - [ ] 8.8 Responsive total (mobile + desktop) + transiciones entre pantallas
 - [ ] 8.9 Compartir sala con Web Share API (fallback copiar código)

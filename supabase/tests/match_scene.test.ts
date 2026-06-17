@@ -53,6 +53,38 @@ describe("get_match_scene", () => {
   });
 });
 
+describe("get_match_penals", () => {
+  it("devuelve los penales resueltos (idx/kicker/scored) a un miembro; rechaza al ajeno", async () => {
+    await withRollback(async (c) => {
+      const fx = await makeMatchFixture(c);
+      await c.query(
+        `insert into public.penalties
+           (match_id, idx, kicker_participant_id, keeper_participant_id, question_id,
+            difficulty, status, resolution)
+         values ($1, 1, $2, $3,
+            (select id from public.questions where difficulty = 'easy' limit 1),
+            'easy', 'resolved',
+            jsonb_build_object('scored', true, 'winner', 'kicker', 'reason', 'goal'))`,
+        [fx.matchId, fx.pA, fx.pB],
+      );
+
+      await asRole(c, "authenticated", fx.userA);
+      const { rows } = await c.query<{ p: Array<{ idx: number; scored: boolean }> }>(
+        "select public.get_match_penals($1) as p",
+        [fx.matchId],
+      );
+      await resetRole(c);
+      expect(rows[0]!.p).toHaveLength(1);
+      expect(rows[0]!.p[0]!.scored).toBe(true);
+
+      await asRole(c, "authenticated", randomUUID());
+      await expect(
+        c.query("select public.get_match_penals($1)", [fx.matchId]),
+      ).rejects.toThrow(/not_match_member/);
+    });
+  });
+});
+
 describe("get_active_match: kicker/keeper sin filtrar correct_index", () => {
   it("incluye kicker/keeper del penal abierto y nunca correct_index", async () => {
     await withRollback(async (c) => {
