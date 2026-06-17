@@ -104,6 +104,24 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     }
   }
 
+  // Compartir sala (8.9): Web Share API nativa; fallback a copiar el código.
+  async function onShare() {
+    const url = `${window.location.origin}/sala/${code}`;
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: "TANDA",
+          text: `Sumate a mi partida de TANDA. Código ${code}`,
+          url,
+        });
+        return;
+      } catch {
+        // El usuario canceló el diálogo o no se pudo: caemos a copiar.
+      }
+    }
+    void onCopy();
+  }
+
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -159,13 +177,21 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
         </ul>
       </div>
 
-      <button
-        onClick={onLeave}
-        disabled={leaving}
-        className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle disabled:opacity-50"
-      >
-        {leaving ? "Saliendo…" : "Salir"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onShare}
+          className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+        >
+          Compartir
+        </button>
+        <button
+          onClick={onLeave}
+          disabled={leaving}
+          className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle disabled:opacity-50"
+        >
+          {leaving ? "Saliendo…" : "Salir"}
+        </button>
+      </div>
     </div>
   );
 }

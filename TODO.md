@@ -467,7 +467,9 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       por la política del navegador. Mute persistente (lib/prefs) con botón 🔊/🔇 en la tarjeta de
       PenalLive. typecheck/lint/build verdes.
 - [ ] 8.8 Responsive total (mobile + desktop) + transiciones entre pantallas
-- [ ] 8.9 Compartir sala con Web Share API (fallback copiar código)
+- [x] 8.9 Compartir sala con Web Share API (fallback copiar código). Botón "Compartir" en el Lobby:
+      `navigator.share({title,text,url})` con la URL /sala/{code}; si no hay Web Share o se cancela,
+      cae a copiar el código (onCopy). typecheck/lint/build verdes.
 - [x] 8.10 HUD de tanda. `components/penal/PenalHud.tsx` montado sobre la tarjeta de `<PenalLive>`:
       marcador en vivo (nación + color de kit + goles), "Penal N de 5" (`Math.ceil(idx/2)`; >10 =
       "Muerte súbita") y badge PATEÁS/ATAJÁS (compara my_participant_id de get_match_scene con
