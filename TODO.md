@@ -2,25 +2,32 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: 8.10 — HUD de tanda (marcador en vivo 2-1, "Penal N de 5", si pateás/atajás,
-   opción resaltada). Se monta SOBRE la tarjeta/escena de <PenalLive> (components/penal/). Datos: el
-   PenalStartPayload ya trae idx + kicker/keeper_participant_id; get_match_scene da my_participant_id +
-   briefs → derivar "pateás/atajás" comparando mi participante con el kicker. El marcador viene en
-   penal:result (home_score/away_score) y en get_active_match. Después: 8.3 (barra de tiempo roja +
-   vibración), 8.4 + 4.9 (animaciones 3D goal/save/miss_wide por penal:result, JUNTAS), 8.6 (resumen
-   fin de partido + CTA cierre invitado), 8.11/8.12/8.7/8.8/8.9/8.13, luego F9 (9.1-9.6). OJO 4.6b
-   (offset de reloj fiel) sigue pendiente.
+>>> PRÓXIMA TAREA: F9 (pulido) — **F8 ESTÁ 100% COMPLETO**. Arrancar por 9.1 (auditoría RLS + anti-
+   trampa: la suite db ya blinda lo grueso; falta correr `get_advisors(security)` por MCP —Gino lo
+   cortó la vez pasada, pedir OK— y revisar que las RPC nuevas no filtren). Luego 9.2 (estados carga/
+   empty/error: ya hay varios, hacer pasada por vista), 9.3 (accesibilidad: reduced-motion YA global en
+   globals.css + perf), 9.4 (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/
+   abandon + resuscripción Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home),
+   9.6 (verificación e2e §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra
+   de tiempo del penal ya lo usa; falta aplicarlo al tiempo muerto/round_deadline).
 
->>> HECHO este tramo (commits): 8.2 escena de penal 3D + pantalla de partido real; 8.5 bracket +
-   tournament-scoped. La pantalla /partido es TOURNAMENT-SCOPED (<TournamentLive>, gate
-   get_active_tournament): alterna penal 3D (<PenalLive> + PenalScene low-poly, cámara penal-cam fija,
-   camiseta teñida por nación vía AvatarModel kitTop) ↔ bracket 2D (<Bracket>: tu camino + "ver todo")
-   en el tiempo muerto, gobernado por el reloj de ronda (no timer). SERVER: mig _match_scene
-   (get_match_scene + kicker/keeper en penal:start/get_active_match) + mig _bracket
-   (get_active_tournament + get_bracket). Helpers puros lib/penal/scene.ts + lib/bracket/bracket.ts.
-   Lobby navega a /partido al arrancar; home "Volver al partido". 100 unit + 33 db verdes.
-   PENDIENTE de Gino (visual, no bloquea): mirar a ojo (a) el render WebGL de la escena de penal y
-   (b) el bracket + la transición penal↔tiempo muerto, en un torneo real.
+>>> OPS ANTES DE PROBAR EN PROD: aplicar a la DB de prod las 4 migraciones nuevas de este tramo
+   (20260617100000_match_scene, _110000_bracket, _120000_match_penals) — hoy SOLO están en local
+   (Docker) y verificadas por la suite db. Sin eso, /partido y el bracket no andan en prod.
+
+>>> HECHO este tramo (commits, F8 COMPLETO + 4.9): 8.2 escena de penal 3D + pantalla de partido real;
+   8.5 bracket + pantalla TOURNAMENT-SCOPED (<TournamentLive>, gate get_active_tournament): alterna
+   penal 3D (<PenalLive> + PenalScene low-poly, cámara penal-cam fija, camiseta teñida por nación vía
+   AvatarModel kitTop) ↔ bracket 2D (<Bracket>: tu camino + "ver todo") en el tiempo muerto, gobernado
+   por el reloj de ronda. 8.10 HUD (PenalHud: marcador+Penal N de 5+pateás/atajás). 8.3 barra de tiempo
+   (TimeBar + vibración). 8.4+4.9 animaciones 3D goal/save/miss_wide (PenalScene useFrame por reason+
+   variant). 8.6 RunSummary (fin de torneo + penal a penal vía get_match_penals + CTA invitado, cierra
+   8.1). 8.12 campeón (Confetti + teclado 1/2/3 + lib/prefs). 8.7 audio sintetizado (lib/audio Web
+   Audio + mute). 8.9 compartir sala (Web Share). 8.8 transiciones fade-in. 8.11/8.13 ya estaban.
+   SERVER (3 migs, SOLO EN LOCAL aún): _match_scene, _bracket, _match_penals. Helpers puros
+   lib/penal/scene.ts + lib/bracket/bracket.ts (+ tests). Estado verde: typecheck/lint/build, 100 unit
+   + 34 db. PENDIENTE de Gino (visual, no bloquea): mirar a ojo el render WebGL de la escena de penal +
+   animaciones, y el bracket + transición penal↔tiempo muerto, en un torneo real.
 
 >>> PREVIO (commits): 9.0 (tests SQL/RPC + DB en CI; ver [[tanda-db-tests]]). 8.1 MODO INVITADO
    redefinido (Gino): usuario real efímero = sesión anónima + username autoasignado invitado_<9díg> +

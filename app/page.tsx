@@ -137,6 +137,11 @@ export default async function Home({
           </div>
         </div>
       )}
+
+      <p className="mt-4 max-w-xs text-balance text-[11px] leading-relaxed text-fg-subtle">
+        Juego original e independiente. No está afiliado, asociado ni autorizado por la FIFA ni por
+        ninguna organización futbolística. Naciones y selecciones a modo ilustrativo.
+      </p>
     </main>
   );
 }
