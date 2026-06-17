@@ -407,9 +407,12 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend.`
       competitivo real** (NO torneo client-side). Hecho: `lib/guest/anon.ts` (`generateGuestUsername`
       +1 test, `signInAsGuest` con reintento) + `<GuestButton>` en el home (no logueados) +
       `enable_anonymous_sign_ins=true` en config.toml. Verificado: trigger crea profile anónimo OK;
-      typecheck/lint/build, 89 unit + 26 db. Falta CTA "Creá una cuenta" al estilo cierre (con 8.6) +
-      gate de avatar-edit/perfil para anónimos. **OPS: habilitar anonymous sign-ins en PROD.**
-      SPEC §8.4 reescrito.
+      typecheck/lint/build, 89 unit + 26 db. GATE de anónimos HECHO: /avatar redirige al invitado (queda
+      con DEFAULT_AVATAR masculino), /perfil le muestra versión "sos invitado" + CTA "Creá una cuenta"
+      (sin editar avatar / sin recuperación / sin historial), y el home lo saluda como invitado con CTA a
+      crear cuenta. Falta (menor): el CTA de cierre al terminar un torneo (con 8.6) y el LINKEO real de
+      identidad anónima→email/password al crear cuenta (hoy /register crea cuenta nueva; futuro 8.x).
+      **OPS: habilitar anonymous sign-ins en PROD.** SPEC §8.4 reescrito.
 - [x] 8.1b ~~Modo práctica invitado: torneo local sobre `lib/engine`~~ **DESCARTADO**: el invitado va
       por el camino real (8.1). No se bundlea el banco de preguntas al cliente (expondría la clave de
       respuestas → cheat en partidas reales). Tarea anulada.

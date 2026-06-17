@@ -43,6 +43,7 @@ export default async function Home({
       .single();
     username = profile?.username ?? null;
   }
+  const isGuest = user?.is_anonymous === true;
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
@@ -70,16 +71,34 @@ export default async function Home({
       {username ? (
         <div className="flex flex-col items-center gap-6">
           <p className="text-lg">
-            Hola, <span className="font-semibold text-gold">{username}</span> 👋
+            {isGuest ? (
+              <>
+                Estás jugando como{" "}
+                <span className="font-semibold text-gold">invitado</span>
+              </>
+            ) : (
+              <>
+                Hola, <span className="font-semibold text-gold">{username}</span> 👋
+              </>
+            )}
           </p>
           <PlayMenu />
           <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Link
-              href="/perfil"
-              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
-            >
-              Mi perfil
-            </Link>
+            {isGuest ? (
+              <Link
+                href="/register"
+                className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+              >
+                Creá una cuenta
+              </Link>
+            ) : (
+              <Link
+                href="/perfil"
+                className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+              >
+                Mi perfil
+              </Link>
+            )}
             <LogoutButton />
           </div>
         </div>

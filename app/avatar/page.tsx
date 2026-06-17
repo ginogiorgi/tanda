@@ -12,6 +12,8 @@ export default async function AvatarPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+  // El invitado (sesión anónima) no edita su avatar: queda con el masculino default (§8.4).
+  if (user.is_anonymous) redirect("/perfil");
 
   const { data: profile } = await supabase
     .from("profiles")
