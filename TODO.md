@@ -2,18 +2,36 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PRÓXIMA TAREA: F9 (pulido) — **F8 ESTÁ 100% COMPLETO**. Arrancar por 9.1 (auditoría RLS + anti-
-   trampa: la suite db ya blinda lo grueso; falta correr `get_advisors(security)` por MCP —Gino lo
-   cortó la vez pasada, pedir OK— y revisar que las RPC nuevas no filtren). Luego 9.2 (estados carga/
-   empty/error: ya hay varios, hacer pasada por vista), 9.3 (accesibilidad: reduced-motion YA global en
-   globals.css + perf), 9.4 (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/
-   abandon + resuscripción Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home),
-   9.6 (verificación e2e §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra
-   de tiempo del penal ya lo usa; falta aplicarlo al tiempo muerto/round_deadline).
+>>> PRÓXIMA TAREA: F9 (pulido) — 9.1 HECHO. Arrancar por 9.2 (estados carga/empty/error: ya hay varios,
+   hacer pasada por vista), 9.3 (accesibilidad: reduced-motion YA global en globals.css + perf), 9.4
+   (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
+   Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
+   §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
+   lo usa; falta aplicarlo al tiempo muerto/round_deadline).
+   >>> PENDIENTE 9.6: correr `get_advisors(security)` por MCP RECIÉN POST-DEPLOY de las 3 migraciones
+   nuevas a prod (hoy el scan no las cubriría; decisión de Gino). El review estático + suite db ya
+   blindan las RPC nuevas.
 
->>> OPS ANTES DE PROBAR EN PROD: aplicar a la DB de prod las 4 migraciones nuevas de este tramo
-   (20260617100000_match_scene, _110000_bracket, _120000_match_penals) — hoy SOLO están en local
-   (Docker) y verificadas por la suite db. Sin eso, /partido y el bracket no andan en prod.
+>>> HECHO 9.1 (auditoría RLS + anti-trampa): codificada como guardrail durable, no review de una vez.
+   (1) Migración 20260617130000_rls_anticheat_hardening: tapó fugas de superficie por el GRANT default
+   de PUBLIC — `abandon` quedaba ejecutable por `anon`; ~14 RPC de cliente (create_room/quick_play/
+   join_room/select_option/resolve_penalty/get_*/dev_*) ejecutables por `anon` vía PUBLIC (todas exigen
+   sesión salvo resolve_penalty, cuyo uid-null ES el backstop del cron → no explotable pero el backstop
+   es para tick(), no anon); 9 helpers puros del motor (engine_imul/_mulberry32/_rand_int/_rand_bool/
+   _hash32/_bot_intent/_advance_match, bot_penalty_scored, tanda_penalty_difficulty) sin revoke. Todo a
+   authenticated-only (helpers de pertenencia is_*_member/realtime_*_member quedan para evaluar policies;
+   username_available sigue anon). (2) Test supabase/tests/rls_audit.test.ts (5): RLS en TODA tabla de
+   public; superficie ejecutable == allowlist (authenticated 21 / anon 6, set-equality → rompe ante grant
+   accidental futuro); denylist de 31 mutadores internos NO ejecutables por cliente (generaliza el check
+   de 4 de anticheat). Guardrail verificado (grant interno + disable RLS → 4 tests rojos). Estado verde:
+   39 db + 100 unit + typecheck + lint. Las RPC nuevas de F8 ya validan pertenencia y no filtran
+   correct_index (cubiertas por match_scene/bracket tests) → review estático OK, sin cambios.
+
+>>> OPS ANTES DE PROBAR EN PROD: aplicar a la DB de prod las migraciones nuevas de este tramo
+   (20260617100000_match_scene, _110000_bracket, _120000_match_penals, _130000_rls_anticheat_hardening)
+   — hoy SOLO están en local (Docker) y verificadas por la suite db. Sin eso, /partido y el bracket no
+   andan en prod, y la superficie de funciones no queda blindada (la _130000 es least-privilege puro,
+   no rompe nada). Tras deployar: correr `get_advisors(security)` (9.6).
 
 >>> HECHO este tramo (commits, F8 COMPLETO + 4.9): 8.2 escena de penal 3D + pantalla de partido real;
    8.5 bracket + pantalla TOURNAMENT-SCOPED (<TournamentLive>, gate get_active_tournament): alterna
@@ -519,7 +537,14 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       Side-effect útil: forzar reconciliar el historial de migraciones (squash) para que `db reset`
       desde archivos == remoto (ver memoria `tanda-sql-migrations-canonical`). Generar tipos de la DB
       (`supabase gen types`) para tipar las `supabase.rpc(...)` del cliente puede entrar acá o aparte.
-- [ ] 9.1 Auditoría RLS + anti-trampa (correct_index nunca al cliente)
+- [x] 9.1 Auditoría RLS + anti-trampa (correct_index nunca al cliente). Codificada como guardrail
+      durable: `supabase/tests/rls_audit.test.ts` (RLS en toda tabla de public + superficie ejecutable
+      == allowlist por rol + denylist de mutadores internos). Hardening de superficie (mig
+      20260617130000): `abandon` y ~14 RPC de cliente + 9 helpers puros del motor que quedaban
+      ejecutables por `anon`/PUBLIC vía el grant default → authenticated-only (least-privilege; ninguna
+      era explotable). Las RPC nuevas de F8 ya validaban pertenencia y no filtran `correct_index`.
+      `get_advisors(security)` se corre en 9.6 post-deploy (las migraciones nuevas no están en prod aún).
+      39 db + 100 unit + typecheck + lint verdes; guardrail verificado.
 - [ ] 9.2 Estados carga / empty / error en cada vista
 - [ ] 9.3 Accesibilidad (`prefers-reduced-motion`) + performance
 - [ ] 9.4 Manejo de errores robusto
