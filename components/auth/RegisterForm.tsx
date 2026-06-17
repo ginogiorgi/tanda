@@ -9,7 +9,7 @@ import { isValidUsername, usernameToEmail } from "@/lib/auth";
 /** Estado del chequeo de disponibilidad del username (RPC `username_available`). */
 type Availability = "idle" | "checking" | "free" | "taken";
 
-export function RegisterForm() {
+export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -67,10 +67,49 @@ export function RegisterForm() {
 
     setLoading(true);
     const supabase = createClient();
+    const trimmed = username.trim();
+
+    // Upgrade del invitado (sesión anónima → permanente): mantiene id/profile/avatar, le suma
+    // email sintético + password + username elegido. El profile ya existe (invitado_…) → lo updateamos.
+    if (upgrade) {
+      const { error: upgradeError } = await supabase.auth.updateUser({
+        email: usernameToEmail(trimmed),
+        password,
+        data: { username: trimmed },
+      });
+      if (upgradeError) {
+        setLoading(false);
+        setError(
+          /registered|exists|taken|already/i.test(upgradeError.message)
+            ? "Ese usuario ya está tomado. Probá con otro."
+            : "No se pudo crear la cuenta. Probá de nuevo en un momento.",
+        );
+        return;
+      }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ username: trimmed })
+          .eq("id", user.id);
+        if (profileError) {
+          setLoading(false);
+          setError("Ese usuario ya está tomado. Probá con otro.");
+          return;
+        }
+      }
+      setLoading(false);
+      router.push("/avatar");
+      router.refresh();
+      return;
+    }
+
     const { data, error: signUpError } = await supabase.auth.signUp({
-      email: usernameToEmail(username),
+      email: usernameToEmail(trimmed),
       password,
-      options: { data: { username: username.trim() } },
+      options: { data: { username: trimmed } },
     });
     setLoading(false);
 
