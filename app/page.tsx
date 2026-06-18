@@ -27,22 +27,19 @@ export default async function Home({
     data: { user },
   } = await supabase.auth.getUser();
 
-  let username: string | null = null;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single();
-    username = profile?.username ?? null;
-  }
   const isGuest = user?.is_anonymous === true;
 
-  // Torneo en curso → ofrecer volver (rehidratación tras cerrar la pestaña / volver al home).
+  // Perfil + torneo en curso son independientes → en paralelo (una sola ida, no dos secuenciales).
+  // El torneo en curso permite ofrecer "Volver al partido" tras cerrar la pestaña.
+  let username: string | null = null;
   let hasActiveMatch = false;
   if (user) {
-    const { data } = await supabase.rpc("get_active_tournament");
-    hasActiveMatch = Boolean((data as { tournament_id?: string } | null)?.tournament_id);
+    const [{ data: profile }, { data: active }] = await Promise.all([
+      supabase.from("profiles").select("username").eq("id", user.id).single(),
+      supabase.rpc("get_active_tournament"),
+    ]);
+    username = profile?.username ?? null;
+    hasActiveMatch = Boolean((active as { tournament_id?: string } | null)?.tournament_id);
   }
 
   return (

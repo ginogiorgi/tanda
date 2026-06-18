@@ -77,13 +77,11 @@ export default async function PerfilPage() {
   const recoveryEmail =
     typeof recoveryEmailRaw === "string" && recoveryEmailRaw ? recoveryEmailRaw : null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", user.id)
-    .single();
-
-  const history = await getTournamentHistory(supabase, user.id);
+  // Perfil e historial son independientes → en paralelo.
+  const [{ data: profile }, history] = await Promise.all([
+    supabase.from("profiles").select("username").eq("id", user.id).single(),
+    getTournamentHistory(supabase, user.id),
+  ]);
   const stats = aggregateStats(history);
 
   return (

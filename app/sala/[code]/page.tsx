@@ -26,19 +26,13 @@ export default async function SalaPage({
   const { error: joinError } = await supabase.rpc("join_room", { p_code: code });
   if (joinError) redirect(`/?aviso=${reasonFromError(joinError.message)}`);
 
-  const { data: room } = await supabase
-    .from("rooms")
-    .select("status, starts_at")
-    .eq("code", code)
-    .single();
+  // Tras el join, la sala y el perfil son independientes → en paralelo.
+  const [{ data: room }, { data: profile }] = await Promise.all([
+    supabase.from("rooms").select("status, starts_at").eq("code", code).single(),
+    supabase.from("profiles").select("username").eq("id", user.id).single(),
+  ]);
   if (!room) redirect("/?aviso=room_not_found");
   if (room.status === "cancelled") redirect("/?aviso=room_cancelled");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", user.id)
-    .single();
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-12">
