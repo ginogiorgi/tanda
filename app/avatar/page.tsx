@@ -5,7 +5,16 @@ import { saveAvatar } from "./actions";
 import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
 import type { AvatarConfig } from "@/lib/avatar/types";
 
-export default async function AvatarPage() {
+export default async function AvatarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string }>;
+}) {
+  // Tarea 1: al guardar, volver según de dónde se abrió — tras crear cuenta (`from=signup`) al inicio;
+  // editando desde el perfil, al perfil.
+  const { from } = await searchParams;
+  const redirectTo = from === "signup" ? "/" : "/perfil";
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -36,7 +45,7 @@ export default async function AvatarPage() {
           perfil.
         </p>
       </div>
-      <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo="/perfil" />
+      <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo={redirectTo} />
     </main>
   );
 }

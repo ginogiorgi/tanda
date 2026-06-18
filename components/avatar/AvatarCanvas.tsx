@@ -8,6 +8,9 @@
 import { Canvas } from "@react-three/fiber";
 import type { AvatarConfig } from "@/lib/avatar/types";
 import { AvatarModel } from "./AvatarModel";
+import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
+
+suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3F internamente
 
 interface AvatarCanvasProps {
   config: AvatarConfig;

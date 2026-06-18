@@ -49,3 +49,54 @@ export function presenceMembers(
     .sort((a, b) => a.online_at - b.online_at)
     .map(({ userId, username }) => ({ userId, username }));
 }
+
+/** Entrada del roster acumulado: el miembro + cuándo llegó (orden) y cuándo se lo vio por última vez. */
+export type RosterEntry = {
+  userId: string;
+  username: string;
+  online_at: number;
+  lastSeen: number;
+};
+
+/** Período de gracia: un jugador ausente del estado de Presence no se quita hasta superarlo. */
+export const PRESENCE_GRACE_MS = 4000;
+
+/**
+ * Reconcilia un roster ACUMULADO contra el estado de Presence actual, con período de gracia. Esto
+ * evita el parpadeo (8.2): una desconexión/re-track transitoria saca a un jugador del `presenceState`
+ * por un instante; sin gracia, la fila desaparece y reaparece. Acá los presentes se refrescan y los
+ * ausentes recién se descartan tras `graceMs`. Pura → testeable; el reloj entra por `now`.
+ */
+export function reconcileRoster(
+  roster: Map<string, RosterEntry>,
+  state: Record<string, LobbyPresence[]>,
+  now: number,
+  graceMs: number = PRESENCE_GRACE_MS,
+): Map<string, RosterEntry> {
+  const next = new Map(roster);
+  const present = new Set<string>();
+  for (const presences of Object.values(state)) {
+    for (const p of presences) {
+      present.add(p.userId);
+      const existing = next.get(p.userId);
+      next.set(p.userId, {
+        userId: p.userId,
+        username: p.username,
+        // conservar el online_at más viejo → orden de llegada estable aunque re-trackee.
+        online_at: existing ? Math.min(existing.online_at, p.online_at) : p.online_at,
+        lastSeen: now,
+      });
+    }
+  }
+  for (const [id, entry] of next) {
+    if (!present.has(id) && now - entry.lastSeen > graceMs) next.delete(id);
+  }
+  return next;
+}
+
+/** Lista de miembros del roster, ordenada por llegada (estable). */
+export function rosterMembers(roster: Map<string, RosterEntry>): LobbyMember[] {
+  return [...roster.values()]
+    .sort((a, b) => a.online_at - b.online_at)
+    .map(({ userId, username }) => ({ userId, username }));
+}

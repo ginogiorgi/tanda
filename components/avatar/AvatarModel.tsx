@@ -209,53 +209,60 @@ interface HairMeshProps {
 }
 
 /**
- * Pelo como casquete corto sobre la mitad superior de la cabeza, a radio mayor → no traspasa
- * y **no baja más allá de la frente** (nada de barba). El nacimiento queda por encima de los
- * ojos en todos los estilos.
+ * Pelo que **abraza el cráneo** (no flota): un casquete con el MISMO centro y escala que la cabeza y
+ * radio apenas mayor (cáscara fina) → sigue la curvatura en X/Y/Z, sin el borde despegado de los
+ * lados. Más segmentos = borde prolijo. El nacimiento queda por encima de los ojos en todos los
+ * estilos; las masas (cresta, rodete, melena) nacen pegadas al cuero cabelludo, no como piezas sueltas.
  */
+// La cabeza es una esfera de radio HEAD_R escalada así (más angosta en X, más alta en Y).
+const HEAD_SCALE: [number, number, number] = [0.92, 1.12, 1];
+
 function HairMesh({ part, color }: HairMeshProps) {
   if (part === "none") return null;
   const mat = <meshStandardMaterial color={color} flatShading />;
-  const r = HEAD_R + 0.018;
-  const HAIRLINE = Math.PI / 2.5; // casquete corto: solo la parte de arriba de la cabeza
 
-  // Casquete superior común (cubre arriba + atrás, por encima de los ojos).
-  const cap = (
-    <mesh position={[0, HEAD_CY + 0.005, 0]} scale={[0.97, 1.12, 1]}>
-      <sphereGeometry args={[r, 8, 6, 0, Math.PI * 2, 0, HAIRLINE]} />
+  // Cáscara que sigue el cráneo: mismo centro/escala que la cabeza, radio = HEAD_R + `extra` (fino).
+  // `hairline` = cuánto baja el casquete desde la coronilla (más chico = nace más arriba). π/2.35 deja
+  // el nacimiento por encima de los ojos sin tapar la cara.
+  const shell = (extra: number, hairline: number) => (
+    <mesh position={[0, HEAD_CY, 0]} scale={HEAD_SCALE}>
+      <sphereGeometry args={[HEAD_R + extra, 12, 8, 0, Math.PI * 2, 0, hairline]} />
       {mat}
     </mesh>
   );
+  const cap = shell(0.012, Math.PI / 2.35);
 
   switch (part) {
     case "buzz":
-      return (
-        <mesh position={[0, HEAD_CY + 0.005, 0]} scale={[0.95, 1.12, 1]}>
-          <sphereGeometry args={[HEAD_R + 0.006, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.6]} />
-          {mat}
-        </mesh>
-      );
+      // Rapado: cáscara finita bien pegada al cráneo.
+      return shell(0.005, Math.PI / 2.3);
     case "mohawk":
       return (
-        <mesh position={[0, HEAD_CY + HEAD_R * 1.0, 0]}>
-          <boxGeometry args={[0.05, 0.16, 0.24]} />
-          {mat}
-        </mesh>
+        <group>
+          {/* base rapada a los costados */}
+          {shell(0.004, Math.PI / 2.35)}
+          {/* cresta central que NACE de la coronilla (caja fina a lo largo de Z, anclada al cuero) */}
+          <mesh position={[0, HEAD_CY + HEAD_R * 0.9, -0.005]} scale={[1, 1.18, 1]}>
+            <boxGeometry args={[0.055, 0.13, 0.26]} />
+            {mat}
+          </mesh>
+        </group>
       );
     case "bun":
       return (
         <group>
           {cap}
-          <Joint y={HEAD_CY + HEAD_R * 0.95} z={-HEAD_R * 0.9} r={0.065} color={color} />
+          {/* rodete pegado a la nuca-coronilla */}
+          <Joint y={HEAD_CY + HEAD_R * 0.9} z={-HEAD_R * 0.72} r={0.062} color={color} />
         </group>
       );
     case "long":
       return (
         <group>
           {cap}
-          {/* melena corta por detrás (sólo en -Z, no envuelve la cara) */}
-          <mesh position={[0, HEAD_CY - 0.12, -HEAD_R * 0.8]}>
-            <boxGeometry args={[0.22, 0.26, 0.05]} />
+          {/* melena que cae por detrás, clavada a la nuca (sólo -Z, no envuelve la cara) */}
+          <mesh position={[0, HEAD_CY - 0.13, -HEAD_R * 0.86]} scale={[1.05, 1, 1]}>
+            <boxGeometry args={[0.23, 0.3, 0.07]} />
             {mat}
           </mesh>
         </group>

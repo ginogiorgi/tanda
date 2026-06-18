@@ -101,7 +101,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
         }
       }
       setLoading(false);
-      router.push("/avatar");
+      router.push("/avatar?from=signup");
       router.refresh();
       return;
     }
@@ -123,7 +123,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
       return;
     }
 
-    router.push("/avatar");
+    router.push("/avatar?from=signup");
     router.refresh();
   }
 

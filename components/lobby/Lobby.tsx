@@ -6,9 +6,11 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import {
   formatRemaining,
-  presenceMembers,
+  reconcileRoster,
+  rosterMembers,
   type LobbyMember,
   type LobbyPresence,
+  type RosterEntry,
 } from "@/lib/lobby/presence";
 
 type LobbyProps = {
@@ -29,6 +31,8 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
   const [leaving, setLeaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  // Roster acumulado con período de gracia → los nombres no parpadean ante churn transitorio (tarea 2).
+  const rosterRef = useRef<Map<string, RosterEntry>>(new Map());
 
   // Presence: cada cliente trackea su {userId, username}; todos ven el estado sincronizado.
   useEffect(() => {
@@ -37,17 +41,29 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     });
     channelRef.current = channel;
 
+    // Reconcilia el roster contra el estado actual (con gracia) y publica los miembros.
+    const refresh = () => {
+      rosterRef.current = reconcileRoster(
+        rosterRef.current,
+        channel.presenceState<LobbyPresence>(),
+        Date.now(),
+      );
+      setMembers(rosterMembers(rosterRef.current));
+    };
+
     channel
-      .on("presence", { event: "sync" }, () => {
-        setMembers(presenceMembers(channel.presenceState<LobbyPresence>()));
-      })
+      .on("presence", { event: "sync" }, refresh)
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
           await channel.track({ userId, username, online_at: Date.now() });
         }
       });
 
+    // Tick de respaldo: descarta a los ausentes una vez vencida la gracia, aunque no llegue otro sync.
+    const id = setInterval(refresh, 2000);
+
     return () => {
+      clearInterval(id);
       void supabase.removeChannel(channel);
       channelRef.current = null;
     };

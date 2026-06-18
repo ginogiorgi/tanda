@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   formatRemaining,
   presenceMembers,
+  reconcileRoster,
+  rosterMembers,
   type LobbyPresence,
+  type RosterEntry,
 } from "./presence";
 
 describe("formatRemaining", () => {
@@ -50,5 +53,42 @@ describe("presenceMembers", () => {
       u1: [p("u1", "Ana", 500), p("u1", "Ana", 100)],
     };
     expect(presenceMembers(state)).toEqual([{ userId: "u1", username: "Ana" }]);
+  });
+});
+
+describe("reconcileRoster (período de gracia, anti-parpadeo)", () => {
+  function p(userId: string, username: string, online_at: number): LobbyPresence {
+    return { userId, username, online_at };
+  }
+  const empty = () => new Map<string, RosterEntry>();
+
+  it("agrega presentes y preserva el orden de llegada", () => {
+    let roster = reconcileRoster(empty(), { a: [p("u1", "Ana", 100)] }, 1000);
+    roster = reconcileRoster(roster, { a: [p("u1", "Ana", 100)], b: [p("u2", "Beto", 200)] }, 1100);
+    expect(rosterMembers(roster)).toEqual([
+      { userId: "u1", username: "Ana" },
+      { userId: "u2", username: "Beto" },
+    ]);
+  });
+
+  it("NO descarta a un ausente dentro de la gracia (no parpadea)", () => {
+    let roster = reconcileRoster(empty(), { a: [p("u1", "Ana", 100)], b: [p("u2", "Beto", 200)] }, 1000);
+    // u2 desaparece transitoriamente; pasaron 2s (< gracia 4s) → sigue visible.
+    roster = reconcileRoster(roster, { a: [p("u1", "Ana", 100)] }, 3000);
+    expect(rosterMembers(roster).map((m) => m.userId)).toEqual(["u1", "u2"]);
+  });
+
+  it("descarta al ausente una vez superada la gracia", () => {
+    let roster = reconcileRoster(empty(), { a: [p("u1", "Ana", 100)], b: [p("u2", "Beto", 200)] }, 1000);
+    // u2 ausente y ya pasaron > 4s desde su último visto → se quita.
+    roster = reconcileRoster(roster, { a: [p("u1", "Ana", 100)] }, 6000);
+    expect(rosterMembers(roster).map((m) => m.userId)).toEqual(["u1"]);
+  });
+
+  it("un re-track con online_at más nuevo conserva el orden viejo (no salta de lugar)", () => {
+    let roster = reconcileRoster(empty(), { a: [p("u1", "Ana", 100)], b: [p("u2", "Beto", 200)] }, 1000);
+    // u1 reconecta con online_at mayor; debe seguir primero (conservamos el más viejo).
+    roster = reconcileRoster(roster, { a: [p("u1", "Ana", 999)], b: [p("u2", "Beto", 200)] }, 2000);
+    expect(rosterMembers(roster).map((m) => m.userId)).toEqual(["u1", "u2"]);
   });
 });

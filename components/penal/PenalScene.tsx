@@ -24,6 +24,9 @@ import type { Group, Mesh } from "three";
 import { AvatarModel } from "@/components/avatar/AvatarModel";
 import type { SceneRole } from "@/lib/penal/scene";
 import type { PenaltyReason } from "@/lib/realtime/penal";
+import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
+
+suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3F internamente
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const GRASS = "#2f7d3a";
