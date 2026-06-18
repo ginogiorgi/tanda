@@ -14,6 +14,7 @@ function entry(over: Partial<TournamentHistoryEntry>): TournamentHistoryEntry {
     goalsFor: 0,
     matchesPlayed: 0,
     matchesWon: 0,
+    abandoned: false,
     playedAt: "2026-06-15T00:00:00Z",
     ...over,
   };
@@ -56,6 +57,17 @@ describe("aggregateStats", () => {
 
   it("bestPlacement null si ningún torneo terminó", () => {
     expect(aggregateStats([entry({ placement: null })]).bestPlacement).toBeNull();
+  });
+
+  it("un torneo abandonado cuenta como jugado pero no como título ni mejor posición", () => {
+    const stats = aggregateStats([
+      entry({ placement: 1, goalsFor: 2, abandoned: true }),
+      entry({ placement: 16, goalsFor: 1 }),
+    ]);
+    expect(stats.titles).toBe(0); // el bot ganó tras el abandono, no es tu título
+    expect(stats.bestPlacement).toBe(16); // ignora el placement del abandonado
+    expect(stats.goals).toBe(3); // los goles sí se cuentan
+    expect(stats.tournamentsPlayed).toBe(2);
   });
 
   it("winRate = ganados / jugados (0 si no jugó partidos)", () => {

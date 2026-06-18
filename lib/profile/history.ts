@@ -1,9 +1,8 @@
 /**
  * Historial y estadísticas del jugador. La **agregación es pura y testeable** (sin red): se
- * alimenta de una lista de participaciones en torneos. Hoy la fuente devuelve lista vacía
- * (las tablas `participants`/`matches`/`penalties` se crean en F3/F6); cuando existan, se
- * mapean sus filas a {@link TournamentHistoryEntry} y se pasan a {@link aggregateStats} sin
- * tocar la UI. Ver SPEC §8 (Perfil → Historial / estadísticas) y PLAN F2.
+ * alimenta de una lista de participaciones en torneos que devuelve la RPC `get_tournament_history`
+ * (ver `lib/profile/queries.ts`), mapeadas a {@link TournamentHistoryEntry} y pasadas a
+ * {@link aggregateStats}. Ver SPEC §8 (Perfil → Historial / estadísticas).
  */
 
 /** Una participación del jugador en un torneo (una fila del historial). */
@@ -19,6 +18,8 @@ export interface TournamentHistoryEntry {
   goalsFor: number;
   matchesPlayed: number;
   matchesWon: number;
+  /** El jugador tocó Abandonar: el desenlace de la fila no es suyo (lo siguió un bot). */
+  abandoned: boolean;
   /** ISO timestamp de cuándo jugó (para ordenar el historial). */
   playedAt: string;
 }
@@ -48,10 +49,13 @@ export function aggregateStats(
   let bestPlacement: number | null = null;
 
   for (const e of entries) {
-    if (e.placement === 1) titles += 1;
     goals += e.goalsFor;
     matchesPlayed += e.matchesPlayed;
     matchesWon += e.matchesWon;
+    // Un torneo abandonado no cuenta como título ni mejor posición: el desenlace lo logró el bot
+    // que te reemplazó, no vos.
+    if (e.abandoned) continue;
+    if (e.placement === 1) titles += 1;
     if (e.placement !== null) {
       bestPlacement =
         bestPlacement === null ? e.placement : Math.min(bestPlacement, e.placement);

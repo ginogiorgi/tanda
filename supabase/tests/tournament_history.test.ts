@@ -17,6 +17,7 @@ type HistoryEntry = {
   goalsFor: number;
   matchesPlayed: number;
   matchesWon: number;
+  abandoned: boolean;
   playedAt: string;
 };
 
@@ -61,6 +62,28 @@ describe("get_tournament_history (10.10)", () => {
       expect(b.matchesPlayed).toBe(1);
       expect(b.matchesWon).toBe(0); // pB perdió
       expect(b.goalsFor).toBe(1); // away_score de pB
+    });
+  });
+
+  it("una participación ABANDONADA (is_bot=true, abandoned=true, user_id no nulo) sigue apareciendo", async () => {
+    await withRollback(async (c) => {
+      const fx = await makeMatchFixture(c);
+      await c.query(
+        `update public.matches
+            set status = 'finished', home_score = 0, away_score = 3, winner_participant_id = $2
+          where id = $1`,
+        [fx.matchId, fx.pB],
+      );
+      // Simula el efecto de abandon(): el humano pasa a bot conservando user_id, marcado abandoned.
+      await c.query(
+        `update public.participants set is_bot = true, abandoned = true where id = $1`,
+        [fx.pA],
+      );
+
+      const histA = await history(c, fx.userA);
+      expect(histA).toHaveLength(1); // antes del fix quedaba fuera por el filtro is_bot=false
+      expect(histA[0]!.abandoned).toBe(true);
+      expect(histA[0]!.tournamentId).toBe(fx.tournamentId);
     });
   });
 

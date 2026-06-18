@@ -16,8 +16,8 @@ function placementLabel(placement: number | null): string {
 /**
  * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
  * estadísticas e historial. El 3D del avatar se edita en `/avatar` (no se renderiza acá: el
- * 3D va solo en creador y penal, SPEC §8.2). El historial se nutre de datos de torneos
- * (`getTournamentHistory`, stub hasta F3/F6): por ahora muestra estado vacío.
+ * 3D va solo en creador y penal, SPEC §8.2). El historial se nutre de datos de torneos reales
+ * vía `getTournamentHistory` (RPC `get_tournament_history`, 10.10).
  */
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -156,13 +156,15 @@ export default async function PerfilPage() {
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-fg">{h.nationName}</span>
                   <span className="text-xs text-fg-subtle">
-                    {h.placement === 1
-                      ? "Campeón"
-                      : h.eliminatedPhase ?? "En curso"}
+                    {h.abandoned
+                      ? "Abandonaste"
+                      : h.placement === 1
+                        ? "Campeón"
+                        : h.eliminatedPhase ?? "En curso"}
                   </span>
                 </div>
                 <span className="text-sm font-semibold text-gold">
-                  {placementLabel(h.placement)}
+                  {h.abandoned ? "—" : placementLabel(h.placement)}
                 </span>
               </li>
             ))}
