@@ -32,10 +32,9 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 ## Pendientes (no bloquean)
 
 - **Tipar el cliente** con `supabase gen types` (Database generic) para las `supabase.rpc(...)`.
-- **Squash/baseline de migraciones**: hoy hay ~45 migraciones, varias redefinidas con
-  `create or replace`. Consolidarlas en un baseline es la limpieza pendiente del directorio
-  `supabase/`, pero es **riesgosa** (el replay desde archivos debe seguir == prod) → tarea
-  aparte y deliberada, no oportunista. Ver memoria `tanda-sql-migrations-canonical`.
+
+> Migraciones: consolidadas en un baseline de 3 archivos (schema + wiring + seed), verificado por
+> `db:reset` + 51 pruebas db. Ver memoria `tanda-sql-migrations-canonical`.
 
 > Protocolo: una cosa a la vez, verificar con output real, commit descriptivo. Cambios de
 > arquitectura grandes → consultar a Gino primero.
