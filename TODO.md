@@ -13,7 +13,7 @@
    48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
    bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
    open_next_round). FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
-   PASO 3 (10.8 audio perspectiva) HECHO. FALTAN: PASO 4 tanteador overlay 2D (10.12). PASO 5 historial real (10.10).
+   PASO 3 (10.8 audio perspectiva) HECHO. PASO 4 (10.12 tanteador overlay) HECHO. FALTA: PASO 5 historial real (10.10).
    Migraciones NUEVAS pendientes de prod (lote al cerrar F10, con OK de Gino): 190000_penal_result_detail,
    200000_round_deadline_3s, + la de historial (paso 5). Commits LOCALES (sin pushear); pushear `main` deploya.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
@@ -672,9 +672,11 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       barra al tap, bloquea los botones, muestra "Respondiste a los X.Xs" y, en el resultado, el delta de
       tiempos (10.7). SPEC + CLAUDE gotcha actualizados (revertido "respuesta cambiable"). Test db nuevo
       (select_option.test.ts: primer tap, re-tap idempotente, cambio rechazado, 1 sola fila).
-- [ ] 10.12 Tanteador estilo transmisión: círculos verde (gol) / rojo (erró) por penal, como tablero
-      detrás del arco un poco elevado, en vez del texto centrado actual ("Penal N · score"). Reusar el
-      concepto de PenalDots (RunSummary) para el HUD en vivo.
+- [x] 10.12 Tanteador estilo transmisión: círculos verde (gol) / rojo (erró) por penal. HECHO (overlay
+      2D, decisión de Gino): PenalHud muestra dos filas de círculos (uno por penal pateado por cada lado,
+      separados por paridad de idx) bajo cada nación+marcador. PenalLive acumula los `penal:result`
+      (dedupe por idx) y siembra desde `get_match_penals` al montar (refresh/reconexión). "Penal N de M"
+      usa la longitud por fase (3 grupos / 5 eliminación, de `get_active_match.phase`).
 - [x] 10.13 Segunda chance (ambos erraron, reaparecen las 2 opciones): mensaje arriba explicando POR QUÉ
       se volvieron a mostrar. HECHO: `penal:second_chance` lleva `reason='both_missed'` (mig 190000) y
       PenalLive muestra "Erraron los dos: segunda chance — quedan 2 opciones".

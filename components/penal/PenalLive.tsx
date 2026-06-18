@@ -15,7 +15,7 @@ import {
 import { resolveSceneRoles } from "@/lib/penal/scene";
 import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 import type { PenalAnimation } from "@/components/penal/PenalScene";
-import { PenalHud } from "@/components/penal/PenalHud";
+import { PenalHud, type PenalDot } from "@/components/penal/PenalHud";
 import { TimeBar } from "@/components/penal/TimeBar";
 import {
   playGood,
@@ -47,6 +47,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [scene, setScene] = useState<MatchScene | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
   const [score, setScore] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
+  // 10.12: tablero de penales resueltos del match (verde gol / rojo erró), por lado vía paridad de idx.
+  const [dots, setDots] = useState<PenalDot[]>([]);
+  const [kicksPerSide, setKicksPerSide] = useState(5);
   const [muted, setMuted] = useState(false);
 
   // Mute persistente (8.7/8.12): cargar la preferencia al montar. Estado inicial false (evita
@@ -114,6 +117,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         const am = data as ActiveMatch | null;
         if (am && am.match_id === matchId) {
           setScore({ home: am.home_score, away: am.away_score });
+          // 10.12: penales por lado según fase del match (grupos 3 / eliminación 5) para "Penal N de M".
+          setKicksPerSide(am.phase === "group" ? 3 : 5);
           if (am.penal) {
             setPenal(am.penal);
             // 10.11: si ya había respondido (reconexión), retomo la selección y la dejo fija.
@@ -166,6 +171,12 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             (myRole === "keep" && r.winner === "keeper");
           if (myRole == null ? r.scored : good) playGood();
           else playBad();
+          // 10.12: sumá este penal al tablero (dedupe por idx ante re-emisiones).
+          setDots((prev) =>
+            prev.some((d) => d.idx === r.idx)
+              ? prev
+              : [...prev, { idx: r.idx, scored: r.scored }].sort((a, b) => a.idx - b.idx),
+          );
         })
         .subscribe((status) => {
           // Reconexión (9.5): al volver a SUBSCRIBED tras una caída, resincronizamos por si nos
@@ -184,6 +195,19 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       const sc = (sceneData as MatchScene | null) ?? null;
       setScene(sc);
       sceneRef.current = sc;
+
+      // 10.12: siembra el tablero con los penales ya resueltos del match (para refresh/reconexión).
+      const { data: penalsData } = await supabase.rpc("get_match_penals", { p_match: matchId });
+      if (!active) return;
+      const seeded = (penalsData as { idx: number; scored: boolean }[] | null) ?? [];
+      if (seeded.length > 0) {
+        setDots((prev) => {
+          const have = new Set(prev.map((d) => d.idx));
+          const merged = [...prev];
+          for (const p of seeded) if (!have.has(p.idx)) merged.push({ idx: p.idx, scored: p.scored });
+          return merged.sort((a, b) => a.idx - b.idx);
+        });
+      }
 
       // Rehidratación inicial (4.8): retomo el penal en curso con su deadline server y mi selección.
       await hydrate();
@@ -408,6 +432,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         awayScore={score.away}
         idx={penal.idx}
         role={role}
+        dots={dots}
+        kicksPerSide={kicksPerSide}
       />
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium uppercase tracking-[0.2em] text-fg-subtle">

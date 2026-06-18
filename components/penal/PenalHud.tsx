@@ -8,16 +8,51 @@
 
 import type { ParticipantBrief } from "@/lib/realtime/score";
 
-function Side({ brief, score, align }: { brief: ParticipantBrief | null; score: number; align: "left" | "right" }) {
+/** Un penal ya resuelto: su idx global (impar = patea home, par = away) y si el pateador convirtió. */
+export type PenalDot = { idx: number; scored: boolean };
+
+/** Tablero estilo transmisión (10.12): un círculo por penal pateado por este lado — verde gol, rojo erró. */
+function Dots({ dots, align }: { dots: PenalDot[]; align: "left" | "right" }) {
   return (
-    <div className={`flex flex-1 items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
-      <span
-        className="h-4 w-4 shrink-0 rounded-full"
-        style={{ backgroundColor: brief?.kit_primary ?? "#666" }}
-        aria-hidden
-      />
-      <span className="font-mono text-sm font-semibold text-fg">{brief?.nation_code ?? "???"}</span>
-      <span className="font-mono text-xl font-extrabold tabular-nums text-fg">{score}</span>
+    <span className={`flex flex-wrap gap-1 ${align === "right" ? "justify-end" : ""}`}>
+      {dots.length === 0 ? (
+        <span className="text-[10px] text-fg-subtle">—</span>
+      ) : (
+        dots.map((d) => (
+          <span
+            key={d.idx}
+            title={`Penal ${d.idx}`}
+            className={`h-2.5 w-2.5 rounded-full ${d.scored ? "bg-success" : "bg-danger/70"}`}
+          />
+        ))
+      )}
+    </span>
+  );
+}
+
+function Side({
+  brief,
+  score,
+  dots,
+  align,
+}: {
+  brief: ParticipantBrief | null;
+  score: number;
+  dots: PenalDot[];
+  align: "left" | "right";
+}) {
+  return (
+    <div className={`flex flex-1 flex-col gap-1 ${align === "right" ? "items-end" : "items-start"}`}>
+      <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
+        <span
+          className="h-4 w-4 shrink-0 rounded-full"
+          style={{ backgroundColor: brief?.kit_primary ?? "#666" }}
+          aria-hidden
+        />
+        <span className="font-mono text-sm font-semibold text-fg">{brief?.nation_code ?? "???"}</span>
+        <span className="font-mono text-xl font-extrabold tabular-nums text-fg">{score}</span>
+      </div>
+      <Dots dots={dots} align={align} />
     </div>
   );
 }
@@ -31,20 +66,36 @@ interface PenalHudProps {
   idx: number;
   /** "kick" si el caller patea este penal, "keep" si ataja, null si solo mira. */
   role: "kick" | "keep" | null;
+  /** Penales ya resueltos del match (10.12): tablero de círculos verde/rojo por lado. */
+  dots: PenalDot[];
+  /** Penales por lado en esta fase (3 grupos / 5 eliminación) → "Penal N de M". */
+  kicksPerSide: number;
 }
 
-export function PenalHud({ home, away, homeScore, awayScore, idx, role }: PenalHudProps) {
-  const suddenDeath = idx > 10;
-  const label = suddenDeath ? "Muerte súbita" : `Penal ${Math.ceil(idx / 2)} de 5`;
+export function PenalHud({
+  home,
+  away,
+  homeScore,
+  awayScore,
+  idx,
+  role,
+  dots,
+  kicksPerSide,
+}: PenalHudProps) {
+  const suddenDeath = idx > kicksPerSide * 2;
+  const label = suddenDeath ? "Muerte súbita" : `Penal ${Math.ceil(idx / 2)} de ${kicksPerSide}`;
+  // impar = patea home, par = away (mismo criterio que engine_advance_match).
+  const homeDots = dots.filter((d) => d.idx % 2 === 1);
+  const awayDots = dots.filter((d) => d.idx % 2 === 0);
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <div className="flex w-full items-center gap-3">
-        <Side brief={home} score={homeScore} align="left" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
+      <div className="flex w-full items-start gap-3">
+        <Side brief={home} score={homeScore} dots={homeDots} align="left" />
+        <span className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
           {label}
         </span>
-        <Side brief={away} score={awayScore} align="right" />
+        <Side brief={away} score={awayScore} dots={awayDots} align="right" />
       </div>
       {role && (
         <span
