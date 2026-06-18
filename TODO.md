@@ -2,107 +2,26 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> ESTADO (handoff sesión 2026-06-17, cont.): EN F10. PASO 0 HECHO: las 3 migraciones pendientes
-   APLICADAS A PROD por MCP (160000_seed_nations_qualified [destructiva, OK de Gino], 170000_match_length_by_phase,
-   180000_bot_delay_floor); advisors corridos (performance 0; security solo lo esperado por diseño).
-   ⇒ 10.1, 10.4, 10.5, 10.9 cerradas (código + prod). 10.6: el server YA es aleatorio (verificado) → se
-   cierra VISIBLE en 10.11. PASO 1 HECHO (commit): 10.6/10.7/10.11/10.13 — mig 190000_penal_result_detail
-   (resolve_penalty con won_by_speed + selected_at + participant ids + reason='both_missed'; select_option
-   PRIMER-TAP-GANA con already_answered) + PenalLive (congela timer, no cambiable, segundo+delta+motivo+
-   pick vs correcta) + SPEC/CLAUDE gotcha + test db select_option. Verde: typecheck/lint/build + 101 unit +
-   48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
-   bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
-   open_next_round). PASO 3 (10.8 audio perspectiva) HECHO. PASO 4 (10.12 tanteador overlay) HECHO.
-   PASO 5 (10.10 historial real, RPC get_tournament_history + test db) HECHO. ⇒ **F10 COMPLETA (13/13)**.
-   Verde final: typecheck/lint/build + 101 unit + 50 db.
-   >>> DEPLOY HECHO (OK de Gino): las 3 migraciones nuevas (190000_penal_result_detail,
-   200000_round_deadline_3s, 210000_tournament_history) APLICADAS A PROD por MCP + advisors corridos
-   (performance 0; security solo lo esperado, única novedad get_tournament_history como RPC de cliente
-   authenticated). `main` PUSHEADO → Vercel deploya el front. prod==local (DB + front sincronizados).
-   >>> ÚNICO PENDIENTE: walkthrough visual de Gino de las mejoras F10 en prod (transiciones 10.2/10.3,
-   tanteador 10.12, audio 10.8, pantalla de resultado 10.7/10.11/10.13). No bloquea: no hay más código.
->>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
-   agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
->>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
-   6 migraciones del tramo aplicadas a prod por MCP (prod==local), advisors corridos (perf 0; security
-   solo lo esperado por diseño), dev harness borrado, OPS de Vercel/Resend/anon confirmado por Gino.
-   >>> ÚNICO PENDIENTE DEL PROYECTO: el walkthrough visual de Gino en prod (§12.1-3: avatar, escena de
-   penal + animaciones, bracket, en un torneo real). No hay más tareas de código. Al confirmar el
-   visual, tildar 9.6 y el proyecto queda cerrado. OJO: los commits de la sesión están LOCALES; pushear
-   a main dispara el deploy del front en Vercel (preguntar a Gino si quiere que se pushee).
-   (manejo de errores robusto), 9.5 (rate-limit en quick_play/select_option/abandon + resuscripción
-   Realtime tras caída — el disclaimer "no afiliado a FIFA" YA está en el home), 9.6 (verificación e2e
-   §12 + DEPLOY final). OJO 4.6b (offset de reloj fiel) sigue pendiente (la barra de tiempo del penal ya
-   lo usa; falta aplicarlo al tiempo muerto/round_deadline).
-   >>> PENDIENTE 9.6: correr `get_advisors(security)` por MCP RECIÉN POST-DEPLOY de las 3 migraciones
-   nuevas a prod (hoy el scan no las cubriría; decisión de Gino). El review estático + suite db ya
-   blindan las RPC nuevas.
+>>> PROYECTO COMPLETO (F0–F10). Todo el código está hecho, verificado y DEPLOYADO a prod
+   (DB por MCP + front por push a `main` → Vercel). prod == local. Verde: typecheck/lint/build +
+   101 unit + 50 db. La historia detallada vive en los checkboxes de abajo y en el git log.
 
->>> HECHO 9.1 (auditoría RLS + anti-trampa): codificada como guardrail durable, no review de una vez.
-   (1) Migración 20260617130000_rls_anticheat_hardening: tapó fugas de superficie por el GRANT default
-   de PUBLIC — `abandon` quedaba ejecutable por `anon`; ~14 RPC de cliente (create_room/quick_play/
-   join_room/select_option/resolve_penalty/get_*/dev_*) ejecutables por `anon` vía PUBLIC (todas exigen
-   sesión salvo resolve_penalty, cuyo uid-null ES el backstop del cron → no explotable pero el backstop
-   es para tick(), no anon); 9 helpers puros del motor (engine_imul/_mulberry32/_rand_int/_rand_bool/
-   _hash32/_bot_intent/_advance_match, bot_penalty_scored, tanda_penalty_difficulty) sin revoke. Todo a
-   authenticated-only (helpers de pertenencia is_*_member/realtime_*_member quedan para evaluar policies;
-   username_available sigue anon). (2) Test supabase/tests/rls_audit.test.ts (5): RLS en TODA tabla de
-   public; superficie ejecutable == allowlist (authenticated 21 / anon 6, set-equality → rompe ante grant
-   accidental futuro); denylist de 31 mutadores internos NO ejecutables por cliente (generaliza el check
-   de 4 de anticheat). Guardrail verificado (grant interno + disable RLS → 4 tests rojos). Estado verde:
-   39 db + 100 unit + typecheck + lint. Las RPC nuevas de F8 ya validan pertenencia y no filtran
-   correct_index (cubiertas por match_scene/bracket tests) → review estático OK, sin cambios.
+>>> F10 (13/13 mejoras post-walkthrough) cerrada. Migraciones de F10 ya en prod:
+   160000_seed_nations_qualified · 170000_match_length_by_phase · 180000_bot_delay_floor ·
+   190000_penal_result_detail · 200000_round_deadline_3s · 210000_tournament_history.
 
->>> OPS ANTES DE PROBAR EN PROD: aplicar a la DB de prod las migraciones nuevas de este tramo
-   (20260617100000_match_scene, _110000_bracket, _120000_match_penals, _130000_rls_anticheat_hardening,
-   _140000_rate_limit) — hoy SOLO están en local (Docker) y verificadas por la suite db. Sin eso,
-   /partido y el bracket no andan en prod, la superficie de funciones no queda blindada (_130000,
-   least-privilege puro) y no hay rate-limit (_140000). Tras deployar: correr `get_advisors(security)`
-   (9.6).
+>>> BASE DE PROD LIMPIA (slate de lanzamiento, hecho a pedido de Gino): 0 cuentas (auth.users/
+   profiles), 0 data de juego (rooms/tournaments/matches/penalties/answers/bot_intents), 0 rate_limits.
+   Intacta la referencia: 48 naciones (clasificadas Mundial 2026) + 221 preguntas. El 1er torneo real
+   arranca de cero.
 
->>> HECHO este tramo (commits, F8 COMPLETO + 4.9): 8.2 escena de penal 3D + pantalla de partido real;
-   8.5 bracket + pantalla TOURNAMENT-SCOPED (<TournamentLive>, gate get_active_tournament): alterna
-   penal 3D (<PenalLive> + PenalScene low-poly, cámara penal-cam fija, camiseta teñida por nación vía
-   AvatarModel kitTop) ↔ bracket 2D (<Bracket>: tu camino + "ver todo") en el tiempo muerto, gobernado
-   por el reloj de ronda. 8.10 HUD (PenalHud: marcador+Penal N de 5+pateás/atajás). 8.3 barra de tiempo
-   (TimeBar + vibración). 8.4+4.9 animaciones 3D goal/save/miss_wide (PenalScene useFrame por reason+
-   variant). 8.6 RunSummary (fin de torneo + penal a penal vía get_match_penals + CTA invitado, cierra
-   8.1). 8.12 campeón (Confetti + teclado 1/2/3 + lib/prefs). 8.7 audio sintetizado (lib/audio Web
-   Audio + mute). 8.9 compartir sala (Web Share). 8.8 transiciones fade-in. 8.11/8.13 ya estaban.
-   SERVER (3 migs, SOLO EN LOCAL aún): _match_scene, _bracket, _match_penals. Helpers puros
-   lib/penal/scene.ts + lib/bracket/bracket.ts (+ tests). Estado verde: typecheck/lint/build, 100 unit
-   + 34 db. PENDIENTE de Gino (visual, no bloquea): mirar a ojo el render WebGL de la escena de penal +
-   animaciones, y el bracket + transición penal↔tiempo muerto, en un torneo real.
+>>> ÚNICO PENDIENTE (no es código): walkthrough visual de Gino en prod — avatar, escena de penal +
+   animaciones, bracket, y las mejoras F10 (transiciones 10.2/10.3, tanteador 10.12, audio 10.8,
+   pantalla de resultado 10.7/10.11/10.13) en un torneo real. Al confirmar, el proyecto queda cerrado.
 
->>> PREVIO (commits): 9.0 (tests SQL/RPC + DB en CI; ver [[tanda-db-tests]]). 8.1 MODO INVITADO
-   redefinido (Gino): usuario real efímero = sesión anónima + username autoasignado invitado_<9díg> +
-   avatar default, juega el camino competitivo REAL (no torneo client-side; ver [[tanda-guest-anon]]).
-   GuestButton + lib/guest/anon + gate avatar/perfil + upgrade invitado→cuenta (/register modo upgrade).
-   8.1b (torneo local) DESCARTADO. anon sign-ins YA HABILITADO en prod. SPEC §8.4 reescrito. Para correr
-   los tests DB: `pnpm db:start && pnpm db:reset && pnpm test:db` (necesita Docker).
-
->>> 9.0 DONE: suite repetible del camino autoritativo PLPGSQL con Postgres local de Supabase (Docker)
-   + Vitest project `db` (pg directo) + job `db` en CI. 26 tests: paridad VIVA TS↔SQL (mulberry32/
-   bot_intent/penalty_difficulty/fnv32, sin golden hardcodeado), anti-trampa (correct_index ilegible
-   por anon/authenticated, escrituras solo por RPC, RPCs internas revocadas, broadcasts solo a
-   miembros), e2e torneo 48 (start→driver fast-forward→campeón+3º, 72 grupos+32 KO, 0 cruce mismo
-   grupo R32), reloj de ronda compartido (1 deadline), abandon (humano→bot, get_active_match deja de
-   rehidratar, resuelve is_random=false). `pnpm test` sigue unit-only (88, sin Docker); `pnpm db:start
-   && pnpm db:reset && pnpm test:db` para la suite DB. HALLAZGO arreglado: `db reset` desde archivos
-   fallaba — faltaba la migración del event trigger `ensure_rls`/`rls_auto_enable` (se había aplicado
-   out-of-band); agregada como 20260614090650 (idempotente, fiel al remoto) → historial autocontenido.
-   Guardrail verificado (romper una constante de paridad en una migración → suite roja). DIFERIDO: tipar
-   el cliente con `supabase gen types` (Database generic) queda como tarea aparte (9.x).
-
->>> CONTEXTO DURABLE (lo viejo de F2–F7 vive en el git log y en los checkboxes de abajo): el camino
-   autoritativo (matchmaking → grupos con reloj de ronda → KO → campeón + abandon + score:live) está
-   COMPLETO, en PLPGSQL (no Edge Functions; SPEC §1.2/§1.3) y blindado por la suite DB de 9.0. lib/engine
-   (TS) = fuente de la regla; las versiones SQL son ports fieles verificados por paridad. El dev harness
-   (/dev/penal, dev_create_practice_penal) es TEMPORAL (prueba penales sueltos) y se borra en F8 cuando
-   exista la pantalla de partido real.
-
-OPS PENDIENTE (Gino, no bloquea el código): cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/
-NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de recuperación).`
+>>> DIFERIDO (tarea aparte, no bloquea): tipar el cliente con `supabase gen types` (Database generic)
+   para las `supabase.rpc(...)`. OPS ya confirmado (env vars Vercel + dominio Resend + anon sign-ins).
+   Suite DB local: `pnpm db:start && pnpm db:reset && pnpm test:db` (Docker).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -277,9 +196,10 @@ NEXT_PUBLIC_SITE_URL en Vercel + verificar dominio en Resend (para los mails de 
       posiciones en vivo (score:live de 6.5) + la animación durante el tiempo muerto. Va con la pantalla
       de partido/bracket (8.5/8.2). Reconexión durante el tiempo muerto: get_active_match devuelve
       penal=null (correcto), retoma al abrir la próxima ronda.
-- [ ] 4.6b Offset de reloj cliente/servidor (barra fiel al `deadline`, no al reloj local).
-      Helpers ya en lib/realtime/penal.ts (`clockOffset`/`remainingMs`); falta enchufarlos en la
-      pantalla de partido real (F8) y aplicar el mismo criterio al tiempo muerto (`round_deadline`).
+- [x] 4.6b Offset de reloj cliente/servidor (barra fiel al `deadline`, no al reloj local).
+      HECHO: la barra del penal usa `clockOffset`/`remainingMs` contra el `deadline` server (8.3/TimeBar).
+      El tiempo muerto NO tiene barra de cuenta regresiva (F10/10.3 muestra la tabla del grupo + pokea
+      `open_next_round` al vencer `round_deadline`) → no hay countdown que corregir por offset → N/A.
 - [x] 4.7 `tick()` por `pg_cron` (backstop de penales/rooms). `tick()` (SECURITY DEFINER,
       revoke a public/anon/authenticated) barre penales `open`/`second_chance` con
       `deadline<=now()` (límite 200/tick) y llama `resolve_penalty` por el camino backstop (uid
