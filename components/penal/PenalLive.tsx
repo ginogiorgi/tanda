@@ -424,7 +424,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   return (
     <>
       {sceneBg(false)}
-      <div className="fade-in relative z-10 flex w-full max-w-md flex-col gap-6">
+      <div
+        className={`fade-in relative z-10 flex w-full max-w-md flex-col gap-6 ${
+          isSecondChance ? "rounded-2xl ring-1 ring-amber-400/40" : ""
+        }`}
+      >
       <PenalHud
         home={scene?.home ?? null}
         away={scene?.away ?? null}
@@ -436,7 +440,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         kicksPerSide={kicksPerSide}
       />
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium uppercase tracking-[0.2em] text-fg-subtle">
+        <span
+          className={`font-medium uppercase tracking-[0.2em] ${
+            isSecondChance ? "font-bold text-amber-300" : "text-fg-subtle"
+          }`}
+        >
           {isSecondChance ? "2ª chance" : "Elegí tu respuesta"}
         </span>
         <div className="flex items-center gap-3">
@@ -453,11 +461,16 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       </div>
       <TimeBar fraction={displayRemaining / totalMs} />
 
-      {/* 10.13: explicar por qué reaparecen las opciones en segunda chance. */}
+      {/* 10.13: banner prominente — que se note que entraste en otra fase del penal. */}
       {isSecondChance && (
-        <p className="text-center text-sm font-medium text-amber-400">
-          Erraron los dos: segunda chance — quedan 2 opciones
-        </p>
+        <div className="fade-in rounded-xl border border-amber-400/60 bg-amber-500/15 px-4 py-3 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">
+            Segunda chance
+          </p>
+          <p className="mt-1 text-sm font-medium text-amber-100">
+            Erraron los dos — quedan 2 opciones. ¡Última oportunidad!
+          </p>
+        </div>
       )}
 
       {/* 10.11: confirmación de que tu respuesta quedó fija + el segundo exacto. */}
