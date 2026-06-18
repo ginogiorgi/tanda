@@ -13,15 +13,15 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Cliente (Next.js App Router, RSC + "use client")           │
-│  - UI, animaciones (Framer Motion), suscripción Realtime    │
+│  - UI, animaciones CSS, suscripción Realtime                │
 │  - NUNCA conoce correct_index ni decide resultados          │
 └───────────────┬─────────────────────────────────────────────┘
                 │ Server Actions / Route Handlers (auth, lecturas)
-                │ Llamadas RPC / invoke Edge Function (acciones de juego)
+                │ Llamadas RPC SECURITY DEFINER (acciones de juego)
 ┌───────────────▼─────────────────────────────────────────────┐
-│  Supabase Edge Functions  +  Postgres RPC (lógica AUTORITATIVA)│
+│  Postgres RPC plpgsql SECURITY DEFINER (lógica AUTORITATIVA) │
 │  - select_option, resolve_penalty, start_tournament, tick... │
-│  - importan el MOTOR (TS puro) y lo aplican con now() server │
+│  - PORT FIEL del MOTOR (TS puro), aplicado con now() server  │
 └───────────────┬─────────────────────────────────────────────┘
                 │
 ┌───────────────▼───────────────┐   ┌─────────────────────────┐
@@ -105,8 +105,8 @@ bot-vs-bot se jueguen "de verdad".
 
 ### 1.5 Realtime: Broadcast + Presence (decisión cerrada)
 
-- **Broadcast autoría server**: los eventos de juego se emiten desde Edge Functions /
-  triggers, con payload **controlado** (jamás incluye `correct_index`).
+- **Broadcast autoría server**: los eventos de juego se emiten desde las RPC plpgsql
+  (`realtime.send()`), con payload **controlado** (jamás incluye `correct_index`).
 - **Presence**: lista de conectados del lobby en vivo.
 - El cliente se suscribe; nunca lee tablas sensibles por Postgres Changes.
 
@@ -305,7 +305,7 @@ groups ──▶ (standings) ──▶ round_of_32 ──▶ round_of_16 ──�
 
 ---
 
-## 5. Contratos de RPC / Edge Functions
+## 5. Contratos de RPC (plpgsql `SECURITY DEFINER`)
 
 Todas autoritativas, validan pertenencia y usan `now()` del servidor. Errores como
 `{ error: code }` con códigos explícitos.

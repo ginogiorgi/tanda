@@ -1,21 +1,19 @@
 # CLAUDE.md — TANDA
 
 Juego de trivia mundialista multijugador en tiempo real. Cada pregunta es un penal.
-Calidad "app oficial de FIFA". Producto en `docs/BRIEF.md` (fuente de verdad),
-arquitectura en `SPEC.md`, fases en `PLAN.md`, tareas en `TODO.md`.
+Calidad "app oficial de FIFA". Producto/reglas en `docs/BRIEF.md`, arquitectura y
+contratos en `SPEC.md`, estado actual en `TODO.md`.
 
 ## Protocolo de trabajo (reanudable)
-- **Al iniciar cualquier sesión: leer `TODO.md` primero.** La línea `ESTADO ACTUAL`
-  dice dónde quedaste. Trabajar la primera tarea sin tildar; una a la vez; no saltear.
-- Al terminar una tarea: verificar con **output real** (typecheck/lint/build/tests),
-  tildar el checkbox, actualizar `ESTADO ACTUAL`, y commit descriptivo.
+- **Al iniciar cualquier sesión: leer `TODO.md`** para el estado actual y cómo correr/deployar.
+- Al terminar un cambio: verificar con **output real** (typecheck/lint/build/tests),
+  actualizar `TODO.md` si cambió el estado, y commit descriptivo.
 - Antes de cualquier cambio de arquitectura grande: **parar y consultar a Gino**.
-- Cada fase es una rebanada vertical que compila y corre sola.
 
 ## Stack
 Next.js (App Router) + TypeScript estricto · Supabase (Postgres/Auth/Realtime/RLS/pg_cron;
 lógica autoritativa en RPC plpgsql, sin Edge Functions en v1) · Vercel · Tailwind ·
-Framer Motion · Vitest. Gestor: **pnpm**.
+animaciones CSS (no hay Framer Motion) · Vitest. Gestor: **pnpm**.
 
 ## Comandos
 ```

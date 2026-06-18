@@ -8,7 +8,8 @@ selecciones) hasta coronar un campeón.
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript estricto · Tailwind v4 · Supabase
-(Postgres, Auth, Realtime, Edge Functions, RLS) · Vercel · Vitest.
+(Postgres, Auth, Realtime, RLS, pg_cron). La lógica autoritativa del juego corre en
+**RPC plpgsql `SECURITY DEFINER`** (no hay Edge Functions). Vercel · Vitest.
 
 ## Comandos
 
@@ -18,7 +19,12 @@ pnpm build      # build de producción
 pnpm start      # servir el build
 pnpm lint       # ESLint
 pnpm typecheck  # tsc --noEmit
-pnpm test       # Vitest (motor de juego y de torneo)
+pnpm test       # Vitest unit (motor de juego y de torneo)
+
+# Suite del camino autoritativo SQL/RPC (necesita Docker):
+pnpm db:start   # levanta Postgres local de Supabase
+pnpm db:reset   # aplica supabase/migrations/ de cero
+pnpm test:db    # Vitest contra la DB local
 ```
 
 ## Setup
@@ -29,8 +35,9 @@ pnpm test       # Vitest (motor de juego y de torneo)
 
 ## Documentación
 
-- **`docs/BRIEF.md`** — diseño del producto (fuente de verdad).
+- **`docs/BRIEF.md`** — diseño del producto y reglas del juego.
 - **`SPEC.md`** — arquitectura, modelo de datos, máquinas de estado, contratos.
-- **`PLAN.md`** — fases de construcción.
-- **`TODO.md`** — estado actual y tareas (leer primero al retomar).
-- **`CLAUDE.md`** — comandos, convenciones y gotchas.
+- **`TODO.md`** — estado actual + cómo correr/deployar.
+- **`CLAUDE.md`** — convenciones y gotchas (timing/RLS/anti-trampa).
+- **`supabase/migrations/`** — esquema y RPCs de la DB: **la fuente de verdad** (la base
+  de prod se construye replayeando estos archivos; ver `supabase/README.md`).

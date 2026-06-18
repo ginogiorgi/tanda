@@ -22,7 +22,8 @@ responsive, mobile-first, con animaciones premium y cero detalles "de demo".
 ## 1. Stack y restricciones técnicas (cerradas)
 
 - **Frontend/SSR:** Next.js (App Router) + TypeScript (modo estricto).
-- **Backend:** Supabase → Postgres + Auth + Realtime + Edge Functions + RLS.
+- **Backend:** Supabase → Postgres + Auth + Realtime + RLS + pg_cron. La lógica
+  autoritativa del juego corre en RPC plpgsql `SECURITY DEFINER` (sin Edge Functions; ver SPEC §1.2).
 - **Hosting:** Vercel.
 - **Estado inicial de infra:** SOLO existe el repo de GitHub vacío. Claude scaffoldea
   TODO desde cero, incluyendo instrucciones de setup de Supabase y Vercel y variables
@@ -40,9 +41,8 @@ resuelven los timers y los "ticks" del juego. Opciones a evaluar con tradeoffs:
   (broadcast/presence)** para sincronizar; resolución del penal por **timestamps del
   servidor**; avance de fases por **eventos** (cada respuesta dispara una resolución)
   en lugar de loops continuos.
-- Un **scheduler** (Supabase Edge Functions + `pg_cron` / scheduled functions) para
-  cerrar penales cuando se agota el tiempo aunque nadie responda, y para mover los
-  bots.
+- Un **scheduler** (`pg_cron` → `tick()` backstop) para cerrar penales cuando se agota
+  el tiempo aunque nadie responda, y para mover los bots.
 - Bots manejados **del lado servidor** (no en el cliente), con su respuesta agendada
   según dificultad.
   Claude debe proponer la arquitectura final y validarla conmigo antes de codear.
@@ -102,7 +102,7 @@ Google Fonts) que evoque el estilo.
 
 ### 4.3 Animaciones premium
 
-- Librería: Framer Motion (o CSS/transform performante). Respetar `prefers-reduced-motion`.
+- Animaciones CSS/transform performantes (sin Framer Motion). Respetar `prefers-reduced-motion`.
 - **Pantalla de penal:** la tarjeta de pregunta + 3 opciones va **centrada**. **Detrás,
   blurreada**, una animación del **arquero en el arco** y el **pateador preparado**.
 - Cuando ambos eligen (o se agota el tiempo): la tarjeta **desaparece** y se ve la
