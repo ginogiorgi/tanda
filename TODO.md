@@ -29,9 +29,15 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. 3D (R3F) solo en avatar y penal.
 
-## Pendientes (no bloquean)
+## Próxima sesión (arrancar acá)
 
-- **Tipar el cliente** con `supabase gen types` (Database generic) para las `supabase.rpc(...)`.
+- **Verificación full pendiente**: el último commit (tipado del cliente) pasó `typecheck` pero
+  NO se llegó a correr `lint`/`build`/`test`/`test:db` después. Correr la suite completa primero
+  y confirmar verde antes de seguir (debería estarlo: el tipado es type-only).
+- Mejoras de calidad ya hechas esta sesión: limpieza de docs + código/deps muertos (knip),
+  paralelización de queries en server pages, metadatos de lanzamiento (OG/SEO), PWA (manifest +
+  íconos), consolidación de migraciones (45 → 3), y tipado del cliente (`Database` a mano en
+  `lib/supabase/database.types.ts` — mantener a mano hasta tener token de plataforma para `gen types`).
 
 > Migraciones: consolidadas en un baseline de 3 archivos (schema + wiring + seed), verificado por
 > `db:reset` + 51 pruebas db. Ver memoria `tanda-sql-migrations-canonical`.
