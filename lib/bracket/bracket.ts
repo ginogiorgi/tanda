@@ -77,6 +77,8 @@ export interface KoPhaseView {
 }
 
 export interface BracketView {
+  /** Fase actual del torneo (gobierna qué se muestra: grupos vs árbol de eliminación). */
+  phase: TournamentPhase;
   groups: GroupView[];
   ko: KoPhaseView[];
   myGroupLetter: string | null;
@@ -191,6 +193,7 @@ export function buildBracketView(snap: BracketSnapshot, live: ScoreboardState): 
     : undefined;
 
   return {
+    phase: snap.current_phase,
     groups,
     ko,
     myGroupLetter: myTeam?.group_letter ?? null,
