@@ -197,16 +197,6 @@ export interface Qualified {
   slot: QualifiedSlot;
 }
 
-/** Fases de eliminación, en orden. */
-export const KO_PHASES = [
-  "round_of_32",
-  "round_of_16",
-  "quarters",
-  "semis",
-  "final",
-] as const;
-export type KoPhase = (typeof KO_PHASES)[number];
-
 /**
  * Arma los 16 cruces de `round_of_32` a partir de los 32 clasificados (SPEC §4). Mapeo
  * determinista por seed que **evita que dos del mismo grupo se crucen de entrada**: cada ganador

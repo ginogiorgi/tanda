@@ -21,12 +21,8 @@ export type MatchSide = "home" | "away";
 export type MatchKind = "group" | "elimination";
 
 /** Penales por lado en regulación, por fase (10.4): grupos 3, eliminación 5. */
-export function kicksPerSide(kind: MatchKind): number {
+function kicksPerSide(kind: MatchKind): number {
   return kind === "group" ? 3 : 5;
-}
-/** Penales de regulación (kicksPerSide × 2). */
-export function regulationPenalties(kind: MatchKind): number {
-  return kicksPerSide(kind) * 2;
 }
 
 /** Estado del partido tras los penales jugados hasta ahora. */

@@ -19,8 +19,3 @@ export function makeRng(seed: number): () => number {
 export function randInt(rng: () => number, n: number): number {
   return Math.floor(rng() * n);
 }
-
-/** Booleano uniforme a partir de un generador. */
-export function randBool(rng: () => number): boolean {
-  return rng() < 0.5;
-}

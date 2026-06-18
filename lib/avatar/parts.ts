@@ -25,7 +25,7 @@ export const BODY_TYPES: readonly { id: BodyType; label: string }[] = [
   { id: "female", label: "Mujer" },
 ] as const;
 
-export const HAIR_PARTS: readonly PartOption[] = [
+const HAIR_PARTS: readonly PartOption[] = [
   { id: "none", label: "Pelado" },
   { id: "buzz", label: "Rapado" },
   { id: "short", label: "Corto" },
@@ -34,19 +34,19 @@ export const HAIR_PARTS: readonly PartOption[] = [
   { id: "long", label: "Largo" },
 ] as const;
 
-export const TOP_PARTS: readonly PartOption[] = [
+const TOP_PARTS: readonly PartOption[] = [
   { id: "tee", label: "Remera" },
   { id: "longsleeve", label: "Manga larga" },
   { id: "tank", label: "Musculosa" },
 ] as const;
 
-export const BOTTOM_PARTS: readonly PartOption[] = [
+const BOTTOM_PARTS: readonly PartOption[] = [
   { id: "shorts", label: "Short" },
   { id: "pants", label: "Pantalón" },
   { id: "joggers", label: "Jogger" },
 ] as const;
 
-export const SHOES_PARTS: readonly PartOption[] = [
+const SHOES_PARTS: readonly PartOption[] = [
   { id: "sneakers", label: "Zapatillas" },
   { id: "boots", label: "Botines" },
   { id: "cleats", label: "Tapones" },
