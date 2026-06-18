@@ -18,8 +18,8 @@ import type { PenalAnimation } from "@/components/penal/PenalScene";
 import { PenalHud } from "@/components/penal/PenalHud";
 import { TimeBar } from "@/components/penal/TimeBar";
 import {
-  playGoal,
-  playSave,
+  playGood,
+  playBad,
   playWhistle,
   setMuted as setAudioMuted,
   unlockAudio,
@@ -75,6 +75,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   const [abandoning, setAbandoning] = useState(false);
   const [abandonError, setAbandonError] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  // Espejo de `scene` para leer mi rol dentro del handler de `penal:result` (closure del subscribe,
+  // que se arma una sola vez antes de que `scene` cargue) → audio por perspectiva (10.8).
+  const sceneRef = useRef<MatchScene | null>(null);
   const pokedRef = useRef<string | null>(null);
   const vibratedRef = useRef<string | null>(null);
   const remainingRef = useRef(0);
@@ -149,8 +152,20 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           const r = payload as PenalResultPayload;
           setResult(r);
           setScore({ home: r.home_score, away: r.away_score });
-          if (r.scored) playGoal();
-          else playSave();
+          // 10.8: audio por perspectiva → "bueno" si el resultado favorece a MI lado (metí/atajé),
+          // "malo" si favorece al rival. No por gol/atajada físico (eso ya lo dice la animación 3D).
+          const myId = sceneRef.current?.my_participant_id ?? null;
+          const myRole =
+            myId === r.kicker_participant_id
+              ? "kick"
+              : myId === r.keeper_participant_id
+                ? "keep"
+                : null;
+          const good =
+            (myRole === "kick" && r.winner === "kicker") ||
+            (myRole === "keep" && r.winner === "keeper");
+          if (myRole == null ? r.scored : good) playGood();
+          else playBad();
         })
         .subscribe((status) => {
           // Reconexión (9.5): al volver a SUBSCRIBED tras una caída, resincronizamos por si nos
@@ -166,7 +181,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         p_match: matchId,
       });
       if (!active) return;
-      setScene((sceneData as MatchScene | null) ?? null);
+      const sc = (sceneData as MatchScene | null) ?? null;
+      setScene(sc);
+      sceneRef.current = sc;
 
       // Rehidratación inicial (4.8): retomo el penal en curso con su deadline server y mi selección.
       await hydrate();

@@ -13,7 +13,7 @@
    48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
    bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
    open_next_round). FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
-   PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5 historial real (10.10).
+   PASO 3 (10.8 audio perspectiva) HECHO. FALTAN: PASO 4 tanteador overlay 2D (10.12). PASO 5 historial real (10.10).
    Migraciones NUEVAS pendientes de prod (lote al cerrar F10, con OK de Gino): 190000_penal_result_detail,
    200000_round_deadline_3s, + la de historial (paso 5). Commits LOCALES (sin pushear); pushear `main` deploya.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
@@ -656,9 +656,10 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       rápido"). HECHO: `penal:result` ahora lleva `won_by_speed` + `kicker/keeper_selected_at` +
       participant ids (mig 190000_penal_result_detail); PenalLive muestra el motivo + el delta de tiempos
       (perspectiva: "ganaste por velocidad" / "<nación> respondió X.Xs más rápido").
-- [ ] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
-      mete/ataja el RIVAL. Hoy es goal/save fijo sin perspectiva. Usar el rol del jugador (kicker/keeper)
-      + a quién favorece el resultado.
+- [x] 10.8 Audio por perspectiva: sonido BUENO cuando TU equipo mete/ataja; sonido MALO cuando
+      mete/ataja el RIVAL. HECHO: `lib/audio` `playGood` (festejo) / `playBad` (decepción) en vez de
+      playGoal/playSave fijos. PenalLive cruza `result.winner` con mi rol (kicker/keeper de
+      get_match_scene, vía sceneRef para el closure del handler) → bueno si el resultado me favorece.
 - [x] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
       restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido"); aplicarlo
       también a grupos con la nueva longitud (GD = penales convertidos al cortar). Va junto con 10.4.

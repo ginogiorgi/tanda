@@ -89,20 +89,28 @@ export function playWhistle(): void {
   tone(c, 2350, t + 0.06, 0.16, "triangle", 0.16);
 }
 
-/** Gol: repique ascendente + ráfaga de multitud. */
-export function playGoal(): void {
+/**
+ * Resultado A FAVOR del jugador (10.8): tu equipo metió o atajó. Repique ascendente + ráfaga de
+ * multitud (festejo). Es el sonido "bueno" desde la perspectiva del jugador, sin importar si el
+ * evento físico fue gol o atajada.
+ */
+export function playGood(): void {
   const c = ready();
   if (!c) return;
   const t = c.currentTime;
   [523, 659, 784, 1047].forEach((f, i) => tone(c, f, t + i * 0.09, 0.22, "sawtooth", 0.12));
-  noise(c, t + 0.1, 0.7, 1800, 0.14); // multitud
+  noise(c, t + 0.1, 0.7, 1800, 0.14); // multitud festejando
 }
 
-/** Atajada: golpe seco grave + un toque de ruido. */
-export function playSave(): void {
+/**
+ * Resultado EN CONTRA del jugador (10.8): metió o atajó el rival. Tonos descendentes + golpe grave
+ * (decepción). Es el sonido "malo" desde tu perspectiva.
+ */
+export function playBad(): void {
   const c = ready();
   if (!c) return;
   const t = c.currentTime;
-  tone(c, 150, t, 0.16, "square", 0.2);
-  noise(c, t, 0.18, 600, 0.18);
+  [392, 330, 262].forEach((f, i) => tone(c, f, t + i * 0.11, 0.26, "triangle", 0.12));
+  tone(c, 110, t + 0.05, 0.3, "square", 0.16); // golpe grave
+  noise(c, t, 0.2, 500, 0.1);
 }
