@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { publicSupabaseEnv, secretKey } from "@/lib/env";
+import type { Database } from "@/lib/supabase/database.types";
 
 /**
  * Cliente admin de Supabase (service-role vía `secretKey`). **Solo servidor** (Server
@@ -9,7 +10,7 @@ import { publicSupabaseEnv, secretKey } from "@/lib/env";
  */
 export function createAdminClient() {
   const { url } = publicSupabaseEnv();
-  return createClient(url, secretKey(), {
+  return createClient<Database>(url, secretKey(), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
