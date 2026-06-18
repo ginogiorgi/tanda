@@ -7,4 +7,5 @@ La aleatoriedad entra siempre como parámetro (`seed`). Ver SPEC §1.2.
 - `match.ts` — tanda de 5, alternancia kicker/keeper, muerte súbita. (F3)
 - `tournament.ts` — grupos, mejores terceros, bracket, desempates. (F6)
 
-Las Edge Functions / RPC son una capa fina que invoca este motor con `now()` del servidor.
+Las RPC plpgsql (`SECURITY DEFINER`) son un **port fiel** de este motor, verificado por
+paridad, y lo aplican con `now()` del servidor. No hay Edge Functions.

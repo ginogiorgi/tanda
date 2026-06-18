@@ -27,7 +27,8 @@ pnpm test       # Vitest (motor de juego y de torneo)
 
 ## Convenciones (Pyrux)
 - TS estricto: nunca `any`, `as any`, ni `@ts-ignore`.
-- Tailwind para todo, nunca CSS inline. Animaciones con Framer Motion, no `useEffect`.
+- Tailwind para todo, nunca CSS inline. Animaciones con CSS (keyframes en `globals.css` /
+  transforms), no `useEffect`; respetar `prefers-reduced-motion`.
 - Mobile-first en todos los componentes.
 - `"use client"` solo con interactividad real. `page.tsx` es Server Component que compone
   directamente; no existe `*PageClient.tsx`.

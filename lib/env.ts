@@ -18,7 +18,7 @@ export function publicSupabaseEnv(): { url: string; publishableKey: string } {
   return { url, publishableKey };
 }
 
-/** Secret key — SOLO en servidor/Edge/CI. Nunca exponer al cliente. */
+/** Secret key — SOLO en servidor/CI. Nunca exponer al cliente. */
 export function secretKey(): string {
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!key) {
