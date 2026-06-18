@@ -2,14 +2,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TournamentHistoryEntry } from "./history";
 
 /**
- * Trae el historial de torneos del jugador. **Stub hasta F3/F6**: las tablas
- * `participants`/`matches`/`tournaments` todavía no existen, así que devuelve lista vacía.
- * Cuando existan, esta función mapea sus filas (placement, eliminated_phase, goles, etc.) a
- * {@link TournamentHistoryEntry}; la agregación y la UI no cambian. Ver SPEC §8 / PLAN F6.
+ * Trae el historial de torneos del jugador (F10/10.10). La lectura va por la RPC SECURITY DEFINER
+ * `get_tournament_history` (las tablas participants/matches/tournaments son deny-all → un SELECT
+ * directo daría 0 filas). La RPC usa `auth.uid()` internamente y devuelve el shape exacto de
+ * {@link TournamentHistoryEntry}; la agregación (`aggregateStats`) y la UI no cambian.
  */
 export async function getTournamentHistory(
-  _supabase: SupabaseClient,
+  supabase: SupabaseClient,
   _userId: string,
 ): Promise<TournamentHistoryEntry[]> {
-  return [];
+  const { data, error } = await supabase.rpc("get_tournament_history");
+  if (error || !data) return [];
+  return data as TournamentHistoryEntry[];
 }

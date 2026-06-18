@@ -12,10 +12,15 @@
    pick vs correcta) + SPEC/CLAUDE gotcha + test db select_option. Verde: typecheck/lint/build + 101 unit +
    48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
    bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
-   open_next_round). FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
-   PASO 3 (10.8 audio perspectiva) HECHO. PASO 4 (10.12 tanteador overlay) HECHO. FALTA: PASO 5 historial real (10.10).
-   Migraciones NUEVAS pendientes de prod (lote al cerrar F10, con OK de Gino): 190000_penal_result_detail,
-   200000_round_deadline_3s, + la de historial (paso 5). Commits LOCALES (sin pushear); pushear `main` deploya.
+   open_next_round). PASO 3 (10.8 audio perspectiva) HECHO. PASO 4 (10.12 tanteador overlay) HECHO.
+   PASO 5 (10.10 historial real, RPC get_tournament_history + test db) HECHO. ⇒ **F10 COMPLETA del lado
+   CÓDIGO** (13/13). Verde final: typecheck/lint/build + 101 unit + 50 db.
+   >>> PENDIENTE PARA CERRAR F10 (necesita a Gino, NO hecho aún): (a) aplicar a PROD por MCP las 3
+   migraciones nuevas de esta sesión —190000_penal_result_detail, 200000_round_deadline_3s,
+   210000_tournament_history (todas seguras: create-or-replace + 1 función nueva con revoke)— + correr
+   advisors; (b) pushear `main` para deployar el front por Vercel (los commits están LOCALES). OJO: el
+   front y la DB conviene deployarlos JUNTOS — select_option pasó a primer-tap-gana, el front viejo
+   trataría la respuesta como cambiable. (c) walkthrough visual de Gino de las mejoras F10 en prod.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
@@ -663,9 +668,12 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
 - [x] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
       restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido"); aplicarlo
       también a grupos con la nueva longitud (GD = penales convertidos al cortar). Va junto con 10.4.
-- [ ] 10.10 Historial roto: `getTournamentHistory` es un STUB (devuelve []) desde 2.7 → el perfil nunca
-      muestra nada. Implementarlo de verdad (query a participants/tournaments del usuario: nación,
-      placement/eliminated_phase, resultado). Perdí 1 + abandoné 1 y no aparecen.
+- [x] 10.10 Historial roto: `getTournamentHistory` era un STUB ([]). HECHO: RPC `get_tournament_history()`
+      (SECURITY DEFINER por auth.uid(), mig 210000_tournament_history; revoke public/anon + grant
+      authenticated) devuelve una fila por participación no-bot: nación, placement/eliminated_phase,
+      fecha, y agregación de matches finalizados (goles a favor / jugados / ganados). queries.ts mapea
+      1:1 a TournamentHistoryEntry (aggregateStats + UI sin cambios). Test db nuevo + sumada al allowlist
+      de rls_audit.
 - [x] 10.11 Respuesta NO cambiable + congelar el tiempo al elegir + mostrar el segundo exacto. HECHO:
       `select_option` ahora es PRIMER-TAP-GANA (rechaza el cambio con `already_answered`, re-tap igual
       idempotente; mig 190000) → regla AUTORITATIVA, no solo del cliente. PenalLive congela el contador/
