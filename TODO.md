@@ -10,10 +10,12 @@
    (resolve_penalty con won_by_speed + selected_at + participant ids + reason='both_missed'; select_option
    PRIMER-TAP-GANA con already_answered) + PenalLive (congela timer, no cambiable, segundo+delta+motivo+
    pick vs correcta) + SPEC/CLAUDE gotcha + test db select_option. Verde: typecheck/lint/build + 101 unit +
-   48 db. FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md): PASO 2
-   transiciones (10.2+10.3). PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5
-   historial real (10.10). Las migraciones NUEVAS de pasos 1/5 (190000 + la de historial) se aplican a prod
-   al cerrar F10, en lote, con OK de Gino. Commits LOCALES (sin pushear); pushear `main` deploya el front.
+   48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
+   bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
+   open_next_round). FALTAN (en orden, plan en ~/.claude/plans/segui-no-pares-hasta-immutable-marble.md):
+   PASO 3 audio perspectiva (10.8). PASO 4 tanteador overlay 2D (10.12). PASO 5 historial real (10.10).
+   Migraciones NUEVAS pendientes de prod (lote al cerrar F10, con OK de Gino): 190000_penal_result_detail,
+   200000_round_deadline_3s, + la de historial (paso 5). Commits LOCALES (sin pushear); pushear `main` deploya.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
@@ -631,13 +633,16 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       (web-search de la lista oficial de clasificados). Migración que reemplaza el seed de `nations`
       (mantener `difficulty_tier` por banda de ranking entre los clasificados, kits, flag ISO-2).
       Aplicar a prod por MCP. OJO: nada de datos reales aún → reseed seguro.
-- [ ] 10.2 Transición penal→penal DENTRO de un match: que no muestre el grupo ni trabe (hoy flashea el
-      bracket en el hueco y la animación tarda 1s de más). El grupo se muestra SOLO entre rondas (10.3).
-      `<TournamentLive>`: distinguir hueco intra-match (seguir en escena de penal, sin bracket) de
-      tiempo muerto entre rondas (round_deadline).
-- [ ] 10.3 Entre partido y partido (tiempo muerto): mostrar 3s el estado del grupo actual y después ir
-      al próximo. Hoy no muestra nada. Atar al `round_deadline` del reloj de ronda (tiempo muerto), que
-      pasa a ~3s, mostrando la tabla del grupo.
+- [x] 10.2 Transición penal→penal DENTRO de un match: que no muestre el grupo ni trabe. HECHO:
+      `<TournamentLive>` decide por `get_active_match` → mientras MI match siga vivo (`am != null`, haya
+      penal abierto o esté en el hueco entre penales) me quedo en la escena de penal (`<PenalLive>` con
+      el mismo `key` mantiene la escena/resultado, no flashea el bracket). El grupo aparece SOLO cuando
+      el match terminó (am == null, 10.3).
+- [x] 10.3 Entre partido y partido (tiempo muerto): mostrar el estado del grupo actual y después ir al
+      próximo. HECHO: tiempo muerto a 3s (mig 200000_round_deadline_3s) + linger del resultado bajado a
+      1.2s (antes 3.5s se comía la ventana → "no mostraba nada") → al terminar el match cae al Bracket
+      "tu camino" (VersusCard + tabla del grupo). El cliente pokea `open_next_round` al vencer el tiempo
+      muerto para arrancar la próxima ronda enseguida (tick server = backstop).
 - [x] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
       Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
       + tests. Afecta cuántos penales se crean por match. APLICADA A PROD (mig 170000_match_length_by_phase).

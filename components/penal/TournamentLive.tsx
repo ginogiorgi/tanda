@@ -26,8 +26,12 @@ import {
 } from "@/lib/realtime/score";
 import type { ActiveMatch } from "@/lib/realtime/penal";
 
-/** Cuánto se mantiene la pantalla del penal tras resolver (GOL/ATAJADO) antes de ceder al bracket. */
-const RESULT_LINGER_MS = 3500;
+/**
+ * Cuánto se mantiene la pantalla del penal tras terminar el PARTIDO (GOL/ATAJADO del último penal)
+ * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). Corto a propósito: el tiempo muerto
+ * del server es ~3s, así que un linger largo se comía toda la ventana y el grupo no llegaba a verse.
+ */
+const RESULT_LINGER_MS = 1200;
 
 export function TournamentLive({
   tournamentId,
@@ -44,6 +48,7 @@ export function TournamentLive({
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
   const [showPenal, setShowPenal] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
 
   // Canal privado del torneo: marcadores en vivo (score:live, 6.5).
@@ -99,28 +104,40 @@ export function TournamentLive({
     };
   }, [supabase, tournamentId, retry]);
 
-  // Detecta el penal abierto: si lo hay → pantalla de penal; si no → bracket (con linger tras el
-  // resultado para que se vea GOL/ATAJADO antes de ceder al bracket en el tiempo muerto).
+  // Decide la escena con `get_active_match`:
+  //  • `am != null` → MI partido está vivo: hay penal abierto O estoy en el hueco corto ENTRE penales
+  //    del mismo match. En ambos casos me quedo en la escena de penal y NO muestro el bracket (10.2:
+  //    no flashear el grupo entre penal y penal). `<PenalLive>` (mismo `key`) espera el próximo
+  //    `penal:start` por su canal sin remontarse.
+  //  • `am == null` → terminó mi partido / tiempo muerto entre rondas: dejo ver el resultado un toque
+  //    (linger corto) y después caigo a la tabla del grupo (Bracket "tu camino"), que se ve durante el
+  //    tiempo muerto (10.3). Además pokeo `open_next_round` para abrir la próxima ronda apenas vence el
+  //    `round_deadline` (el `tick()` server es backstop ≤10s).
   useEffect(() => {
     let active = true;
     const poll = async () => {
       const { data } = await supabase.rpc("get_active_match");
       if (!active) return;
       const am = data as ActiveMatch | null;
-      const open = am?.penal != null;
-      if (open && am?.match_id) {
+      if (am != null && am.match_id) {
         if (lingerRef.current) {
           clearTimeout(lingerRef.current);
           lingerRef.current = null;
         }
         setCurrentMatchId(am.match_id);
         setShowPenal(true);
-      } else if (!lingerRef.current) {
-        // Ningún penal abierto: dejá ver el penal un toque más (resultado) y después el bracket.
-        lingerRef.current = setTimeout(() => {
-          setShowPenal(false);
-          lingerRef.current = null;
-        }, RESULT_LINGER_MS);
+        showPenalRef.current = true;
+      } else {
+        // Sin partido activo → arrancar la próxima ronda si el tiempo muerto ya venció (idempotente,
+        // no-op si todavía no), y soltar la escena de penal tras el linger corto.
+        void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+        if (showPenalRef.current && !lingerRef.current) {
+          lingerRef.current = setTimeout(() => {
+            setShowPenal(false);
+            showPenalRef.current = false;
+            lingerRef.current = null;
+          }, RESULT_LINGER_MS);
+        }
       }
     };
     void poll();
@@ -130,7 +147,7 @@ export function TournamentLive({
       clearInterval(id);
       if (lingerRef.current) clearTimeout(lingerRef.current);
     };
-  }, [supabase]);
+  }, [supabase, tournamentId]);
 
   if (showPenal && currentMatchId) {
     return <PenalLive key={currentMatchId} matchId={currentMatchId} />;
