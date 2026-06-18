@@ -13,14 +13,14 @@
    48 db. PASO 2 HECHO (commit): 10.2 (intra-match: quedarse en escena de penal si am!=null, no flashear
    bracket) + 10.3 (tiempo muerto 3s mig 200000 + linger 1.2s → tabla de grupo entre matches + poke
    open_next_round). PASO 3 (10.8 audio perspectiva) HECHO. PASO 4 (10.12 tanteador overlay) HECHO.
-   PASO 5 (10.10 historial real, RPC get_tournament_history + test db) HECHO. ⇒ **F10 COMPLETA del lado
-   CÓDIGO** (13/13). Verde final: typecheck/lint/build + 101 unit + 50 db.
-   >>> PENDIENTE PARA CERRAR F10 (necesita a Gino, NO hecho aún): (a) aplicar a PROD por MCP las 3
-   migraciones nuevas de esta sesión —190000_penal_result_detail, 200000_round_deadline_3s,
-   210000_tournament_history (todas seguras: create-or-replace + 1 función nueva con revoke)— + correr
-   advisors; (b) pushear `main` para deployar el front por Vercel (los commits están LOCALES). OJO: el
-   front y la DB conviene deployarlos JUNTOS — select_option pasó a primer-tap-gana, el front viejo
-   trataría la respuesta como cambiable. (c) walkthrough visual de Gino de las mejoras F10 en prod.
+   PASO 5 (10.10 historial real, RPC get_tournament_history + test db) HECHO. ⇒ **F10 COMPLETA (13/13)**.
+   Verde final: typecheck/lint/build + 101 unit + 50 db.
+   >>> DEPLOY HECHO (OK de Gino): las 3 migraciones nuevas (190000_penal_result_detail,
+   200000_round_deadline_3s, 210000_tournament_history) APLICADAS A PROD por MCP + advisors corridos
+   (performance 0; security solo lo esperado, única novedad get_tournament_history como RPC de cliente
+   authenticated). `main` PUSHEADO → Vercel deploya el front. prod==local (DB + front sincronizados).
+   >>> ÚNICO PENDIENTE: walkthrough visual de Gino de las mejoras F10 en prod (transiciones 10.2/10.3,
+   tanteador 10.12, audio 10.8, pantalla de resultado 10.7/10.11/10.13). No bloquea: no hay más código.
 >>> EN F10 (batch de 13 mejoras post-walkthrough de Gino, ver abajo). Trabajando en orden
    agrupado por capa. F9 quedó completa del lado código/deploy (resumen abajo).
 >>> (F9) F9 COMPLETA del lado código/deploy. 9.1–9.5 hechas; 9.6 con verificación local en verde,
