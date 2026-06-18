@@ -5,11 +5,17 @@
  * {@link aggregateStats}. Ver SPEC §8 (Perfil → Historial / estadísticas).
  */
 
+/** Desenlace del jugador en el torneo, para la tarjeta del historial (tarea 7). */
+export type HistoryOutcome = "won" | "lost" | "abandoned" | null;
+
 /** Una participación del jugador en un torneo (una fila del historial). */
 export interface TournamentHistoryEntry {
   tournamentId: string;
   /** Selección que le tocó. */
   nationName: string;
+  /** Código de la selección del jugador (p. ej. "ARG") + color de kit, para la tarjeta. */
+  nationCode: string | null;
+  kitPrimary: string | null;
   /** Posición final: 1 = campeón, 2 = subcampeón, 3 = tercero… `null` si sigue en curso. */
   placement: number | null;
   /** Fase en la que quedó eliminado (`group`, `round_of_32`…), `null` si fue campeón. */
@@ -22,6 +28,14 @@ export interface TournamentHistoryEntry {
   abandoned: boolean;
   /** ISO timestamp de cuándo jugó (para ordenar el historial). */
   playedAt: string;
+  // ── Partido más avanzado y terminado (para la tarjeta tipo resultado, tarea 7) ──
+  finalPhase: string | null;
+  finalMyScore: number | null;
+  finalOppScore: number | null;
+  finalOppNationCode: string | null;
+  finalOppKitPrimary: string | null;
+  /** Ganaste / perdiste ese partido, o abandonaste el torneo. */
+  outcome: HistoryOutcome;
 }
 
 /** Estadísticas agregadas que se muestran en el Perfil. */

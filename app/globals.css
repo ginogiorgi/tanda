@@ -38,6 +38,9 @@
 
   /* Acento activo del partido (se asigna en runtime; default dorado) */
   --accent: var(--gold);
+
+  /* Marca Pyrux (coral empresarial) — solo para el crédito de autoría en la landing */
+  --pyrux: #ff7b3d;
 }
 
 @theme inline {
@@ -58,6 +61,7 @@
   --color-success: var(--success);
 
   --color-accent: var(--accent);
+  --color-pyrux: var(--pyrux);
   --color-accent-blue: var(--accent-blue);
   --color-accent-green: var(--accent-green);
   --color-accent-red: var(--accent-red);

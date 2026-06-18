@@ -12,7 +12,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Confetti } from "@/components/penal/Confetti";
-import type { MatchPhase, ParticipantBrief, ScoreLivePayload } from "@/lib/realtime/score";
+import { ResultCard } from "@/components/penal/ResultCard";
+import type { MatchPhase, ScoreLivePayload } from "@/lib/realtime/score";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 
 const PHASE_LABEL: Record<MatchPhase, string> = {
@@ -42,21 +43,6 @@ type PenalRow = {
   reason: string;
 };
 
-function Chip({ brief, isMe }: { brief: ParticipantBrief | null; isMe: boolean }) {
-  return (
-    <span className="flex items-center gap-2">
-      <span
-        className="h-4 w-4 rounded-full"
-        style={{ backgroundColor: brief?.kit_primary ?? "#666" }}
-        aria-hidden
-      />
-      <span className={`font-mono text-base font-bold ${isMe ? "text-gold" : "text-fg"}`}>
-        {brief?.nation_code ?? "???"}
-      </span>
-    </span>
-  );
-}
-
 function PenalDots({
   penals,
   side,
@@ -80,7 +66,7 @@ function PenalDots({
 }
 
 function outcomeText(placement: number | null, eliminated: MatchPhase | null): string {
-  if (placement === 1) return "¡Campeón! 🏆";
+  if (placement === 1) return "¡Campeón!";
   if (placement === 2) return "Subcampeón 🥈";
   if (placement === 3) return "3er puesto 🥉";
   if (placement === 4) return "4º puesto";
@@ -143,11 +129,12 @@ export function RunSummary({
 
   return (
     <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
+      {/* Tarea 12: el confeti cae arriba; la copa va más abajo (mt) para que no queden pegados. */}
       {isChampion && <Confetti />}
-      <div className="flex flex-col items-center gap-2">
-        {isChampion && <span className="text-6xl">🏆</span>}
+      <div className={`flex flex-col items-center gap-2 ${isChampion ? "mt-12 sm:mt-16" : ""}`}>
+        {isChampion && <span className="mb-2 text-7xl drop-shadow">🏆</span>}
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
-          {isChampion ? "Campeón del Mundial" : "Fin del torneo"}
+          {isChampion ? "Campeón del Mundo" : "Fin del torneo"}
         </span>
         <p className={`font-extrabold tracking-tight text-gold ${isChampion ? "text-4xl" : "text-3xl"}`}>
           {outcomeText(me?.placement ?? null, me?.eliminated_phase ?? null)}
@@ -155,20 +142,26 @@ export function RunSummary({
       </div>
 
       {lastMatch && (
-        <div className="w-full rounded-2xl border border-border bg-bg-elevated p-5">
-          <div className="flex items-center justify-between">
-            <Chip brief={lastMatch.home} isMe={lastMatch.home?.participant_id === myParticipantId} />
-            <span className="font-mono text-2xl font-extrabold tabular-nums text-fg">
-              {lastMatch.home_score}–{lastMatch.away_score}
-            </span>
-            <Chip brief={lastMatch.away} isMe={lastMatch.away?.participant_id === myParticipantId} />
-          </div>
+        <ResultCard
+          left={{
+            code: lastMatch.home?.nation_code ?? null,
+            kit: lastMatch.home?.kit_primary ?? null,
+            isMe: lastMatch.home?.participant_id === myParticipantId,
+          }}
+          right={{
+            code: lastMatch.away?.nation_code ?? null,
+            kit: lastMatch.away?.kit_primary ?? null,
+            isMe: lastMatch.away?.participant_id === myParticipantId,
+          }}
+          leftScore={lastMatch.home_score}
+          rightScore={lastMatch.away_score}
+        >
+          {/* Tarea 14: sin la leyenda "penal a penal"; quedan los dos tableros de penales. */}
           <div className="mt-4 flex items-center justify-between gap-4">
             <PenalDots penals={penals} side={lastMatch.home?.participant_id ?? null} />
-            <span className="text-[10px] uppercase tracking-wider text-fg-subtle">penal a penal</span>
             <PenalDots penals={penals} side={lastMatch.away?.participant_id ?? null} />
           </div>
-        </div>
+        </ResultCard>
       )}
 
       <div className="flex w-full flex-col items-center gap-3">

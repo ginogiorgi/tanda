@@ -9,6 +9,8 @@ function entry(over: Partial<TournamentHistoryEntry>): TournamentHistoryEntry {
   return {
     tournamentId: "t",
     nationName: "Argentina",
+    nationCode: "ARG",
+    kitPrimary: "#6cace4",
     placement: null,
     eliminatedPhase: null,
     goalsFor: 0,
@@ -16,6 +18,12 @@ function entry(over: Partial<TournamentHistoryEntry>): TournamentHistoryEntry {
     matchesWon: 0,
     abandoned: false,
     playedAt: "2026-06-15T00:00:00Z",
+    finalPhase: null,
+    finalMyScore: null,
+    finalOppScore: null,
+    finalOppNationCode: null,
+    finalOppKitPrimary: null,
+    outcome: null,
     ...over,
   };
 }

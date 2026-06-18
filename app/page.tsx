@@ -55,6 +55,27 @@ export default async function Home({
           Cada pregunta es un penal. Respondé bien y más rápido que tu rival para
           meter el gol o atajar. 48 selecciones, una sola copa.
         </p>
+        {/* Tarea 11: crédito de autoría. */}
+        <p className="text-xs text-fg-subtle">
+          Hecho por{" "}
+          <a
+            href="https://www.pyrux.com.ar/es"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-pyrux transition-opacity hover:opacity-80"
+          >
+            Pyrux
+          </a>{" "}
+          y{" "}
+          <a
+            href="https://www.instagram.com/delpianojuan/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-fg transition-opacity hover:opacity-80"
+          >
+            JM10
+          </a>
+        </p>
       </div>
 
       <div className="flex items-center gap-2" aria-hidden>

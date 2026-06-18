@@ -5,13 +5,18 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
 import { getTournamentHistory } from "@/lib/profile/queries";
 import { aggregateStats } from "@/lib/profile/history";
+import { ResultCard } from "@/components/penal/ResultCard";
 
-/** Posición final legible. `null` = todavía no terminó un torneo. */
-function placementLabel(placement: number | null): string {
-  if (placement === null) return "—";
-  if (placement === 1) return "Campeón";
-  return `#${placement}`;
-}
+/** Fase legible para el caption de la tarjeta del historial. */
+const PHASE_ES: Record<string, string> = {
+  group: "Fase de grupos",
+  round_of_32: "32avos",
+  round_of_16: "Octavos",
+  quarters: "Cuartos",
+  semis: "Semifinal",
+  third_place: "3er puesto",
+  final: "Final",
+};
 
 /**
  * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
@@ -127,10 +132,6 @@ export default async function PerfilPage() {
           <StatCard label="Torneos jugados" value={stats.tournamentsPlayed} />
           <StatCard label="Victorias" value={`${Math.round(stats.winRate * 100)}%`} />
           <StatCard label="Goles" value={stats.goals} />
-          <StatCard
-            label="Mejor posición"
-            value={placementLabel(stats.bestPlacement)}
-          />
         </div>
       </section>
 
@@ -145,25 +146,17 @@ export default async function PerfilPage() {
             </p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-3">
             {history.map((h) => (
-              <li
-                key={h.tournamentId}
-                className="flex items-center justify-between rounded-xl border border-border bg-bg-elevated px-4 py-3"
-              >
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-fg">{h.nationName}</span>
-                  <span className="text-xs text-fg-subtle">
-                    {h.abandoned
-                      ? "Abandonaste"
-                      : h.placement === 1
-                        ? "Campeón"
-                        : h.eliminatedPhase ?? "En curso"}
-                  </span>
-                </div>
-                <span className="text-sm font-semibold text-gold">
-                  {h.abandoned ? "—" : placementLabel(h.placement)}
-                </span>
+              <li key={h.tournamentId}>
+                <ResultCard
+                  caption={h.finalPhase ? PHASE_ES[h.finalPhase] : undefined}
+                  left={{ code: h.nationCode, kit: h.kitPrimary, isMe: true }}
+                  right={{ code: h.finalOppNationCode, kit: h.finalOppKitPrimary }}
+                  leftScore={h.finalMyScore}
+                  rightScore={h.finalOppScore}
+                  outcome={h.outcome}
+                />
               </li>
             ))}
           </ul>
