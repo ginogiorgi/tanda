@@ -6,7 +6,7 @@
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
  */
 import type { AvatarConfig } from "@/lib/avatar/types";
-import type { ActiveMatch, MatchScene } from "@/lib/realtime/penal";
+import type { ActiveMatch, MatchScene, PenalResultPayload } from "@/lib/realtime/penal";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import type { TournamentHistoryEntry } from "@/lib/profile/history";
 
@@ -42,6 +42,7 @@ export type Database = {
         Returns: { idx: number; kicker_participant_id: string; scored: boolean; reason: string }[];
       };
       get_tournament_history: { Args: Empty; Returns: TournamentHistoryEntry[] };
+      get_penalty_result: { Args: { p_penalty: string }; Returns: PenalResultPayload | null };
       select_option: { Args: { p_penalty: string; p_option: number }; Returns: undefined };
       resolve_penalty: { Args: { p_penalty: string }; Returns: undefined };
       open_next_round: { Args: { p_tournament: string }; Returns: undefined };

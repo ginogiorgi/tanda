@@ -66,25 +66,32 @@ describe("resolvePenalty — tabla §5.2 (primera fase)", () => {
 });
 
 describe("resolvePenalty — los dos mal", () => {
-  it("primera fase → second_chance quitando una opción incorrecta", () => {
+  it("primera fase → second_chance quitando a CADA UNO la opción que eligió", () => {
     const r = resolvePenalty(ans(1, 100), ans(2, 100), ctx({ correctIndex: 0 }));
     expect(r.outcome).toBe("second_chance");
     if (r.outcome === "second_chance") {
-      expect([1, 2]).toContain(r.removedOption);
-      expect(r.removedOption).not.toBe(0); // nunca se quita la correcta
+      expect(r.removedKicker).toBe(1); // el pateador eligió la 1 → se le quita
+      expect(r.removedKeeper).toBe(2); // el arquero eligió la 2 → se le quita
+      expect(r.removedKicker).not.toBe(0); // nunca se quita la correcta
+      expect(r.removedKeeper).not.toBe(0);
     }
   });
 
-  it("si ambos erraron la MISMA opción, esa es la que se quita", () => {
+  it("si ambos erraron la MISMA opción, a cada uno se le quita esa", () => {
     const r = resolvePenalty(ans(2, 100), ans(2, 300), ctx({ correctIndex: 0 }));
-    expect(r).toMatchObject({ outcome: "second_chance", removedOption: 2 });
+    expect(r).toMatchObject({
+      outcome: "second_chance",
+      removedKicker: 2,
+      removedKeeper: 2,
+    });
   });
 
-  it("ambos timeout (primera fase) → second_chance con opción incorrecta", () => {
+  it("ambos timeout (primera fase) → second_chance, a cada uno una incorrecta por seed", () => {
     const r = resolvePenalty(TIMEOUT, TIMEOUT, ctx({ correctIndex: 1 }));
     expect(r.outcome).toBe("second_chance");
     if (r.outcome === "second_chance") {
-      expect([0, 2]).toContain(r.removedOption);
+      expect([0, 2]).toContain(r.removedKicker);
+      expect([0, 2]).toContain(r.removedKeeper);
     }
   });
 

@@ -55,11 +55,18 @@ export interface ResolvedPenalty {
   variant: number;
 }
 
-/** "Los dos mal" en primera fase → segunda chance con una opción menos. */
+/**
+ * "Los dos mal" en primera fase → segunda chance con una opción menos **por jugador**: a cada
+ * lado se le quita la opción que ÉL eligió mal (decisión de producto). Como ambos erraron, su
+ * propia selección es incorrecta → quedan 2 (la correcta + la otra incorrecta) para cada uno. Si
+ * un jugador no eligió nada (timeout sin opción asignada), se quita una incorrecta por seed.
+ */
 export interface SecondChancePenalty {
   outcome: "second_chance";
-  /** Opción (incorrecta) que se quita; quedan 2 (la correcta + una incorrecta). */
-  removedOption: number;
+  /** Opción (incorrecta) que se le quita al pateador (la que eligió). */
+  removedKicker: number;
+  /** Opción (incorrecta) que se le quita al arquero (la que eligió). */
+  removedKeeper: number;
 }
 
 export type PenaltyResolution = ResolvedPenalty | SecondChancePenalty;
@@ -96,25 +103,17 @@ function decideWinner(
   return null; // los dos mal
 }
 
-/** Opción incorrecta a quitar en la segunda chance (la que ambos erraron, o una por seed). */
-function pickRemovedOption(
-  kicker: PlayerAnswer,
-  keeper: PlayerAnswer,
-  ctx: PenaltyContext,
-): number {
+/**
+ * Opción incorrecta a quitar **para un jugador** en la segunda chance: la que ÉL eligió (que es
+ * incorrecta porque ambos erraron). Si el jugador no eligió nada (sin opción), se quita una
+ * incorrecta determinística por seed (así igual le quedan 2). `saltSeed` desambigua por lado.
+ */
+function removedFor(answer: PlayerAnswer, ctx: PenaltyContext, saltSeed: number): number {
+  if (answer.answered && answer.optionIndex !== null && answer.optionIndex !== ctx.correctIndex) {
+    return answer.optionIndex;
+  }
   const wrong = [0, 1, 2].filter((i) => i !== ctx.correctIndex);
-  const kw =
-    kicker.answered && kicker.optionIndex !== ctx.correctIndex
-      ? kicker.optionIndex
-      : null;
-  const gw =
-    keeper.answered && keeper.optionIndex !== ctx.correctIndex
-      ? keeper.optionIndex
-      : null;
-  // Si ambos erraron la MISMA opción, esa desaparece (regla literal del BRIEF §5.2).
-  if (kw !== null && kw === gw) return kw;
-  // Si no (errores distintos / timeouts), quitamos una incorrecta determinística por seed.
-  const removed = wrong[randInt(makeRng(ctx.seed), wrong.length)];
+  const removed = wrong[randInt(makeRng(ctx.seed ^ saltSeed), wrong.length)];
   if (removed === undefined) throw new Error("correctIndex fuera de rango (0-2)");
   return removed;
 }
@@ -136,7 +135,8 @@ export function resolvePenalty(
     if (ctx.phase === "first") {
       return {
         outcome: "second_chance",
-        removedOption: pickRemovedOption(kicker, keeper, ctx),
+        removedKicker: removedFor(kicker, ctx, 0),
+        removedKeeper: removedFor(keeper, ctx, 0x68bc21eb),
       };
     }
     // Segunda chance fallida → gana el arquero, la tiró afuera.

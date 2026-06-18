@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -87,6 +87,35 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   // 10.11: respuesta NO cambiable. Ref (no estado) para que el guard sobreviva al closure stale
   // del handler de teclado (que solo se re-crea al cambiar de fase, no al elegir).
   const answeredRef = useRef(false);
+  // Tarea 5: espejo del resultado + timeout de respaldo. Si se pierde el broadcast `penal:result`
+  // (reconexión), buscamos el resultado por RPC para no quedar colgados en la animación.
+  const resultRef = useRef<PenalResultPayload | null>(null);
+  const fallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    resultRef.current = result;
+  }, [result]);
+
+  // Aplica un resultado de penal (de broadcast o del fallback por RPC): marcador, audio por
+  // perspectiva (10.8) y tablero de penales (10.12). Idempotente por `penalty_id`.
+  const applyResult = useCallback((r: PenalResultPayload) => {
+    if (resultRef.current?.penalty_id === r.penalty_id) return;
+    setResult(r);
+    setScore({ home: r.home_score, away: r.away_score });
+    const myId = sceneRef.current?.my_participant_id ?? null;
+    const myRole =
+      myId === r.kicker_participant_id ? "kick" : myId === r.keeper_participant_id ? "keep" : null;
+    const good =
+      (myRole === "kick" && r.winner === "kicker") ||
+      (myRole === "keep" && r.winner === "keeper");
+    if (myRole == null ? r.scored : good) playGood();
+    else playBad();
+    setDots((prev) =>
+      prev.some((d) => d.idx === r.idx)
+        ? prev
+        : [...prev, { idx: r.idx, scored: r.scored }].sort((a, b) => a.idx - b.idx),
+    );
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -134,15 +163,24 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         if (next.phase !== "second_chance") playWhistle(); // silbato al abrir el penal (8.7)
         // `penal:second_chance` no trae pateador/arquero (mismo penalty_id que el `penal:start`
         // previo): los arrastramos del penal en curso para no perder la colocación de avatares.
-        setPenal((prev) =>
-          !next.kicker_participant_id && prev?.penalty_id === next.penalty_id
-            ? {
-                ...next,
-                kicker_participant_id: prev.kicker_participant_id,
-                keeper_participant_id: prev.keeper_participant_id,
-              }
-            : next,
-        );
+        setPenal((prev) => {
+          const kickerId = next.kicker_participant_id ?? prev?.kicker_participant_id;
+          const keeperId = next.keeper_participant_id ?? prev?.keeper_participant_id;
+          // Tarea 10: el broadcast de 2ª chance trae la opción quitada de cada lado; normalizamos a la
+          // del rol propio (la que YO elegí) para el resto del componente.
+          const myId = sceneRef.current?.my_participant_id ?? null;
+          const myRemoved =
+            myId != null && myId === kickerId
+              ? next.removed_option_kicker
+              : myId != null && myId === keeperId
+                ? next.removed_option_keeper
+                : next.removed_option;
+          const merged =
+            !next.kicker_participant_id && prev?.penalty_id === next.penalty_id
+              ? { ...next, kicker_participant_id: kickerId, keeper_participant_id: keeperId }
+              : next;
+          return { ...merged, removed_option: myRemoved };
+        });
         // Fase nueva → arranca sin selección y con la respuesta des-bloqueada (10.11).
         setSelected(null);
         setFrozenRemaining(null);
@@ -154,29 +192,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         .on("broadcast", { event: "penal:start" }, onNewPhase)
         .on("broadcast", { event: "penal:second_chance" }, onNewPhase)
         .on("broadcast", { event: "penal:result" }, ({ payload }) => {
-          const r = payload as PenalResultPayload;
-          setResult(r);
-          setScore({ home: r.home_score, away: r.away_score });
-          // 10.8: audio por perspectiva → "bueno" si el resultado favorece a MI lado (metí/atajé),
-          // "malo" si favorece al rival. No por gol/atajada físico (eso ya lo dice la animación 3D).
-          const myId = sceneRef.current?.my_participant_id ?? null;
-          const myRole =
-            myId === r.kicker_participant_id
-              ? "kick"
-              : myId === r.keeper_participant_id
-                ? "keep"
-                : null;
-          const good =
-            (myRole === "kick" && r.winner === "kicker") ||
-            (myRole === "keep" && r.winner === "keeper");
-          if (myRole == null ? r.scored : good) playGood();
-          else playBad();
-          // 10.12: sumá este penal al tablero (dedupe por idx ante re-emisiones).
-          setDots((prev) =>
-            prev.some((d) => d.idx === r.idx)
-              ? prev
-              : [...prev, { idx: r.idx, scored: r.scored }].sort((a, b) => a.idx - b.idx),
-          );
+          // 10.8/10.12: marcador + audio por perspectiva + tablero (idempotente por penalty_id).
+          applyResult(payload as PenalResultPayload);
         })
         .subscribe((status) => {
           // Reconexión (9.5): al volver a SUBSCRIBED tras una caída, resincronizamos por si nos
@@ -220,7 +237,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       if (channelRef.current) void supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     };
-  }, [supabase, matchId]);
+  }, [supabase, matchId, applyResult]);
 
   // Contador contra el `deadline` server, corregido por el offset estimado al recibir la fase
   // (SPEC §1.3). Al llegar a 0, el cliente hace el "poke": llama `resolve_penalty` una sola vez
@@ -243,12 +260,30 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       if (r <= 0 && pokedRef.current !== phaseKey) {
         pokedRef.current = phaseKey;
         void supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id });
+        // Tarea 5: respaldo si se pierde el broadcast `penal:result` (reconexión) → buscamos el
+        // resultado por RPC y lo aplicamos igual, así no quedamos colgados en la animación. Reintenta
+        // mientras el server todavía está resolviendo (devuelve null hasta que el penal está `resolved`).
+        const penaltyId = penal.penalty_id;
+        let tries = 0;
+        const pull = async () => {
+          if (resultRef.current || tries >= 5) return;
+          tries++;
+          const { data } = await supabase.rpc("get_penalty_result", { p_penalty: penaltyId });
+          if (resultRef.current) return;
+          if (data) applyResult(data);
+          else fallbackRef.current = setTimeout(() => void pull(), 1200);
+        };
+        if (fallbackRef.current) clearTimeout(fallbackRef.current);
+        fallbackRef.current = setTimeout(() => void pull(), 1500);
       }
     };
     tick();
     const id = setInterval(tick, 250);
-    return () => clearInterval(id);
-  }, [penal, supabase]);
+    return () => {
+      clearInterval(id);
+      if (fallbackRef.current) clearTimeout(fallbackRef.current);
+    };
+  }, [penal, supabase, applyResult]);
 
   // 10.11: elegir opción. PRIMER TAP GANA (no cambiable): el server rechaza un cambio con
   // `already_answered`. Optimista en el cliente; al tap congelo el contador (frozenRemaining) y
@@ -370,39 +405,43 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return (
       <>
         {sceneBg(true, { reason: result.reason, variant: result.variant })}
-        <div className="fade-in relative z-10 mt-auto flex w-full max-w-md flex-col items-center gap-3 pb-4 text-center">
-          <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
-            Penal {result.idx} · {result.home_score}–{result.away_score}
-          </span>
-          <p className="text-4xl font-extrabold tracking-tight text-gold">
-            {result.scored ? "¡GOL!" : "ATAJADO"}
-          </p>
-          {/* 10.7: motivo cuando empatan en aciertos y gana el más rápido. */}
-          {result.won_by_speed && deltaMs != null && (
-            <p className="text-sm font-semibold text-fg-muted">
-              {amWinner
-                ? `Ganaste por velocidad: respondiste ${(deltaMs / 1000).toFixed(1)}s antes`
-                : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`}
+        {/* Tarea 4: el texto va arriba (encima del arco) sobre una placa sutil con blur → no se confunde
+            con el arco claro del fondo. */}
+        <div className="fade-in relative z-10 mb-auto flex w-full max-w-md flex-col items-center pt-4 text-center">
+          <div className="flex w-full flex-col items-center gap-3 rounded-2xl bg-bg/75 px-5 py-5 ring-1 ring-border/60 backdrop-blur-sm">
+            <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-muted">
+              Penal {result.idx} · {result.home_score}–{result.away_score}
+            </span>
+            <p className="text-4xl font-extrabold tracking-tight text-gold drop-shadow-sm">
+              {result.scored ? "¡GOL!" : "ATAJADO"}
             </p>
-          )}
-          <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
-          {/* 10.6 (visible): tu pick vs la correcta; si no respondiste, opción al azar. */}
-          {role != null &&
-            (iAnswered ? (
-              <p className="text-sm text-fg-subtle">
-                Tu respuesta: {penal.options[selected]}
+            {/* 10.7: motivo cuando empatan en aciertos y gana el más rápido. */}
+            {result.won_by_speed && deltaMs != null && (
+              <p className="text-sm font-semibold text-fg-muted">
+                {amWinner
+                  ? `Ganaste por velocidad: respondiste ${(deltaMs / 1000).toFixed(1)}s antes`
+                  : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`}
               </p>
-            ) : (
-              <p className="text-sm text-amber-400">
-                No respondiste → se eligió una opción al azar
-              </p>
-            ))}
-          <p className="text-base font-semibold text-fg">
-            Correcta: {penal.options[result.correct_index]}
-          </p>
-          {result.explanation && (
-            <p className="text-balance text-sm text-fg-subtle">{result.explanation}</p>
-          )}
+            )}
+            <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
+            {/* 10.6 (visible): tu pick vs la correcta; si no respondiste, opción al azar. */}
+            {role != null &&
+              (iAnswered ? (
+                <p className="text-sm text-fg-muted">
+                  Tu respuesta: {penal.options[selected]}
+                </p>
+              ) : (
+                <p className="text-sm text-amber-400">
+                  No respondiste → se eligió una opción al azar
+                </p>
+              ))}
+            <p className="text-base font-semibold text-fg">
+              Correcta: {penal.options[result.correct_index]}
+            </p>
+            {result.explanation && (
+              <p className="text-balance text-sm text-fg-muted">{result.explanation}</p>
+            )}
+          </div>
         </div>
       </>
     );

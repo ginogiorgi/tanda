@@ -33,8 +33,14 @@ export type PenalStartPayload = {
   deadline: string;
   /** `now()` del server al emitir → para estimar el offset del reloj del cliente. */
   server_now: string;
-  /** Solo en `penal:second_chance`: opción incorrecta quitada (quedan 2). */
+  /**
+   * Solo en `penal:second_chance`: opción incorrecta quitada (quedan 2). **Por jugador** (tarea 10):
+   * a cada uno se le quita la opción que ÉL eligió. El broadcast trae las dos (`_kicker`/`_keeper`) y
+   * el cliente normaliza a `removed_option` la del rol propio; `get_active_match` ya devuelve la propia.
+   */
   removed_option?: number;
+  removed_option_kicker?: number;
+  removed_option_keeper?: number;
   phase?: "first" | "second_chance";
   /**
    * Solo en `penal:second_chance`: motivo por el que reaparecen las opciones (10.13). Hoy siempre

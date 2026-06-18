@@ -12,6 +12,14 @@ describe("reloj de ronda compartido", () => {
     await withRollback(async (c) => {
       const { tournamentId } = await startRealTournament(c, 3);
 
+      // start_tournament deja una ventana de presentación (ver los grupos) antes de abrir el 1er penal
+      // (tarea 3): vencemos ese tiempo muerto y pokeamos el backstop para abrir la jornada 1.
+      await c.query(
+        `update public.tournaments set round_deadline = now() - interval '1 second' where id = $1`,
+        [tournamentId],
+      );
+      await c.query("select public.tick()");
+
       // Penales abiertos de matches con humano (no bot-only) recién abierta la jornada 1.
       const rows = await c.query<{
         deadline: string;

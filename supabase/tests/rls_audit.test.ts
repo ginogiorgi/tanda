@@ -21,6 +21,7 @@ const AUTH_ALLOWLIST = [
   "get_bracket",
   "get_match_penals",
   "get_match_scene",
+  "get_penalty_result",
   "get_tournament_history",
   "join_room",
   "leave_room",
