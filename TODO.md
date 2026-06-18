@@ -2,26 +2,35 @@
 
 `ESTADO ACTUAL (handoff — al decir "seguí", arrancar acá):
 
->>> PROYECTO COMPLETO (F0–F10). Todo el código está hecho, verificado y DEPLOYADO a prod
-   (DB por MCP + front por push a `main` → Vercel). prod == local. Verde: typecheck/lint/build +
-   101 unit + 50 db. La historia detallada vive en los checkboxes de abajo y en el git log.
+> > > PROYECTO COMPLETO (F0–F10). Todo el código está hecho, verificado y DEPLOYADO a prod
+> > > (DB por MCP + front por push a `main` → Vercel). prod == local. Verde: typecheck/lint/build +
+> > > 102 unit + 51 db. La historia detallada vive en los checkboxes de abajo y en el git log.
 
->>> F10 (13/13 mejoras post-walkthrough) cerrada. Migraciones de F10 ya en prod:
-   160000_seed_nations_qualified · 170000_match_length_by_phase · 180000_bot_delay_floor ·
-   190000_penal_result_detail · 200000_round_deadline_3s · 210000_tournament_history.
+> > > F10 (13/13 mejoras post-walkthrough) cerrada. Migraciones de F10 ya en prod:
+> > > 160000_seed_nations_qualified · 170000_match_length_by_phase · 180000_bot_delay_floor ·
+> > > 190000_penal_result_detail · 200000_round_deadline_3s · 210000_tournament_history.
 
->>> BASE DE PROD LIMPIA (slate de lanzamiento, hecho a pedido de Gino): 0 cuentas (auth.users/
-   profiles), 0 data de juego (rooms/tournaments/matches/penalties/answers/bot_intents), 0 rate_limits.
-   Intacta la referencia: 48 naciones (clasificadas Mundial 2026) + 221 preguntas. El 1er torneo real
-   arranca de cero.
+> > > FIX POST-PROD (Gino probó y 3 mejoras no andaban en la práctica — corregidas y redeployadas):
+> > > 10.3 → en juego solo-vs-bots resolve_round avanzaba al instante sin tiempo muerto → el bracket
+> > > entre partidos no se veía. Fix: tiempo muerto separado (3s entre penales del match / 6s entre
+> > > matches) + open_next_round routea el avance (mig 220000_deadtime_between_matches).
+> > > 10.10 → abandonar marcaba is_bot=true y get_tournament_history filtraba is_bot=false → no
+> > > aparecía en el historial. Fix: columna participants.abandoned + filtro por user_id + UI
+> > > "Abandonaste" (mig 230000_history_includes_abandon). 10.13 → cartel de 2ª chance ahora es un
+> > > banner ámbar con borde + acento de tarjeta + label de fase resaltado.
 
->>> ÚNICO PENDIENTE (no es código): walkthrough visual de Gino en prod — avatar, escena de penal +
-   animaciones, bracket, y las mejoras F10 (transiciones 10.2/10.3, tanteador 10.12, audio 10.8,
-   pantalla de resultado 10.7/10.11/10.13) en un torneo real. Al confirmar, el proyecto queda cerrado.
+> > > BASE DE PROD LIMPIA (slate de lanzamiento, hecho a pedido de Gino): 0 cuentas (auth.users/
+> > > profiles), 0 data de juego (rooms/tournaments/matches/penalties/answers/bot_intents), 0 rate_limits.
+> > > Intacta la referencia: 48 naciones (clasificadas Mundial 2026) + 221 preguntas. El 1er torneo real
+> > > arranca de cero.
 
->>> DIFERIDO (tarea aparte, no bloquea): tipar el cliente con `supabase gen types` (Database generic)
-   para las `supabase.rpc(...)`. OPS ya confirmado (env vars Vercel + dominio Resend + anon sign-ins).
-   Suite DB local: `pnpm db:start && pnpm db:reset && pnpm test:db` (Docker).`
+> > > ÚNICO PENDIENTE (no es código): walkthrough visual de Gino en prod — avatar, escena de penal +
+> > > animaciones, bracket, y las mejoras F10 (transiciones 10.2/10.3, tanteador 10.12, audio 10.8,
+> > > pantalla de resultado 10.7/10.11/10.13) en un torneo real. Al confirmar, el proyecto queda cerrado.
+
+> > > DIFERIDO (tarea aparte, no bloquea): tipar el cliente con `supabase gen types` (Database generic)
+> > > para las `supabase.rpc(...)`. OPS ya confirmado (env vars Vercel + dominio Resend + anon sign-ins).
+> > > Suite DB local: `pnpm db:start && pnpm db:reset && pnpm test:db` (Docker).`
 
 > Una tarea a la vez, en orden. Al terminar cada una: verificar con output real
 > (`typecheck`/`lint`/`build`/tests según aplique), tildar el checkbox, actualizar
@@ -91,8 +100,7 @@
       rooms, tournaments, participants, matches, penalties, penalty_answers, bot_intents,
       tournament_questions) + 9 enums + índices (incl. cobertura de todas las FKs).
       RLS auto-habilitada en las 10; `nations` SELECT para authenticated, `questions` sin
-      SELECT (correct_index server-only). Resto deny-all hasta F4 (políticas de pertenencia
-      + escrituras por RPC). Aplicada vía MCP; advisors sin ERROR/WARN nuevos (solo INFO
+      SELECT (correct_index server-only). Resto deny-all hasta F4 (políticas de pertenencia + escrituras por RPC). Aplicada vía MCP; advisors sin ERROR/WARN nuevos (solo INFO
       esperados: deny-all + unused_index sin tráfico)
 - [x] 3.2 `lib/engine/penalty.ts` (resolución pura, 6 casos §5.2). `resolvePenalty` pura y
       determinista + `rng.ts` (mulberry32 seeded). GOL/ATAJADO desde la óptica del pateador;
@@ -142,8 +150,7 @@
       `lib/realtime/penal.ts` (`PenalStartPayload` sin correcta, `clockOffset`/`remainingMs`,
       7 tests) + `<PenalLive>` (`setAuth` + canal `private:true` + contador contra el
       `deadline` server). Harness DEV temporal (se reemplaza en F5/F8): RPC
-      `dev_create_practice_penal` (room `cancelled` invisible al matchmaking + torneo + caller
-      + bot + match + penal `pending`) + `/dev/penal` + `<PenalDevHarness>`. typecheck/lint/
+      `dev_create_practice_penal` (room `cancelled` invisible al matchmaking + torneo + caller + bot + match + penal `pending`) + `/dev/penal` + `<PenalDevHarness>`. typecheck/lint/
       build verdes, 52 tests; advisors sin lints nuevos; E2E browser real: payload llega por
       canal privado SIN `correct_index`, contador 10s server
 - [x] 4.4 `select_option` (respuesta cambiable, timestamp server, validaciones). RPC
@@ -170,7 +177,7 @@
       Broadcast `penal:second_chance`); si no, `resolved` + marcador del match + Broadcast
       `penal:result` (acá SÍ viaja correct_index+explanation, ya resuelto). Validación de
       pertenencia para el poke humano; uid null = backstop (tick). Helpers SQL `engine_imul/
-      _mulberry32/_rand_int/_rand_bool/_hash32`. Cliente `<PenalLive>`: poke a 0s + manejo de
+  _mulberry32/_rand_int/_rand_bool/_hash32`. Cliente `<PenalLive>`: poke a 0s + manejo de
       second_chance (oculta la opción quitada, 5s) + pantalla GOL/ATAJADO con la correcta
       revelada. typecheck/lint/build verdes, 52 tests; E2E SQL real 10 escenarios (S1-S9: 6
       filas §5.2 + 2ª chance + ausente + idempotencia + too_early) OK + paridad RNG TS↔SQL.
@@ -240,19 +247,19 @@
       invitado client-side (§8.4) y se portará a SQL para `bot_intents` (5.3). 4 tests
       (determinismo, delay en rango, tasa de acierto ≈ tier sobre 20k seeds, orden de tiers)
 - [~] 5.2 Relleno de cupos con bots + naciones aleatorias + reparto de humanos 1 por grupo.
-      `start_tournament(p_room)` (plpgsql, no client-callable): claim optimista pending→ (lock
-      SKIP LOCKED, idempotente), 0 humanos→cancela sala; reparte humanos 1/grupo round-robin,
-      rellena bots hasta 4/grupo, asigna las 48 naciones (1 c/u sin repetir, sorteo por seed),
-      arma 12 grupos + fixture round-robin (72 matches, bracket_slot=jornada, is_bot_only si
-      ambos bots), pone tournament+room in_progress. E2E SQL (5 humanos): 48 part (5+43), 48
-      naciones distintas, 12 grupos de 4, humanos 1/grupo, 72 matches (6/grupo), bot_only=57
-      (verificado), idempotente. DEFERIDO (parcial): crear penales 1ª jornada (necesita banco
-      F7) + simular bot-only + abrir 1ª jornada (6.4). WIRING LISTO: join_room dispara
-      start_tournament al 48º; tick() (10s) arranca lobbies vencidos (≥1 humano) o cancela (0);
-      janitor quedó solo para retención. OJO: el wire reescribió join_room preservando la ventana
-      de 2min + columnas calificadas (el OUT param `tournament_id` es ambiguo si no se califica).
-      E2E SQL: join 48º→in_progress; tick lobby vencido c/humano→in_progress (72 matches); sin
-      humanos→cancelled
+  `start_tournament(p_room)` (plpgsql, no client-callable): claim optimista pending→ (lock
+  SKIP LOCKED, idempotente), 0 humanos→cancela sala; reparte humanos 1/grupo round-robin,
+  rellena bots hasta 4/grupo, asigna las 48 naciones (1 c/u sin repetir, sorteo por seed),
+  arma 12 grupos + fixture round-robin (72 matches, bracket_slot=jornada, is_bot_only si
+  ambos bots), pone tournament+room in_progress. E2E SQL (5 humanos): 48 part (5+43), 48
+  naciones distintas, 12 grupos de 4, humanos 1/grupo, 72 matches (6/grupo), bot_only=57
+  (verificado), idempotente. DEFERIDO (parcial): crear penales 1ª jornada (necesita banco
+  F7) + simular bot-only + abrir 1ª jornada (6.4). WIRING LISTO: join_room dispara
+  start_tournament al 48º; tick() (10s) arranca lobbies vencidos (≥1 humano) o cancela (0);
+  janitor quedó solo para retención. OJO: el wire reescribió join_room preservando la ventana
+  de 2min + columnas calificadas (el OUT param `tournament_id` es ambiguo si no se califica).
+  E2E SQL: join 48º→in_progress; tick lobby vencido c/humano→in_progress (72 matches); sin
+  humanos→cancelled
 - [x] 5.3 `bot_intents` precomputados/materializados (incl. segunda chance y muerte súbita).
       `engine_bot_intent(tier, seed)` = PORT FIEL de `lib/engine/bot.ts` (paridad bit-perfect: 0
       mismatches en 40 casos = 4 tiers × 10 seeds, incl. bordes). `precompute_bot_intents(penalty)`
@@ -339,14 +346,13 @@
 
 ## F7 · Banco de preguntas
 
-- [x] 7.1 Tabla `questions` + `tournament_questions` (no-repeat). Esquema ya existía (game_model);
-      + `questions.source_key` (única, nullable) para seed idempotente estilo `nations.code`.
+- [x] 7.1 Tabla `questions` + `tournament_questions` (no-repeat). Esquema ya existía (game_model); + `questions.source_key` (única, nullable) para seed idempotente estilo `nations.code`.
 - [x] 7.2 Generar 200+ preguntas correctas por dificultad/categoría. 220 preguntas factuales (solo
       Mundiales, hasta 2022), 6 categorías §9.1, distribución easy 60/medium 60/hard 55/very_hard 45.
       `correct_index` rotado 0/1/2 (74/73/73) → sin patrón explotable. Sin marcas/mascotas FIFA.
 - [x] 7.3 Seed script + asignación por fase (§9.3). Migración insert idempotente
       (`on conflict (source_key) do nothing`). Regla de dificultad por fase en `lib/engine/
-      difficulty.ts` (`penaltyDifficulty(phase, idx)`, fuente de la regla, 5 tests) + PORT SQL
+  difficulty.ts` (`penaltyDifficulty(phase, idx)`, fuente de la regla, 5 tests) + PORT SQL
       `tanda_penalty_difficulty` verificado por PARIDAD (0 mismatches en 7 fases × idx 1-5).
 - [x] 7.4 Asignación 1 pregunta por (ronda, penal-index) compartida; bot-only no consume.
       `take_tournament_question(tournament, difficulty, seed)` (SECURITY DEFINER, revoke a
@@ -416,8 +422,7 @@
       R32→final). Naciones por código + color de kit (sin assets FIFA). Datos: `get_bracket` (foto
       inicial, refrescada c/5s) + canal privado `tournament:{id}` (score:live de 6.5) mergeado con
       applyScoreUpdate. SERVER (mig 20260617110000_bracket): `get_active_tournament()` (gate que
-      sobrevive al hueco entre partidos: torneo in_progress donde sigo jugando, no eliminado/coronado)
-      + `get_bracket(tournament)` (participants con brief+grupo+placement+eliminated_phase + matches
+      sobrevive al hueco entre partidos: torneo in_progress donde sigo jugando, no eliminado/coronado) + `get_bracket(tournament)` (participants con brief+grupo+placement+eliminated_phase + matches
       forma score:live, valida is_tournament_member). Helper puro `lib/bracket/bracket.ts`
       (`buildBracketView`: rankea grupos con rankGroup del motor, árbol KO por fase, tu camino/próximo
       rival; seed NO viaja → orden visual entre empates totales aprox., la clasificación real la fija
@@ -430,8 +435,7 @@
       lo muestra `<TournamentLive>` cuando mi corrida terminó (mi participante con eliminated_phase o
       placement seteado en el snapshot de get_bracket). Marcador final del último partido (fase más
       avanzada donde jugué) + penal a penal (RPC `get_match_penals(match)`, mig 20260617120000, dots
-      gol/erró por lado, valida is_match_member) + desenlace (Campeón/Subcampeón/3º/4º/Eliminado en X)
-      + "Jugar de nuevo" (quick_play→/sala/code) / "Inicio". Si es invitado, CTA "Creá una cuenta"
+      gol/erró por lado, valida is_match_member) + desenlace (Campeón/Subcampeón/3º/4º/Eliminado en X) + "Jugar de nuevo" (quick_play→/sala/code) / "Inicio". Si es invitado, CTA "Creá una cuenta"
       (cierre del pendiente de 8.1). Campeón muestra versión base (trofeo/confeti dedicado = 8.12).
       typecheck/lint/build verdes, 100 unit + 34 db (get_match_penals: miembro vs ajeno).
 - [x] 8.7 Audio. `lib/audio.ts` SINTETIZADO con Web Audio API (sin assets externos): silbato al abrir
@@ -470,17 +474,17 @@
       regresión automática. Codificar como suite repetible (pgTAP en `supabase/tests/` vía
       `supabase db test`, o Vitest contra un Supabase local/branch efímero):
       (a) **E2E de torneo**: `start_tournament` → drive (vencer deadlines + `tick`/`open_next_round`)
-          → campeón + 3er puesto; 72 grupos + 32 KO; reproducible.
+      → campeón + 3er puesto; 72 grupos + 32 KO; reproducible.
       (b) **Reloj de ronda compartido**: N humanos en grupos distintos → 1 solo `deadline` en la ronda.
       (c) **abandon**: humano → bot (is_bot=true), intent de bot en penal abierto, `get_active_match`
-          deja de rehidratarlo, resuelve con `is_random=false`.
+      deja de rehidratarlo, resuelve con `is_random=false`.
       (d) **Paridad TS↔SQL** (automatizar lo verificado a mano): RNG mulberry32, `engine_bot_intent`,
-          `tanda_penalty_difficulty`, `engine_group_standings`/`buildRoundOf32` (no-cruce mismo grupo).
+      `tanda_penalty_difficulty`, `engine_group_standings`/`buildRoundOf32` (no-cruce mismo grupo).
       (e) **Anti-trampa (§ gotchas)**: `anon`/`authenticated` NO puede `select questions.correct_index`,
-          NO puede escribir tablas de juego (solo por RPC), NO puede leer broadcasts de otro match/torneo
-          (policies de realtime.messages). `correct_index` no viaja en `penal:start`/`score:live`.
+      NO puede escribir tablas de juego (solo por RPC), NO puede leer broadcasts de otro match/torneo
+      (policies de realtime.messages). `correct_index` no viaja en `penal:start`/`score:live`.
       (f) **CI**: levantar Supabase local, aplicar migraciones y correr (a)-(e) en GitHub Actions
-          (hoy CI solo corre typecheck/lint/build/test TS). Atrapa migraciones rotas antes del merge.
+      (hoy CI solo corre typecheck/lint/build/test TS). Atrapa migraciones rotas antes del merge.
       Side-effect útil: forzar reconciliar el historial de migraciones (squash) para que `db reset`
       desde archivos == remoto (ver memoria `tanda-sql-migrations-canonical`). Generar tipos de la DB
       (`supabase gen types`) para tipar las `supabase.rpc(...)` del cliente puede entrar acá o aparte.
@@ -530,23 +534,21 @@
       corta) + enforce_rate_limit sumado a la denylist de rls_audit. typecheck/lint/build verdes,
       45 db + 100 unit.
 - [~] 9.6 Verificación end-to-end §12 + deploy final. VERIFICACIÓN LOCAL HECHA: §12.6 (typecheck/lint/
-      build + 100 unit motor/torneo + 46 db) en verde; §12.4 (torneo por todas las fases → campeón+3º)
-      por tournament_e2e; §12.5 (varios torneos en simultáneo sin interferencia) por el NUEVO
-      concurrency.test.ts (2 torneos en paralelo: drivear uno no toca al otro, ambos terminan con sus
-      invariantes, sin solape de participantes, pertenencia aislada). PENDIENTE (necesita a Gino):
-      (a) walkthrough visual §12.1-3 (avatar, escena de penal + animaciones, bracket en un torneo real);
-      (b) DEPLOY a prod. HECHO por MCP: las 5 migraciones nuevas aplicadas a la DB de prod (prod==local)
-      + get_advisors corrido (performance 0 lints; security solo lo esperado por diseño — RPCs SECURITY
-      DEFINER del modelo autoritativo, helpers de pertenencia, anon sign-ins §8.4, tablas deny-all).
-      FALTA OPS de Gino: cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel +
-      verificar dominio en Resend; habilitar anonymous sign-ins en el dashboard de prod. FOLLOW-UPS del
-      advisor: borrar el dev harness de prod (dev_create_practice_penal + /dev/penal, ya sobra post-F8);
-      opcional, activar leaked password protection en Auth.
-      >>> ACTUALIZACIÓN (Gino confirmó): env vars Vercel + dominio Resend + anonymous sign-ins YA estaban
-      verificados/habilitados (quedó viejo). Leaked password protection = feature premium, NO se activa.
-      Dev harness BORRADO (mig 20260617150000_drop_dev_harness: drop de la función, aplicada a prod por
-      MCP; ruta /dev/penal + PenalDevHarness eliminados; sacado del allowlist de rls_audit). ⇒ TODO el
-      código y el deploy de DB están HECHOS. ÚNICO pendiente: el walkthrough visual de Gino (§12.1-3).
+  build + 100 unit motor/torneo + 46 db) en verde; §12.4 (torneo por todas las fases → campeón+3º)
+  por tournament_e2e; §12.5 (varios torneos en simultáneo sin interferencia) por el NUEVO
+  concurrency.test.ts (2 torneos en paralelo: drivear uno no toca al otro, ambos terminan con sus
+  invariantes, sin solape de participantes, pertenencia aislada). PENDIENTE (necesita a Gino):
+  (a) walkthrough visual §12.1-3 (avatar, escena de penal + animaciones, bracket en un torneo real);
+  (b) DEPLOY a prod. HECHO por MCP: las 5 migraciones nuevas aplicadas a la DB de prod (prod==local) + get_advisors corrido (performance 0 lints; security solo lo esperado por diseño — RPCs SECURITY
+  DEFINER del modelo autoritativo, helpers de pertenencia, anon sign-ins §8.4, tablas deny-all).
+  FALTA OPS de Gino: cargar SUPABASE_SECRET_KEY/RESEND_API_KEY/NEXT_PUBLIC_SITE_URL en Vercel +
+  verificar dominio en Resend; habilitar anonymous sign-ins en el dashboard de prod. FOLLOW-UPS del
+  advisor: borrar el dev harness de prod (dev_create_practice_penal + /dev/penal, ya sobra post-F8);
+  opcional, activar leaked password protection en Auth. >>> ACTUALIZACIÓN (Gino confirmó): env vars Vercel + dominio Resend + anonymous sign-ins YA estaban
+  verificados/habilitados (quedó viejo). Leaked password protection = feature premium, NO se activa.
+  Dev harness BORRADO (mig 20260617150000_drop_dev_harness: drop de la función, aplicada a prod por
+  MCP; ruta /dev/penal + PenalDevHarness eliminados; sacado del allowlist de rls_audit). ⇒ TODO el
+  código y el deploy de DB están HECHOS. ÚNICO pendiente: el walkthrough visual de Gino (§12.1-3).
 
 ## F10 · Mejoras post-walkthrough (Gino, 2026-06-17)
 
@@ -567,10 +569,13 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       próximo. HECHO: tiempo muerto a 3s (mig 200000_round_deadline_3s) + linger del resultado bajado a
       1.2s (antes 3.5s se comía la ventana → "no mostraba nada") → al terminar el match cae al Bracket
       "tu camino" (VersusCard + tabla del grupo). El cliente pokea `open_next_round` al vencer el tiempo
-      muerto para arrancar la próxima ronda enseguida (tick server = backstop).
+      muerto para arrancar la próxima ronda enseguida (tick server = backstop). FIX POST-PROD (mig
+      220000): en solo-vs-bots `resolve_round` avanzaba AL INSTANTE (sin tiempo muerto, porque no había
+      otros matches humanos en curso) → el bracket nunca se veía. Ahora `resolve_round` separa el tiempo
+      muerto (3s entre penales del mismo match / 6s ENTRE matches) y NO avanza en línea; `open_next_round`
+      routea: matches humanos en curso → `open_round_penals`, frontera de jornada → `advance_tournament`.
 - [x] 10.4 Fase de grupos = 3 tandas (6 penales); eliminación directa = 5 tandas (10 penales, como hoy).
-      Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad
-      + tests. Afecta cuántos penales se crean por match. APLICADA A PROD (mig 170000_match_length_by_phase).
+      Motor `lib/engine/match.ts` (advanceMatch) phase-aware + port SQL `engine_advance_match` + paridad + tests. Afecta cuántos penales se crean por match. APLICADA A PROD (mig 170000_match_length_by_phase).
 - [x] 10.5 Bots responden muy rápido: +2s al mínimo Y al máximo de cada tier (ventana 4..7/8/9/10s).
       `lib/engine/bot.ts` TIER_MODEL + port SQL `engine_bot_intent` (mig 20260617180000) + paridad. (Gino
       pidió mid-stream sumar también al máximo.) APLICADA A PROD (mig 180000_bot_delay_floor).
@@ -586,18 +591,21 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       playGoal/playSave fijos. PenalLive cruza `result.winner` con mi rol (kicker/keeper de
       get_match_scene, vía sceneRef para el closure del handler) → bueno si el resultado me favorece.
 - [x] 10.9 Fin de tanda anticipado: terminar cuando el resultado ya no se puede revertir con los penales
-      restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido"); aplicarlo
+      restantes (ej. 2-0 con 3 por lado → corta). KO ya lo hacía ("corta cuando está decidido10."); aplicarlo
       también a grupos con la nueva longitud (GD = penales convertidos al cortar). Va junto con 10.4.
 - [x] 10.10 Historial roto: `getTournamentHistory` era un STUB ([]). HECHO: RPC `get_tournament_history()`
       (SECURITY DEFINER por auth.uid(), mig 210000_tournament_history; revoke public/anon + grant
       authenticated) devuelve una fila por participación no-bot: nación, placement/eliminated_phase,
       fecha, y agregación de matches finalizados (goles a favor / jugados / ganados). queries.ts mapea
       1:1 a TournamentHistoryEntry (aggregateStats + UI sin cambios). Test db nuevo + sumada al allowlist
-      de rls_audit.
+      de rls_audit. FIX POST-PROD (mig 230000): el abandono NO aparecía porque `abandon` marca is_bot=true
+      y la RPC filtraba is_bot=false. Ahora hay columna `participants.abandoned` (los bots puros tienen
+      user_id null → filtro por user_id basta), `abandon` setea abandoned=true, la RPC expone abandoned y
+      la UI muestra "Abandonaste" (no cuenta como título/mejor posición). Test db de abandono agregado.
 - [x] 10.11 Respuesta NO cambiable + congelar el tiempo al elegir + mostrar el segundo exacto. HECHO:
       `select_option` ahora es PRIMER-TAP-GANA (rechaza el cambio con `already_answered`, re-tap igual
       idempotente; mig 190000) → regla AUTORITATIVA, no solo del cliente. PenalLive congela el contador/
-      barra al tap, bloquea los botones, muestra "Respondiste a los X.Xs" y, en el resultado, el delta de
+      barra al tap, bloquea los botones, muestra "Respondiste a los X.Xs" y, en el resultado, el elta de
       tiempos (10.7). SPEC + CLAUDE gotcha actualizados (revertido "respuesta cambiable"). Test db nuevo
       (select_option.test.ts: primer tap, re-tap idempotente, cambio rechazado, 1 sola fila).
 - [x] 10.12 Tanteador estilo transmisión: círculos verde (gol) / rojo (erró) por penal. HECHO (overlay
@@ -607,4 +615,6 @@ porque tocan tests + ports SQL + paridad; UI después). Una a la vez, verificar,
       usa la longitud por fase (3 grupos / 5 eliminación, de `get_active_match.phase`).
 - [x] 10.13 Segunda chance (ambos erraron, reaparecen las 2 opciones): mensaje arriba explicando POR QUÉ
       se volvieron a mostrar. HECHO: `penal:second_chance` lleva `reason='both_missed'` (mig 190000) y
-      PenalLive muestra "Erraron los dos: segunda chance — quedan 2 opciones".
+      PenalLive muestra "Erraron los dos: segunda chance — quedan 2 opciones". FIX POST-PROD (visual):
+      el aviso ahora es un BANNER ámbar (borde + fondo) + acento de tarjeta (ring ámbar) + label de fase
+      resaltado → se nota claramente que entraste en otra fase del penal.
