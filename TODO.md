@@ -116,11 +116,15 @@ Migración `20260619140000_db_optim.sql` (C1/C2/C4) + `20260619150000_quick_play
 - [x] **C5/C6/C7** Documentados en `SPEC.md §11` (pooler Supavisor transaction mode :6543; 100% Broadcast
   + techo por tier; lectura de `pg_stat_statements`). Verif: 58 db + 107 unit + typecheck/lint/knip/build verde.
 
-### FASE D — SEO
-- [ ] **D1** Componente server `JsonLd`: `VideoGame`+`Organization`(Pyrux)+`WebSite`.
-- [ ] **D2** Metadata por ruta en públicas indexables (landing/login/register); privadas siguen `noindex`.
-- [ ] **D3** Consolidar `metadataBase`/SITE_URL (una fuente, ver A2).
-- [ ] **D4** Verificar sitemap/robots/manifest + URL canónica. Verif: `pnpm build` + revisar `/sitemap.xml` etc.
+### FASE D — SEO ✅ COMPLETA
+- [x] **D1** `components/common/JsonLd.tsx` (server): `@graph` con `Organization`(Pyrux)+`WebSite`+
+  `VideoGame`(+Offer free), montado en la landing. Verificado en el HTML servido.
+- [x] **D2** Metadata por ruta: `login`/`register` con title+description+canonical (indexables);
+  `partido`/`avatar`/`perfil`/`sala`/`forgot`/`reset` con `robots:{index:false,follow:false}`. Verificado
+  `<meta name="robots" content="noindex, nofollow">` en `/partido`.
+- [x] **D3** Ya consolidado en A2: `canonicalSiteUrl()` es la única fuente (metadataBase/sitemap/robots/JsonLd).
+- [x] **D4** Verificado con server de prod: `/robots.txt` (disallows + host + sitemap), `/sitemap.xml`
+  (3 URLs públicas, dominio canónico), canonical en landing/login, JSON-LD en el HTML.
 
 ### FASE E — Velocidad navegador (CWV)
 - [ ] **E1** `@next/bundle-analyzer` + `ANALYZE=true pnpm build`, identificar chunks gordos.

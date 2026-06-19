@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Lobby } from "@/components/lobby/Lobby";
 import { isKnownRoomError } from "@/lib/errors";
+
+// Sala privada (por código/usuario) → noindex (D2).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 /** `join_room` devuelve un código en inglés → motivo para el aviso del home (genérico si no se conoce). */
 function reasonFromError(message: string): string {

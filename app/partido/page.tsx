@@ -1,6 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TournamentLive } from "@/components/penal/TournamentLive";
+
+// Privada y por usuario → fuera del índice (D2; robots.txt ya la bloquea, esto es el refuerzo a nivel meta).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 /**
  * Pantalla de partido/torneo real (F8 8.2/8.5). Tournament-scoped: te sigue de grupos a la final.

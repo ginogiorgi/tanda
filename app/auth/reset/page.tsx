@@ -1,6 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+
+// Utilidad de auth → noindex (D2).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 /**
  * Pantalla para elegir nueva contraseña. Se llega tras verificar el link de recuperación

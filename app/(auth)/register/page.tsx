@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+
+export const metadata: Metadata = {
+  title: "Crear cuenta",
+  description: "Creá tu cuenta en Tanda: armá tu jugador y competí en la trivia mundialista en tiempo real. 48 selecciones, una sola copa.",
+  alternates: { canonical: "/register" },
+};
 
 export default async function RegisterPage() {
   const supabase = await createClient();

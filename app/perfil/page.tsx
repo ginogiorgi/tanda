@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
 import { getTournamentHistory } from "@/lib/profile/queries";
+
+// Privada y por usuario → noindex (D2).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { aggregateStats } from "@/lib/profile/history";
 import { ResultCard } from "@/components/penal/ResultCard";
 

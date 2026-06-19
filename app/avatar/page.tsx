@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AvatarCreator } from "@/components/avatar/AvatarCreator";
 import { saveAvatar } from "./actions";
 import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
 import type { AvatarConfig } from "@/lib/avatar/types";
+
+// Privada (requiere sesión) → noindex (D2).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AvatarPage({
   searchParams,

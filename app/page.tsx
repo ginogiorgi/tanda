@@ -4,6 +4,7 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { GuestButton } from "@/components/lobby/GuestButton";
 import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
+import { JsonLd } from "@/components/common/JsonLd";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -44,6 +45,7 @@ export default async function Home({
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+      <JsonLd />
       <div className="flex flex-col items-center gap-4">
         <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
           Mundial · Trivia · Tiempo real

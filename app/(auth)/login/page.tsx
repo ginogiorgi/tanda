@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LoginForm } from "@/components/auth/LoginForm";
+
+export const metadata: Metadata = {
+  title: "Iniciar sesión",
+  description: "Entrá a tu cuenta de Tanda y seguí compitiendo en la trivia mundialista en tiempo real.",
+  alternates: { canonical: "/login" },
+};
 
 export default async function LoginPage() {
   const supabase = await createClient();
