@@ -1603,6 +1603,7 @@ CREATE OR REPLACE FUNCTION "public"."participant_brief"("p_part" "uuid") RETURNS
     'nation_name', n.name,
     'flag', n.flag_asset,
     'kit_primary', n.kit_primary,
+    'kit_secondary', n.kit_secondary,
     'accent', n.accent_color
   )
   from public.participants p

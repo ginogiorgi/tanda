@@ -58,7 +58,7 @@ insert into public.nations (code, name, fifa_rank, difficulty_tier, accent_color
   ('TUN', 'Túnez',               30, 'medium', '#E70013', 'tn',     '#E70013', '#FFFFFF'),
   -- LOW (31-48)
   ('QAT', 'Catar',               31, 'low',    '#8A1538', 'qa',     '#8A1538', '#FFFFFF'),
-  ('KSA', 'Arabia Saudita',      32, 'low',    '#006C35', 'sa',     '#006C35', '#FFFFFF'),
+  ('KSA', 'Arabia Saudita',      32, 'low',    '#006C35', 'sa',     '#006C35', '#006C35'),
   ('IRN', 'RI de Irán',          33, 'low',    '#FFFFFF', 'ir',     '#FFFFFF', '#239F40'),
   ('IRQ', 'Irak',                34, 'low',    '#2D8A3E', 'iq',     '#2D8A3E', '#FFFFFF'),
   ('UZB', 'Uzbekistán',          35, 'low',    '#2266CC', 'uz',     '#2266CC', '#FFFFFF'),

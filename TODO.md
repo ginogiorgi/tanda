@@ -41,7 +41,13 @@ orden de timestamp) + `get_advisors` después.
 - Verif Fase A: `pnpm typecheck && pnpm lint && pnpm build && pnpm test`.
 
 ### FASE B — 5 features de gameplay
-**B1 — Remera dos colores (banda diagonal):** ✅ COMPLETA (migración aplicada local + 52 db verde)
+**B1 — Remera dos colores (banda diagonal):** ✅ COMPLETA + EN PROD
+- [x] **Prod limpio + aplicado (2026-06-19):** data de testing truncada en prod (rooms cascade + rate_limits;
+  se preservaron nations/questions/profiles/auth). Cambio `kit_secondary`/KSA aplicado a prod por
+  `execute_sql`. Advisors: performance 0; security = solo los conocidos (sin nuevos). Ledger prod = 4.
+- [x] **Migraciones consolidadas:** `kits_two_color` foldeado en `baseline` (participant_brief) + `seed`
+  (KSA lisa) y borrado el archivo suelto → set canónico de 4 (baseline+wiring+seed+session_fixes).
+  `db reset` local reproduce todo (52 db verde).
 - [x] **B1.1** Migración `20260619120000_kits_two_color.sql`: la data curada (F10) ya tenía 2 colores
   verídicos por país → se mantienen como base+banda; caso lisa: `KSA` flatten a verde (ejemplo del owner).
 - [x] **B1.2** RPC `participant_brief` devuelve `kit_secondary` (create-or-replace, revoke public/anon).
