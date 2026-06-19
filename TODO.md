@@ -93,11 +93,15 @@ orden de timestamp) + `get_advisors` después.
   el contador en 0 → la UI se bloquea y pasa al estado de espera de la animación sin parpadeo. Crítico en
   la 2ª chance (5s). Sin cambio de SQL (`second_chance.test.ts` intacto, verde). Verif: 107 unit + checks.
 
-**B5 — Mensaje de espera + banderas reales:**
-- [ ] **B5.1** Wire up banderas reales (`flag`=`nations.flag_asset`) en `PenalHud.tsx`/`Bracket.tsx`/reveal,
-  SVGs locales lazy (ej. `country-flag-icons`), no CDN.
-- [ ] **B5.2** Overlay "Esperando que todos terminen su tanda…" en `TournamentLive.tsx` cuando
-  `get_active_match`=null pero torneo `in_progress` y tu match resolvió. Verif: manual 2+ jugadores.
+**B5 — Mensaje de espera + banderas reales:** ✅ COMPLETA
+- [x] **B5.1** Banderas reales: 48 SVG locales en `public/flags/<code>.svg` (set lipis/flag-icons MIT,
+  copiados — `LICENSE.flag-icons.txt`; `flag_asset` ISO-2 coincide exacto, `gb-eng/sct` incluidos). Componente
+  `components/common/Flag.tsx` (`<img>` lazy, no CDN, runtime tree-shaken: solo baja la que se ve). Cableado
+  en `PenalHud`, `Bracket` (chip+KO+campeón), `NationReveal`, `ResultCard`/`RunSummary` (flag opcional;
+  historial lo omite, graceful). Sin dep en runtime/build.
+- [x] **B5.2** Banner "Esperando que todos terminen su tanda…" en `TournamentLive` sobre el bracket cuando
+  mi tanda resolvió (`everPlayed` && sin match activo); no aparece en la presentación inicial.
+  Verif: 107 unit + 55 db + typecheck/lint/knip/build verde. *(Pendiente: ojo manual 2+ jugadores.)*
 
 ### FASE C — DB: optimización + listo para 1000+ concurrentes
 - [ ] **C1** Índice `idx_questions_difficulty ON questions(difficulty)` (hotspot de `take_tournament_question`).

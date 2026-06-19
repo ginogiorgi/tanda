@@ -6,9 +6,12 @@
  */
 
 import type { ReactNode } from "react";
+import { Flag } from "@/components/common/Flag";
 import type { HistoryOutcome } from "@/lib/profile/history";
 
-type Team = { code: string | null; kit: string | null; isMe?: boolean };
+/** `flag` opcional (B5.1): lo pasa RunSummary (tiene el brief con bandera); el historial del perfil
+ * lo omite (su RPC no trae `flag`) → sin bandera, graceful. */
+type Team = { code: string | null; kit: string | null; isMe?: boolean; flag?: string | null };
 
 const OUTCOME: Record<NonNullable<HistoryOutcome>, { label: string; cls: string }> = {
   won: { label: "Ganaste", cls: "bg-success/15 text-success" },
@@ -16,11 +19,12 @@ const OUTCOME: Record<NonNullable<HistoryOutcome>, { label: string; cls: string 
   abandoned: { label: "Abandonaste", cls: "bg-fg-subtle/15 text-fg-muted" },
 };
 
-function TeamChip({ code, kit, isMe }: Team) {
+function TeamChip({ code, kit, isMe, flag }: Team) {
   return (
     <span className="flex items-center gap-2">
+      <Flag code={flag} name={code} className="h-4" />
       <span
-        className="h-4 w-4 shrink-0 rounded-full"
+        className="h-3.5 w-3.5 shrink-0 rounded-full"
         style={{ backgroundColor: kit ?? "#666" }}
         aria-hidden
       />

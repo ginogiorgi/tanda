@@ -7,7 +7,7 @@
  *    qué posición vas/quedaste (tarea 17, antes del 1er KO).
  *  - **Eliminación** (tareas 16/8): el cartel de tu próximo rival arriba + el ÁRBOL COMPLETO de llaves
  *    (16avos→octavos→cuartos→semis→final) con scroll horizontal, mobile-first.
- * Sin assets FIFA: la nación se muestra por código + color de kit.
+ * Sin assets FIFA: la nación se muestra por bandera real (B5.1, SVGs locales) + código + color de kit.
  */
 
 import {
@@ -16,6 +16,7 @@ import {
   type ParticipantBrief,
   type ScoreLivePayload,
 } from "@/lib/realtime/score";
+import { Flag } from "@/components/common/Flag";
 import type { BracketView, GroupRow, GroupView, KoMatchView } from "@/lib/bracket/bracket";
 
 const PHASE_LABEL: Record<MatchPhase, string> = {
@@ -52,6 +53,7 @@ function TeamChip({
   if (!brief) return <span className="text-fg-subtle">—</span>;
   return (
     <span className={`flex items-center gap-1.5 ${dim ? "opacity-50" : ""}`}>
+      <Flag code={brief.flag} name={brief.nation_name} className={size === "xs" ? "h-3" : "h-3.5"} />
       <span
         className={`${size === "xs" ? "h-2 w-2" : "h-3 w-3"} shrink-0 rounded-full`}
         style={kitSwatchStyle(brief)}
@@ -117,8 +119,9 @@ function VersusCard({ match }: { match: ScoreLivePayload }) {
       </span>
       <div className="mt-3 flex items-center justify-center gap-4">
         <div className="flex flex-1 flex-col items-center gap-1">
+          <Flag code={match.home?.flag} name={match.home?.nation_name} className="h-7" />
           <span
-            className="h-8 w-8 rounded-full"
+            className="h-3 w-3 rounded-full"
             style={kitSwatchStyle(match.home)}
             aria-hidden
           />
@@ -128,8 +131,9 @@ function VersusCard({ match }: { match: ScoreLivePayload }) {
           {live ? `${match.home_score}–${match.away_score}` : "vs"}
         </span>
         <div className="flex flex-1 flex-col items-center gap-1">
+          <Flag code={match.away?.flag} name={match.away?.nation_name} className="h-7" />
           <span
-            className="h-8 w-8 rounded-full"
+            className="h-3 w-3 rounded-full"
             style={kitSwatchStyle(match.away)}
             aria-hidden
           />
@@ -221,6 +225,7 @@ export function Bracket({ view }: { view: BracketView }) {
       <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-4">
         <div className="flex flex-col items-center gap-1 text-center">
           <span className="text-3xl">🏆</span>
+          <Flag code={view.champion.flag} name={view.champion.nation_name} className="h-7" />
           <span className="font-mono text-lg font-bold text-gold">
             {view.champion.nation_code}
           </span>

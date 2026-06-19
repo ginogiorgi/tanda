@@ -7,6 +7,7 @@
  */
 
 import { kitSwatchStyle, type ParticipantBrief } from "@/lib/realtime/score";
+import { Flag } from "@/components/common/Flag";
 
 /** Un penal ya resuelto: su idx global (impar = patea home, par = away) y si el pateador convirtió. */
 export type PenalDot = { idx: number; scored: boolean };
@@ -44,8 +45,9 @@ function Side({
   return (
     <div className={`flex flex-1 flex-col gap-1 ${align === "right" ? "items-end" : "items-start"}`}>
       <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
+        <Flag code={brief?.flag} name={brief?.nation_name} className="h-4" />
         <span
-          className="h-4 w-4 shrink-0 rounded-full"
+          className="h-3 w-3 shrink-0 rounded-full"
           style={kitSwatchStyle(brief)}
           aria-hidden
         />

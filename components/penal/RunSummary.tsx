@@ -146,11 +146,13 @@ export function RunSummary({
           left={{
             code: lastMatch.home?.nation_code ?? null,
             kit: lastMatch.home?.kit_primary ?? null,
+            flag: lastMatch.home?.flag ?? null,
             isMe: lastMatch.home?.participant_id === myParticipantId,
           }}
           right={{
             code: lastMatch.away?.nation_code ?? null,
             kit: lastMatch.away?.kit_primary ?? null,
+            flag: lastMatch.away?.flag ?? null,
             isMe: lastMatch.away?.participant_id === myParticipantId,
           }}
           leftScore={lastMatch.home_score}

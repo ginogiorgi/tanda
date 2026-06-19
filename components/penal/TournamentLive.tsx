@@ -52,6 +52,9 @@ export function TournamentLive({
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
   const [showPenal, setShowPenal] = useState(false);
   const [revealExpired, setRevealExpired] = useState(false);
+  // B5.2: ¿ya jugué al menos un penal en este torneo? Distingue "espera entre rondas" (mi tanda
+  // resolvió, faltan otros) de la presentación inicial (todavía nadie pateó → no es espera).
+  const [everPlayed, setEverPlayed] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
@@ -139,6 +142,7 @@ export function TournamentLive({
         setCurrentMatchId(am.match_id);
         setShowPenal(true);
         showPenalRef.current = true;
+        setEverPlayed(true);
       } else {
         // Sin partido activo → arrancar la próxima ronda si el tiempo muerto ya venció (idempotente,
         // no-op si todavía no), y soltar la escena de penal tras el linger corto.
@@ -225,6 +229,16 @@ export function TournamentLive({
 
   return (
     <>
+      {/* B5.2: mi tanda resolvió pero la ronda sigue (otros humanos terminando) → aviso de espera sobre
+          el bracket. No en la presentación inicial (everPlayed=false). */}
+      {everPlayed && (
+        <div className="fade-in relative z-10 flex items-center gap-2 rounded-full border border-border bg-bg-elevated/80 px-4 py-1.5 text-xs font-medium text-fg-muted backdrop-blur-sm">
+          <span className="flex gap-1" aria-hidden>
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />
+          </span>
+          Esperando que todos terminen su tanda…
+        </div>
+      )}
       <Bracket view={buildBracketView(snapshot, live)} />
       <Link
         href="/"
