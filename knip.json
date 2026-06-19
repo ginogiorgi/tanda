@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "app/**/{page,layout,route,error,not-found,sitemap,robots,manifest,icon,apple-icon,opengraph-image,template,loading,default}.{ts,tsx}",
+    "app/**/actions.ts",
+    "**/*.test.ts"
+  ],
+  "project": ["**/*.{ts,tsx}"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["tailwindcss"]
+}

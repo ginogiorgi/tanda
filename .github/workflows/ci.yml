@@ -29,6 +29,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Knip (código/deps muertos)
+        run: pnpm knip
+
       - name: Test
         run: pnpm test
 

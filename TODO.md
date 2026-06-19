@@ -29,11 +29,14 @@ orden de timestamp) + `get_advisors` después.
 - [x] **A3** Campos de `ParticipantBrief`: `flag`+`accent` hoy sin consumidor de UI (solo type+fixtures).
   Se cablean en Fase B (`flag`→B5 banderas, `accent`→B2.3 styling reveal). Ambos retenidos, no se borran.
 - [x] **A4** `next.config.ts`: bundle-analyzer (`ANALYZE=true`) + `optimizePackageImports` (three/R3F). Build verde.
-- [ ] **A5** Barrido `app/`: `"use client"` solo con interactividad real, imports muertos, sin `*PageClient`.
-- [ ] **A6** Barrido `components/`: props/estado/handlers muertos, clases Tailwind duplicadas, sin CSS inline.
-- [ ] **A7** Barrido `lib/`: exports sin consumidor (cruzar con tests), tipos duplicados.
-- [ ] **A8** Docs (`SPEC.md`, `docs/BRIEF.md`, `README.md`, `CLAUDE.md`) al día tras los cambios.
-- [ ] **A9** Instalar **knip** + script `pnpm knip`, limpiar lo que marque, sumarlo al CI.
+- [x] **A5** Barrido `app/`: sin `*PageClient`, sin imports muertos (knip), `style={{}}` solo en `next/og`
+  (icon/apple-icon/og-image, Satori no soporta Tailwind) — legítimo.
+- [x] **A6** Barrido `components/`: knip sin dead exports; 22 `"use client"` todos interactivos reales;
+  `style={{}}` solo valores dinámicos runtime (`TimeBar`/`Confetti` width %) — patrón correcto.
+- [x] **A7** Barrido `lib/`: knip limpio (los 9 tipos eran contrato in-file del motor, cubiertos por
+  `ignoreExportsUsedInFile`); sin exports huérfanos ni tipos duplicados.
+- [ ] **A8** Docs (`SPEC.md`, `docs/BRIEF.md`, `README.md`, `CLAUDE.md`) al día tras los cambios. *(al final)*
+- [x] **A9** knip instalado + `knip.json` + script `pnpm knip` (limpio) + paso en CI (`verify`).
 - [ ] **A10** Actualizar `database.types.ts` a mano (kit_secondary, RPCs nuevos/modificados).
 - Verif Fase A: `pnpm typecheck && pnpm lint && pnpm build && pnpm test`.
 
