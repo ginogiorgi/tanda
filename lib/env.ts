@@ -35,6 +35,14 @@ export function siteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 }
 
+/**
+ * URL canónica del sitio para SEO (metadataBase, sitemap, robots). A diferencia de `siteUrl()`,
+ * siempre cae a la URL de producción: los metadatos canónicos nunca deben apuntar a localhost.
+ */
+export function canonicalSiteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://tanda2026.com.ar";
+}
+
 /** API key de Resend (envío de mails). Solo servidor. `null` si todavía no se configuró. */
 export function resendApiKey(): string | null {
   return process.env.RESEND_API_KEY ?? null;

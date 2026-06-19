@@ -24,8 +24,8 @@ orden de timestamp) + `get_advisors` después.
 ---
 
 ### FASE A — Limpieza profunda archivo por archivo
-- [ ] **A1** Borrar `example.png` (raíz, untracked, sin referencias).
-- [ ] **A2** Centralizar SITE_URL en `lib/env.ts` (hoy literal repetido en `layout.tsx`/`sitemap.ts`/`robots.ts`).
+- [x] **A1** Borrar `example.png` (raíz, untracked, sin referencias).
+- [x] **A2** Centralizar SITE_URL en `lib/env.ts` (`canonicalSiteUrl()` usado por `layout.tsx`/`sitemap.ts`/`robots.ts`).
 - [ ] **A3** Campos sin uso de `ParticipantBrief` (`lib/realtime/score.ts`): `flag`→se usa en B5 (no borrar);
   `accent`→si queda sin consumidor tras Fase B, borrar de RPC + tipo + `database.types.ts`.
 - [ ] **A4** `next.config.ts` vacío → config real (bundle-analyzer, optimizePackageImports — ver Fase E).

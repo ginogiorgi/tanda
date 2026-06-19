@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
+import { canonicalSiteUrl } from "@/lib/env";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -8,7 +9,7 @@ const outfit = Outfit({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tanda2026.com.ar";
+const SITE_URL = canonicalSiteUrl();
 const DESCRIPTION =
   "Trivia de Mundiales en tiempo real. Cada pregunta es un penal: respondé bien y más rápido que tu rival para meter el gol o atajar. 48 selecciones, una sola copa.";
 

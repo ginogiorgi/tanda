@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { canonicalSiteUrl } from "@/lib/env";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tanda2026.com.ar";
+const SITE_URL = canonicalSiteUrl();
 
 /**
  * robots.txt: indexable salvo las rutas privadas/de juego (no aportan a SEO y cambian por usuario).

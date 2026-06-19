@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { canonicalSiteUrl } from "@/lib/env";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tanda2026.com.ar";
+const SITE_URL = canonicalSiteUrl();
 
 /** Sitemap: solo las páginas públicas (las de juego son privadas y por usuario). */
 export default function sitemap(): MetadataRoute.Sitemap {
