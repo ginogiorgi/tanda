@@ -636,6 +636,7 @@ $$;
 
 ALTER FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") OWNER TO "postgres";
 REVOKE ALL ON FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") FROM PUBLIC;
+REVOKE ALL ON FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") FROM "anon";
 GRANT ALL ON FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") TO "authenticated";
 
 
