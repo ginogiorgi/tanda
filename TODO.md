@@ -26,9 +26,9 @@ orden de timestamp) + `get_advisors` después.
 ### FASE A — Limpieza profunda archivo por archivo
 - [x] **A1** Borrar `example.png` (raíz, untracked, sin referencias).
 - [x] **A2** Centralizar SITE_URL en `lib/env.ts` (`canonicalSiteUrl()` usado por `layout.tsx`/`sitemap.ts`/`robots.ts`).
-- [ ] **A3** Campos sin uso de `ParticipantBrief` (`lib/realtime/score.ts`): `flag`→se usa en B5 (no borrar);
-  `accent`→si queda sin consumidor tras Fase B, borrar de RPC + tipo + `database.types.ts`.
-- [ ] **A4** `next.config.ts` vacío → config real (bundle-analyzer, optimizePackageImports — ver Fase E).
+- [x] **A3** Campos de `ParticipantBrief`: `flag`+`accent` hoy sin consumidor de UI (solo type+fixtures).
+  Se cablean en Fase B (`flag`→B5 banderas, `accent`→B2.3 styling reveal). Ambos retenidos, no se borran.
+- [x] **A4** `next.config.ts`: bundle-analyzer (`ANALYZE=true`) + `optimizePackageImports` (three/R3F). Build verde.
 - [ ] **A5** Barrido `app/`: `"use client"` solo con interactividad real, imports muertos, sin `*PageClient`.
 - [ ] **A6** Barrido `components/`: props/estado/handlers muertos, clases Tailwind duplicadas, sin CSS inline.
 - [ ] **A7** Barrido `lib/`: exports sin consumidor (cruzar con tests), tipos duplicados.
