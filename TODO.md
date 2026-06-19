@@ -41,16 +41,17 @@ orden de timestamp) + `get_advisors` después.
 - Verif Fase A: `pnpm typecheck && pnpm lint && pnpm build && pnpm test`.
 
 ### FASE B — 5 features de gameplay
-**B1 — Remera dos colores (banda diagonal):**
-- [ ] **B1.1** Migración `*_kits_two_color.sql`: `kit_primary`+`kit_secondary` verídicos país por país (48
-  del seed). Sin secundario característico → `kit_secondary = kit_primary` (remera lisa).
-- [ ] **B1.2** RPC `participant_brief` (baseline ~L1601) devuelve también `kit_secondary` (create-or-replace).
-- [ ] **B1.3** Tipos: `kit_secondary` en `ParticipantBrief` (`lib/realtime/score.ts`) + `database.types.ts`.
-- [ ] **B1.4** `lib/penal/scene.ts`: `kitSash` en `SceneRole` desde `kit_secondary` + test.
-- [ ] **B1.5** `components/avatar/AvatarModel.tsx`: prop `kitSash`, mesh de banda diagonal ~45° en el pecho;
-  si `kitSash===kitTop` invisible (lisa); solo en contexto penal.
-- [ ] **B1.6** `components/penal/PenalScene.tsx`: pasar `kitSash` a ambos `<AvatarModel>`.
-- [ ] **B1.7** (opcional) chips 2D dos tonos en `Bracket.tsx`/`PenalHud.tsx`. Verif: `pnpm test:db` + `pnpm test` + `pnpm dev`.
+**B1 — Remera dos colores (banda diagonal):** ✅ COMPLETA (migración aplicada local + 52 db verde)
+- [x] **B1.1** Migración `20260619120000_kits_two_color.sql`: la data curada (F10) ya tenía 2 colores
+  verídicos por país → se mantienen como base+banda; caso lisa: `KSA` flatten a verde (ejemplo del owner).
+- [x] **B1.2** RPC `participant_brief` devuelve `kit_secondary` (create-or-replace, revoke public/anon).
+- [x] **B1.3** Tipos: `kit_secondary` en `ParticipantBrief` (`lib/realtime/score.ts`); fixtures de test al día.
+- [x] **B1.4** `lib/penal/scene.ts`: `kitSash` en `SceneRole` (`sashOf`, cae a base si falta) + test lisa.
+- [x] **B1.5** `AvatarModel.tsx`: prop `kitSash` + componente `Sash` (slab diagonal al frente del pecho);
+  no se dibuja si `kitSash===kitTop` (lisa) ni en el creador (requiere `kitTop`).
+- [x] **B1.6** `PenalScene.tsx`: pasa `kitSash` a ambos `<AvatarModel>`.
+- [x] **B1.7** Chips 2D dos tonos: helper `kitSwatchStyle` (gradiente diagonal) en `PenalHud`/`Bracket`.
+  Verif: 107 unit + 52 db verde, typecheck/lint/knip/build verde. *(Pendiente: ojo visual en `pnpm dev`.)*
 
 **B2 — Pantalla de revelación de selección (~2s) + fix reloj que corre en lobby:**
 - [ ] **B2.1** Fix raíz: `start_tournament` deja `round_deadline` null; nuevo RPC idempotente

@@ -27,6 +27,8 @@ export type ParticipantBrief = {
   nation_name: string | null;
   flag: string | null;
   kit_primary: string | null;
+  /** Segundo color (banda diagonal cruzada de la remera). Si === kit_primary, la remera va lisa. */
+  kit_secondary: string | null;
   accent: string | null;
 };
 
@@ -49,6 +51,22 @@ export type ScoreLivePayload = {
   /** `now()` del server al emitir (para ordenar/diagnóstico). */
   server_now: string;
 };
+
+/**
+ * Estilo del chip 2D de una nación: banda diagonal de dos tonos (espejo de la remera 3D con su
+ * "raya cruzada"). Si no hay segundo color (o es igual al base), el chip va liso. Para usar en
+ * `style={...}` de los swatches del HUD/bracket.
+ */
+export function kitSwatchStyle(
+  brief: Pick<ParticipantBrief, "kit_primary" | "kit_secondary"> | null,
+): { background: string } {
+  const base = brief?.kit_primary ?? "#666";
+  const sash = brief?.kit_secondary ?? base;
+  if (sash === base) return { background: base };
+  return {
+    background: `linear-gradient(115deg, ${base} 0%, ${base} 42%, ${sash} 42%, ${sash} 58%, ${base} 58%, ${base} 100%)`,
+  };
+}
 
 /** Estado del bracket en el cliente: último `score:live` recibido por partido. */
 export type ScoreboardState = Record<string, ScoreLivePayload>;

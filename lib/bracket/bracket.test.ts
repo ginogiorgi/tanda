@@ -16,6 +16,7 @@ function brief(id: string): ParticipantBrief {
     nation_name: id,
     flag: id,
     kit_primary: "#123456",
+    kit_secondary: "#abcdef",
     accent: "#123456",
   };
 }

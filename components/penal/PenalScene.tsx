@@ -185,10 +185,18 @@ function Actors({
   return (
     <>
       <group ref={kickerRef} position={[0, 0.9, 1.3]} rotation={[0, Math.PI, 0]}>
-        <AvatarModel config={kicker.avatar} kitTop={kicker.kitTop ?? undefined} />
+        <AvatarModel
+          config={kicker.avatar}
+          kitTop={kicker.kitTop ?? undefined}
+          kitSash={kicker.kitSash ?? undefined}
+        />
       </group>
       <group ref={keeperRef} position={[0, 0.86, GOAL_Z + 0.3]}>
-        <AvatarModel config={keeper.avatar} kitTop={keeper.kitTop ?? undefined} />
+        <AvatarModel
+          config={keeper.avatar}
+          kitTop={keeper.kitTop ?? undefined}
+          kitSash={keeper.kitSash ?? undefined}
+        />
       </group>
       <mesh ref={ballRef} position={[SPOT.x, SPOT.y, SPOT.z]}>
         <icosahedronGeometry args={[0.12, 1]} />

@@ -6,7 +6,7 @@
  * se resalta en la propia tarjeta de `<PenalLive>`. Presentacional.
  */
 
-import type { ParticipantBrief } from "@/lib/realtime/score";
+import { kitSwatchStyle, type ParticipantBrief } from "@/lib/realtime/score";
 
 /** Un penal ya resuelto: su idx global (impar = patea home, par = away) y si el pateador convirtió. */
 export type PenalDot = { idx: number; scored: boolean };
@@ -46,7 +46,7 @@ function Side({
       <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
         <span
           className="h-4 w-4 shrink-0 rounded-full"
-          style={{ backgroundColor: brief?.kit_primary ?? "#666" }}
+          style={kitSwatchStyle(brief)}
           aria-hidden
         />
         <span className="font-mono text-sm font-semibold text-fg">{brief?.nation_code ?? "???"}</span>

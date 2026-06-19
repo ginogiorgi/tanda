@@ -109,11 +109,18 @@ interface AvatarModelProps {
    * `kit_primary` de la nación. Si no viene, se usa el `top.color` del avatar (creador/perfil).
    */
   kitTop?: HexColor;
+  /**
+   * Color de la banda diagonal cruzada de la remera (`kit_secondary`). Estilización del juego para
+   * diferenciar selecciones de color parecido. Si falta o es igual a `kitTop`, no se dibuja banda
+   * (remera lisa). Solo aplica en la escena de penal (junto con `kitTop`), no en el creador.
+   */
+  kitSash?: HexColor;
 }
 
-export function AvatarModel({ config, kitTop }: AvatarModelProps) {
+export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
   const { bodyType, hair, bottom, shoes } = config;
   const top = kitTop ? { ...config.top, color: kitTop } : config.top;
+  const sashColor = kitTop && kitSash && kitSash !== top.color ? kitSash : null;
   const b = BODY[bodyType];
   const ts = topStyle(top.part);
   const bs = bottomStyle(bottom.part);
@@ -164,6 +171,9 @@ export function AvatarModel({ config, kitTop }: AvatarModelProps) {
         </mesh>
       )}
 
+      {/* banda diagonal cruzada (kit_secondary): slab fino al frente del pecho, de hombro a cadera */}
+      {sashColor && <Sash color={sashColor} body={b} />}
+
       {/* ── Brazos + hombro sobre el brazo (deltoides) ── */}
       {[-1, 1].map((s) => {
         const x = s * shoulderX;
@@ -200,6 +210,26 @@ export function AvatarModel({ config, kitTop }: AvatarModelProps) {
       {/* ── Pelo (siempre por encima de los ojos) ── */}
       <HairMesh part={hair.part} color={hair.color} />
     </group>
+  );
+}
+
+/**
+ * Banda diagonal cruzada de la remera (la "raya cruzada"): un slab fino apoyado al frente del torso,
+ * de un hombro a la cadera opuesta. Sigue el achatado en Z del torso para apoyarse sobre el pecho y
+ * se dimensiona con la silueta del cuerpo (vale para hombre/mujer). Low-poly, sin texturas.
+ */
+function Sash({ color, body }: { color: string; body: BodyShape }) {
+  const yMid = (WAIST + SHOULDER) / 2 + 0.02;
+  const rMid = (body.waistR + body.shoulderR) / 2;
+  const flatten = body.bust ? 0.82 : 0.72; // mismo achatado que el torso
+  const z = rMid * flatten * 0.95; // apoyada sobre la superficie frontal del pecho
+  const width = body.shoulderR * 0.5;
+  const length = SHOULDER - WAIST + body.shoulderR * 1.5;
+  return (
+    <mesh position={[0, yMid, z]} rotation={[-0.08, 0, 0.92]}>
+      <boxGeometry args={[width, length, 0.03]} />
+      <meshStandardMaterial color={color} flatShading />
+    </mesh>
   );
 }
 

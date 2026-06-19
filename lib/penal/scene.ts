@@ -22,6 +22,11 @@ export type SceneRole = {
   avatar: AvatarConfig;
   /** Color de camiseta de la nación (override del `top`), o `null` si la nación no tiene kit. */
   kitTop: HexColor | null;
+  /**
+   * Color de la banda diagonal cruzada de la remera (`kit_secondary`). `null` si no hay kit; si es
+   * igual a `kitTop`, la banda se funde y la remera se ve lisa (naciones sin segundo color).
+   */
+  kitSash: HexColor | null;
   /** Brief de nación del participante (bandera/código/nombre), `null` si no se conoce. */
   brief: ParticipantBrief | null;
 };
@@ -43,15 +48,35 @@ function kitOf(brief: ParticipantBrief | null): HexColor | null {
 }
 
 /**
+ * Color de la banda diagonal (`kit_secondary`). Cae al `kit_primary` si falta o es inválido, de modo
+ * que sin segundo color la banda se funde con la base (remera lisa) en vez de desaparecer el override.
+ */
+function sashOf(brief: ParticipantBrief | null): HexColor | null {
+  const sash = brief?.kit_secondary;
+  if (sash && isHexColor(sash)) return sash;
+  return kitOf(brief);
+}
+
+/**
  * Resuelve el rol (avatar + kit + brief) de un participante mirando de qué lado del partido está.
  * `null` si el id no matchea ninguno de los dos lados (no debería pasar con datos consistentes).
  */
 function roleFor(participantId: string, scene: MatchScene): SceneRole | null {
   if (scene.home?.participant_id === participantId) {
-    return { avatar: avatarOf(scene.home_avatar), kitTop: kitOf(scene.home), brief: scene.home };
+    return {
+      avatar: avatarOf(scene.home_avatar),
+      kitTop: kitOf(scene.home),
+      kitSash: sashOf(scene.home),
+      brief: scene.home,
+    };
   }
   if (scene.away?.participant_id === participantId) {
-    return { avatar: avatarOf(scene.away_avatar), kitTop: kitOf(scene.away), brief: scene.away };
+    return {
+      avatar: avatarOf(scene.away_avatar),
+      kitTop: kitOf(scene.away),
+      kitSash: sashOf(scene.away),
+      brief: scene.away,
+    };
   }
   return null;
 }

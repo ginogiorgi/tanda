@@ -10,7 +10,12 @@
  * Sin assets FIFA: la nación se muestra por código + color de kit.
  */
 
-import type { MatchPhase, ParticipantBrief, ScoreLivePayload } from "@/lib/realtime/score";
+import {
+  kitSwatchStyle,
+  type MatchPhase,
+  type ParticipantBrief,
+  type ScoreLivePayload,
+} from "@/lib/realtime/score";
 import type { BracketView, GroupRow, GroupView, KoMatchView } from "@/lib/bracket/bracket";
 
 const PHASE_LABEL: Record<MatchPhase, string> = {
@@ -49,7 +54,7 @@ function TeamChip({
     <span className={`flex items-center gap-1.5 ${dim ? "opacity-50" : ""}`}>
       <span
         className={`${size === "xs" ? "h-2 w-2" : "h-3 w-3"} shrink-0 rounded-full`}
-        style={{ backgroundColor: brief.kit_primary ?? "#666" }}
+        style={kitSwatchStyle(brief)}
         aria-hidden
       />
       <span
@@ -114,7 +119,7 @@ function VersusCard({ match }: { match: ScoreLivePayload }) {
         <div className="flex flex-1 flex-col items-center gap-1">
           <span
             className="h-8 w-8 rounded-full"
-            style={{ backgroundColor: match.home?.kit_primary ?? "#666" }}
+            style={kitSwatchStyle(match.home)}
             aria-hidden
           />
           <span className="font-mono text-lg font-bold text-fg">{match.home?.nation_code}</span>
@@ -125,7 +130,7 @@ function VersusCard({ match }: { match: ScoreLivePayload }) {
         <div className="flex flex-1 flex-col items-center gap-1">
           <span
             className="h-8 w-8 rounded-full"
-            style={{ backgroundColor: match.away?.kit_primary ?? "#666" }}
+            style={kitSwatchStyle(match.away)}
             aria-hidden
           />
           <span className="font-mono text-lg font-bold text-fg">{match.away?.nation_code}</span>
