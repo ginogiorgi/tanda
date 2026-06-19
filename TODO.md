@@ -37,7 +37,10 @@ orden de timestamp) + `get_advisors` después.
   `ignoreExportsUsedInFile`); sin exports huérfanos ni tipos duplicados.
 - [ ] **A8** Docs (`SPEC.md`, `docs/BRIEF.md`, `README.md`, `CLAUDE.md`) al día tras los cambios. *(al final)*
 - [x] **A9** knip instalado + `knip.json` + script `pnpm knip` (limpio) + paso en CI (`verify`).
-- [ ] **A10** Actualizar `database.types.ts` a mano (kit_secondary, RPCs nuevos/modificados).
+- [x] **A10** `database.types.ts` verificado contra migraciones canónicas: 2 tablas (`rooms`/`profiles`)
+  y 16 RPC del cliente coinciden 1:1; `kit_secondary`/datos-de-final fluyen por los shapes TS
+  referenciados (`ParticipantBrief`/`TournamentHistoryEntry`), no hacía falta tocar la grilla.
+  Único fix: conteo del comentario de cabecera (15→16; `get_penalty_result` lo sumó session_fixes).
 - Verif Fase A: `pnpm typecheck && pnpm lint && pnpm build && pnpm test`.
 
 ### FASE B — 5 features de gameplay
