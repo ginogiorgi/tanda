@@ -103,16 +103,18 @@ orden de timestamp) + `get_advisors` después.
   mi tanda resolvió (`everPlayed` && sin match activo); no aparece en la presentación inicial.
   Verif: 107 unit + 55 db + typecheck/lint/knip/build verde. *(Pendiente: ojo manual 2+ jugadores.)*
 
-### FASE C — DB: optimización + listo para 1000+ concurrentes
-- [ ] **C1** Índice `idx_questions_difficulty ON questions(difficulty)` (hotspot de `take_tournament_question`).
-- [ ] **C2** Índice parcial `tournaments(status) WHERE status='in_progress'` (escaneo de `tick()`).
-- [ ] **C3** `quick_play` sin lock global: shardear advisory lock o sala abierta con `FOR UPDATE SKIP LOCKED`.
-  **Sensible** → verificar `concurrency.test.ts` a fondo.
-- [ ] **C4** `tick()`: subir/parametrizar `LIMIT 200`/`LIMIT 100`; reemplazar `exception when others then null` por logging.
-- [ ] **C5** Pooler: documentar/dejar Supavisor transaction mode; runtime usa pooler, no conexión directa.
-- [ ] **C6** Confirmar 100% Broadcast; documentar en `SPEC.md` que el techo es el tier (Pro 500 / Team 5000).
-- [ ] **C7** Documentar lectura de `pg_stat_statements`. Verif Fase C: `pnpm db:reset && pnpm test:db` +
-  `EXPLAIN` antes/después + `get_advisors`.
+### FASE C — DB: optimización + listo para 1000+ concurrentes ✅ COMPLETA
+Migración `20260619140000_db_optim.sql` (C1/C2/C4) + `20260619150000_quick_play_no_global_lock.sql` (C3).
+- [x] **C1** Índice `questions_difficulty_idx ON questions(difficulty)` — `EXPLAIN` confirma index scan.
+- [x] **C2** Índice parcial `tournaments_in_progress_idx ON (round_deadline) WHERE status='in_progress'`
+  (se indexa `round_deadline`, no la constante `status`; cubre `<=now()` y `IS NULL`). `EXPLAIN` ✓.
+- [x] **C3** `quick_play` sin lock global: camino común con `FOR UPDATE SKIP LOCKED` + re-chequeo de cupo
+  bajo el lock de fila; solo la creación se serializa (lock acotado). +3 tests `quick_play.test.ts`
+  (reuso de lobby, idempotencia, overfill→sala nueva). `concurrency.test.ts` verde.
+- [x] **C4** `tick()`: techos por vuelta a ~500 matches (penales `LIMIT 1000`, resto `500`) + `raise
+  warning` por fila en vez de tragar errores.
+- [x] **C5/C6/C7** Documentados en `SPEC.md §11` (pooler Supavisor transaction mode :6543; 100% Broadcast
+  + techo por tier; lectura de `pg_stat_statements`). Verif: 58 db + 107 unit + typecheck/lint/knip/build verde.
 
 ### FASE D — SEO
 - [ ] **D1** Componente server `JsonLd`: `VideoGame`+`Organization`(Pyrux)+`WebSite`.

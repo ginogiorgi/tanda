@@ -542,3 +542,52 @@ no implementar.
    muerte súbita) hasta campeón y 3er/4to. → F6
 5. Varias salas/torneos en simultáneo sin interferencia. → F4/F9
 6. `typecheck`, `lint`, `build` y tests del motor de juego y de torneo en verde. → todas
+
+---
+
+## 11. Operaciones y escala (1000+ concurrentes)
+
+Decisión: el código/SQL queda **listo** para escalar; el "switch" de escala es de **infra**
+(subir el tier de Supabase + pg_cron más frecuente), no de código. Lo ya hecho en SQL (Fase C):
+
+- **C1** Índice `questions_difficulty_idx` — `take_tournament_question` filtra por dificultad en
+  cada penal; sin él era seq scan del banco. `EXPLAIN` confirma index scan.
+- **C2** Índice parcial `tournaments_in_progress_idx ON (round_deadline) WHERE status='in_progress'`
+  — lo escanea `tick()` cada vuelta (vencimiento de `round_deadline` + ramas de `advance`). (Se indexa
+  `round_deadline`, no `status`: un índice sobre una constante no sirve; el btree cubre el `IS NULL`.)
+- **C4** `tick()` con techos por vuelta dimensionados a ~500 matches concurrentes (penales `LIMIT
+  1000`, torneos/salas `LIMIT 500`) y `raise warning` por fila en vez de tragar errores en silencio
+  (quedan en los logs de Postgres). Si se supera el techo, la próxima vuelta de pg_cron limpia el resto.
+- **C3** `quick_play` **sin lock global**: el camino común (unirse a un lobby abierto) usa
+  `FOR UPDATE ... SKIP LOCKED` sobre la sala elegida (concurrentes agarran salas distintas o saltan a
+  crear, con re-chequeo de cupo bajo el lock de fila → nunca pasa de 48). Solo la **creación** (cuando
+  no hay sala que reusar) se serializa con un lock acotado para no fragmentar en un burst.
+
+### 11.1 Pooler / conexiones (C5)
+El runtime (RPC desde la app + Realtime) debe ir por el **pooler de Supabase (Supavisor) en
+*transaction mode*** (puerto 6543), no por conexión directa (5432). Transaction mode multiplexa
+conexiones por transacción → soporta miles de clientes con pocas conexiones de Postgres. Las RPC del
+juego son transacciones cortas (encajan en transaction mode; no usan estado de sesión entre llamadas).
+Migraciones/DDL y `pg_cron` van por conexión directa/sesión. **Ops:** usar la `DATABASE_URL` del pooler
+(6543) para la app en Vercel.
+
+### 11.2 Realtime: techo del tier (C6)
+Todo el realtime es **100% Broadcast** (server→cliente desde las RPC con `realtime.send`) + Presence
+solo en el lobby; no hay Postgres Changes en el camino caliente (§1.5). El techo de concurrencia lo
+fija el **tier de Supabase** (Realtime concurrent connections: Free 200 · Pro 500 · Team 5000 ·
+Enterprise a medida) y los mensajes/seg por canal. Con un humano por canal `match:{id}` y N por
+`tournament:{id}`, 1000+ jugadores requieren **Team o superior**. Switch de escala = subir el tier.
+
+### 11.3 Diagnóstico de hotspots (C7)
+Con `pg_stat_statements` habilitado, ordenar por tiempo total acumulado para encontrar las RPC más
+caras:
+```sql
+select calls, round(total_exec_time) ms_total, round(mean_exec_time, 2) ms_avg,
+       left(query, 80) query
+from pg_stat_statements
+order by total_exec_time desc
+limit 20;
+```
+Candidatos esperables al tope: `resolve_penalty`, `tick`, `get_active_match`, `get_bracket`. Para una
+query puntual, `EXPLAIN (ANALYZE, BUFFERS)` antes/después de tocar índices. `select pg_stat_statements_reset();`
+para medir una ventana limpia.
