@@ -62,14 +62,18 @@ orden de timestamp) + `get_advisors` después.
 - [x] **B1.7** Chips 2D dos tonos: helper `kitSwatchStyle` (gradiente diagonal) en `PenalHud`/`Bracket`.
   Verif: 107 unit + 52 db verde, typecheck/lint/knip/build verde. *(Pendiente: ojo visual en `pnpm dev`.)*
 
-**B2 — Pantalla de revelación de selección (~2s) + fix reloj que corre en lobby:**
-- [ ] **B2.1** Fix raíz: `start_tournament` deja `round_deadline` null; nuevo RPC idempotente
-  `begin_presentation(tournament_id)` setea `round_deadline = now()+N s` en la 1ª llamada de un humano;
-  `tick()` backstop tras un máx. de espera. Server-authoritative (solo timing de presentación).
-- [ ] **B2.2** `Lobby.tsx` navega a `/partido` al llegar a 0; `TournamentLive` muestra "armando" + reveal;
-  llama `begin_presentation` al estar listo.
-- [ ] **B2.3** Estado de revelación en `TournamentLive.tsx` antes del `<Bracket>`: "Te tocó [nación]"
-  (bandera+kit+nombre), ~2s, CSS, `prefers-reduced-motion`. Verif: `pnpm test:db` + flujo manual.
+**B2 — Pantalla de revelación de selección (~2s) + fix reloj que corre en lobby:** ✅ COMPLETA
+- [x] **B2.1** Migración `20260619130000_begin_presentation.sql`: `start_tournament` deja BACKSTOP largo
+  (now()+30s) en vez de la ventana real; nuevo RPC `begin_presentation(p_tournament)` comprime a ~6s en
+  la 1ª llamada de un humano (idempotente vía umbral `>8s` + sin penales abiertos + fase groups). `tick()`
+  abre la jornada al vencer el backstop si nadie llega. Server-authoritative (solo timing). +3 db tests
+  en `round_clock.test.ts` (backstop→ventana, idempotencia, no-participante). `database.types.ts` al día.
+- [x] **B2.2** `TournamentLive` llama `begin_presentation` al montar → el reloj arranca al ENTRAR a
+  /partido, no en start_tournament. (Lobby se mantiene: ya muestra "Armando torneo…" y navega al crearse
+  el torneo; mover el wait a /partido es cosmético y el server-redirect de /partido lo haría más frágil.)
+- [x] **B2.3** `NationReveal.tsx` + estado derivado en `TournamentLive` antes del `<Bracket>`: "Te tocó
+  [nación]" (kit banda diagonal + nombre + código), ~2.2s, CSS (`reveal-pop` en globals.css),
+  `prefers-reduced-motion`. Bandera real pendiente de B5. Verif: 55 db + 107 unit + build/lint/knip verde.
 
 **B3 — Animación de penal: cap ~2.5s, sin repeticiones:**
 - [ ] **B3.1** `useMemo` del objeto `anim` keyado por `penalty_id+reason+variant` (`PenalLive.tsx:407`).

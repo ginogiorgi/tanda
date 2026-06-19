@@ -17,6 +17,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { PenalLive } from "@/components/penal/PenalLive";
 import { RunSummary } from "@/components/penal/RunSummary";
+import { NationReveal } from "@/components/penal/NationReveal";
 import { Bracket } from "@/components/bracket/Bracket";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
@@ -33,6 +34,9 @@ import type { ActiveMatch } from "@/lib/realtime/penal";
  */
 const RESULT_LINGER_MS = 1200;
 
+/** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket. */
+const REVEAL_MS = 2200;
+
 export function TournamentLive({
   tournamentId,
   isGuest,
@@ -47,9 +51,17 @@ export function TournamentLive({
   const [live, setLive] = useState<ScoreboardState>({});
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
   const [showPenal, setShowPenal] = useState(false);
+  const [revealExpired, setRevealExpired] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
+  const revealTimerRef = useRef(false);
+
+  // B2.1: arrancar la ventana de presentación AL ENTRAR a /partido (no en start_tournament). Idempotente
+  // en el server (1ª llamada de un humano comprime el backstop a ~6s; las siguientes son no-op).
+  useEffect(() => {
+    void supabase.rpc("begin_presentation", { p_tournament: tournamentId });
+  }, [supabase, tournamentId]);
 
   // Canal privado del torneo: marcadores en vivo (score:live, 6.5).
   useEffect(() => {
@@ -149,6 +161,15 @@ export function TournamentLive({
     };
   }, [supabase, tournamentId]);
 
+  // B2.3: la revelación de nación (~2s) vive una sola vez al entrar. El effect solo agenda el fin de
+  // la ventana al cargar el primer snapshot; QUÉ mostrar se deriva en el render (abajo).
+  useEffect(() => {
+    if (revealTimerRef.current || !snapshot) return;
+    revealTimerRef.current = true;
+    const id = setTimeout(() => setRevealExpired(true), REVEAL_MS);
+    return () => clearTimeout(id);
+  }, [snapshot]);
+
   if (showPenal && currentMatchId) {
     return <PenalLive key={currentMatchId} matchId={currentMatchId} />;
   }
@@ -180,6 +201,18 @@ export function TournamentLive({
 
   // Mi corrida terminó (eliminado o coronado) → resumen de fin de torneo (8.6).
   const me = snapshot.participants.find((p) => p.participant_id === snapshot.my_participant_id);
+
+  // Revelación de nación (B2.3): una sola vez al entrar (ventana no vencida) y solo si recién arranca
+  // (no eliminado/coronado → así un refresh tardío cae directo al bracket/resumen, no a la revelación).
+  if (
+    !revealExpired &&
+    me?.nation_name &&
+    me.eliminated_phase == null &&
+    me.placement == null
+  ) {
+    return <NationReveal me={me} />;
+  }
+
   if (me && (me.eliminated_phase != null || me.placement != null)) {
     return (
       <RunSummary

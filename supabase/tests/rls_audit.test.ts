@@ -15,6 +15,7 @@ afterAll(closePool);
 const AUTH_ALLOWLIST = [
   // RPCs de cliente
   "abandon",
+  "begin_presentation",
   "create_room",
   "get_active_match",
   "get_active_tournament",

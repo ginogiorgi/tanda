@@ -1,7 +1,7 @@
 /**
  * Tipos de la base para el cliente de Supabase. El CLI nuevo exige login de plataforma para
  * `gen types`, así que este `Database` se mantiene a mano (es chico: 2 tablas consultadas por
- * `.from` + las 16 RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
+ * `.from` + las 17 RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
  * ARGS en compilación, y tipa el `data` con nuestros shapes reales (los `jsonb` se mapean a los
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
  */
@@ -47,6 +47,7 @@ export type Database = {
       resolve_penalty: { Args: { p_penalty: string }; Returns: undefined };
       open_next_round: { Args: { p_tournament: string }; Returns: undefined };
       abandon: { Args: { p_match: string }; Returns: undefined };
+      begin_presentation: { Args: { p_tournament: string }; Returns: undefined };
       quick_play: { Args: Empty; Returns: RoomRef[] };
       create_room: { Args: Empty; Returns: RoomRef[] };
       join_room: { Args: { p_code: string }; Returns: RoomRef[] };
