@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -95,6 +95,17 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   useEffect(() => {
     resultRef.current = result;
   }, [result]);
+
+  // B3.1: identidad ESTABLE del objeto de animación (keyada por penal+reason+variant). Sin esto, el
+  // literal inline se recreaba en cada render (el contador tickea 250ms mientras se ve el resultado),
+  // reiniciando la animación 3D una y otra vez. Memoizado → la escena la corre una sola vez.
+  const anim = useMemo<PenalAnimation | null>(
+    () =>
+      result
+        ? { id: result.penalty_id, reason: result.reason, variant: result.variant }
+        : null,
+    [result],
+  );
 
   // Aplica un resultado de penal (de broadcast o del fallback por RPC): marcador, audio por
   // perspectiva (10.8) y tablero de penales (10.12). Idempotente por `penalty_id`.
@@ -404,7 +415,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         : null;
     return (
       <>
-        {sceneBg(true, { reason: result.reason, variant: result.variant })}
+        {sceneBg(true, anim)}
         {/* Tarea 4: el texto va arriba (encima del arco) sobre una placa sutil con blur → no se confunde
             con el arco claro del fondo. */}
         <div className="fade-in relative z-10 mb-auto flex w-full max-w-md flex-col items-center pt-4 text-center">

@@ -39,7 +39,10 @@ const GOAL_HALF_W = 1.8;
 const GOAL_H = 2.0;
 const SPOT = { x: 0, y: 0.12, z: 0 } as const;
 
-export type PenalAnimation = { reason: PenaltyReason; variant: number };
+/** `id` = penalty_id: identidad ESTABLE de la animación. El reset del cronómetro se keya por `id`
+ * (no por identidad de objeto) → la animación corre UNA vez por penal, sin reinicios por re-render
+ * del padre (B3.2). `reason`+`variant` definen la colocación (shotPlan). */
+export type PenalAnimation = { id: string; reason: PenaltyReason; variant: number };
 
 /** Centra la cámara una vez mirando al arco (setup, no animación por frame). */
 function SceneCamera() {
@@ -131,10 +134,12 @@ function Actors({
   const plan = useMemo(() => (anim ? shotPlan(anim) : null), [anim]);
   const keeperBaseX = 0;
 
-  // Reinicia el cronómetro de la animación cuando llega un resultado nuevo.
+  // B3.2: reinicia el cronómetro SOLO cuando cambia el penal (identidad estable `anim.id`), no en cada
+  // render del padre. Sin esto, el contador del padre (tick 250ms mientras se muestra el resultado)
+  // recreaba el objeto `anim` y reiniciaba la animación una y otra vez.
   useEffect(() => {
     startRef.current = null;
-  }, [anim]);
+  }, [anim?.id]);
 
   useFrame((state) => {
     const ball = ballRef.current;

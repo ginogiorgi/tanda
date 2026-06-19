@@ -75,12 +75,17 @@ orden de timestamp) + `get_advisors` después.
   [nación]" (kit banda diagonal + nombre + código), ~2.2s, CSS (`reveal-pop` en globals.css),
   `prefers-reduced-motion`. Bandera real pendiente de B5. Verif: 55 db + 107 unit + build/lint/knip verde.
 
-**B3 — Animación de penal: cap ~2.5s, sin repeticiones:**
-- [ ] **B3.1** `useMemo` del objeto `anim` keyado por `penalty_id+reason+variant` (`PenalLive.tsx:407`).
-- [ ] **B3.2** `PenalScene.tsx`: reset de `startRef`/`plan` por `penalty_id` (identidad estable), no por ref.
-- [ ] **B3.3** No remontar `PenalLive` entre penales del mismo match (`showPenal`/`RESULT_LINGER_MS`/`key`).
-- [ ] **B3.4** Cap visible ~2.5s → siguiente pregunta (poke `open_next_round`) o estado de espera (B5);
-  ajustar hueco inter-penal del server (`resolve_round` `now()+3s`) si hace falta. Verif: manual + `pnpm test:db`.
+**B3 — Animación de penal: cap ~2.5s, sin repeticiones:** ✅ COMPLETA
+- [x] **B3.1** `useMemo` del objeto `anim` keyado por `result` (penalty_id+reason+variant) en `PenalLive`.
+  Causa raíz: el literal inline se recreaba en cada render (contador tickea 250ms mientras se ve el
+  resultado) → la escena reiniciaba la animación sin parar.
+- [x] **B3.2** `PenalScene.tsx`: `PenalAnimation` ahora lleva `id` (penalty_id); el reset de `startRef` se
+  keya por `anim?.id` (identidad estable), no por identidad de objeto → corre una sola vez por penal.
+- [x] **B3.3** Ya correcto: `<PenalLive key={currentMatchId}>` no remonta entre penales del mismo match
+  (key estable + `get_active_match` sigue != null en el hueco inter-penal → `showPenal` no baja).
+- [x] **B3.4** Cap visible acotado por el hueco inter-penal del server (`resolve_round` now()+3s ≈ anim
+  1.5s + lectura 1.5s); con B3.1 la animación corre una vez → no más "se queda/se repite". Se mantiene 3s
+  (legibilidad del resultado) en vez de 2.5s. Verif: 107 unit + typecheck/lint/knip/build verde + ojo manual.
 
 **B4 — Segunda chance: entrar a la animación al instante:**
 - [ ] **B4.1** `setTimeout` al deadline exacto para pokear `resolve_penalty` (no esperar el tick de 250ms);
