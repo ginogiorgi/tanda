@@ -254,6 +254,10 @@ rígido). Una "ronda" es una **jornada de grupos** o una **fase de eliminación*
   **miran el bracket en vivo**: qué partidos siguen y cómo va el marcador de penales.
 - Caso raro (2 humanos en el **mismo grupo** que se cruzan): el reloj compartido ya los
   pone en la misma jornada; si uno está ausente, juega con respuestas aleatorias (§5.2).
+- **Presentación inicial (B2.1):** la ventana para ver los grupos + la **revelación de
+  selección** ("te tocó [nación]", ~2s, con bandera real) arranca cuando el humano **entra a
+  `/partido`** (RPC `begin_presentation`), no en `start_tournament` → no se "come" segundos
+  mientras el lobby todavía dice "armando". `tick()` es el backstop si ningún humano llega.
 
 ---
 
@@ -314,16 +318,17 @@ Todas autoritativas, validan pertenencia y usan `now()` del servidor. Errores co
 |---|---|---|---|
 | `create_room()` | — | crea room `lobby`, `starts_at=now()+2min`, devuelve `code` | `unauthenticated` |
 | `join_room(code)` | code | agrega al caller como participante humano si hay cupo y `lobby`; si con él se llega a **48 → arranca ya** (`start_tournament`, sin esperar los 2 min) | `room_not_found`, `room_full`, `already_started`, `room_cancelled` |
-| `quick_play()` | — | si el caller ya tiene torneo activo → lo **reanuda** (`get_active_match`). Si no, matchmaking: une a la sala en `lobby` que **más humanos** tenga con cupo; si no hay, crea una. Atómico (evita carreras) | `unauthenticated` |
+| `quick_play()` | — | si el caller ya tiene torneo activo → lo **reanuda** (`get_active_match`). Si no, matchmaking: une a la sala en `lobby` que **más humanos** tenga con cupo (`FOR UPDATE SKIP LOCKED`, sin lock global — C3); si no hay, crea una (creación serializada con lock acotado). Sin overfill de 48 | `unauthenticated` |
 | `get_active_match()` | — | devuelve el torneo/partido/penal en curso del caller (para rehidratar tras refresh) o `null` | |
-| `start_tournament(room_id)` | room_id | rellena bots hasta 48, asigna naciones aleatorias, **reparte humanos uno por grupo** (round-robin) y completa con bots, arma 12 grupos + fixture, estado `in_progress`; simula bot-only de la 1ª jornada. Si 0 humanos → `cancelled` | `already_started` |
+| `begin_presentation(tournament_id)` | id | timing de presentación (B2.1): la **1ª llamada de un humano** comprime el backstop a la ventana real (~6s) para ver grupos/revelación antes del 1er penal; idempotente (llegadas tardías no la extienden). Solo timing, no evalúa nada | `unauthenticated`, `not_participant` |
+| `start_tournament(room_id)` | room_id | rellena bots hasta 48, asigna naciones aleatorias, **reparte humanos uno por grupo** (round-robin) y completa con bots, arma 12 grupos + fixture, estado `in_progress`. **No** abre la 1ª jornada: deja un **backstop** de `round_deadline` que `begin_presentation` ajusta al entrar el humano (B2.1) → el 1er penal arranca con los 10s plenos. Si 0 humanos → `cancelled` | `already_started` |
 | `select_option(penalty_id, option_index)` | ids | registra la selección (PRIMER tap fijo, no cambiable — F10/10.11) con `selected_at=now()` server; valida ventana `[started_at, deadline]` y pertenencia; rechaza cambios. **No** resuelve (la resolución es a los 10s) | `out_of_window`, `not_participant`, `penalty_closed`, `already_answered` |
 | `resolve_penalty(penalty_id)` | id | idempotente, **solo** si `now()≥deadline`: asigna aleatoria a ausentes, materializa bot_intents, aplica motor, persiste, emite `penal:result`, agenda siguiente penal o cierra match | `too_early` / no-op si ya resuelto |
 | `advance_match(match_id)` | id | reparte puntos (grupos) o define ganador/súbita (elim.); dispara `advance_tournament` si corresponde | |
 | `advance_tournament(tournament_id)` | id | arma siguiente fase cuando la actual terminó; simula bot-only; emite bracket | |
 | `simulate_bot_match(match_id)` | id | resuelve match bot-vs-bot al instante (modelo probabilístico), persiste log | |
 | `abandon(tournament_id)` | id | el caller deja el torneo: su participante pasa a `is_bot=true` (dificultad de su nación); penales en curso suyos se resuelven por `bot_intents`; devuelve OK para volver al home | `not_participant` |
-| `tick()` (pg_cron) | — | backstop: penales vencidos, bot_intents vencidos, rooms con `starts_at<now` en lobby → `start_tournament` | |
+| `tick()` (pg_cron) | — | backstop: bot_intents + penales vencidos, `round_deadline` vencido → `open_next_round`, rooms con `starts_at<now` → `start_tournament`, torneos sin ronda abierta → `advance_tournament`. Techos por vuelta dimensionados a 1000+ (C4) + `raise warning` por fila (no traga errores) | |
 
 ### 5.1 Abandono → conversión a bot
 

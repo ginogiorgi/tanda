@@ -17,7 +17,7 @@ Rama de trabajo: `cleanup-optim-features`. Plan completo en
 3. Limpieza: **profunda**, archivo por archivo — verificando con tests/build.
 4. Infra: dejar **código/SQL listo**; NO pagar plan ahora, documentar el "switch" de escala.
 
-Verde de referencia: `typecheck` · `lint` · `build` · **106 unit** + **52 db**.
+Verde de referencia: `typecheck` · `lint` · `build` · `knip` · **107 unit** + **58 db**.
 Front: push → Vercel (https://tanda2026.com.ar). DB: migraciones por Supabase MCP (`apply_migration`,
 orden de timestamp) + `get_advisors` después.
 
@@ -35,7 +35,9 @@ orden de timestamp) + `get_advisors` después.
   `style={{}}` solo valores dinámicos runtime (`TimeBar`/`Confetti` width %) — patrón correcto.
 - [x] **A7** Barrido `lib/`: knip limpio (los 9 tipos eran contrato in-file del motor, cubiertos por
   `ignoreExportsUsedInFile`); sin exports huérfanos ni tipos duplicados.
-- [ ] **A8** Docs (`SPEC.md`, `docs/BRIEF.md`, `README.md`, `CLAUDE.md`) al día tras los cambios. *(al final)*
+- [x] **A8** Docs al día: `SPEC.md` actualizado (§5 `begin_presentation`/`quick_play`/`start_tournament`/
+  `tick`; §3.3 presentación relativa a la llegada; §11 nuevo ops/escala). `BRIEF.md` ya prevé banderas
+  (L217), `README.md` evergreen y `CLAUDE.md` exacto → sin cambios.
 - [x] **A9** knip instalado + `knip.json` + script `pnpm knip` (limpio) + paso en CI (`verify`).
 - [x] **A10** `database.types.ts` verificado contra migraciones canónicas: 2 tablas (`rooms`/`profiles`)
   y 16 RPC del cliente coinciden 1:1; `kit_secondary`/datos-de-final fluyen por los shapes TS
@@ -157,7 +159,27 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. 3D (R3F) solo en avatar y penal.
 
+## Pendientes que NO se pudieron cerrar en este entorno (requieren acción de Gino)
+
+- **Deploy DB a prod**: aplicar a prod por MCP (`apply_migration`, orden de timestamp) las 3 migraciones
+  nuevas: `20260619130000_begin_presentation`, `20260619140000_db_optim`, `20260619150000_quick_play_no_global_lock`.
+  Correr `get_advisors` después. (No se tocó prod en esta sesión; todo verificado en DB local.)
+- **Deploy front**: `git push origin main` (estoy en `cleanup-optim-features`; Vercel publica al mergear/pushear a main).
+- **Gates manuales (browser real)**: ojo visual en `pnpm dev` de B1.7 (kit 2 colores), B2.3 (revelación),
+  B3 (animación una vez), B5 (banderas + banner espera 2+ jugadores); y **E5 Lighthouse** (LCP/INP/CLS).
+
 ## Hecho la última sesión (registro)
+
+**Sesión 2026-06-19 (B→E completas, todo en branch `cleanup-optim-features`):** A10 (paridad
+`database.types.ts`), Fase B completa — B2 revelación de nación + `begin_presentation` (reloj relativo a
+la llegada, migración nueva), B3 animación de penal una sola vez (anim memoizado + reset por penalty_id),
+B4 poke al deadline exacto (2ª chance instantánea), B5 banderas reales (48 SVG locales en `public/flags/`)
++ banner de espera. Fase C — índices `questions`/`tournaments`, `tick()` con techos+logging, `quick_play`
+sin lock global (`FOR UPDATE SKIP LOCKED`), docs de escala (`SPEC §11`). Fase D — JSON-LD + metadata por
+ruta + noindex en privadas. Fase E — code-split de three confirmado + fonts/flags lazy (E5 = gate manual).
+A8 docs al día. Verde: 107 unit + 58 db + typecheck/lint/knip/build. **Sin tocar prod.** Detalle en git log.
+
+### Sesión previa
 
 16 fixes de gameplay/UI + cierre de los 2 pendientes del TODO. DB: migración `20260618120000_session_fixes`
 (lead-in de ronda para ver grupos/bracket antes del 1er penal con 10s plenos; `get_penalty_result` para
