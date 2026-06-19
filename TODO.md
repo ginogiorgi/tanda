@@ -126,12 +126,16 @@ Migración `20260619140000_db_optim.sql` (C1/C2/C4) + `20260619150000_quick_play
 - [x] **D4** Verificado con server de prod: `/robots.txt` (disallows + host + sitemap), `/sitemap.xml`
   (3 URLs públicas, dominio canónico), canonical en landing/login, JSON-LD en el HTML.
 
-### FASE E — Velocidad navegador (CWV)
-- [ ] **E1** `@next/bundle-analyzer` + `ANALYZE=true pnpm build`, identificar chunks gordos.
-- [ ] **E2** `next.config.ts`: `optimizePackageImports`; confirmar three/R3F fuera del bundle inicial.
-- [ ] **E3** Fuentes `next/font` (Outfit) `display:swap`+subset, sin CLS.
-- [ ] **E4** Banderas (B5.1) lazy/tree-shaken (no cargar las 48 de una).
-- [ ] **E5** Lighthouse en build de prod (LCP/INP/CLS), corregir lo crítico. Verif: `pnpm build` + Lighthouse.
+### FASE E — Velocidad navegador (CWV) ✅ (E5 = gate manual)
+- [x] **E1** `@next/bundle-analyzer` (A4) + chunks inspeccionados: three vive en UN chunk (~868K)
+  referenciado SOLO por `/avatar` y `/partido` (`react-loadable-manifest`), no en el bundle inicial.
+- [x] **E2** `optimizePackageImports` (three/R3F) activo; three/R3F confirmados FUERA del bundle inicial
+  (next/dynamic ssr:false en `PenalSceneViewer`/avatar). La landing no carga three.
+- [x] **E3** Outfit por `next/font/google` con `display:swap` + subset `latin` (layout.tsx) → sin CLS de fuente.
+- [x] **E4** Banderas (B5.1) `<img loading="lazy">` + `aspect-[4/3]` (sin CLS); el navegador baja solo
+  las visibles, no las 48.
+- [ ] **E5** Lighthouse en prod (LCP/INP/CLS): **gate manual** — requiere browser real (no hay Chrome/
+  lighthouse en este entorno). LCP de la landing = el `<h1>` de texto (rápido); sin imágenes que shifteen.
 
 ## Cómo correr / testear / deployar
 
