@@ -257,6 +257,33 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     if (!penal) return;
     const offset = clockOffset(penal.server_now);
     const phaseKey = `${penal.penalty_id}:${penal.started_at}`;
+
+    // Poke al deadline: resuelve el penal (idempotente en el server, valida now()≥deadline). Una sola
+    // vez por fase. Transición optimista: congelamos el contador en 0 → la UI se bloquea y pasa al
+    // estado de espera de la animación sin parpadeo.
+    const poke = () => {
+      if (pokedRef.current === phaseKey) return;
+      pokedRef.current = phaseKey;
+      setRemaining(0);
+      remainingRef.current = 0;
+      void supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id });
+      // Tarea 5: respaldo si se pierde el broadcast `penal:result` (reconexión) → buscamos el
+      // resultado por RPC y lo aplicamos igual, así no quedamos colgados en la animación. Reintenta
+      // mientras el server todavía está resolviendo (devuelve null hasta que el penal está `resolved`).
+      const penaltyId = penal.penalty_id;
+      let tries = 0;
+      const pull = async () => {
+        if (resultRef.current || tries >= 5) return;
+        tries++;
+        const { data } = await supabase.rpc("get_penalty_result", { p_penalty: penaltyId });
+        if (resultRef.current) return;
+        if (data) applyResult(data);
+        else fallbackRef.current = setTimeout(() => void pull(), 1200);
+      };
+      if (fallbackRef.current) clearTimeout(fallbackRef.current);
+      fallbackRef.current = setTimeout(() => void pull(), 1500);
+    };
+
     const tick = () => {
       const r = remainingMs(penal.deadline, offset);
       setRemaining(r);
@@ -268,30 +295,17 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           navigator.vibrate(180);
         }
       }
-      if (r <= 0 && pokedRef.current !== phaseKey) {
-        pokedRef.current = phaseKey;
-        void supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id });
-        // Tarea 5: respaldo si se pierde el broadcast `penal:result` (reconexión) → buscamos el
-        // resultado por RPC y lo aplicamos igual, así no quedamos colgados en la animación. Reintenta
-        // mientras el server todavía está resolviendo (devuelve null hasta que el penal está `resolved`).
-        const penaltyId = penal.penalty_id;
-        let tries = 0;
-        const pull = async () => {
-          if (resultRef.current || tries >= 5) return;
-          tries++;
-          const { data } = await supabase.rpc("get_penalty_result", { p_penalty: penaltyId });
-          if (resultRef.current) return;
-          if (data) applyResult(data);
-          else fallbackRef.current = setTimeout(() => void pull(), 1200);
-        };
-        if (fallbackRef.current) clearTimeout(fallbackRef.current);
-        fallbackRef.current = setTimeout(() => void pull(), 1500);
-      }
+      if (r <= 0) poke();
     };
     tick();
     const id = setInterval(tick, 250);
+    // B4.1: poke EXACTO al deadline en vez de esperar al próximo tick de 250ms → se entra a la
+    // animación al instante (clave en la 2ª chance de 5s, donde 250ms de demora se notan). Si el
+    // deadline ya pasó, el `tick()` de arriba ya disparó el poke (idempotente).
+    const exactId = setTimeout(poke, Math.max(0, remainingMs(penal.deadline, offset)));
     return () => {
       clearInterval(id);
+      clearTimeout(exactId);
       if (fallbackRef.current) clearTimeout(fallbackRef.current);
     };
   }, [penal, supabase, applyResult]);

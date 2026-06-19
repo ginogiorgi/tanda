@@ -87,9 +87,11 @@ orden de timestamp) + `get_advisors` después.
   1.5s + lectura 1.5s); con B3.1 la animación corre una vez → no más "se queda/se repite". Se mantiene 3s
   (legibilidad del resultado) en vez de 2.5s. Verif: 107 unit + typecheck/lint/knip/build verde + ojo manual.
 
-**B4 — Segunda chance: entrar a la animación al instante:**
-- [ ] **B4.1** `setTimeout` al deadline exacto para pokear `resolve_penalty` (no esperar el tick de 250ms);
-  transición optimista a la animación. `PenalLive.tsx`. Verif: manual + `second_chance.test.ts`.
+**B4 — Segunda chance: entrar a la animación al instante:** ✅ COMPLETA
+- [x] **B4.1** `PenalLive`: poke de `resolve_penalty` con `setTimeout` al deadline EXACTO (además del tick
+  de 250ms como backstop), guardado por `pokedRef` (idempotente). Transición optimista: el poke congela
+  el contador en 0 → la UI se bloquea y pasa al estado de espera de la animación sin parpadeo. Crítico en
+  la 2ª chance (5s). Sin cambio de SQL (`second_chance.test.ts` intacto, verde). Verif: 107 unit + checks.
 
 **B5 — Mensaje de espera + banderas reales:**
 - [ ] **B5.1** Wire up banderas reales (`flag`=`nations.flag_asset`) en `PenalHud.tsx`/`Bracket.tsx`/reveal,
