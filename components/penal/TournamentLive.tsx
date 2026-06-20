@@ -35,10 +35,11 @@ import {
 
 /**
  * Cuánto se mantiene la pantalla del penal tras terminar el PARTIDO (GOL/ATAJADO del último penal)
- * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). = los ~3s de animación del último
- * penal; el tiempo muerto entre partidos del server es 5s, así que quedan 2s para ver el grupo.
+ * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). Corto a propósito: el gap entre
+ * partidos del server es 6s y el cliente detecta el fin del partido ~1s tarde (poll), así que con
+ * 2s de linger quedan ~3s para ver el grupo (lo que pidió Gino).
  */
-const RESULT_LINGER_MS = 3000;
+const RESULT_LINGER_MS = 2000;
 
 /** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
 const REVEAL_MS = 2000;
@@ -185,7 +186,9 @@ export function TournamentLive({
     };
     pollRef.current = poll;
     void poll();
-    const id = setInterval(() => void poll(), 1500);
+    // Poll de 1s: detecta el fin del partido y la apertura del próximo penal con ≤1s de latencia
+    // (clave para que el grupo entre jornadas se vea ~3s y no de refilón).
+    const id = setInterval(() => void poll(), 1000);
     return () => {
       active = false;
       clearInterval(id);

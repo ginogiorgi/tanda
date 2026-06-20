@@ -52,18 +52,27 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
   const secs = (rd: string | null) =>
     rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
 
-  it("start_tournament deja un backstop largo; begin_presentation lo comprime a ~4s", async () => {
+  it("start_tournament fija la ventana de presentación (~6s) como round_deadline (F3)", async () => {
     await withRollback(async (c) => {
-      const { tournamentId, users } = await startRealTournament(c, 2);
+      const { tournamentId } = await startRealTournament(c, 2);
 
-      // Backstop: bien por encima de la ventana real (no son 4s corriendo desde el lobby).
+      // F3: el backstop ES la ventana de presentación (6s), no 30s. El 1er penal lo abre el cron al
+      // vencer; no dependemos de begin_presentation del cliente (que no surtía efecto en prod).
       const before = await c.query<{ rd: string | null }>(
         `select round_deadline::text as rd from public.tournaments where id = $1`,
         [tournamentId],
       );
-      expect(secs(before.rows[0]!.rd)!).toBeGreaterThan(20);
+      const left = secs(before.rows[0]!.rd)!;
+      expect(left).toBeGreaterThan(2);
+      expect(left).toBeLessThanOrEqual(7);
+    });
+  });
 
-      // Primera llamada de un humano → ventana real (~4s: 2s país + 2s grupos, F).
+  it("begin_presentation ya no extiende ni acorta la ventana de 6s (queda no-op, F3)", async () => {
+    await withRollback(async (c) => {
+      const { tournamentId, users } = await startRealTournament(c, 2);
+
+      // Con la ventana en 6s (< 8s del guard), begin_presentation es no-op: ni la pisa ni la extiende.
       await asRole(c, "authenticated", users[0]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);
@@ -73,35 +82,8 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
         [tournamentId],
       );
       const left = secs(after.rows[0]!.rd)!;
-      expect(left).toBeGreaterThan(3);
-      expect(left).toBeLessThanOrEqual(8);
-    });
-  });
-
-  it("es idempotente: una 2ª llamada (humano tardío) no extiende la ventana", async () => {
-    await withRollback(async (c) => {
-      const { tournamentId, users } = await startRealTournament(c, 2);
-
-      await asRole(c, "authenticated", users[0]);
-      await c.query("select public.begin_presentation($1)", [tournamentId]);
-      await resetRole(c);
-
-      // Simulamos que pasaron ~4s desde la 1ª llamada (quedan ~2s).
-      await c.query(
-        `update public.tournaments set round_deadline = now() + interval '2 seconds' where id = $1`,
-        [tournamentId],
-      );
-
-      // Un 2º humano que recién entra NO debe re-expandir a 4s.
-      await asRole(c, "authenticated", users[1]);
-      await c.query("select public.begin_presentation($1)", [tournamentId]);
-      await resetRole(c);
-
-      const after = await c.query<{ rd: string | null }>(
-        `select round_deadline::text as rd from public.tournaments where id = $1`,
-        [tournamentId],
-      );
-      expect(secs(after.rows[0]!.rd)!).toBeLessThanOrEqual(3);
+      expect(left).toBeGreaterThan(2);
+      expect(left).toBeLessThanOrEqual(7);
     });
   });
 

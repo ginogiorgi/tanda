@@ -96,7 +96,9 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
       }
     };
     void poll();
-    const id = setInterval(() => void poll(), 1500);
+    // Poll rápido (700ms): apenas el server arma el torneo, saltar a /partido para no comerse parte
+    // de la ventana de presentación (país + grupos) esperando el próximo tick del poll.
+    const id = setInterval(() => void poll(), 700);
     return () => {
       active = false;
       clearInterval(id);
