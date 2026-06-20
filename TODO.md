@@ -106,8 +106,9 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 - `lib/engine/` — motor TS puro y determinista (regla del juego + modo invitado). Testeable
   sin red. Su **port fiel a plpgsql** (verificado por paridad) corre el camino autoritativo.
 - `supabase/migrations/` — esquema + RPCs `SECURITY DEFINER`: **fuente de verdad** de la DB.
-  Set canónico de 6: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
-  · `session_f_timing` (F: `round:next` + tiempos muertos recortados).
+  Set canónico de 7: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
+  · `session_f_timing` (F: `round:next` + tiempos muertos recortados) · `fast_tick` (F2: cron 10s→1s,
+  CAUSA RAÍZ — el juego avanzaba solo por el cron porque los pokes del cliente no surtían efecto).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas del
   design system (desde Sesión A). 3D (R3F) solo en avatar y penal.
