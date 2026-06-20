@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
+import { Input, Field } from "@/components/ui/Input";
 
 export function ResetPasswordForm() {
   const router = useRouter();
@@ -44,53 +46,43 @@ export function ResetPasswordForm() {
         <p className="text-sm text-fg-muted">
           Listo, tu contraseña quedó actualizada.
         </p>
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="rounded-lg bg-gold px-4 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
-        >
+        <Button type="button" onClick={() => router.push("/")} size="lg">
           Ir al inicio
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Nueva contraseña</span>
-        <input
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4 text-left">
+      <Field label="Nueva contraseña" htmlFor="reset-password">
+        <Input
+          id="reset-password"
           type="password"
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="••••••••"
           autoFocus
         />
-      </label>
+      </Field>
 
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Repetir contraseña</span>
-        <input
+      <Field label="Repetir contraseña" htmlFor="reset-confirm">
+        <Input
+          id="reset-confirm"
           type="password"
           autoComplete="new-password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="••••••••"
         />
-      </label>
+      </Field>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-2 rounded-lg bg-gold px-4 py-3 font-semibold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={loading} block size="lg" className="mt-2">
         {loading ? "Guardando…" : "Guardar contraseña"}
-      </button>
+      </Button>
     </form>
   );
 }

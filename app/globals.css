@@ -10,6 +10,7 @@
   --bg: #0a0a0a;
   --bg-elevated: #121212;
   --bg-overlay: #1a1a1a;
+  --bg-raised: #161616; /* cards del HUD/broadcast (un punto más claras que elevated) */
 
   /* Texto */
   --fg: #ffffff;
@@ -23,6 +24,21 @@
 
   /* Bordes / líneas */
   --border: #262626;
+  --ring: #383838; /* hairline más visible para hover/focus */
+
+  /* Gradientes broadcast (premium). El de pitch usa el acento activo del partido. */
+  --grad-gold: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 48%, var(--gold-deep) 100%);
+  --grad-pitch: radial-gradient(
+    120% 78% at 50% -12%,
+    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+    transparent 58%
+  );
+  --grad-accent: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 88%, white) 0%,
+    var(--accent) 55%,
+    color-mix(in srgb, var(--accent) 78%, black) 100%
+  );
 
   /* Estados de juego */
   --danger: #ef4444; /* barra de tiempo / últimos segundos */
@@ -47,6 +63,7 @@
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
   --color-bg-overlay: var(--bg-overlay);
+  --color-bg-raised: var(--bg-raised);
 
   --color-fg: var(--fg);
   --color-fg-muted: var(--fg-muted);
@@ -57,6 +74,7 @@
   --color-gold-soft: var(--gold-soft);
 
   --color-border: var(--border);
+  --color-ring: var(--ring);
   --color-danger: var(--danger);
   --color-success: var(--success);
 
@@ -70,6 +88,22 @@
   --color-accent-teal: var(--accent-teal);
 
   --font-sans: var(--font-outfit);
+  --font-display: var(--font-oswald);
+
+  /* Sombras broadcast: cards con profundidad sutil, pops con más caída. */
+  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px -14px rgba(0, 0, 0, 0.8);
+  --shadow-pop: 0 18px 50px -20px rgba(0, 0, 0, 0.85);
+}
+
+/* Utilidades de fondo broadcast (gradientes que no salen de @theme). */
+.bg-gold-grad {
+  background-image: var(--grad-gold);
+}
+.bg-accent-grad {
+  background-image: var(--grad-accent);
+}
+.bg-pitch {
+  background-image: var(--grad-pitch);
 }
 
 body {

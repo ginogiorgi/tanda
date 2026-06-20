@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -54,7 +56,7 @@ export function RecoveryEmailForm({ initialEmail }: RecoveryEmailFormProps) {
         </p>
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <input
+        <Input
           type="email"
           autoComplete="email"
           value={email}
@@ -62,16 +64,13 @@ export function RecoveryEmailForm({ initialEmail }: RecoveryEmailFormProps) {
             setEmail(e.target.value);
             setSaved(false);
           }}
-          className="flex-1 rounded-lg border border-border bg-bg px-4 py-2.5 text-fg outline-none transition-colors focus:border-gold"
+          invalid={Boolean(error)}
+          className="flex-1"
           placeholder="tu@email.com"
         />
-        <button
-          type="submit"
-          disabled={saving}
-          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={saving} size="sm" className="shrink-0">
           {saving ? "Guardando…" : saved ? "Guardado ✓" : "Guardar"}
-        </button>
+        </Button>
       </div>
       {error && <p className="text-sm text-danger">{error}</p>}
     </form>

@@ -24,6 +24,7 @@ import {
   type PartOption,
 } from "@/lib/avatar/parts";
 import type { SaveAvatarResult } from "@/app/avatar/actions";
+import { Button } from "@/components/ui/Button";
 import { AvatarViewer } from "./AvatarViewer";
 
 interface AvatarCreatorProps {
@@ -127,8 +128,8 @@ export function AvatarCreator({
               onClick={() => setBodyType(b.id)}
               className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition ${
                 avatar.bodyType === b.id
-                  ? "bg-white/15 text-white ring-white/30"
-                  : "bg-white/5 text-white/60 ring-white/10 hover:bg-white/10"
+                  ? "bg-gold/15 text-fg ring-gold/40"
+                  : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
               }`}
             >
               {b.label}
@@ -175,14 +176,9 @@ export function AvatarCreator({
 
         {onSave && (
           <div className="mt-2 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-50"
-            >
+            <Button type="button" onClick={handleSave} disabled={saving} block size="lg">
               {saving ? "Guardando…" : saved ? "Guardado ✓" : saveLabel}
-            </button>
+            </Button>
             {saveError && <p className="text-sm text-danger">{saveError}</p>}
           </div>
         )}
@@ -199,8 +195,8 @@ function Selector({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
-      <span className="text-xs font-semibold uppercase tracking-wide text-white/50">
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-bg-elevated p-3">
+      <span className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
         {label}
       </span>
       {children}
@@ -252,8 +248,8 @@ function ChipRow({
           onClick={() => onSelect(o.id)}
           className={`rounded-lg px-3 py-1.5 text-sm ring-1 transition ${
             selected === o.id
-              ? "bg-white/15 text-white ring-white/30"
-              : "bg-white/5 text-white/60 ring-white/10 hover:bg-white/10"
+              ? "bg-gold/15 text-fg ring-gold/40"
+              : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
           }`}
         >
           {o.label}
@@ -281,8 +277,8 @@ function ColorRow({
           style={{ backgroundColor: color }}
           className={`h-7 w-7 rounded-full ring-2 transition ${
             selected.toLowerCase() === color.toLowerCase()
-              ? "ring-white"
-              : "ring-white/20 hover:ring-white/40"
+              ? "ring-gold"
+              : "ring-border hover:ring-ring"
           }`}
         />
       ))}

@@ -10,19 +10,18 @@
 
 import { kitSwatchStyle } from "@/lib/realtime/score";
 import { Flag } from "@/components/common/Flag";
+import { Eyebrow } from "@/components/ui/Typography";
 import type { BracketTeam } from "@/lib/bracket/bracket";
 
 export function NationReveal({ me }: { me: BracketTeam }) {
   return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-      <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
-        Te tocó
-      </span>
+    <div className="flex w-full max-w-sm flex-col items-center gap-7 text-center">
+      <Eyebrow className="tracking-[0.35em]">Te tocó</Eyebrow>
 
-      <div className="reveal-pop flex flex-col items-center gap-5">
-        <div className="relative h-24 w-24">
+      <div className="reveal-pop flex flex-col items-center gap-6">
+        <div className="relative h-28 w-28">
           <div
-            className="h-full w-full rounded-2xl border border-border shadow-lg"
+            className="h-full w-full rounded-3xl border border-white/10 shadow-pop"
             style={kitSwatchStyle(me)}
             aria-hidden
           />
@@ -30,11 +29,11 @@ export function NationReveal({ me }: { me: BracketTeam }) {
           <Flag
             code={me.flag}
             name={me.nation_name}
-            className="absolute -bottom-2 -right-2 h-9 rounded-md shadow-md"
+            className="absolute -bottom-2 -right-2 h-10 rounded-md shadow-md ring-1 ring-black/40"
           />
         </div>
         <div className="flex flex-col items-center gap-1">
-          <span className="text-3xl font-extrabold tracking-tight text-fg">
+          <span className="font-display text-4xl font-bold uppercase tracking-tight text-fg">
             {me.nation_name ?? "Tu selección"}
           </span>
           {me.nation_code && (

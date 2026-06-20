@@ -5,6 +5,8 @@ import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { GuestButton } from "@/components/lobby/GuestButton";
 import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
+import { buttonVariants } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Typography";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -44,39 +46,16 @@ export default async function Home({
   }
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+    <main className="bg-pitch flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
       <JsonLd />
       <div className="flex flex-col items-center gap-4">
-        <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
-          Mundial · Trivia · Tiempo real
-        </span>
-        <h1 className="text-6xl font-extrabold tracking-tight text-gold sm:text-8xl">
+        <Eyebrow className="tracking-[0.3em]">Mundial · Trivia · Tiempo real</Eyebrow>
+        <h1 className="font-display text-7xl font-bold uppercase tracking-tight text-gold drop-shadow-[0_8px_30px_rgba(212,175,55,0.18)] sm:text-9xl">
           TANDA
         </h1>
         <p className="max-w-md text-balance text-base text-fg-muted sm:text-lg">
           Cada pregunta es un penal. Respondé bien y más rápido que tu rival para
           meter el gol o atajar. 48 selecciones, una sola copa.
-        </p>
-        {/* Tarea 11: crédito de autoría. */}
-        <p className="text-xs text-fg-subtle">
-          Hecho por{" "}
-          <a
-            href="https://www.pyrux.com.ar/es"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-pyrux transition-opacity hover:opacity-80"
-          >
-            Pyrux
-          </a>{" "}
-          y{" "}
-          <a
-            href="https://www.instagram.com/delpianojuan/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-fg transition-opacity hover:opacity-80"
-          >
-            JM10
-          </a>
         </p>
       </div>
 
@@ -103,10 +82,7 @@ export default async function Home({
             )}
           </p>
           {hasActiveMatch && (
-            <Link
-              href="/partido"
-              className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
-            >
+            <Link href="/partido" className={buttonVariants({ variant: "primary", size: "lg" })}>
               Volver al partido
             </Link>
           )}
@@ -115,15 +91,12 @@ export default async function Home({
             {isGuest ? (
               <Link
                 href="/register"
-                className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
+                className={buttonVariants({ variant: "outline", size: "lg" })}
               >
                 Creá una cuenta
               </Link>
             ) : (
-              <Link
-                href="/perfil"
-                className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
-              >
+              <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
                 Mi perfil
               </Link>
             )}
@@ -134,16 +107,10 @@ export default async function Home({
         <div className="flex flex-col items-center gap-5">
           <GuestButton />
           <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Link
-              href="/register"
-              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
-            >
+            <Link href="/register" className={buttonVariants({ variant: "outline", size: "lg" })}>
               Crear cuenta
             </Link>
-            <Link
-              href="/login"
-              className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle"
-            >
+            <Link href="/login" className={buttonVariants({ variant: "outline", size: "lg" })}>
               Entrar
             </Link>
           </div>

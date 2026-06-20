@@ -17,6 +17,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { PenalLive } from "@/components/penal/PenalLive";
 import { RunSummary } from "@/components/penal/RunSummary";
+import { Button } from "@/components/ui/Button";
 import { NationReveal } from "@/components/penal/NationReveal";
 import { Bracket } from "@/components/bracket/Bracket";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
@@ -185,15 +186,15 @@ export function TournamentLive({
           <p className="text-balance text-sm text-fg-muted">
             No pudimos cargar el torneo. Revisá tu conexión y probá de nuevo.
           </p>
-          <button
+          <Button
             onClick={() => {
               setLoadError(false);
               setRetry((n) => n + 1);
             }}
-            className="rounded-lg bg-gold px-6 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+            size="sm"
           >
             Reintentar
-          </button>
+          </Button>
           <Link href="/" className="text-xs font-medium text-fg-subtle hover:text-fg-muted">
             Volver al inicio
           </Link>

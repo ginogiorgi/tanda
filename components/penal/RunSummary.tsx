@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Confetti } from "@/components/penal/Confetti";
 import { ResultCard } from "@/components/penal/ResultCard";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import type { MatchPhase, ScoreLivePayload } from "@/lib/realtime/score";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 
@@ -136,7 +137,11 @@ export function RunSummary({
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
           {isChampion ? "Campeón del Mundo" : "Fin del torneo"}
         </span>
-        <p className={`font-extrabold tracking-tight text-gold ${isChampion ? "text-4xl" : "text-3xl"}`}>
+        <p
+          className={`font-display font-bold uppercase tracking-tight text-gold ${
+            isChampion ? "text-5xl" : "text-4xl"
+          }`}
+        >
           {outcomeText(me?.placement ?? null, me?.eliminated_phase ?? null)}
         </p>
       </div>
@@ -167,19 +172,19 @@ export function RunSummary({
       )}
 
       <div className="flex w-full flex-col items-center gap-3">
-        <button
-          type="button"
-          onClick={playAgain}
-          disabled={busy}
-          className="w-full rounded-lg bg-gold px-6 py-3 font-bold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
+        <Button type="button" onClick={playAgain} disabled={busy} block size="lg">
           {busy ? "Buscando…" : "Jugar de nuevo"}
-        </button>
+        </Button>
         {error && <p className="text-sm text-danger">{error}</p>}
         {isGuest && (
           <Link
             href="/register"
-            className="w-full rounded-lg border border-gold/50 px-6 py-3 font-medium text-gold transition-colors hover:border-gold"
+            className={buttonVariants({
+              variant: "outline",
+              size: "lg",
+              block: true,
+              className: "border-gold/50 text-gold hover:border-gold",
+            })}
           >
             Creá una cuenta para guardar tu progreso
           </Link>

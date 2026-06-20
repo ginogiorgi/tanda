@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 /** Las RPC de matchmaking devuelven `TABLE(room_id, tournament_id, code)`. */
 type RoomRef = { room_id: string; tournament_id: string; code: string };
@@ -38,21 +40,24 @@ export function PlayMenu() {
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-4">
-      <button
+      <Button
         onClick={() => go("play", () => supabase.rpc("quick_play"))}
         disabled={busy !== null}
-        className="w-full rounded-lg bg-gold px-6 py-4 text-lg font-bold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
+        block
+        className="h-14 text-lg font-bold"
       >
         {busy === "play" ? "Buscando…" : "Jugar"}
-      </button>
+      </Button>
 
-      <button
+      <Button
         onClick={() => go("create", () => supabase.rpc("create_room"))}
         disabled={busy !== null}
-        className="w-full rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle disabled:opacity-50"
+        variant="outline"
+        block
+        size="lg"
       >
         {busy === "create" ? "Creando…" : "Crear sala"}
-      </button>
+      </Button>
 
       <form
         onSubmit={(e) => {
@@ -66,21 +71,17 @@ export function PlayMenu() {
         }}
         className="flex w-full gap-2"
       >
-        <input
+        <Input
           type="text"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           maxLength={6}
           placeholder="CÓDIGO"
-          className="w-full rounded-lg border border-border bg-bg-elevated px-4 py-3 text-center font-mono tracking-[0.2em] text-fg outline-none transition-colors focus:border-gold"
+          className="text-center font-mono tracking-[0.2em]"
         />
-        <button
-          type="submit"
-          disabled={busy !== null}
-          className="rounded-lg border border-border px-5 py-3 font-medium text-fg transition-colors hover:border-fg-subtle disabled:opacity-50"
-        >
+        <Button type="submit" disabled={busy !== null} variant="outline" size="lg" className="shrink-0">
           {busy === "join" ? "…" : "Unirse"}
-        </button>
+        </Button>
       </form>
 
       {error && <p className="text-sm text-danger">{error}</p>}

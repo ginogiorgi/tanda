@@ -39,9 +39,9 @@ export default async function AvatarPage({
     : DEFAULT_AVATAR;
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center gap-6 px-2 py-10">
+    <main className="bg-pitch flex min-h-dvh w-full flex-col items-center gap-6 px-2 py-10">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-extrabold tracking-tight text-gold">
+        <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-gold">
           Armá tu jugador
         </h1>
         <p className="max-w-md text-balance text-sm text-fg-muted">

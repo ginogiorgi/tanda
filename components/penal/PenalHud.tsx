@@ -8,6 +8,8 @@
 
 import { kitSwatchStyle, type ParticipantBrief } from "@/lib/realtime/score";
 import { Flag } from "@/components/common/Flag";
+import { Badge } from "@/components/ui/Badge";
+import { ScorePill } from "@/components/ui/ScorePill";
 
 /** Un penal ya resuelto: su idx global (impar = patea home, par = away) y si el pateador convirtió. */
 export type PenalDot = { idx: number; scored: boolean };
@@ -51,8 +53,12 @@ function Side({
           style={kitSwatchStyle(brief)}
           aria-hidden
         />
-        <span className="font-mono text-sm font-semibold text-fg">{brief?.nation_code ?? "???"}</span>
-        <span className="font-mono text-xl font-extrabold tabular-nums text-fg">{score}</span>
+        <span className="font-display text-sm font-bold uppercase text-fg">
+          {brief?.nation_code ?? "???"}
+        </span>
+        <ScorePill tone="neutral" size="sm">
+          {score}
+        </ScorePill>
       </div>
       <Dots dots={dots} align={align} />
     </div>
@@ -100,13 +106,9 @@ export function PenalHud({
         <Side brief={away} score={awayScore} dots={awayDots} align="right" />
       </div>
       {role && (
-        <span
-          className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider ${
-            role === "kick" ? "bg-gold/20 text-gold" : "bg-accent-blue/20 text-accent-blue"
-          }`}
-        >
+        <Badge variant={role === "kick" ? "gold" : "blue"}>
           {role === "kick" ? "⚽ Pateás" : "🧤 Atajás"}
-        </span>
+        </Badge>
       )}
     </div>
   );

@@ -39,7 +39,7 @@ export default async function SalaPage({
   if (room.status === "cancelled") redirect("/?aviso=room_cancelled");
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-12">
+    <main className="bg-pitch flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-12">
       <Lobby
         code={code}
         startsAt={room.starts_at}

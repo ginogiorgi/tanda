@@ -113,31 +113,38 @@ function GroupTable({ group, compact }: { group: GroupView; compact?: boolean })
 function VersusCard({ match }: { match: ScoreLivePayload }) {
   const live = match.status === "in_progress" || match.status === "sudden_death";
   return (
-    <div className="w-full rounded-2xl border border-gold/40 bg-bg-elevated p-5 text-center">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+    <div
+      className={`w-full rounded-2xl border bg-bg-elevated/70 p-5 text-center shadow-card backdrop-blur-md ${
+        live ? "border-danger/50" : "border-gold/40"
+      }`}
+    >
+      <span
+        className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+          live ? "text-danger" : "text-gold"
+        }`}
+      >
+        {live && (
+          <span className="h-1.5 w-1.5 rounded-full bg-danger motion-safe:animate-pulse" aria-hidden />
+        )}
         {live ? "Jugando ahora" : "Tu próximo partido"} · {PHASE_LABEL[match.phase]}
       </span>
       <div className="mt-3 flex items-center justify-center gap-4">
         <div className="flex flex-1 flex-col items-center gap-1">
-          <Flag code={match.home?.flag} name={match.home?.nation_name} className="h-7" />
-          <span
-            className="h-3 w-3 rounded-full"
-            style={kitSwatchStyle(match.home)}
-            aria-hidden
-          />
-          <span className="font-mono text-lg font-bold text-fg">{match.home?.nation_code}</span>
+          <Flag code={match.home?.flag} name={match.home?.nation_name} className="h-8" />
+          <span className="h-3 w-3 rounded-full" style={kitSwatchStyle(match.home)} aria-hidden />
+          <span className="font-display text-xl font-bold uppercase text-fg">
+            {match.home?.nation_code}
+          </span>
         </div>
-        <span className="font-mono text-2xl font-extrabold tabular-nums text-fg-muted">
+        <span className="font-display text-3xl font-bold tabular-nums text-fg-muted">
           {live ? `${match.home_score}–${match.away_score}` : "vs"}
         </span>
         <div className="flex flex-1 flex-col items-center gap-1">
-          <Flag code={match.away?.flag} name={match.away?.nation_name} className="h-7" />
-          <span
-            className="h-3 w-3 rounded-full"
-            style={kitSwatchStyle(match.away)}
-            aria-hidden
-          />
-          <span className="font-mono text-lg font-bold text-fg">{match.away?.nation_code}</span>
+          <Flag code={match.away?.flag} name={match.away?.nation_name} className="h-8" />
+          <span className="h-3 w-3 rounded-full" style={kitSwatchStyle(match.away)} aria-hidden />
+          <span className="font-display text-xl font-bold uppercase text-fg">
+            {match.away?.nation_code}
+          </span>
         </div>
       </div>
     </div>
@@ -224,12 +231,12 @@ export function Bracket({ view }: { view: BracketView }) {
     return (
       <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-4">
         <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-3xl">🏆</span>
-          <Flag code={view.champion.flag} name={view.champion.nation_name} className="h-7" />
-          <span className="font-mono text-lg font-bold text-gold">
+          <span className="text-4xl drop-shadow-[0_6px_24px_rgba(212,175,55,0.3)]">🏆</span>
+          <Flag code={view.champion.flag} name={view.champion.nation_name} className="h-8" />
+          <span className="font-display text-2xl font-bold uppercase tracking-tight text-gold">
             {view.champion.nation_code}
           </span>
-          <span className="text-xs text-fg-subtle">campeón</span>
+          <span className="text-xs uppercase tracking-[0.3em] text-fg-subtle">campeón</span>
         </div>
         <BracketTree ko={view.ko} />
       </div>

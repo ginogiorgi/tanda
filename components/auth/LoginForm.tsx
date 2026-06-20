@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { usernameToEmail } from "@/lib/auth";
+import { Button } from "@/components/ui/Button";
+import { Input, Field } from "@/components/ui/Input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -35,41 +37,35 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Usuario</span>
-        <input
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4 text-left">
+      <Field label="Usuario" htmlFor="login-username">
+        <Input
+          id="login-username"
           type="text"
           autoComplete="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="tu_usuario"
           autoFocus
         />
-      </label>
+      </Field>
 
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Contraseña</span>
-        <input
+      <Field label="Contraseña" htmlFor="login-password">
+        <Input
+          id="login-password"
           type="password"
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="••••••••"
         />
-      </label>
+      </Field>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-2 rounded-lg bg-gold px-4 py-3 font-semibold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={loading} block size="lg" className="mt-2">
         {loading ? "Entrando…" : "Entrar"}
-      </button>
+      </Button>
 
       <p className="text-center text-sm">
         <Link href="/forgot" className="font-medium text-fg-muted hover:text-fg hover:underline">

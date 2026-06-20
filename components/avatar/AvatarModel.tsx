@@ -214,22 +214,30 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
 }
 
 /**
- * Banda diagonal cruzada de la remera (la "raya cruzada"): un slab fino apoyado al frente del torso,
- * de un hombro a la cadera opuesta. Sigue el achatado en Z del torso para apoyarse sobre el pecho y
- * se dimensiona con la silueta del cuerpo (vale para hombre/mujer). Low-poly, sin texturas.
+ * Banda diagonal cruzada de la remera (la "raya cruzada"): en vez de un slab plano que flotaba y
+ * sobresalía de los costados, ahora es una **cáscara curva que abraza el frente del torso** (mismo
+ * truco que el casquete del pelo). Es un segmento de cilindro ahusado que comparte el taper
+ * cintura→hombro y el achatado en Z del torso, apoyado apenas por fuera de la camiseta (offset fino),
+ * acotado a WAIST..SHOULDER y con una inclinación diagonal moderada. Así sigue la curvatura y se lee
+ * como parte de la remera, sin perforar ni despegarse. Low-poly, sin texturas.
  */
 function Sash({ color, body }: { color: string; body: BodyShape }) {
-  const yMid = (WAIST + SHOULDER) / 2 + 0.02;
-  const rMid = (body.waistR + body.shoulderR) / 2;
-  const flatten = body.bust ? 0.82 : 0.72; // mismo achatado que el torso
-  const z = rMid * flatten * 0.95; // apoyada sobre la superficie frontal del pecho
-  const width = body.shoulderR * 0.5;
-  const length = SHOULDER - WAIST + body.shoulderR * 1.5;
+  const flatten = body.bust ? 0.82 : 0.72; // mismo achatado en Z que el torso
+  const off = 0.016; // cáscara apenas por fuera de la superficie (como el `extra` del pelo)
+  const arc = 1.05; // ancho angular de la banda sobre el frente del torso (~60°)
+  const tilt = 0.42; // inclinación diagonal (banda cruzada), en radianes
+  const yMid = (WAIST + SHOULDER) / 2;
+  const h = SHOULDER - WAIST;
   return (
-    <mesh position={[0, yMid, z]} rotation={[-0.08, 0, 0.92]}>
-      <boxGeometry args={[width, length, 0.03]} />
-      <meshStandardMaterial color={color} flatShading />
-    </mesh>
+    <group position={[0, yMid, 0]} rotation={[0, 0, tilt]} scale={[1, 1, flatten]}>
+      {/* Centro del arco llevado al frente (+Z). Si apareciera en la espalda, usar -Math.PI / 2. */}
+      <mesh rotation={[0, Math.PI / 2 - arc / 2, 0]}>
+        <cylinderGeometry
+          args={[body.shoulderR + off, body.waistR + off, h, SEG * 3, 1, true, 0, arc]}
+        />
+        <meshStandardMaterial color={color} flatShading />
+      </mesh>
+    </group>
   );
 }
 

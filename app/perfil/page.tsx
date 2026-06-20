@@ -10,6 +10,10 @@ import { getTournamentHistory } from "@/lib/profile/queries";
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { aggregateStats } from "@/lib/profile/history";
 import { ResultCard } from "@/components/penal/ResultCard";
+import { Card } from "@/components/ui/Card";
+import { Eyebrow, SectionTitle } from "@/components/ui/Typography";
+import { StatCard } from "@/components/ui/StatCard";
+import { buttonVariants } from "@/components/ui/Button";
 
 /** Fase legible para el caption de la tarjeta del historial. */
 const PHASE_ES: Record<string, string> = {
@@ -47,37 +51,34 @@ export default async function PerfilPage() {
 
     return (
       <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-6 py-12">
+        {/* Tarea 4: navegación arriba de todo. */}
+        <nav className="flex items-center justify-between">
+          <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            ← Inicio
+          </Link>
+          <LogoutButton />
+        </nav>
+
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
-            Invitado
-          </span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gold">
+          <Eyebrow>Invitado</Eyebrow>
+          <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-gold">
             {guestProfile?.username ?? "Invitado"}
           </h1>
         </div>
 
-        <section className="flex flex-col gap-3 rounded-2xl border border-border bg-bg-elevated p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
-            Estás jugando como invitado
-          </h2>
+        <Card className="flex flex-col gap-3">
+          <SectionTitle>Estás jugando como invitado</SectionTitle>
           <p className="text-sm text-fg-muted">
             Tenés un jugador con el look por defecto y podés jugar todas las salas. Nada se
             guarda: creá una cuenta para tener tu avatar a medida, tu historial y tus stats.
           </p>
           <Link
             href="/register"
-            className="self-start rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+            className={buttonVariants({ variant: "primary", size: "sm", className: "self-start" })}
           >
             Creá una cuenta
           </Link>
-        </section>
-
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-sm font-medium text-fg-muted hover:text-fg">
-            ← Inicio
-          </Link>
-          <LogoutButton />
-        </div>
+        </Card>
       </main>
     );
   }
@@ -95,42 +96,24 @@ export default async function PerfilPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-6 py-12">
+      {/* Tarea 4: navegación arriba de todo (Inicio + Cerrar sesión). */}
+      <nav className="flex items-center justify-between">
+        <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+          ← Inicio
+        </Link>
+        <LogoutButton />
+      </nav>
+
       <div className="flex flex-col gap-1">
-        <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-subtle">
-          Perfil
-        </span>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gold">
+        <Eyebrow>Perfil</Eyebrow>
+        <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-gold">
           {profile?.username ?? "Jugador"}
         </h1>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-bg-elevated p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
-          Tu jugador
-        </h2>
-        <p className="text-sm text-fg-muted">
-          Es el mismo que patea y ataja los penales. En cada partido viste la camiseta de la
-          selección que te toca.
-        </p>
-        <Link
-          href="/avatar"
-          className="self-start rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
-        >
-          Editar jugador
-        </Link>
-      </section>
-
-      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-bg-elevated p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
-          Email de recuperación
-        </h2>
-        <RecoveryEmailForm initialEmail={recoveryEmail} />
-      </section>
-
+      {/* Tarea 4: orden Estadísticas → Historial → Tu jugador → Email de recuperación. */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
-          Estadísticas
-        </h2>
+        <SectionTitle>Estadísticas</SectionTitle>
         <div className="grid grid-cols-2 gap-3">
           <StatCard label="Títulos" value={stats.titles} />
           <StatCard label="Torneos jugados" value={stats.tournamentsPlayed} />
@@ -140,15 +123,13 @@ export default async function PerfilPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-subtle">
-          Historial
-        </h2>
+        <SectionTitle>Historial</SectionTitle>
         {history.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+          <Card variant="bare" className="border border-dashed border-border p-6 text-center">
             <p className="text-sm text-fg-muted">
               Todavía no jugaste ningún torneo. Tocá Jugar para arrancar tu primera tanda.
             </p>
-          </div>
+          </Card>
         ) : (
           <ul className="flex flex-col gap-3">
             {history.map((h) => (
@@ -167,23 +148,24 @@ export default async function PerfilPage() {
         )}
       </section>
 
-      <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm font-medium text-fg-muted hover:text-fg">
-          ← Inicio
+      <Card className="flex flex-col gap-3">
+        <SectionTitle>Tu jugador</SectionTitle>
+        <p className="text-sm text-fg-muted">
+          Es el mismo que patea y ataja los penales. En cada partido viste la camiseta de la
+          selección que te toca.
+        </p>
+        <Link
+          href="/avatar"
+          className={buttonVariants({ variant: "primary", size: "sm", className: "self-start" })}
+        >
+          Editar jugador
         </Link>
-        <LogoutButton />
-      </div>
-    </main>
-  );
-}
+      </Card>
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl border border-border bg-bg-elevated px-4 py-3">
-      <span className="text-2xl font-extrabold tracking-tight text-fg">{value}</span>
-      <span className="text-xs font-medium uppercase tracking-wide text-fg-subtle">
-        {label}
-      </span>
-    </div>
+      <Card className="flex flex-col gap-3">
+        <SectionTitle>Email de recuperación</SectionTitle>
+        <RecoveryEmailForm initialEmail={recoveryEmail} />
+      </Card>
+    </main>
   );
 }

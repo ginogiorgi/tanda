@@ -7,16 +7,20 @@
 
 import type { ReactNode } from "react";
 import { Flag } from "@/components/common/Flag";
+import { Badge, type BadgeProps } from "@/components/ui/Badge";
 import type { HistoryOutcome } from "@/lib/profile/history";
 
 /** `flag` opcional (B5.1): lo pasa RunSummary (tiene el brief con bandera); el historial del perfil
  * lo omite (su RPC no trae `flag`) → sin bandera, graceful. */
 type Team = { code: string | null; kit: string | null; isMe?: boolean; flag?: string | null };
 
-const OUTCOME: Record<NonNullable<HistoryOutcome>, { label: string; cls: string }> = {
-  won: { label: "Ganaste", cls: "bg-success/15 text-success" },
-  lost: { label: "Perdiste", cls: "bg-danger/15 text-danger" },
-  abandoned: { label: "Abandonaste", cls: "bg-fg-subtle/15 text-fg-muted" },
+const OUTCOME: Record<
+  NonNullable<HistoryOutcome>,
+  { label: string; variant: BadgeProps["variant"] }
+> = {
+  won: { label: "Ganaste", variant: "success" },
+  lost: { label: "Perdiste", variant: "danger" },
+  abandoned: { label: "Abandonaste", variant: "neutral" },
 };
 
 function TeamChip({ code, kit, isMe, flag }: Team) {
@@ -28,7 +32,7 @@ function TeamChip({ code, kit, isMe, flag }: Team) {
         style={{ backgroundColor: kit ?? "#666" }}
         aria-hidden
       />
-      <span className={`font-mono text-base font-bold ${isMe ? "text-gold" : "text-fg"}`}>
+      <span className={`font-display text-base font-bold uppercase ${isMe ? "text-gold" : "text-fg"}`}>
         {code ?? "???"}
       </span>
     </span>
@@ -57,7 +61,7 @@ export function ResultCard({
 }) {
   const o = outcome ? OUTCOME[outcome] : null;
   return (
-    <div className="w-full rounded-2xl border border-border bg-bg-elevated p-5">
+    <div className="w-full rounded-2xl border border-border bg-bg-elevated p-5 shadow-card">
       {caption && (
         <p className="mb-3 text-center text-[11px] font-medium uppercase tracking-wider text-fg-subtle">
           {caption}
@@ -65,7 +69,7 @@ export function ResultCard({
       )}
       <div className="flex items-center justify-between">
         <TeamChip {...left} />
-        <span className="font-mono text-2xl font-extrabold tabular-nums text-fg">
+        <span className="font-display text-3xl font-bold tabular-nums text-fg">
           {`${leftScore ?? "–"}–${rightScore ?? "–"}`}
         </span>
         <TeamChip {...right} />
@@ -73,11 +77,7 @@ export function ResultCard({
       {children}
       {o && (
         <div className="mt-4 flex justify-center">
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${o.cls}`}
-          >
-            {o.label}
-          </span>
+          <Badge variant={o.variant}>{o.label}</Badge>
         </div>
       )}
     </div>

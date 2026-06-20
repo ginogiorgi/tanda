@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
 import {
   formatRemaining,
   reconcileRoster,
@@ -146,7 +147,7 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
         </span>
         <button
           onClick={onCopy}
-          className="font-mono text-5xl font-extrabold tracking-[0.2em] text-gold transition-opacity hover:opacity-80"
+          className="font-mono text-5xl font-extrabold tracking-[0.2em] text-gold drop-shadow-[0_6px_24px_rgba(212,175,55,0.18)] transition-opacity hover:opacity-80"
           title="Copiar código"
         >
           {code}
@@ -161,7 +162,7 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
           <p className="text-lg font-semibold text-fg">Armando torneo…</p>
         ) : (
           <>
-            <span className="font-mono text-4xl font-bold tabular-nums text-fg">
+            <span className="font-display text-5xl font-bold tabular-nums text-fg">
               {formatRemaining(remaining)}
             </span>
             <span className="text-xs text-fg-subtle">
@@ -171,7 +172,7 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
         )}
       </div>
 
-      <div className="w-full rounded-xl border border-border bg-bg-elevated p-4">
+      <div className="w-full rounded-2xl border border-border bg-bg-elevated p-4 shadow-card">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm font-medium text-fg-muted">Conectados</span>
           <span className="text-sm font-semibold text-gold">{members.length}</span>
@@ -194,19 +195,12 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          onClick={onShare}
-          className="rounded-lg bg-gold px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
-        >
+        <Button onClick={onShare} size="lg">
           Compartir
-        </button>
-        <button
-          onClick={onLeave}
-          disabled={leaving}
-          className="rounded-lg border border-border px-6 py-3 font-medium text-fg transition-colors hover:border-fg-subtle disabled:opacity-50"
-        >
+        </Button>
+        <Button onClick={onLeave} disabled={leaving} variant="outline" size="lg">
           {leaving ? "Saliendo…" : "Salir"}
-        </button>
+        </Button>
       </div>
     </div>
   );

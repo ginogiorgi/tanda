@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { signInAsGuest } from "@/lib/guest/anon";
+import { Button } from "@/components/ui/Button";
 
 /** §8.4: entra como invitado (sesión anónima, username autoasignado) y cae en el home a jugar. */
 export function GuestButton() {
@@ -26,13 +27,9 @@ export function GuestButton() {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <button
-        onClick={onClick}
-        disabled={busy}
-        className="rounded-lg bg-gold px-6 py-4 text-lg font-bold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
+      <Button onClick={onClick} disabled={busy} className="h-14 text-lg font-bold">
         {busy ? "Entrando…" : "Jugar como invitado"}
-      </button>
+      </Button>
       {error && <p className="text-sm text-danger">{error}</p>}
     </div>
   );

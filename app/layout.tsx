@@ -1,11 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit } from "next/font/google";
+import { Outfit, Oswald } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
+import { Footer } from "@/components/ui/Footer";
 import "./globals.css";
 
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Display condensada estilo marcador/transmisión (broadcast premium): titulares, marcadores y
+// el wordmark TANDA. El body sigue en Outfit (geométrica, legible).
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+  // Solo los pesos que realmente usa el HUD/marcador (semibold/bold) → menos bytes de fuente (CWV).
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -54,8 +65,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${outfit.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-bg text-fg">{children}</body>
+    <html lang="es" className={`${outfit.variable} ${oswald.variable} h-full`}>
+      <body className="min-h-full flex flex-col bg-bg text-fg">
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

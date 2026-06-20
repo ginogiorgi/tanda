@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { isValidUsername, usernameToEmail } from "@/lib/auth";
+import { Button } from "@/components/ui/Button";
+import { Input, Field } from "@/components/ui/Input";
 
 /** Estado del chequeo de disponibilidad del username (RPC `username_available`). */
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -130,15 +132,15 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
   const showAvailability = isValidUsername(username.trim());
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Usuario</span>
-        <input
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4 text-left">
+      <Field label="Usuario" htmlFor="reg-username">
+        <Input
+          id="reg-username"
           type="text"
           autoComplete="username"
           value={username}
           onChange={(e) => onUsernameChange(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
+          invalid={showAvailability && availability === "taken"}
           placeholder="tu_usuario"
           autoFocus
         />
@@ -151,29 +153,24 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
         {showAvailability && availability === "taken" && (
           <span className="text-xs text-danger">Ese usuario ya está tomado.</span>
         )}
-      </label>
+      </Field>
 
-      <label className="flex flex-col gap-1.5 text-left">
-        <span className="text-sm font-medium text-fg-muted">Contraseña</span>
-        <input
+      <Field label="Contraseña" htmlFor="reg-password">
+        <Input
+          id="reg-password"
           type="password"
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-border bg-bg-elevated px-4 py-3 text-fg outline-none transition-colors focus:border-gold"
           placeholder="••••••••"
         />
-      </label>
+      </Field>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading || availability === "taken"}
-        className="mt-2 rounded-lg bg-gold px-4 py-3 font-semibold text-bg transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={loading || availability === "taken"} block size="lg" className="mt-2">
         {loading ? "Creando…" : "Crear cuenta"}
-      </button>
+      </Button>
 
       <p className="text-center text-sm text-fg-muted">
         ¿Ya tenés cuenta?{" "}
