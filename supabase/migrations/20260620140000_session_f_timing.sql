@@ -36,7 +36,11 @@ end;
 $$;
 
 ALTER FUNCTION "public"."notify_round_next"("p_tournament" "uuid") OWNER TO "postgres";
+-- Interna (la llaman funciones SECURITY DEFINER): cerrar el endpoint RPC. El REVOKE de PUBLIC no
+-- alcanza porque las default privileges de Supabase otorgan EXECUTE a anon/authenticated en funciones
+-- nuevas del schema público → hay que revocarles explícito.
 REVOKE ALL ON FUNCTION "public"."notify_round_next"("p_tournament" "uuid") FROM PUBLIC;
+REVOKE ALL ON FUNCTION "public"."notify_round_next"("p_tournament" "uuid") FROM "anon", "authenticated";
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- resolve_round (barrier de ronda): tiempo muerto entre partidos 6s → 5s. El intra-partido sigue
