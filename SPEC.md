@@ -233,7 +233,12 @@ sincronizados, cada **ronda** avanza con un **barrier por penal-index** (no un r
 rígido). Una "ronda" es una **jornada de grupos** o una **fase de eliminación**.
 
 - El penal `k` (misma pregunta compartida, §4.1) abre a la vez en **todos** los partidos
-  con humanos: 10s de respuesta + animación de duración fija.
+  con humanos: 10s de respuesta + animación de tiro (~3s).
+- **Timings de tiempo muerto (sesión F, agresivos):** intra-partido `round_deadline`=**3s**
+  (= la animación); entre partidos=**5s** (3s animación + 2s para ver el grupo); lead-in de
+  fase (KO)=**2s** (ver los cruces); presentación inicial=**4s** (2s país + 2s grupos). El
+  cliente abre el próximo penal por broadcast **`round:next`** (poke preciso a `open_next_round`
+  al vencer el deadline), no por polling; el `tick()` de pg_cron (10s) queda solo de backstop.
 - **Barrier:** el penal `k+1` se abre recién cuando **todos** los partidos de la ronda
   cerraron el penal `k`. Esto es necesario porque el caso **"los dos mal"** agrega una
   **segunda chance de 5s** a ese partido puntual (pasa en cualquier fase, también en
@@ -245,7 +250,7 @@ rígido). Una "ronda" es una **jornada de grupos** o una **fase de eliminación*
 - Los partidos `is_bot_only` se **simulan al instante** al iniciar la ronda; su resultado
   se **revela** al ritmo del barrier (no hace esperar a nadie).
 - **Grupos:** 3 jornadas consecutivas (cada humano juega 1 partido por jornada). Entre
-  jornadas, una vista de bracket/posiciones breve (≈4s). El jugador **nunca queda ocioso**
+  jornadas, una vista de bracket/posiciones breve (≈2s sobre los ~3s de animación). El jugador **nunca queda ocioso**
   dentro de grupos; el único punto de sincronización duro es el cierre de grupos para
   armar el bracket de 32.
 - **Eliminación directa:** **gate por fase** — todos los partidos de una fase (incluida la
@@ -320,7 +325,7 @@ Todas autoritativas, validan pertenencia y usan `now()` del servidor. Errores co
 | `join_room(code)` | code | agrega al caller como participante humano si hay cupo y `lobby`; si con él se llega a **48 → arranca ya** (`start_tournament`, sin esperar los 2 min) | `room_not_found`, `room_full`, `already_started`, `room_cancelled` |
 | `quick_play()` | — | si el caller ya tiene torneo activo → lo **reanuda** (`get_active_match`). Si no, matchmaking: une a la sala en `lobby` que **más humanos** tenga con cupo (`FOR UPDATE SKIP LOCKED`, sin lock global — C3); si no hay, crea una (creación serializada con lock acotado). Sin overfill de 48 | `unauthenticated` |
 | `get_active_match()` | — | devuelve el torneo/partido/penal en curso del caller (para rehidratar tras refresh) o `null` | |
-| `begin_presentation(tournament_id)` | id | timing de presentación (B2.1): la **1ª llamada de un humano** comprime el backstop a la ventana real (~6s) para ver grupos/revelación antes del 1er penal; idempotente (llegadas tardías no la extienden). Solo timing, no evalúa nada | `unauthenticated`, `not_participant` |
+| `begin_presentation(tournament_id)` | id | timing de presentación (B2.1): la **1ª llamada de un humano** comprime el backstop a la ventana real (~4s: 2s país + 2s grupos, F) para ver grupos/revelación antes del 1er penal; idempotente (llegadas tardías no la extienden). Solo timing, no evalúa nada | `unauthenticated`, `not_participant` |
 | `start_tournament(room_id)` | room_id | rellena bots hasta 48, asigna naciones aleatorias, **reparte humanos uno por grupo** (round-robin) y completa con bots, arma 12 grupos + fixture, estado `in_progress`. **No** abre la 1ª jornada: deja un **backstop** de `round_deadline` que `begin_presentation` ajusta al entrar el humano (B2.1) → el 1er penal arranca con los 10s plenos. Si 0 humanos → `cancelled` | `already_started` |
 | `select_option(penalty_id, option_index)` | ids | registra la selección (PRIMER tap fijo, no cambiable — F10/10.11) con `selected_at=now()` server; valida ventana `[started_at, deadline]` y pertenencia; rechaza cambios. **No** resuelve (la resolución es a los 10s) | `out_of_window`, `not_participant`, `penalty_closed`, `already_answered` |
 | `resolve_penalty(penalty_id)` | id | idempotente, **solo** si `now()≥deadline`: asigna aleatoria a ausentes, materializa bot_intents, aplica motor, persiste, emite `penal:result`, agenda siguiente penal o cierra match | `too_early` / no-op si ya resuelto |
@@ -365,7 +370,7 @@ Si un humano se desconecta, refresca o pasa la pestaña a segundo plano **sin** 
 |---|---|---|
 | `room:{code}` | Presence + Broadcast | presence (conectados), `room:status`, `room:countdown` |
 | `match:{id}` | Broadcast | `penal:start` (pregunta+opciones, sin correcta), `penal:second_chance` (2 opciones, 5s, al entrar en segunda chance), `penal:result` (GOL/ATAJADO+correcta+marcador), `match:result` (marcador final) |
-| `tournament:{id}` | Broadcast | `bracket:update` (fases, cruces, puntos), `score:live` (marcador de penales en vivo de partidos en curso) y `standings:live` (posiciones de grupos en vivo, para el tiempo muerto del barrier §3.3) |
+| `tournament:{id}` | Broadcast | `bracket:update` (fases, cruces, puntos), `score:live` (marcador de penales en vivo de partidos en curso), `standings:live` (posiciones de grupos en vivo, para el tiempo muerto del barrier §3.3) y `round:next` (open_at del próximo penal → el cliente pokea `open_next_round` exacto, F) |
 
 ---
 

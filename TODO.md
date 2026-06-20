@@ -5,15 +5,20 @@
 Roadmap aprobado para llevar la app a calidad "app oficial FIFA" (dirección **broadcast
 premium**) + resolver 5 pedidos concretos. **Reanudar escribiendo "segui"**.
 
-> **PRÓXIMA SESIÓN ("segui") → Sesión F (timing ≤3s).** Es lo ÚNICO que queda del roadmap.
-> Todos los pointers (archivos:línea + cambios) están en la sección F más abajo. Verde de
-> referencia para no romper nada: `typecheck · lint · knip · build · 107 unit · 58 db`.
+> **Sesión F (timing agresivo) → CÓDIGO HECHO, verde local.** Roadmap completo.
+> Verde: `typecheck · lint · knip · build · 107 unit · 58 db` (incl. e2e de torneo completo).
 >
-> **Pendientes que esperan OK de Gino (no se hicieron solos: tocan prod / git):**
-> 1. Aplicar `20260620120000_questions_refresh.sql` a **prod** (MCP `apply_migration` +
->    reconciliar ledger `schema_migrations` + `get_advisors`).
-> 2. **Commit** de todo lo de esta sesión (A–E + G + limpieza); no se commiteó nada aún.
-> 3. **Gate visual** en `pnpm dev`: raya 3D (Sesión E) + look broadcast nuevo.
+> **PENDIENTE de esta sesión (espera OK de Gino):**
+> - ⏳ Commit + `git push origin main` (front) **y** aplicar `20260620140000_session_f_timing.sql`
+>   a prod por MCP `apply_migration` + reconciliar ledger + `get_advisors`.
+> - ⏳ **Gate manual** en `pnpm dev`: cronometrar el ritmo (2s país + 2s grupos · 10s pregunta +
+>   ~3s animación · 2s grupo entre partidos · 2s cruces en KO) + gate visual pendiente de antes
+>   (raya 3D Sesión E + look broadcast).
+>
+> **Deploy de la sesión anterior: HECHO.**
+> - ✅ Front en prod: commit `ccbf6fa` pusheado a `main` → Vercel.
+> - ✅ DB en prod: `20260620120000_questions_refresh.sql` aplicada por MCP (320 preguntas),
+>   ledger reconciliado, advisors sin alertas nuevas (perf limpio).
 
 Plan completo: `~/.claude/plans/la-aplicacion-tiene-tipicas-glimmering-blossom.md`.
 
@@ -51,23 +56,24 @@ Plan completo: `~/.claude/plans/la-aplicacion-tiene-tipicas-glimmering-blossom.m
   cáscara curva (segmento de cilindro ahusado, comparte taper + achatado Z del torso, offset fino,
   acotado WAIST..SHOULDER, inclinación diagonal). Pendiente: **gate visual de Gino** en `pnpm dev`
   (si el arco saliera en la espalda, cambiar `Math.PI/2` → `-Math.PI/2` en `AvatarModel.tsx`).
-- [ ] **F — Timing ≤3s (Tarea 2)** ← **SIGUIENTE / lo único que falta**
-    - **Diagnóstico** (gap countdown=0 → próxima pregunta, hoy hasta 9s = suma de 3 demoras seriales;
-      la animación ~1.5s NO es el cuello):
-      1. Latencia de resultado: fallback poller arranca a **1500ms** post-poke, reintenta 1200ms
-         (`components/penal/PenalLive.tsx:281,284`).
-      2. Dead time hardcodeado `round_deadline = now()+3s` intra-partido / `+6s` entre partidos
-         (`resolve_round`, `supabase/migrations/20260614000000_baseline_schema.sql:2039,2044`).
-      3. Apertura del próximo penal: solo la dispara el poll de `get_active_match` cada **1500ms**
-         (`components/penal/TournamentLive.tsx:149,160`); si falla cae al backstop pg_cron **10s**
-         (`supabase/migrations/20260614000001_wiring.sql:35`).
-    - **Plan** (apto 1000+: menos polling, más broadcast): DB → bajar `round_deadline` (~1–1.5s /
-      ~2–2.5s), que `resolve_penalty→resolve_round` deje listo el próximo open; cliente → abrir el
-      próximo penal **on `penal:result`** + poke inmediato a `open_next_round`, acortar fallbacks,
-      mostrar la result card ~1.5s mientras carga el próximo. **+ restyle de los botones de opción
-      de `PenalLive`** (diferido de la Sesión D, mismo archivo).
-    - **Verificar**: `pnpm db:start && pnpm db:reset && pnpm test:db` (58) + `pnpm test` (107) +
-      medición manual del gap ≤3s en `pnpm dev`. Migración nueva + aplicar a prod por MCP.
+- [x] **F — Timing agresivo (Tarea 2)** ✓ verde local (`typecheck·lint·knip·build·107·58`)
+    - **Causa real del "hasta 9s" (no era la animación ni el dedup):**
+      1. **Bug intra-partido:** el poke a `open_next_round` estaba solo en la rama sin match activo;
+         entre penales del MISMO partido `get_active_match` no es null → nadie pokeaba → el penal lo
+         abría recién el `tick()` cada **10s**. (El dedup de preguntas es por-torneo y barato; NO se tocó.)
+      2. Jitter del poll de `get_active_match` cada 1500ms encima del `round_deadline`.
+      3. Pantallas de transición de 6s.
+    - **Hecho** (apto 1000+: menos polling, más broadcast):
+      - Migración `20260620140000_session_f_timing.sql`: nuevo evento broadcast **`round:next`**
+        (`notify_round_next` → el cliente pokea `open_next_round` EXACTO al vencer el deadline).
+        Entre partidos `6s→5s` (3s anim + 2s grupo), lead-in KO `6s→2s`, presentación `6s→4s`
+        (2s país + 2s grupos). Intra-partido sigue 3s (= animación). `tick()` queda de backstop.
+      - Cliente: `TournamentLive` suscribe `round:next` (poke preciso + re-poll), **fix del bug
+        intra-partido** (poke cuando `am?.penal == null`), `RESULT_LINGER_MS 1200→3000`,
+        `REVEAL_MS 2200→2000`. `PenalLive` fallback poller `1500/1200→600/600`.
+      - Tipo `RoundNextPayload` en `lib/realtime/penal.ts`; SPEC §3.3/§9 + test `round_clock` al día.
+    - **Pendiente:** gate manual del gap en `pnpm dev` + aplicar migración a prod (ver arriba).
+      Diferido aún: restyle de los botones de opción de `PenalLive` (no es timing).
 - [x] **G — Banco de preguntas (Tarea 3)** ✓ verde local (db:reset + **58 db** pasan). Migración
   `20260620120000_questions_refresh.sql`: 4 fixes a presente (2026 ya se juega) + 5 reescrituras de
   duplicados (Fontaine×4/Klose/Ronaldo/tanda-1982, vía UPDATE sin DELETE) + **100 nuevas** (wc-221..320,
@@ -100,7 +106,8 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 - `lib/engine/` — motor TS puro y determinista (regla del juego + modo invitado). Testeable
   sin red. Su **port fiel a plpgsql** (verificado por paridad) corre el camino autoritativo.
 - `supabase/migrations/` — esquema + RPCs `SECURITY DEFINER`: **fuente de verdad** de la DB.
-  Set canónico de 5: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`.
+  Set canónico de 6: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
+  · `session_f_timing` (F: `round:next` + tiempos muertos recortados).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas del
   design system (desde Sesión A). 3D (R3F) solo en avatar y penal.

@@ -52,18 +52,18 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
   const secs = (rd: string | null) =>
     rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
 
-  it("start_tournament deja un backstop largo; begin_presentation lo comprime a ~6s", async () => {
+  it("start_tournament deja un backstop largo; begin_presentation lo comprime a ~4s", async () => {
     await withRollback(async (c) => {
       const { tournamentId, users } = await startRealTournament(c, 2);
 
-      // Backstop: bien por encima de la ventana real (no son 6s corriendo desde el lobby).
+      // Backstop: bien por encima de la ventana real (no son 4s corriendo desde el lobby).
       const before = await c.query<{ rd: string | null }>(
         `select round_deadline::text as rd from public.tournaments where id = $1`,
         [tournamentId],
       );
       expect(secs(before.rows[0]!.rd)!).toBeGreaterThan(20);
 
-      // Primera llamada de un humano → ventana real (~6s).
+      // Primera llamada de un humano → ventana real (~4s: 2s país + 2s grupos, F).
       await asRole(c, "authenticated", users[0]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);
@@ -92,7 +92,7 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
         [tournamentId],
       );
 
-      // Un 2º humano que recién entra NO debe re-expandir a 6s.
+      // Un 2º humano que recién entra NO debe re-expandir a 4s.
       await asRole(c, "authenticated", users[1]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);

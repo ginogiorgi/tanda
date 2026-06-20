@@ -278,10 +278,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         const { data } = await supabase.rpc("get_penalty_result", { p_penalty: penaltyId });
         if (resultRef.current) return;
         if (data) applyResult(data);
-        else fallbackRef.current = setTimeout(() => void pull(), 1200);
+        else fallbackRef.current = setTimeout(() => void pull(), 600);
       };
       if (fallbackRef.current) clearTimeout(fallbackRef.current);
-      fallbackRef.current = setTimeout(() => void pull(), 1500);
+      fallbackRef.current = setTimeout(() => void pull(), 600);
     };
 
     const tick = () => {

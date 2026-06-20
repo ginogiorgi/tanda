@@ -26,17 +26,22 @@ import {
   type ScoreboardState,
   type ScoreLivePayload,
 } from "@/lib/realtime/score";
-import type { ActiveMatch } from "@/lib/realtime/penal";
+import {
+  clockOffset,
+  remainingMs,
+  type ActiveMatch,
+  type RoundNextPayload,
+} from "@/lib/realtime/penal";
 
 /**
  * Cuánto se mantiene la pantalla del penal tras terminar el PARTIDO (GOL/ATAJADO del último penal)
- * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). Corto a propósito: el tiempo muerto
- * del server es ~3s, así que un linger largo se comía toda la ventana y el grupo no llegaba a verse.
+ * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). = los ~3s de animación del último
+ * penal; el tiempo muerto entre partidos del server es 5s, así que quedan 2s para ver el grupo.
  */
-const RESULT_LINGER_MS = 1200;
+const RESULT_LINGER_MS = 3000;
 
-/** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket. */
-const REVEAL_MS = 2200;
+/** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
+const REVEAL_MS = 2000;
 
 export function TournamentLive({
   tournamentId,
@@ -60,6 +65,10 @@ export function TournamentLive({
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
   const revealTimerRef = useRef(false);
+  // Poke PRECISO de la próxima ronda (agendado por el broadcast `round:next`) + puente al `poll()` de
+  // get_active_match para detectar el match nuevo sin esperar el intervalo de 1500ms.
+  const nextPokeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollRef = useRef<(() => void) | null>(null);
 
   // B2.1: arrancar la ventana de presentación AL ENTRAR a /partido (no en start_tournament). Idempotente
   // en el server (1ª llamada de un humano comprime el backstop a ~6s; las siguientes son no-op).
@@ -84,10 +93,23 @@ export function TournamentLive({
         .on("broadcast", { event: "score:live" }, ({ payload }) => {
           setLive((s) => applyScoreUpdate(s, payload as ScoreLivePayload));
         })
+        // `round:next` (F): el server avisa cuándo vence el tiempo muerto → pokeamos open_next_round
+        // EXACTO en ese instante (no esperamos el poll de 1500ms) y re-chequeamos el match activo
+        // poco después para mostrar la próxima escena sin jitter.
+        .on("broadcast", { event: "round:next" }, ({ payload }) => {
+          const p = payload as RoundNextPayload;
+          const delay = remainingMs(p.open_at, clockOffset(p.server_now));
+          if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
+          nextPokeRef.current = setTimeout(() => {
+            void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+            setTimeout(() => pollRef.current?.(), 200);
+          }, delay);
+        })
         .subscribe();
     })();
     return () => {
       active = false;
+      if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
       if (channel) void supabase.removeChannel(channel);
     };
   }, [supabase, tournamentId]);
@@ -135,6 +157,12 @@ export function TournamentLive({
       const { data } = await supabase.rpc("get_active_match");
       if (!active) return;
       const am = data as ActiveMatch | null;
+      // Backstop del poke preciso (`round:next`): si NO hay penal abierto (hueco intra-partido O entre
+      // partidos) y ya venció el tiempo muerto, abrir la próxima ronda (idempotente, no-op si no). Sin
+      // esto, intra-partido nadie pokeaba open_next_round y el penal lo abría recién el cron (≤10s).
+      if (am?.penal == null) {
+        void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+      }
       if (am != null && am.match_id) {
         if (lingerRef.current) {
           clearTimeout(lingerRef.current);
@@ -145,9 +173,7 @@ export function TournamentLive({
         showPenalRef.current = true;
         setEverPlayed(true);
       } else {
-        // Sin partido activo → arrancar la próxima ronda si el tiempo muerto ya venció (idempotente,
-        // no-op si todavía no), y soltar la escena de penal tras el linger corto.
-        void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+        // Terminó mi partido → soltar la escena de penal tras el linger (los ~3s de animación).
         if (showPenalRef.current && !lingerRef.current) {
           lingerRef.current = setTimeout(() => {
             setShowPenal(false);
@@ -157,6 +183,7 @@ export function TournamentLive({
         }
       }
     };
+    pollRef.current = poll;
     void poll();
     const id = setInterval(() => void poll(), 1500);
     return () => {

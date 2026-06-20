@@ -103,6 +103,18 @@ export type PenalResultPayload = {
 };
 
 /**
+ * Payload de `round:next` (emite `notify_round_next` al setear el `round_deadline`): cuándo se abre
+ * la próxima ronda. El cliente lo usa para pokear `open_next_round` EXACTO al vencer el deadline en
+ * vez de esperar el poll de 1500ms (menos polling, más broadcast). No trae nada del juego.
+ */
+export type RoundNextPayload = {
+  /** ISO timestamp (server) en que vence el tiempo muerto y se abre el próximo penal. */
+  open_at: string;
+  /** `now()` del server al emitir → para estimar el offset del reloj del cliente. */
+  server_now: string;
+};
+
+/**
  * Datos estáticos del partido para la escena 3D (RPC `get_match_scene`, SPEC §8.2). No cambia
  * penal a penal: el cliente lo pide una vez al montar la pantalla. `home_avatar`/`away_avatar` son
  * `null` para bots o usuarios sin avatar → el cliente cae a `DEFAULT_AVATAR`. La camiseta de cada
