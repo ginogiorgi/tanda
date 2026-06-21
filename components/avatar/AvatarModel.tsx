@@ -317,6 +317,9 @@ function TorsoTwoTone({
       pushTri(b0, x1, x0);
       pushTri(x0, x1, p1);
       pushTri(x0, p1, p0);
+      // Tapa superior (abanico al centro de los hombros): el cuello/hombros no cubren todo el radio
+      // del torso, así que sin esto quedaba un hueco arriba. El fondo lo tapa la pelvis.
+      pushTri([0, h2, 0], p1, p0);
     }
 
     const geo = new THREE.BufferGeometry();
