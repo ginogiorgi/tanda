@@ -2,9 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/Button";
+import { Button, type ButtonProps } from "@/components/ui/Button";
 
-export function LogoutButton() {
+// `size`/`className` quedan parametrizables: en el home la fila de CTAs lo quiere grande y del
+// mismo ancho que "Mi perfil" (T6); en la nav del perfil sigue chico (default).
+export function LogoutButton({
+  size = "sm",
+  className,
+}: {
+  size?: ButtonProps["size"];
+  className?: string;
+}) {
   const router = useRouter();
 
   async function onClick() {
@@ -15,7 +23,7 @@ export function LogoutButton() {
   }
 
   return (
-    <Button onClick={onClick} variant="outline" size="sm">
+    <Button onClick={onClick} variant="outline" size={size} className={className}>
       Cerrar sesión
     </Button>
   );

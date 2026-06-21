@@ -25,7 +25,7 @@ export default async function PartidoPage() {
   if (!active?.tournament_id) redirect("/?aviso=no_match");
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 px-6 py-12">
+    <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-6 overflow-y-auto px-6 py-12">
       <TournamentLive
         tournamentId={active.tournament_id}
         isGuest={user.is_anonymous === true}

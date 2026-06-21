@@ -46,7 +46,7 @@ export default async function Home({
   }
 
   return (
-    <main className="bg-pitch flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-16 text-center">
       <JsonLd />
       <div className="flex flex-col items-center gap-4">
         <Eyebrow className="tracking-[0.3em]">Mundial · Trivia · Tiempo real</Eyebrow>
@@ -91,16 +91,19 @@ export default async function Home({
             {isGuest ? (
               <Link
                 href="/register"
-                className={buttonVariants({ variant: "outline", size: "lg" })}
+                className={buttonVariants({ variant: "outline", size: "lg", className: "min-w-[11rem]" })}
               >
                 Creá una cuenta
               </Link>
             ) : (
-              <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              <Link
+                href="/perfil"
+                className={buttonVariants({ variant: "outline", size: "lg", className: "min-w-[11rem]" })}
+              >
                 Mi perfil
               </Link>
             )}
-            <LogoutButton />
+            <LogoutButton size="lg" className="min-w-[11rem]" />
           </div>
         </div>
       ) : (

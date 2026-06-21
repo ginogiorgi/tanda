@@ -17,7 +17,7 @@ export default async function ResetPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <main className="bg-pitch flex min-h-dvh w-full flex-col items-center justify-center gap-8 px-6 py-16">
+    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-16">
       <Link
         href="/"
         className="font-display text-5xl font-bold uppercase tracking-tight text-gold drop-shadow-[0_6px_24px_rgba(212,175,55,0.18)]"

@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${outfit.variable} ${oswald.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-bg text-fg">
+      <body className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
         {children}
         <Footer />
       </body>

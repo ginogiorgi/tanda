@@ -23,7 +23,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 px-6 py-16 text-center">
+    <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-6 overflow-y-auto px-6 py-16 text-center">
       <div className="flex flex-col items-center gap-2">
         <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
           Uh, algo falló
