@@ -74,7 +74,7 @@ export type ActiveMatch = {
 
 /**
  * Payload de `penal:result` (emite `resolve_penalty` al cerrar el penal). Acá SÍ viaja
- * `correct_index` + `explanation`: el penal ya está `resolved`, se revela la correcta (§8.11).
+ * `correct_index`: el penal ya está `resolved`, se revela la correcta (§8.11).
  */
 export type PenalResultPayload = {
   penalty_id: string;
@@ -87,7 +87,6 @@ export type PenalResultPayload = {
   variant: number;
   phase: "first" | "second_chance";
   correct_index: number;
-  explanation: string | null;
   home_score: number;
   away_score: number;
   /**

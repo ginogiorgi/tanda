@@ -458,9 +458,6 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             >
               Correcta: {penal.options[result.correct_index]}
             </p>
-            {result.explanation && (
-              <p className="text-balance text-sm text-fg-muted">{result.explanation}</p>
-            )}
           </div>
         </div>
       </>
