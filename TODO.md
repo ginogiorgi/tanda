@@ -1,26 +1,28 @@
 # TODO — TANDA ⚽
 
-## Estado: Rediseño + optimización (multisesión)
+## Estado: Plan de 16 tareas (multisesión)
 
-Roadmap aprobado para llevar la app a calidad "app oficial FIFA" (dirección **broadcast
-premium**) + resolver 5 pedidos concretos. **Reanudar escribiendo "segui"**.
+16 pedidos concretos de Gino sobre la app. Plan completo en
+`~/.claude/plans/limpia-tus-contextos-y-splendid-fox.md`. **Reanudar escribiendo "segui"**.
+(El roadmap previo de rediseño/optimización A-G + timing F ya está completo y deployado a prod.)
 
-> **Sesión F (timing agresivo) → CÓDIGO HECHO, verde local.** Roadmap completo.
-> Verde: `typecheck · lint · knip · build · 107 unit · 58 db` (incl. e2e de torneo completo).
+> **Sesión actual (varios puntos) → CÓDIGO HECHO, verde local** (`typecheck · lint · knip · build · 107 unit`).
+> Sin DB ni push (commits locales en `main`).
 >
-> **PENDIENTE de esta sesión (espera OK de Gino):**
-> - ⏳ Commit + `git push origin main` (front) **y** aplicar `20260620140000_session_f_timing.sql`
->   a prod por MCP `apply_migration` + reconciliar ledger + `get_advisors`.
-> - ⏳ **Gate manual** en `pnpm dev`: cronometrar el ritmo (2s país + 2s grupos · 10s pregunta +
->   ~3s animación · 2s grupo entre partidos · 2s cruces en KO) + gate visual pendiente de antes
->   (raya 3D Sesión E + look broadcast).
+> **Hecho esta sesión (9 tareas):**
+> - ✅ **T1** sin scroll · ✅ **T6** botones de inicio parejos · ✅ **T3** país a la izquierda ·
+>   ✅ **T4** globo de resultado simple (verde/rojo) · ✅ **T7** globo no tapa el arco en mobile ·
+>   ✅ **T14** pantalla de fin centrada.
+> - 🟡 **Gate visual pendiente de Gino** (`pnpm dev`): **T2** favicon "T" refinada · **T16** líneas
+>   del bracket en KO · **T12** camiseta de dos colores (escena de penal / editor de avatar; si el
+>   corte sale espejado → invertir `SASH_TILT` en `AvatarModel.tsx`).
 >
-> **Deploy de la sesión anterior: HECHO.**
-> - ✅ Front en prod: commit `ccbf6fa` pusheado a `main` → Vercel.
-> - ✅ DB en prod: `20260620120000_questions_refresh.sql` aplicada por MCP (320 preguntas),
->   ledger reconciliado, advisors sin alertas nuevas (perf limpio).
-
-Plan completo: `~/.claude/plans/la-aplicacion-tiene-tipicas-glimmering-blossom.md`.
+> **Pendiente del plan (próximos "segui"):** T9 (fondo animado CSS) · T13 (historial paginado) ·
+> Bloque D DB/timing (T8 sala 2→1min, T10 fixture +1s, T11 grupos ~4s antes del KO) ·
+> Bloque E datos (T5 colores de 48 selecciones, T15 preguntas → 500 en sub-pasos). Las de DB
+> requieren el **Pre-flight** (reconciliar ledger de prod) antes de tocar SQL.
+>
+> **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`.
 
 ### Decisiones cerradas
 - **Base UI:** primitivas propias en `components/ui/`, sembradas con buen tooling (shadcn/
@@ -106,9 +108,10 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 - `lib/engine/` — motor TS puro y determinista (regla del juego + modo invitado). Testeable
   sin red. Su **port fiel a plpgsql** (verificado por paridad) corre el camino autoritativo.
 - `supabase/migrations/` — esquema + RPCs `SECURITY DEFINER`: **fuente de verdad** de la DB.
-  Set canónico de 7: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
+  Set canónico de 8: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
   · `session_f_timing` (F: `round:next` + tiempos muertos recortados) · `fast_tick` (F2: cron 10s→1s,
-  CAUSA RAÍZ — el juego avanzaba solo por el cron porque los pokes del cliente no surtían efecto).
+  CAUSA RAÍZ — el juego avanzaba solo por el cron porque los pokes del cliente no surtían efecto)
+  · `groups_timing` (F3: presentación 30s→6s + grupo visible entre jornadas).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas del
   design system (desde Sesión A). 3D (R3F) solo en avatar y penal.
