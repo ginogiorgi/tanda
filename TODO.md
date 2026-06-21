@@ -31,7 +31,14 @@
 >   color nacional en la banda (coherente con Inglaterra/USA/Alemania/Ghana del seed). Arabia Saudita:
 >   verde liso → verde con acento dorado. El resto de las 48 ya estaba correcto. Pendiente: gate
 >   visual de Gino en `pnpm dev` (avatar + escena de penal).
-> - **T15** preguntas → 500 (multi-segui, grande).
+> - ✅ **T15** preguntas → 500 — **HECHO**. Migración `20260621120000_questions_to_500.sql`: +180
+>   nuevas (`wc-321..500`), datos durables verificados, **sin duplicar** los 320 (chequeado en DB).
+>   Ángulos nuevos: nacionalidad de figuras actuales, apodos, confederaciones, clubes de campeones,
+>   ciudades sede 2026, 3º/4º puesto por edición. `correct_index` rotado 0/1/2 por dificultad (sin
+>   patrón explotable). Banco final **500** (easy 138 / med 134 / hard 124 / vh 104). Pendiente:
+>   aplicar a prod.
+>
+> **🎉 Las 16 tareas del plan están HECHAS** (verde local; sin push ni deploy a prod salvo pedido).
 >
 > **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`
 > (2 migraciones nuevas locales sin aplicar a prod).
@@ -127,7 +134,8 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
   CAUSA RAÍZ — el juego avanzaba solo por el cron porque los pokes del cliente no surtían efecto)
   · `groups_timing` (F3: presentación 30s→6s + grupo visible entre jornadas)
   · `lobby_1min` (T8) · `groups_fixture_gap` (T10: gap entre partidos 7s)
-  · `groups_ko_pause` (T11: pausa de grupos finales 4s antes del KO + `groups_closed_at`).
+  · `groups_ko_pause` (T11: pausa de grupos finales 4s antes del KO + `groups_closed_at`)
+  · `nation_kit_colors` (T5: 5 correcciones de colores de kit) · `questions_to_500` (T15: +180 → 500).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas del
   design system (desde Sesión A). 3D (R3F) solo en avatar y penal.
