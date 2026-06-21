@@ -25,8 +25,13 @@
 >   finales, recién después `build_knockout` + lead-in 2s) + fix del clobber de `round_deadline`
 >   en `open_next_round`. Cliente: refetch puntual del bracket en `round:next`. **59 db verdes**
 >   (caso nuevo en `round_clock.test.ts`). Pendiente: aplicar a prod + gate visual de Gino.
-> - **T5** colores de las 48 selecciones (los actuales ya están bien; correcciones finas + tu gate
->   visual; conviene verificación web por nación) · **T15** preguntas → 500 (multi-segui, grande).
+> - ✅ **T5** colores de las 48 selecciones — **HECHO**. Migración `20260621110000_nation_kit_colors.sql`:
+>   5 correcciones verificadas por web (kits 2026). Senegal/Irak/Argelia/Jordania tenían el color
+>   nacional como primary pero su home titular es **blanco** → invertidos a `kit_primary=#FFFFFF` +
+>   color nacional en la banda (coherente con Inglaterra/USA/Alemania/Ghana del seed). Arabia Saudita:
+>   verde liso → verde con acento dorado. El resto de las 48 ya estaba correcto. Pendiente: gate
+>   visual de Gino en `pnpm dev` (avatar + escena de penal).
+> - **T15** preguntas → 500 (multi-segui, grande).
 >
 > **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`
 > (2 migraciones nuevas locales sin aplicar a prod).
