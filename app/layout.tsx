@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Outfit, Oswald } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
 import { Footer } from "@/components/ui/Footer";
+import { PitchBackground } from "@/components/ui/PitchBackground";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -67,6 +68,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${outfit.variable} ${oswald.variable} h-full`}>
       <body className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
+        <PitchBackground />
         {children}
         <Footer />
       </body>
