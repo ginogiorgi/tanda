@@ -9,22 +9,11 @@ import { getTournamentHistory } from "@/lib/profile/queries";
 // Privada y por usuario → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { aggregateStats } from "@/lib/profile/history";
-import { ResultCard } from "@/components/penal/ResultCard";
+import { HistoryEntryCard } from "@/components/profile/HistoryEntryCard";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow, SectionTitle } from "@/components/ui/Typography";
 import { StatCard } from "@/components/ui/StatCard";
 import { buttonVariants } from "@/components/ui/Button";
-
-/** Fase legible para el caption de la tarjeta del historial. */
-const PHASE_ES: Record<string, string> = {
-  group: "Fase de grupos",
-  round_of_32: "32avos",
-  round_of_16: "Octavos",
-  quarters: "Cuartos",
-  semis: "Semifinal",
-  third_place: "3er puesto",
-  final: "Final",
-};
 
 /**
  * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
@@ -131,20 +120,28 @@ export default async function PerfilPage() {
             </p>
           </Card>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {history.map((h) => (
-              <li key={h.tournamentId}>
-                <ResultCard
-                  caption={h.finalPhase ? PHASE_ES[h.finalPhase] : undefined}
-                  left={{ code: h.nationCode, kit: h.kitPrimary, isMe: true }}
-                  right={{ code: h.finalOppNationCode, kit: h.finalOppKitPrimary }}
-                  leftScore={h.finalMyScore}
-                  rightScore={h.finalOppScore}
-                  outcome={h.outcome}
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            {/* T13: en el perfil solo los últimos 5; el resto, en la pantalla de historial completo. */}
+            <ul className="flex flex-col gap-3">
+              {history.slice(0, 5).map((h) => (
+                <li key={h.tournamentId}>
+                  <HistoryEntryCard entry={h} />
+                </li>
+              ))}
+            </ul>
+            {history.length > 5 && (
+              <Link
+                href="/perfil/historial"
+                className={buttonVariants({
+                  variant: "outline",
+                  size: "sm",
+                  className: "self-center",
+                })}
+              >
+                Ver historial completo
+              </Link>
+            )}
+          </>
         )}
       </section>
 
