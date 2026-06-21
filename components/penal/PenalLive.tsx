@@ -410,7 +410,6 @@ export function PenalLive({ matchId }: PenalLiveProps) {
 
   // Resuelto: animación 3D goal/save/miss_wide (8.4/4.9) + GOL/ATAJADO + revela la correcta (§8.11).
   if (result) {
-    const iAnswered = selected != null;
     const amWinner =
       (role === "kick" && result.winner === "kicker") ||
       (role === "keep" && result.winner === "keeper");
@@ -432,7 +431,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         {sceneBg(true, anim)}
         {/* Tarea 4: el texto va arriba (encima del arco) sobre una placa sutil con blur → no se confunde
             con el arco claro del fondo. */}
-        <div className="fade-in relative z-10 mb-auto flex w-full max-w-md flex-col items-center pt-4 text-center">
+        {/* T7: en mobile el globo se sube (sin padding superior y un toque de margen negativo) para
+            no tapar el arco; en desktop conserva el aire de arriba. */}
+        <div className="fade-in relative z-10 mb-auto flex w-full max-w-md flex-col items-center -mt-2 pt-0 text-center sm:mt-0 sm:pt-4">
           <div className="flex w-full flex-col items-center gap-3 rounded-2xl bg-bg/75 px-5 py-5 ring-1 ring-border/60 backdrop-blur-sm">
             <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-muted">
               Penal {result.idx} · {result.home_score}–{result.away_score}
@@ -448,19 +449,13 @@ export function PenalLive({ matchId }: PenalLiveProps) {
                   : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`}
               </p>
             )}
-            <p className="text-balance text-sm text-fg-muted">{penal.prompt}</p>
-            {/* 10.6 (visible): tu pick vs la correcta; si no respondiste, opción al azar. */}
-            {role != null &&
-              (iAnswered ? (
-                <p className="text-sm text-fg-muted">
-                  Tu respuesta: {penal.options[selected]}
-                </p>
-              ) : (
-                <p className="text-sm text-amber-400">
-                  No respondiste → se eligió una opción al azar
-                </p>
-              ))}
-            <p className="text-base font-semibold text-fg">
+            {/* T4: globo simple — solo la correcta, en verde si el jugador acertó, rojo si erró
+                (o no respondió). Sin repetir la pregunta ni "Tu respuesta". */}
+            <p
+              className={`text-base font-semibold ${
+                selected === result.correct_index ? "text-success" : "text-danger"
+              }`}
+            >
               Correcta: {penal.options[result.correct_index]}
             </p>
             {result.explanation && (
@@ -502,6 +497,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         role={role}
         dots={dots}
         kicksPerSide={kicksPerSide}
+        flip={myId != null && myId === scene?.away?.participant_id}
       />
       <div className="flex items-center justify-between text-sm">
         <span

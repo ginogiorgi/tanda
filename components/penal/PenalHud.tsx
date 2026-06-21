@@ -78,6 +78,9 @@ interface PenalHudProps {
   dots: PenalDot[];
   /** Penales por lado en esta fase (3 grupos / 5 eliminación) → "Penal N de M". */
   kicksPerSide: number;
+  /** T3: si el caller es el participante `away`, invertir los lados para que su país quede siempre
+   *  a la izquierda. Solo orden visual; la asignación de penales (paridad) no cambia. */
+  flip?: boolean;
 }
 
 export function PenalHud({
@@ -89,6 +92,7 @@ export function PenalHud({
   role,
   dots,
   kicksPerSide,
+  flip = false,
 }: PenalHudProps) {
   const suddenDeath = idx > kicksPerSide * 2;
   const label = suddenDeath ? "Muerte súbita" : `Penal ${Math.ceil(idx / 2)} de ${kicksPerSide}`;
@@ -96,14 +100,23 @@ export function PenalHud({
   const homeDots = dots.filter((d) => d.idx % 2 === 1);
   const awayDots = dots.filter((d) => d.idx % 2 === 0);
 
+  // T3: el lado izquierdo es siempre el del caller. Si patea/ataja como away, se invierten brief,
+  // score y dots de cada lado (la paridad de cada penal sigue siendo home=impar / away=par).
+  const left = flip
+    ? { brief: away, score: awayScore, dots: awayDots }
+    : { brief: home, score: homeScore, dots: homeDots };
+  const right = flip
+    ? { brief: home, score: homeScore, dots: homeDots }
+    : { brief: away, score: awayScore, dots: awayDots };
+
   return (
     <div className="flex w-full flex-col items-center gap-2">
       <div className="flex w-full items-start gap-3">
-        <Side brief={home} score={homeScore} dots={homeDots} align="left" />
+        <Side brief={left.brief} score={left.score} dots={left.dots} align="left" />
         <span className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
           {label}
         </span>
-        <Side brief={away} score={awayScore} dots={awayDots} align="right" />
+        <Side brief={right.brief} score={right.score} dots={right.dots} align="right" />
       </div>
       {role && (
         <Badge variant={role === "kick" ? "gold" : "blue"}>
