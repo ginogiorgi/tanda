@@ -19,8 +19,12 @@
 >   fondo animado de cancha · **T12** camiseta dos colores (Gino: "quedó bien"; borde recto + tapa OK).
 >
 > **Pendiente (próximos "segui"):**
-> - ⛔ **T11** grupos ~4s antes del KO — **BLOQUEADA**: cambio de máquina de estados → necesita
->   tu OK/decisión de enfoque antes de tocarla.
+> - ✅ **T11** grupos ~4s antes del KO — **HECHO** (enfoque B, decidido por Gino). Migración
+>   `20260621100000_groups_ko_pause.sql`: columna `groups_closed_at` + `advance_tournament`
+>   desacopla cierre de grupos del flip de fase (4s con `current_phase='groups'` mostrando tablas
+>   finales, recién después `build_knockout` + lead-in 2s) + fix del clobber de `round_deadline`
+>   en `open_next_round`. Cliente: refetch puntual del bracket en `round:next`. **59 db verdes**
+>   (caso nuevo en `round_clock.test.ts`). Pendiente: aplicar a prod + gate visual de Gino.
 > - **T5** colores de las 48 selecciones (los actuales ya están bien; correcciones finas + tu gate
 >   visual; conviene verificación web por nación) · **T15** preguntas → 500 (multi-segui, grande).
 >
@@ -116,7 +120,9 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
   Set canónico de 8: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
   · `session_f_timing` (F: `round:next` + tiempos muertos recortados) · `fast_tick` (F2: cron 10s→1s,
   CAUSA RAÍZ — el juego avanzaba solo por el cron porque los pokes del cliente no surtían efecto)
-  · `groups_timing` (F3: presentación 30s→6s + grupo visible entre jornadas).
+  · `groups_timing` (F3: presentación 30s→6s + grupo visible entre jornadas)
+  · `lobby_1min` (T8) · `groups_fixture_gap` (T10: gap entre partidos 7s)
+  · `groups_ko_pause` (T11: pausa de grupos finales 4s antes del KO + `groups_closed_at`).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas del
   design system (desde Sesión A). 3D (R3F) solo en avatar y penal.

@@ -102,3 +102,86 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
     });
   });
 });
+
+// T11 — al cerrar la fase de grupos, el torneo NO salta directo al bracket: queda una ventana de ~4s
+// con current_phase='groups' (el cliente muestra las tablas finales) y recién después se arma el KO.
+describe("pausa de grupos finales antes del KO (T11)", () => {
+  const secs = (rd: string | null) =>
+    rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
+
+  it("mantiene 'groups' ~4s tras cerrar los grupos, y luego arma el round_of_32 con lead-in de 2s", async () => {
+    await withRollback(async (c) => {
+      const { tournamentId } = await startRealTournament(c, 2);
+
+      // Driver de SOLO la fase de grupos: vencer deadlines + tick hasta que se ARME la pausa
+      // (groups_closed_at seteado mientras current_phase sigue 'groups'). Frenamos ANTES de vencer
+      // ese deadline para observar la ventana.
+      let armed = false;
+      for (let i = 0; i < 400; i++) {
+        const { rows } = await c.query<{ phase: string; gca: string | null }>(
+          `select current_phase as phase, groups_closed_at::text as gca
+             from public.tournaments where id = $1`,
+          [tournamentId],
+        );
+        const st = rows[0]!;
+        expect(st.phase).toBe("groups"); // nunca debería saltar a KO antes de la pausa
+        if (st.gca !== null) {
+          armed = true;
+          break;
+        }
+        await c.query(
+          `update public.penalties pe set deadline = now() - interval '1 second'
+             from public.matches m
+            where m.id = pe.match_id and m.tournament_id = $1
+              and pe.status in ('open', 'second_chance')`,
+          [tournamentId],
+        );
+        await c.query(
+          `update public.tournaments set round_deadline = now() - interval '1 second'
+            where id = $1 and round_deadline is not null`,
+          [tournamentId],
+        );
+        await c.query("select public.tick()");
+      }
+      expect(armed).toBe(true);
+
+      // Ventana armada: sigue en grupos, deadline ~4s en el futuro y AÚN sin bracket.
+      const paused = (
+        await c.query<{ phase: string; rd: string | null; ko: string }>(
+          `select t.current_phase as phase, t.round_deadline::text as rd,
+                  (select count(*) from public.matches
+                     where tournament_id = $1 and phase = 'round_of_32') as ko
+             from public.tournaments t where t.id = $1`,
+          [tournamentId],
+        )
+      ).rows[0]!;
+      expect(paused.phase).toBe("groups");
+      expect(Number(paused.ko)).toBe(0);
+      const leftPause = secs(paused.rd)!;
+      expect(leftPause).toBeGreaterThan(2);
+      expect(leftPause).toBeLessThanOrEqual(5);
+
+      // Vencida la ventana + tick → se arma el bracket (16 cruces) con lead-in de ~2s.
+      await c.query(
+        `update public.tournaments set round_deadline = now() - interval '1 second' where id = $1`,
+        [tournamentId],
+      );
+      await c.query("select public.tick()");
+
+      const built = (
+        await c.query<{ phase: string; rd: string | null; ko: string }>(
+          `select t.current_phase as phase, t.round_deadline::text as rd,
+                  (select count(*) from public.matches
+                     where tournament_id = $1 and phase = 'round_of_32') as ko
+             from public.tournaments t where t.id = $1`,
+          [tournamentId],
+        )
+      ).rows[0]!;
+      expect(built.phase).toBe("round_of_32");
+      expect(Number(built.ko)).toBe(16);
+      const leftLeadIn = secs(built.rd)!;
+      expect(leftLeadIn).toBeGreaterThan(0);
+      expect(leftLeadIn).toBeLessThanOrEqual(3);
+    });
+  });
+});

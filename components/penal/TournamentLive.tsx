@@ -70,6 +70,10 @@ export function TournamentLive({
   // get_active_match para detectar el match nuevo sin esperar el intervalo de 1500ms.
   const nextPokeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollRef = useRef<(() => void) | null>(null);
+  // Refetch puntual del bracket (T11): tras el poke de `round:next` el server pudo flipear de fase
+  // (grupos→round_of_32). Forzamos la recarga del snapshot para que el reveal del árbol se vea en el
+  // lead-in de 2s en vez de esperar el refresco periódico de 5s.
+  const bracketLoadRef = useRef<(() => void) | null>(null);
 
   // B2.1: arrancar la ventana de presentación AL ENTRAR a /partido (no en start_tournament). Idempotente
   // en el server (1ª llamada de un humano comprime el backstop a ~6s; las siguientes son no-op).
@@ -103,7 +107,10 @@ export function TournamentLive({
           if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
           nextPokeRef.current = setTimeout(() => {
             void supabase.rpc("open_next_round", { p_tournament: tournamentId });
-            setTimeout(() => pollRef.current?.(), 200);
+            setTimeout(() => {
+              pollRef.current?.();
+              bracketLoadRef.current?.(); // reflejar el flip de fase (grupos→KO) sin esperar 5s
+            }, 200);
           }, delay);
         })
         .subscribe();
@@ -135,6 +142,7 @@ export function TournamentLive({
         setLoadError(true);
       }
     };
+    bracketLoadRef.current = () => void load();
     void load();
     const id = setInterval(() => void load(), 5000);
     return () => {

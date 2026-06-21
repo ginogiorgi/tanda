@@ -126,7 +126,7 @@ con `SECURITY DEFINER` que validan.
 | `nations` | `id`, `name`, `code`, `fifa_rank int`, `accent_color`, `flag_asset`, `difficulty_tier` (`elite\|high\|medium\|low`) | seed estático (clasificados 2026) |
 | `questions` | `id`, `category`, `difficulty` (`easy\|medium\|hard\|very_hard`), `prompt`, `options jsonb` (3), `correct_index int` (0-2), `explanation` | `correct_index` **server-only** |
 | `rooms` | `id`, `code text UNIQUE`, `host_id`, `status` (`lobby\|starting\|in_progress\|finished\|cancelled`), `starts_at`, `created_at` | `starts_at` = arranque (lobby +2 min); `cancelled` si quedó sin humanos |
-| `tournaments` | `id`, `room_id`, `status` (ver §4), `current_phase`, `seed`, `champion_participant_id`, `third_place_participant_id` | 1:1 con room; `seed` gobierna sorteos/bracket/bot_intents → reproducible y testeable |
+| `tournaments` | `id`, `room_id`, `status` (ver §4), `current_phase`, `seed`, `champion_participant_id`, `third_place_participant_id`, `round_deadline`, `groups_closed_at` (T11: marca la ventana de "grupos finales" antes del KO) | 1:1 con room; `seed` gobierna sorteos/bracket/bot_intents → reproducible y testeable |
 | `participants` | `id`, `tournament_id`, `user_id?` (null = bot), `nation_id`, `is_bot`, `group_letter`, `seed`, `eliminated_phase?`, `placement?` | 48 por torneo; `placement`/`eliminated_phase` para historial |
 | `matches` | `id`, `tournament_id`, `phase`, `bracket_slot`, `home_participant_id`, `away_participant_id`, `home_score`, `away_score`, `winner_participant_id`, `status` (ver §3), `is_bot_only` | |
 | `penalties` | `id`, `match_id`, `idx` (1..5 o súbita), `kicker_participant_id`, `keeper_participant_id`, `question_id`, `difficulty`, `started_at`, `deadline`, `status` (ver §3), `second_chance bool`, `removed_option int?`, `resolution jsonb` | timestamps server |
@@ -235,10 +235,16 @@ rígido). Una "ronda" es una **jornada de grupos** o una **fase de eliminación*
 - El penal `k` (misma pregunta compartida, §4.1) abre a la vez en **todos** los partidos
   con humanos: 10s de respuesta + animación de tiro (~3s).
 - **Timings de tiempo muerto (sesión F, agresivos):** intra-partido `round_deadline`=**3s**
-  (= la animación); entre partidos=**5s** (3s animación + 2s para ver el grupo); lead-in de
+  (= la animación); entre partidos=**7s** (3s animación + grupo visible, T10); **cierre de
+  grupos→KO=4s** (las tablas finales se ven con `current_phase` aún `groups`, T11); lead-in de
   fase (KO)=**2s** (ver los cruces); presentación inicial=**4s** (2s país + 2s grupos). El
   cliente abre el próximo penal por broadcast **`round:next`** (poke preciso a `open_next_round`
-  al vencer el deadline), no por polling; el `tick()` de pg_cron (10s) queda solo de backstop.
+  al vencer el deadline), no por polling; el `tick()` de pg_cron (1s) queda solo de backstop.
+- **Pausa grupos→KO (T11):** `advance_tournament` NO arma el bracket apenas se cierran los
+  grupos. Marca `tournaments.groups_closed_at` y deja `current_phase='groups'` 4s (el cliente
+  muestra las tablas finales); recién al vencer ese deadline corre `build_knockout` (que flipea
+  a `round_of_32`) + lead-in de 2s para el reveal del árbol. `open_next_round` limpia solo el
+  deadline ya vencido (no pisa el lead-in que `advance_tournament` fija en la misma transacción).
 - **Barrier:** el penal `k+1` se abre recién cuando **todos** los partidos de la ronda
   cerraron el penal `k`. Esto es necesario porque el caso **"los dos mal"** agrega una
   **segunda chance de 5s** a ese partido puntual (pasa en cualquier fase, también en
