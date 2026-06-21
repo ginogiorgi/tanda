@@ -53,9 +53,9 @@ export type ScoreLivePayload = {
 };
 
 /**
- * Estilo del chip 2D de una nación: banda diagonal de dos tonos (espejo de la remera 3D con su
- * "raya cruzada"). Si no hay segundo color (o es igual al base), el chip va liso. Para usar en
- * `style={...}` de los swatches del HUD/bracket.
+ * Estilo del chip 2D de una nación: dos paneles partidos por un corte diagonal limpio (espejo de la
+ * camiseta 3D de dos colores, T12). Si no hay segundo color (o es igual al base), el chip va liso.
+ * Para usar en `style={...}` de los swatches del HUD/bracket.
  */
 export function kitSwatchStyle(
   brief: Pick<ParticipantBrief, "kit_primary" | "kit_secondary"> | null,
@@ -64,7 +64,7 @@ export function kitSwatchStyle(
   const sash = brief?.kit_secondary ?? base;
   if (sash === base) return { background: base };
   return {
-    background: `linear-gradient(115deg, ${base} 0%, ${base} 42%, ${sash} 42%, ${sash} 58%, ${base} 58%, ${base} 100%)`,
+    background: `linear-gradient(115deg, ${base} 0%, ${base} 50%, ${sash} 50%, ${sash} 100%)`,
   };
 }
 

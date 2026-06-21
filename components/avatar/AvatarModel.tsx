@@ -6,11 +6,20 @@
  * vía radios distintos, no solo escala. Ver SPEC §8.2.
  */
 
+import { useMemo } from "react";
+import * as THREE from "three";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
 
 const SKIN = "#d9a06b";
 const EYE = "#2a211b";
 const SEG = 6; // segmentos radiales bajos → facetado low-poly
+
+// Torso de dos colores (T12): radial/anillos un poco más densos que el resto del cuerpo para que el
+// corte diagonal salga prolijo sin dejar de ser facetado. `SASH_TILT` es la inclinación del corte
+// (plano en X-Y que parte el torso en dos paneles); si saliera espejado, invertir el signo.
+const TORSO_RADIAL = SEG * 2;
+const TORSO_RINGS = 8;
+const SASH_TILT = -0.95;
 
 /** Mitad de la altura total (~1.86), para centrar el modelo en el canvas. */
 const HALF_HEIGHT = 0.93;
@@ -110,9 +119,10 @@ interface AvatarModelProps {
    */
   kitTop?: HexColor;
   /**
-   * Color de la banda diagonal cruzada de la remera (`kit_secondary`). Estilización del juego para
-   * diferenciar selecciones de color parecido. Si falta o es igual a `kitTop`, no se dibuja banda
-   * (remera lisa). Solo aplica en la escena de penal (junto con `kitTop`), no en el creador.
+   * Segundo color de la camiseta (`kit_secondary`): el torso se parte en dos paneles por un corte
+   * diagonal limpio. Estilización del juego para diferenciar selecciones de color parecido. Si falta
+   * o es igual a `kitTop`, el torso va liso. Solo aplica en la escena de penal (junto con `kitTop`),
+   * no en el creador.
    */
   kitSash?: HexColor;
 }
@@ -159,8 +169,21 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
       <group scale={[1, 1, torsoFlatten]}>
         {/* pelvis (prenda inferior) */}
         <Bone yBottom={HIP - 0.04} yTop={WAIST} rBottom={b.hipR} rTop={b.waistR * 1.1} color={bottom.color} />
-        {/* torso ahusado cintura→hombros (prenda superior) */}
-        <Bone yBottom={WAIST} yTop={SHOULDER} rBottom={b.waistR} rTop={b.shoulderR} color={top.color} />
+        {/* torso ahusado cintura→hombros (prenda superior). T12: si la nación tiene segundo color, el
+            propio torso se parte en dos paneles por un corte diagonal limpio (integrado, no una
+            cáscara aparte); si no, va liso. */}
+        {sashColor ? (
+          <TorsoTwoTone
+            yBottom={WAIST}
+            yTop={SHOULDER}
+            rBottom={b.waistR}
+            rTop={b.shoulderR}
+            primary={top.color}
+            secondary={sashColor}
+          />
+        ) : (
+          <Bone yBottom={WAIST} yTop={SHOULDER} rBottom={b.waistR} rTop={b.shoulderR} color={top.color} />
+        )}
       </group>
 
       {/* pecho femenino: un polígono del torso levantado a la altura del busto (no un óvalo) */}
@@ -170,9 +193,6 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
           <meshStandardMaterial color={top.color} flatShading />
         </mesh>
       )}
-
-      {/* banda diagonal cruzada (kit_secondary): slab fino al frente del pecho, de hombro a cadera */}
-      {sashColor && <Sash color={sashColor} body={b} />}
 
       {/* ── Brazos + hombro sobre el brazo (deltoides) ── */}
       {[-1, 1].map((s) => {
@@ -214,30 +234,67 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
 }
 
 /**
- * Banda diagonal cruzada de la remera (la "raya cruzada"): en vez de un slab plano que flotaba y
- * sobresalía de los costados, ahora es una **cáscara curva que abraza el frente del torso** (mismo
- * truco que el casquete del pelo). Es un segmento de cilindro ahusado que comparte el taper
- * cintura→hombro y el achatado en Z del torso, apoyado apenas por fuera de la camiseta (offset fino),
- * acotado a WAIST..SHOULDER y con una inclinación diagonal moderada. Así sigue la curvatura y se lee
- * como parte de la remera, sin perforar ni despegarse. Low-poly, sin texturas.
+ * Torso de dos colores (T12): reemplaza la vieja "raya cruzada" (una cáscara de cilindro tilteada que
+ * flotaba/penetraba porque su eje dejaba de ser concéntrico con el torso). Acá el torso ES la
+ * geometría de dos paneles: un tronco de cono (mismo taper cintura→hombro que el `Bone`, y heredando
+ * el achatado en Z del grupo padre) coloreado **por cara** según de qué lado de un plano diagonal en
+ * X-Y cae cada triángulo. Con `flatShading` + color por vértice uniforme por cara, el corte sale
+ * limpio y facetado (on-brand low-poly), pegado al cuerpo y coherente desde cualquier ángulo. Sin
+ * texturas ni offset que sobresalga.
  */
-function Sash({ color, body }: { color: string; body: BodyShape }) {
-  const flatten = body.bust ? 0.82 : 0.72; // mismo achatado en Z que el torso
-  const off = 0.016; // cáscara apenas por fuera de la superficie (como el `extra` del pelo)
-  const arc = 1.05; // ancho angular de la banda sobre el frente del torso (~60°)
-  const tilt = 0.42; // inclinación diagonal (banda cruzada), en radianes
-  const yMid = (WAIST + SHOULDER) / 2;
-  const h = SHOULDER - WAIST;
+function TorsoTwoTone({
+  yBottom,
+  yTop,
+  rBottom,
+  rTop,
+  primary,
+  secondary,
+}: {
+  yBottom: number;
+  yTop: number;
+  rBottom: number;
+  rTop: number;
+  primary: string;
+  secondary: string;
+}) {
+  const geometry = useMemo(() => {
+    const h = yTop - yBottom;
+    // openEnded: las tapas quedan ocultas por pelvis/cuello/hombros; solo importa la cara lateral.
+    const geo = new THREE.CylinderGeometry(
+      rTop,
+      rBottom,
+      h,
+      TORSO_RADIAL,
+      TORSO_RINGS,
+      true,
+    ).toNonIndexed();
+    const pos = geo.getAttribute("position");
+    // `new THREE.Color(hex)` deja el color en espacio lineal (igual que el setter de `color` del
+    // resto de los meshes) → el panel primario matchea las mangas y el secundario un mesh sólido.
+    const cPrim = new THREE.Color(primary);
+    const cSec = new THREE.Color(secondary);
+    const nx = Math.cos(SASH_TILT);
+    const ny = Math.sin(SASH_TILT);
+    const colors = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i += 3) {
+      // Centro de cada cara (geometría centrada en y=0 → el corte pasa por el medio del torso).
+      const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3;
+      const cy = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3;
+      const c = nx * cx + ny * cy > 0 ? cSec : cPrim;
+      for (let k = 0; k < 3; k++) {
+        colors[(i + k) * 3] = c.r;
+        colors[(i + k) * 3 + 1] = c.g;
+        colors[(i + k) * 3 + 2] = c.b;
+      }
+    }
+    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    return geo;
+  }, [yBottom, yTop, rBottom, rTop, primary, secondary]);
+
   return (
-    <group position={[0, yMid, 0]} rotation={[0, 0, tilt]} scale={[1, 1, flatten]}>
-      {/* Centro del arco llevado al frente (+Z). Si apareciera en la espalda, usar -Math.PI / 2. */}
-      <mesh rotation={[0, Math.PI / 2 - arc / 2, 0]}>
-        <cylinderGeometry
-          args={[body.shoulderR + off, body.waistR + off, h, SEG * 3, 1, true, 0, arc]}
-        />
-        <meshStandardMaterial color={color} flatShading />
-      </mesh>
-    </group>
+    <mesh position={[0, (yBottom + yTop) / 2, 0]} geometry={geometry}>
+      <meshStandardMaterial vertexColors flatShading />
+    </mesh>
   );
 }
 
