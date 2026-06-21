@@ -44,6 +44,12 @@ const RESULT_LINGER_MS = 2000;
 /** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
 const REVEAL_MS = 2000;
 
+/**
+ * T9: al ser eliminado en fase directa, mostrar primero los cruces del bracket ~4s (como el reveal
+ * de grupos) para que el jugador vea cómo quedaron al perder, antes del cartel de derrota (RunSummary).
+ */
+const KO_LOSS_REVEAL_MS = 4000;
+
 export function TournamentLive({
   tournamentId,
   isGuest,
@@ -62,6 +68,8 @@ export function TournamentLive({
   // B5.2: ¿ya jugué al menos un penal en este torneo? Distingue "espera entre rondas" (mi tanda
   // resolvió, faltan otros) de la presentación inicial (todavía nadie pateó → no es espera).
   const [everPlayed, setEverPlayed] = useState(false);
+  // T9: ya pasaron los ~4s de cruces tras una eliminación en fase directa → mostrar el resumen.
+  const [koRevealDone, setKoRevealDone] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
@@ -213,6 +221,20 @@ export function TournamentLive({
     return () => clearTimeout(id);
   }, [snapshot]);
 
+  // T9: si me eliminaron en fase directa (no en grupos, no coronado), agendar el pase al resumen tras
+  // los ~4s de cruces. El QUÉ mostrar se deriva en el render; este effect solo corre el reloj.
+  useEffect(() => {
+    if (!snapshot) return;
+    const meNow = snapshot.participants.find((p) => p.participant_id === snapshot.my_participant_id);
+    const koLoss =
+      meNow?.eliminated_phase != null &&
+      meNow.eliminated_phase !== "group" &&
+      meNow.placement == null;
+    if (!koLoss) return;
+    const id = setTimeout(() => setKoRevealDone(true), KO_LOSS_REVEAL_MS);
+    return () => clearTimeout(id);
+  }, [snapshot]);
+
   if (showPenal && currentMatchId) {
     return <PenalLive key={currentMatchId} matchId={currentMatchId} />;
   }
@@ -257,6 +279,12 @@ export function TournamentLive({
   }
 
   if (me && (me.eliminated_phase != null || me.placement != null)) {
+    // T9: eliminación en fase directa → ver los cruces ~4s antes del cartel de derrota.
+    const koLoss =
+      me.eliminated_phase != null && me.eliminated_phase !== "group" && me.placement == null;
+    if (koLoss && !koRevealDone) {
+      return <Bracket view={buildBracketView(snapshot, live)} />;
+    }
     return (
       <RunSummary
         snapshot={snapshot}
@@ -279,12 +307,6 @@ export function TournamentLive({
         </div>
       )}
       <Bracket view={buildBracketView(snapshot, live)} />
-      <Link
-        href="/"
-        className="relative z-10 text-xs font-medium text-fg-subtle transition-colors hover:text-fg-muted"
-      >
-        Volver al inicio
-      </Link>
     </>
   );
 }

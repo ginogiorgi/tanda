@@ -109,7 +109,7 @@ describe("pausa de grupos finales antes del KO (T11)", () => {
   const secs = (rd: string | null) =>
     rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
 
-  it("mantiene 'groups' ~4s tras cerrar los grupos, y luego arma el round_of_32 con lead-in de 2s", async () => {
+  it("mantiene 'groups' ~4s tras cerrar los grupos, y luego arma el round_of_32 con lead-in de 4s", async () => {
     await withRollback(async (c) => {
       const { tournamentId } = await startRealTournament(c, 2);
 
@@ -161,7 +161,7 @@ describe("pausa de grupos finales antes del KO (T11)", () => {
       expect(leftPause).toBeGreaterThan(2);
       expect(leftPause).toBeLessThanOrEqual(5);
 
-      // Vencida la ventana + tick → se arma el bracket (16 cruces) con lead-in de ~2s.
+      // Vencida la ventana + tick → se arma el bracket (16 cruces) con lead-in de ~4s (T7: para ver los cruces).
       await c.query(
         `update public.tournaments set round_deadline = now() - interval '1 second' where id = $1`,
         [tournamentId],
@@ -180,8 +180,8 @@ describe("pausa de grupos finales antes del KO (T11)", () => {
       expect(built.phase).toBe("round_of_32");
       expect(Number(built.ko)).toBe(16);
       const leftLeadIn = secs(built.rd)!;
-      expect(leftLeadIn).toBeGreaterThan(0);
-      expect(leftLeadIn).toBeLessThanOrEqual(3);
+      expect(leftLeadIn).toBeGreaterThan(2);
+      expect(leftLeadIn).toBeLessThanOrEqual(5);
     });
   });
 });
