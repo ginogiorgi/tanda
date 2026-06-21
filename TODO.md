@@ -9,18 +9,21 @@
 > **Sesión actual (varios puntos) → CÓDIGO HECHO, verde local** (`typecheck · lint · knip · build · 107 unit`).
 > Sin DB ni push (commits locales en `main`).
 >
-> **Hecho esta sesión (9 tareas):**
+> **Hecho esta sesión (11 tareas):**
 > - ✅ **T1** sin scroll · ✅ **T6** botones de inicio parejos · ✅ **T3** país a la izquierda ·
 >   ✅ **T4** globo de resultado simple (verde/rojo) · ✅ **T7** globo no tapa el arco en mobile ·
->   ✅ **T14** pantalla de fin centrada.
-> - 🟡 **Gate visual pendiente de Gino** (`pnpm dev`): **T2** favicon "T" refinada · **T16** líneas
->   del bracket en KO · **T12** camiseta de dos colores (escena de penal / editor de avatar; si el
->   corte sale espejado → invertir `SASH_TILT` en `AvatarModel.tsx`).
+>   ✅ **T14** pantalla de fin centrada · ✅ **T13** historial paginado (ruta `/perfil/historial`).
+> - 🟡 **Gate visual pendiente de Gino** (`pnpm dev`): **T2** favicon "T" refinada (caché del
+>   navegador: hard-refresh / ver `/icon`) · **T16** líneas del bracket en KO · **T12** camiseta de
+>   dos colores (escena de penal / editor; si el corte sale espejado → invertir `SASH_TILT` en
+>   `AvatarModel.tsx`) · **T9** fondo animado de cancha (todas las pantallas fuera de juego).
 >
-> **Pendiente del plan (próximos "segui"):** T9 (fondo animado CSS) · T13 (historial paginado) ·
-> Bloque D DB/timing (T8 sala 2→1min, T10 fixture +1s, T11 grupos ~4s antes del KO) ·
-> Bloque E datos (T5 colores de 48 selecciones, T15 preguntas → 500 en sub-pasos). Las de DB
-> requieren el **Pre-flight** (reconciliar ledger de prod) antes de tocar SQL.
+> **Pendiente del plan (próximos "segui") — todo DB, requiere Docker + Pre-flight:**
+> - Bloque D DB/timing: **T8** sala 2→1min · **T10** fixture +1s · **T11** grupos ~4s antes del KO
+>   (cambio de máquina de estados → el plan marca **parar y consultar a Gino**).
+> - Bloque E datos: **T5** colores de las 48 selecciones · **T15** preguntas → 500 (multi-segui).
+> - **Pre-flight** antes de la 1ª de DB: reconciliar el ledger de prod (`mcp list_migrations`) y
+>   verificar local con `pnpm db:start && db:reset && test:db`.
 >
 > **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`.
 
