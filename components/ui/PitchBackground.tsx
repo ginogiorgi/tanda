@@ -12,7 +12,7 @@ export function PitchBackground() {
       <svg
         className="h-full w-full opacity-[0.12] blur-[5px]"
         viewBox="0 0 400 600"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
         stroke="#d4af37"
         strokeWidth={1.6}

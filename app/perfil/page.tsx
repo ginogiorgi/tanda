@@ -84,7 +84,7 @@ export default async function PerfilPage() {
   const stats = aggregateStats(history);
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-8 overflow-y-auto px-6 py-12">
       {/* Tarea 4: navegación arriba de todo (Inicio + Cerrar sesión). */}
       <nav className="flex items-center justify-between">
         <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>

@@ -4,7 +4,7 @@ import type { TournamentHistoryEntry } from "@/lib/profile/history";
 /** Fase legible para el caption de la tarjeta del historial. */
 const PHASE_ES: Record<string, string> = {
   group: "Fase de grupos",
-  round_of_32: "32avos",
+  round_of_32: "16avos",
   round_of_16: "Octavos",
   quarters: "Cuartos",
   semis: "Semifinal",

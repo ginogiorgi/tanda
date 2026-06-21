@@ -46,8 +46,9 @@ export default async function Home({
   }
 
   return (
-    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-16 text-center">
+    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-16 text-center">
       <JsonLd />
+      <div className="my-auto flex w-full flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-4">
         <Eyebrow className="tracking-[0.3em]">Mundial · Trivia · Tiempo real</Eyebrow>
         <h1 className="font-display text-7xl font-bold uppercase tracking-tight text-gold drop-shadow-[0_8px_30px_rgba(212,175,55,0.18)] sm:text-9xl">
@@ -87,36 +88,48 @@ export default async function Home({
             </Link>
           )}
           <PlayMenu />
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
             {isGuest ? (
               <Link
                 href="/register"
-                className={buttonVariants({ variant: "outline", size: "lg", className: "min-w-[11rem]" })}
+                className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[11rem]" })}
               >
                 Creá una cuenta
               </Link>
             ) : (
               <Link
                 href="/perfil"
-                className={buttonVariants({ variant: "outline", size: "lg", className: "min-w-[11rem]" })}
+                className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[11rem]" })}
               >
                 Mi perfil
               </Link>
             )}
-            <LogoutButton size="lg" className="min-w-[11rem]" />
+            <LogoutButton size="lg" className="w-full sm:w-auto sm:min-w-[11rem]" />
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-5">
-          <GuestButton />
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Link href="/register" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              Crear cuenta
-            </Link>
-            <Link href="/login" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              Entrar
-            </Link>
-          </div>
+        <div className="grid w-full max-w-md grid-cols-1 justify-items-center gap-3 sm:grid-cols-2">
+          <Link
+            href="/register"
+            className={buttonVariants({
+              variant: "primary",
+              size: "lg",
+              className: "order-1 w-full sm:col-span-2 sm:w-52 sm:justify-self-center",
+            })}
+          >
+            Crear cuenta
+          </Link>
+          <Link
+            href="/login"
+            className={buttonVariants({
+              variant: "outline",
+              size: "lg",
+              className: "order-2 w-full sm:w-52 sm:justify-self-end",
+            })}
+          >
+            Entrar
+          </Link>
+          <GuestButton className="order-3 w-full sm:w-52 sm:justify-self-start" />
         </div>
       )}
 
@@ -124,6 +137,7 @@ export default async function Home({
         Juego original e independiente. No está afiliado, asociado ni autorizado por la FIFA ni por
         ninguna organización futbolística. Naciones y selecciones a modo ilustrativo.
       </p>
+      </div>
     </main>
   );
 }

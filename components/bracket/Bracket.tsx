@@ -55,11 +55,6 @@ function TeamChip({
     <span className={`flex items-center gap-1.5 ${dim ? "opacity-50" : ""}`}>
       <Flag code={brief.flag} name={brief.nation_name} className={size === "xs" ? "h-3" : "h-3.5"} />
       <span
-        className={`${size === "xs" ? "h-2 w-2" : "h-3 w-3"} shrink-0 rounded-full`}
-        style={kitSwatchStyle(brief)}
-        aria-hidden
-      />
-      <span
         className={`font-mono font-semibold ${size === "xs" ? "text-xs" : "text-sm"} ${
           isMe ? "text-gold" : "text-fg"
         }`}

@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { signInAsGuest } from "@/lib/guest/anon";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/cn";
 
 /** §8.4: entra como invitado (sesión anónima, username autoasignado) y cae en el home a jugar. */
-export function GuestButton() {
+export function GuestButton({ className }: { className?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,8 +27,14 @@ export function GuestButton() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <Button onClick={onClick} disabled={busy} className="h-14 text-lg font-bold">
+    <div className={cn("flex flex-col items-stretch gap-2", className)}>
+      <Button
+        onClick={onClick}
+        disabled={busy}
+        variant="outline"
+        size="lg"
+        className="w-full"
+      >
         {busy ? "Entrando…" : "Jugar como invitado"}
       </Button>
       {error && <p className="text-sm text-danger">{error}</p>}

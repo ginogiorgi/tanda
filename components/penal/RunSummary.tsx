@@ -19,7 +19,7 @@ import type { BracketSnapshot } from "@/lib/bracket/bracket";
 
 const PHASE_LABEL: Record<MatchPhase, string> = {
   group: "fase de grupos",
-  round_of_32: "32avos",
+  round_of_32: "16avos",
   round_of_16: "octavos",
   quarters: "cuartos",
   semis: "semifinales",
