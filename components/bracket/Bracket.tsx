@@ -196,15 +196,22 @@ function BracketTree({ ko }: { ko: BracketView["ko"] }) {
   return (
     <div className="w-full">
       <div className="-mx-1 overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-3 px-1">
-          {columns.map(({ phase, matches }) => (
+        {/* gap-8 (2rem) deja lugar a los conectores: su ancho coincide con el stub del CSS (.bracket-cell). */}
+        <div className="flex min-w-max gap-8 px-1">
+          {columns.map(({ phase, matches }, ci) => (
             <div key={phase} className="flex w-32 shrink-0 flex-col">
               <span className="mb-2 text-center text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
                 {PHASE_LABEL[phase]}
               </span>
-              <div className="flex flex-1 flex-col justify-around gap-2">
+              {/* T16: celdas flex:1 + conectores CSS en todas las columnas menos la última (la final). */}
+              <div
+                className="flex flex-1 flex-col"
+                {...(ci < columns.length - 1 ? { "data-bracket-connect": "" } : {})}
+              >
                 {matches.map((m) => (
-                  <TreeMatch key={m.match.match_id} m={m} />
+                  <div key={m.match.match_id} className="bracket-cell">
+                    <TreeMatch m={m} />
+                  </div>
                 ))}
               </div>
             </div>

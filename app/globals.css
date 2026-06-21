@@ -113,6 +113,37 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * T16 — conectores del cuadro de eliminación (CSS puro). El árbol se reduce a la mitad cada ronda,
+ * así que con celdas `flex:1` de igual alto las llaves salen deterministas por posición: cada par
+ * (impar/par) converge en el centro de la llave de la columna siguiente. Sin animación.
+ */
+.bracket-cell {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: center;
+}
+/* Stub horizontal saliente (= gap entre columnas) en cada llave de las columnas que alimentan. */
+[data-bracket-connect] > .bracket-cell::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 2rem;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+}
+/* Línea vertical que une el centro de la llave de arriba con el de abajo (entra al match siguiente). */
+[data-bracket-connect] > .bracket-cell:nth-child(odd)::before {
+  content: "";
+  position: absolute;
+  left: calc(100% + 2rem);
+  top: 50%;
+  height: 100%;
+  border-left: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+}
+
 /* Confeti del campeón (8.12). Lo neutraliza el bloque prefers-reduced-motion de abajo. */
 @keyframes tanda-confetti {
   0% {
