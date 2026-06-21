@@ -130,9 +130,11 @@ export function RunSummary({
 
   return (
     <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
-      {/* Tarea 12: el confeti cae arriba; la copa va más abajo (mt) para que no queden pegados. */}
+      {/* El confeti cae por encima (overlay absoluto), así que no necesita empujar el contenido. */}
       {isChampion && <Confetti />}
-      <div className={`flex flex-col items-center gap-2 ${isChampion ? "mt-12 sm:mt-16" : ""}`}>
+      {/* T14: el header va sin offset condicional → todos los estados (campeón / subcampeón /
+          eliminado) quedan centrados parejo dentro del mismo contenedor max-w-md. */}
+      <div className="flex flex-col items-center gap-2">
         {isChampion && <span className="mb-2 text-7xl drop-shadow">🏆</span>}
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
           {isChampion ? "Campeón del Mundo" : "Fin del torneo"}
