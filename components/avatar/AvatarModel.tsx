@@ -14,11 +14,11 @@ const SKIN = "#d9a06b";
 const EYE = "#2a211b";
 const SEG = 6; // segmentos radiales bajos → facetado low-poly
 
-// Torso de dos colores (T12): radial/anillos un poco más densos que el resto del cuerpo para que el
-// corte diagonal salga prolijo sin dejar de ser facetado. `SASH_TILT` es la inclinación del corte
-// (plano en X-Y que parte el torso en dos paneles); si saliera espejado, invertir el signo.
-const TORSO_RADIAL = SEG * 2;
-const TORSO_RINGS = 8;
+// Torso de dos colores (T12). `SASH_TILT` es la inclinación del corte (plano `nx·x + ny·y = 0` que
+// parte el torso en dos paneles); si saliera espejado, invertir el signo. `TORSO_RADIAL` solo afecta
+// lo redondeado de la silueta: el BORDE entre colores sale recto igual, porque sus vértices se
+// insertan exactamente sobre el corte (colineales en la vista de frente).
+const TORSO_RADIAL = 16;
 const SASH_TILT = -0.95;
 
 /** Mitad de la altura total (~1.86), para centrar el modelo en el canvas. */
@@ -234,13 +234,17 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
 }
 
 /**
- * Torso de dos colores (T12): reemplaza la vieja "raya cruzada" (una cáscara de cilindro tilteada que
- * flotaba/penetraba porque su eje dejaba de ser concéntrico con el torso). Acá el torso ES la
- * geometría de dos paneles: un tronco de cono (mismo taper cintura→hombro que el `Bone`, y heredando
- * el achatado en Z del grupo padre) coloreado **por cara** según de qué lado de un plano diagonal en
- * X-Y cae cada triángulo. Con `flatShading` + color por vértice uniforme por cara, el corte sale
- * limpio y facetado (on-brand low-poly), pegado al cuerpo y coherente desde cualquier ángulo. Sin
- * texturas ni offset que sobresalga.
+ * Torso de dos colores (T12): reemplaza la vieja "raya cruzada" (cáscara de cilindro tilteada que
+ * flotaba/penetraba). El torso ES la geometría de dos paneles partida por un corte diagonal limpio.
+ *
+ * Clave para que el borde salga **recto** (y no escalonado como cuando se coloreaba por cara entera):
+ * el corte es el plano `nx·x + ny·y = 0`, que en la vista de frente proyecta a una recta. Se
+ * construye la cara lateral del tronco de cono tira por tira y, en cada arista radial, se inserta un
+ * vértice **exactamente** a la altura donde el corte la cruza (`crossY`). Así el borde entre colores
+ * son aristas reales de la malla cuyos vértices son colineales en pantalla → recto sin importar
+ * `TORSO_RADIAL`. Cada triángulo se pinta según el centro (nunca cruza el borde, así que es exacto).
+ * Hereda el taper cintura→hombro y el achatado en Z del grupo padre; `DoubleSide` evita depender del
+ * winding. Low-poly, sin texturas ni offset.
  */
 function TorsoTwoTone({
   yBottom,
@@ -259,41 +263,72 @@ function TorsoTwoTone({
 }) {
   const geometry = useMemo(() => {
     const h = yTop - yBottom;
-    // openEnded: las tapas quedan ocultas por pelvis/cuello/hombros; solo importa la cara lateral.
-    const geo = new THREE.CylinderGeometry(
-      rTop,
-      rBottom,
-      h,
-      TORSO_RADIAL,
-      TORSO_RINGS,
-      true,
-    ).toNonIndexed();
-    const pos = geo.getAttribute("position");
-    // `new THREE.Color(hex)` deja el color en espacio lineal (igual que el setter de `color` del
-    // resto de los meshes) → el panel primario matchea las mangas y el secundario un mesh sólido.
-    const cPrim = new THREE.Color(primary);
-    const cSec = new THREE.Color(secondary);
+    const h2 = h / 2; // geometría centrada en y=0 → el corte pasa por el medio del torso
+    const rMid = (rTop + rBottom) / 2;
+    const slope = (rTop - rBottom) / h; // radio(y) = rMid + slope·y, con y en [-h2, h2]
     const nx = Math.cos(SASH_TILT);
     const ny = Math.sin(SASH_TILT);
-    const colors = new Float32Array(pos.count * 3);
-    for (let i = 0; i < pos.count; i += 3) {
-      // Centro de cada cara (geometría centrada en y=0 → el corte pasa por el medio del torso).
-      const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3;
-      const cy = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3;
-      const c = nx * cx + ny * cy > 0 ? cSec : cPrim;
-      for (let k = 0; k < 3; k++) {
-        colors[(i + k) * 3] = c.r;
-        colors[(i + k) * 3 + 1] = c.g;
-        colors[(i + k) * 3 + 2] = c.b;
+    // `new THREE.Color(hex)` deja el color en espacio lineal (igual que el setter `color` del resto
+    // de los meshes) → el panel primario matchea las mangas y el secundario un mesh sólido.
+    const cPrim = new THREE.Color(primary);
+    const cSec = new THREE.Color(secondary);
+
+    const radiusAt = (y: number) => rMid + slope * y;
+    const vert = (theta: number, y: number): [number, number, number] => {
+      const r = radiusAt(y);
+      return [r * Math.sin(theta), y, r * Math.cos(theta)];
+    };
+    // Altura a la que el corte cruza la arista vertical en `theta`, acotada a [-h2, h2]. Como el radio
+    // depende de y (taper), queda una ecuación lineal en y → solución única.
+    const crossY = (theta: number): number => {
+      const denom = nx * slope * Math.sin(theta) + ny;
+      if (Math.abs(denom) < 1e-6) return 0; // corte ~horizontal en ese ángulo → al centro
+      const y = -(nx * rMid * Math.sin(theta)) / denom;
+      return Math.max(-h2, Math.min(h2, y));
+    };
+
+    const positions: number[] = [];
+    const colors: number[] = [];
+    const pushTri = (
+      a: [number, number, number],
+      b: [number, number, number],
+      c: [number, number, number],
+    ) => {
+      const cx = (a[0] + b[0] + c[0]) / 3;
+      const cy = (a[1] + b[1] + c[1]) / 3;
+      const col = nx * cx + ny * cy > 0 ? cSec : cPrim;
+      for (const p of [a, b, c]) {
+        positions.push(p[0], p[1], p[2]);
+        colors.push(col.r, col.g, col.b);
       }
+    };
+
+    for (let i = 0; i < TORSO_RADIAL; i++) {
+      const t0 = (i / TORSO_RADIAL) * Math.PI * 2;
+      const t1 = ((i + 1) / TORSO_RADIAL) * Math.PI * 2;
+      const b0 = vert(t0, -h2);
+      const b1 = vert(t1, -h2);
+      const x0 = vert(t0, crossY(t0)); // punto de cruce en cada arista → borde recto
+      const x1 = vert(t1, crossY(t1));
+      const p0 = vert(t0, h2);
+      const p1 = vert(t1, h2);
+      // Trapecio inferior (debajo del corte) y superior (encima): el borde común x0–x1 es la recta.
+      pushTri(b0, b1, x1);
+      pushTri(b0, x1, x0);
+      pushTri(x0, x1, p1);
+      pushTri(x0, p1, p0);
     }
-    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geo.computeVertexNormals();
     return geo;
   }, [yBottom, yTop, rBottom, rTop, primary, secondary]);
 
   return (
     <mesh position={[0, (yBottom + yTop) / 2, 0]} geometry={geometry}>
-      <meshStandardMaterial vertexColors flatShading />
+      <meshStandardMaterial vertexColors flatShading side={THREE.DoubleSide} />
     </mesh>
   );
 }
