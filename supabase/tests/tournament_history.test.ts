@@ -19,6 +19,7 @@ type HistoryEntry = {
   matchesWon: number;
   abandoned: boolean;
   playedAt: string;
+  outcome: "won" | "lost" | "abandoned" | null;
 };
 
 async function history(c: PoolClient, uid: string): Promise<HistoryEntry[]> {
@@ -55,6 +56,8 @@ describe("get_tournament_history (10.10)", () => {
       expect(a.matchesPlayed).toBe(1);
       expect(a.matchesWon).toBe(1); // pA ganó
       expect(a.goalsFor).toBe(2); // home_score de pA
+      // Regresión: eliminado en grupos = derrota del torneo, aunque haya GANADO su último partido.
+      expect(a.outcome).toBe("lost");
 
       const histB = await history(c, fx.userB);
       expect(histB).toHaveLength(1);
@@ -83,6 +86,7 @@ describe("get_tournament_history (10.10)", () => {
       const histA = await history(c, fx.userA);
       expect(histA).toHaveLength(1); // antes del fix quedaba fuera por el filtro is_bot=false
       expect(histA[0]!.abandoned).toBe(true);
+      expect(histA[0]!.outcome).toBe("abandoned");
       expect(histA[0]!.tournamentId).toBe(fx.tournamentId);
     });
   });

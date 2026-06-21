@@ -480,8 +480,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   return (
     <>
       {sceneBg(false)}
+      {/* T3: la tarjeta del penal activo va ARRIBA (justo encima del arco), no centrada, para no tapar
+          la escena 3D. Mismo anclaje que el cartel de resultado: mb-auto + margen superior chico. */}
       <div
-        className={`fade-in relative z-10 flex w-full max-w-md flex-col gap-6 ${
+        className={`fade-in relative z-10 mb-auto flex w-full max-w-md flex-col gap-6 -mt-2 pt-0 sm:mt-0 sm:pt-4 ${
           isSecondChance ? "rounded-2xl ring-1 ring-amber-400/40" : ""
         }`}
       >

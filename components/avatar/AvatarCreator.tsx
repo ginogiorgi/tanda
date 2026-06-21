@@ -56,24 +56,26 @@ export function AvatarCreator({
     setSaving(true);
     setSaveError(null);
     setSaved(false);
-    // try/finally: pase lo que pase (error de red, excepción de la action), `saving` SIEMPRE se
-    // resetea → el botón nunca queda colgado en "Guardando…" (T1). En éxito con redirect navegamos
-    // y refrescamos; el reset de `saving` es inocuo porque la navegación desmonta el componente.
+    // Mismo patrón que los flujos que SÍ navegan (LoginForm/RegisterForm): reseteamos el loading
+    // ANTES de navegar y usamos `router.push` (no `replace`). En éxito con redirect navegamos sin
+    // tocar más estado — la navegación desmonta el componente. (T1: antes con `replace` + reset en
+    // `finally` después de navegar la navegación no surtía efecto.)
     try {
       const result = await onSave(avatar);
       if (!result.ok) {
         setSaveError(result.error ?? "No se pudo guardar.");
+        setSaving(false);
         return;
       }
       if (redirectTo) {
-        router.replace(redirectTo);
+        router.push(redirectTo);
         router.refresh();
         return;
       }
       setSaved(true);
+      setSaving(false);
     } catch {
       setSaveError("No se pudo guardar. Probá de nuevo.");
-    } finally {
       setSaving(false);
     }
   }, [onSave, avatar, redirectTo, router]);

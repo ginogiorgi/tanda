@@ -52,27 +52,27 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
   const secs = (rd: string | null) =>
     rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
 
-  it("start_tournament fija la ventana de presentación (~6s) como round_deadline (F3)", async () => {
+  it("start_tournament deja un backstop largo (~15s) como red de seguridad", async () => {
     await withRollback(async (c) => {
       const { tournamentId } = await startRealTournament(c, 2);
 
-      // F3: el backstop ES la ventana de presentación (6s), no 30s. El 1er penal lo abre el cron al
-      // vencer; no dependemos de begin_presentation del cliente (que no surtía efecto en prod).
+      // Enfoque determinístico: start_tournament solo deja un backstop largo (15s). La ventana real
+      // la fija begin_presentation al LLEGAR el humano; el cron abre el 1er penal al vencer.
       const before = await c.query<{ rd: string | null }>(
         `select round_deadline::text as rd from public.tournaments where id = $1`,
         [tournamentId],
       );
       const left = secs(before.rows[0]!.rd)!;
-      expect(left).toBeGreaterThan(2);
-      expect(left).toBeLessThanOrEqual(7);
+      expect(left).toBeGreaterThan(10);
+      expect(left).toBeLessThanOrEqual(16);
     });
   });
 
-  it("begin_presentation ya no extiende ni acorta la ventana de 6s (queda no-op, F3)", async () => {
+  it("begin_presentation re-ancla la ventana a ~6s desde la llegada del humano (idempotente)", async () => {
     await withRollback(async (c) => {
       const { tournamentId, users } = await startRealTournament(c, 2);
 
-      // Con la ventana en 6s (< 8s del guard), begin_presentation es no-op: ni la pisa ni la extiende.
+      // Llega el humano a /partido → comprime el backstop (15s) a ~6s (2s país + ~4s grupos).
       await asRole(c, "authenticated", users[0]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);
@@ -84,6 +84,20 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
       const left = secs(after.rows[0]!.rd)!;
       expect(left).toBeGreaterThan(2);
       expect(left).toBeLessThanOrEqual(7);
+
+      // Idempotente: una segunda llamada (otro humano / re-mount) ya no la pisa (round_deadline < 8s
+      // del guard).
+      await asRole(c, "authenticated", users[1]);
+      await c.query("select public.begin_presentation($1)", [tournamentId]);
+      await resetRole(c);
+
+      const after2 = await c.query<{ rd: string | null }>(
+        `select round_deadline::text as rd from public.tournaments where id = $1`,
+        [tournamentId],
+      );
+      const left2 = secs(after2.rows[0]!.rd)!;
+      expect(left2).toBeGreaterThan(2);
+      expect(left2).toBeLessThanOrEqual(7);
     });
   });
 
