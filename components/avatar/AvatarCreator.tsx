@@ -56,19 +56,26 @@ export function AvatarCreator({
     setSaving(true);
     setSaveError(null);
     setSaved(false);
-    const result = await onSave(avatar);
-    if (!result.ok) {
+    // try/finally: pase lo que pase (error de red, excepción de la action), `saving` SIEMPRE se
+    // resetea → el botón nunca queda colgado en "Guardando…" (T1). En éxito con redirect navegamos
+    // y refrescamos; el reset de `saving` es inocuo porque la navegación desmonta el componente.
+    try {
+      const result = await onSave(avatar);
+      if (!result.ok) {
+        setSaveError(result.error ?? "No se pudo guardar.");
+        return;
+      }
+      if (redirectTo) {
+        router.replace(redirectTo);
+        router.refresh();
+        return;
+      }
+      setSaved(true);
+    } catch {
+      setSaveError("No se pudo guardar. Probá de nuevo.");
+    } finally {
       setSaving(false);
-      setSaveError(result.error ?? "No se pudo guardar.");
-      return;
     }
-    if (redirectTo) {
-      router.push(redirectTo);
-      router.refresh();
-      return;
-    }
-    setSaving(false);
-    setSaved(true);
   }, [onSave, avatar, redirectTo, router]);
 
   // Drag para rotar (solo yaw). Capturamos el puntero sobre el contenedor del viewer.
