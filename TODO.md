@@ -9,21 +9,23 @@
 > **Sesión actual (varios puntos) → CÓDIGO HECHO, verde local** (`typecheck · lint · knip · build · 107 unit`).
 > Sin DB ni push (commits locales en `main`).
 >
-> **Hecho esta sesión (11 tareas):**
-> - ✅ **T1** sin scroll · ✅ **T6** botones de inicio parejos · ✅ **T3** país a la izquierda ·
->   ✅ **T4** globo de resultado simple (verde/rojo) · ✅ **T7** globo no tapa el arco en mobile ·
->   ✅ **T14** pantalla de fin centrada · ✅ **T13** historial paginado (ruta `/perfil/historial`).
-> - 🟡 **Gate visual pendiente de Gino** (`pnpm dev`): **T2** favicon "T" refinada (caché del
->   navegador: hard-refresh / ver `/icon`) · **T16** líneas del bracket en KO · **T12** camiseta de
->   dos colores (escena de penal / editor; si el corte sale espejado → invertir `SASH_TILT` en
->   `AvatarModel.tsx`) · **T9** fondo animado de cancha (todas las pantallas fuera de juego).
+> **Hecho esta sesión (13 tareas) — verde `typecheck·lint·knip·build·107 unit·58 db`:**
+> - ✅ **T1** sin scroll · ✅ **T6** botones de inicio · ✅ **T3** país a la izquierda · ✅ **T4** globo
+>   verde/rojo · ✅ **T7** globo no tapa el arco · ✅ **T14** fin centrada · ✅ **T13** historial paginado.
+> - ✅ **T8** sala 2→1min · ✅ **T10** fixture grupos +1s (6→7s) — 2 migraciones nuevas, **58 db verdes**.
+>   **Pre-flight HECHO:** el ledger de prod ya matchea las migraciones locales (prod en sync).
+> - 🟡 **Gate visual pendiente de Gino** (`pnpm dev`): **T2** favicon (es caché del navegador:
+>   hard-refresh / ver `/icon` — el PNG renderiza OK) · **T16** líneas del bracket en KO · **T9**
+>   fondo animado de cancha · **T12** camiseta dos colores (Gino: "quedó bien"; borde recto + tapa OK).
 >
-> **Pendiente del plan (próximos "segui") — todo DB, requiere Docker + Pre-flight:**
-> - Bloque D DB/timing: **T8** sala 2→1min · **T10** fixture +1s · **T11** grupos ~4s antes del KO
->   (cambio de máquina de estados → el plan marca **parar y consultar a Gino**).
-> - Bloque E datos: **T5** colores de las 48 selecciones · **T15** preguntas → 500 (multi-segui).
-> - **Pre-flight** antes de la 1ª de DB: reconciliar el ledger de prod (`mcp list_migrations`) y
->   verificar local con `pnpm db:start && db:reset && test:db`.
+> **Pendiente (próximos "segui"):**
+> - ⛔ **T11** grupos ~4s antes del KO — **BLOQUEADA**: cambio de máquina de estados → necesita
+>   tu OK/decisión de enfoque antes de tocarla.
+> - **T5** colores de las 48 selecciones (los actuales ya están bien; correcciones finas + tu gate
+>   visual; conviene verificación web por nación) · **T15** preguntas → 500 (multi-segui, grande).
+>
+> **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`
+> (2 migraciones nuevas locales sin aplicar a prod).
 >
 > **Deploy:** ninguno pedido aún. Front por `git push origin main`; DB por MCP `apply_migration`.
 
