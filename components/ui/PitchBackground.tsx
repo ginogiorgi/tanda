@@ -8,9 +8,12 @@
  */
 export function PitchBackground() {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[100svh] overflow-hidden"
+    >
       <svg
-        className="h-full w-full opacity-[0.12] blur-[5px]"
+        className="h-full w-full opacity-[0.17] blur-[4px]"
         viewBox="0 0 400 600"
         preserveAspectRatio="xMidYMid meet"
         fill="none"

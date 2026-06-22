@@ -429,11 +429,10 @@ export function PenalLive({ matchId }: PenalLiveProps) {
     return (
       <>
         {sceneBg(true, anim)}
-        {/* Tarea 4: el texto va arriba (encima del arco) sobre una placa sutil con blur → no se confunde
-            con el arco claro del fondo. */}
-        {/* T7: en mobile el globo se sube (sin padding superior y un toque de margen negativo) para
-            no tapar el arco; en desktop conserva el aire de arriba. */}
-        <div className="fade-in relative z-10 mb-auto flex w-full max-w-md flex-col items-center -mt-2 pt-0 text-center sm:mt-0 sm:pt-4">
+        {/* El globo de resultado va ANCLADO ARRIBA (encima del arco) con posición fija al viewport, no
+            en el flujo centrado del wrapper de /partido (su `my-auto` recentra y tapaba la animación de
+            la pateada). Placa sutil con blur para no confundirse con el arco claro del fondo. */}
+        <div className="fade-in fixed left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
           <div className="flex w-full flex-col items-center gap-3 rounded-2xl bg-bg/75 px-5 py-5 ring-1 ring-border/60 backdrop-blur-sm">
             <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-muted">
               Penal {result.idx} · {result.home_score}–{result.away_score}
@@ -480,10 +479,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
   return (
     <>
       {sceneBg(false)}
-      {/* T3: la tarjeta del penal activo va ARRIBA (justo encima del arco), no centrada, para no tapar
-          la escena 3D. Mismo anclaje que el cartel de resultado: mb-auto + margen superior chico. */}
+      {/* La tarjeta del penal activo va ANCLADA ARRIBA (encima del arco) con posición fija al viewport
+          —mismo criterio que el globo de resultado—, no en el flujo centrado del wrapper de /partido.
+          `max-h-[90svh]` + scroll propio para que nunca desborde en pantallas chicas. */}
       <div
-        className={`fade-in relative z-10 mb-auto flex w-full max-w-md flex-col gap-6 -mt-2 pt-0 sm:mt-0 sm:pt-4 ${
+        className={`fade-in fixed left-1/2 top-[5%] z-10 flex max-h-[90svh] w-full max-w-md -translate-x-1/2 flex-col gap-6 overflow-y-auto px-6 ${
           isSecondChance ? "rounded-2xl ring-1 ring-amber-400/40" : ""
         }`}
       >

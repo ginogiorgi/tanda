@@ -1,17 +1,35 @@
 # TODO — TANDA ⚽
 
-## Estado: Pulido de 16 pedidos + producción — HECHO
+## Estado: 4 fixes (fondo mobile, cartel de penal, timing de grupos, cuestionario) — HECHO
 
-Segunda tanda de pedidos de Gino (UX, layout responsive, flujo de torneo, limpieza de DB,
-SEO) + dejar listo para producción y pushear código + DB a prod.
+Cuarta tanda de pedidos de Gino: pulido de UI mobile, flujo de penal/presentación y una
+auditoría + expansión grande del cuestionario.
 
-> **Verde local completo:** `typecheck · lint · knip · build · 107 unit · 59 db`.
-> **DB de prod:** las 2 migraciones nuevas aplicadas + ledger reconciliado + advisors sin
-> warnings nuevos (los que hay son pre-existentes por diseño: RPCs `SECURITY DEFINER`, RLS
-> con escrituras solo por RPC, sign-ins anónimos para invitados).
+> **Verde local completo:** `typecheck · lint · build · 107 unit · 59 db`.
+> **DB de prod:** las 2 migraciones nuevas aplicadas + ledger reconciliado.
 > **Front:** commit + `git push origin main` (Vercel publica solo).
 
-### Tareas hechas esta sesión
+### Tareas hechas esta sesión (jun 22)
+
+- **Fondo mobile** — `PitchBackground.tsx`: fade menos oscuro (`opacity 0.12→0.17`, `blur 5→4px`)
+  y contenedor `fixed inset-0 h-full`→`fixed inset-x-0 top-0 h-[100svh]` para centrar la cancha
+  en el viewport visible de mobile (antes el viewport grande con barra de URL dejaba aire arriba
+  y cortaba abajo). Desktop intacto.
+- **Cartel de penal arriba del arco** — `PenalLive.tsx`: los carteles de resultado y de penal
+  activo pasan de `mb-auto` (que el `my-auto` del wrapper de `app/partido/page.tsx` recentraba,
+  tapando la pateada) a posición `fixed` anclada arriba (`top-[8%]` / `top-[5%]`, con
+  `max-h-[90svh]` + scroll en el activo). Ya no tapa la animación 3D.
+- **Grupos 10s→5s** — migración `20260622120000_groups_timing_5s.sql`: `begin_presentation` usa
+  `round_deadline = LEAST(round_deadline, now()+7s)` (2s país + 5s grupos) sin el guard frágil
+  `>now()+8s` que dejaba gobernar el backstop; `start_tournament` backstop `15s→10s`. Test
+  `round_clock` al día.
+- **Cuestionario 500→700** — migración `20260622130000_questions_audit_and_expand.sql`: pirámide
+  por embudo de jugadores (easy 269 / medium 184 / hard 165 / very_hard 82). Sin borrar: 23
+  very_hard infladas→hard + wc-302→easy; reescritas (UPDATE) wc-472 (dato desactualizado),
+  wc-313 (autorrevelación), wc-357/347/358 (triviales genéricas) y 9 duplicados; +200 nuevas
+  (wc-501..wc-700) sesgadas a easy/medium, datos durables a jun 2026.
+
+### Tareas hechas sesión previa (16 pedidos)
 
 - **T1** — Guardar avatar ya no queda colgado en "Guardando…": `handleSave` con try/catch/finally
   (siempre resetea `saving`, navega con `router.replace` o muestra error). `AvatarCreator.tsx`.
@@ -71,7 +89,8 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
   Set canónico: `baseline_schema` · `wiring` · `seed` · `session_fixes` · `session_b2_c_optim`
   · `questions_refresh` · `session_f_timing` · `fast_tick` · `groups_timing` · `lobby_1min`
   · `groups_fixture_gap` · `groups_ko_pause` · `nation_kit_colors` · `questions_to_500`
-  · `drop_explanation` (T6) · `ko_reveal_4s` (T7).
+  · `drop_explanation` · `ko_reveal_4s` · `groups_present_deterministic` · `history_group_loss`
+  · `groups_timing_5s` (grupos 5s) · `questions_audit_and_expand` (banco a 700).
 - `supabase/tests/` — suite del camino autoritativo (CI guardrail).
 - `app/` — rutas (Server Components). `components/` — UI. `components/ui/` — primitivas.
   3D (R3F) solo en avatar y penal.

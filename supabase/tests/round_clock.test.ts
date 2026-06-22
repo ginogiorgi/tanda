@@ -52,27 +52,27 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
   const secs = (rd: string | null) =>
     rd === null ? null : (new Date(rd).getTime() - Date.now()) / 1000;
 
-  it("start_tournament deja un backstop largo (~15s) como red de seguridad", async () => {
+  it("start_tournament deja un backstop (~10s) como red de seguridad", async () => {
     await withRollback(async (c) => {
       const { tournamentId } = await startRealTournament(c, 2);
 
-      // Enfoque determinístico: start_tournament solo deja un backstop largo (15s). La ventana real
+      // Enfoque determinístico: start_tournament solo deja un backstop (10s). La ventana real
       // la fija begin_presentation al LLEGAR el humano; el cron abre el 1er penal al vencer.
       const before = await c.query<{ rd: string | null }>(
         `select round_deadline::text as rd from public.tournaments where id = $1`,
         [tournamentId],
       );
       const left = secs(before.rows[0]!.rd)!;
-      expect(left).toBeGreaterThan(10);
-      expect(left).toBeLessThanOrEqual(16);
+      expect(left).toBeGreaterThan(8);
+      expect(left).toBeLessThanOrEqual(10);
     });
   });
 
-  it("begin_presentation re-ancla la ventana a ~6s desde la llegada del humano (idempotente)", async () => {
+  it("begin_presentation re-ancla la ventana a ~7s desde la llegada del humano (idempotente)", async () => {
     await withRollback(async (c) => {
       const { tournamentId, users } = await startRealTournament(c, 2);
 
-      // Llega el humano a /partido → comprime el backstop (15s) a ~6s (2s país + ~4s grupos).
+      // Llega el humano a /partido → comprime el backstop (10s) a ~7s (2s país + 5s grupos) con LEAST.
       await asRole(c, "authenticated", users[0]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);
@@ -85,8 +85,8 @@ describe("begin_presentation (reloj de presentación relativo a la llegada)", ()
       expect(left).toBeGreaterThan(2);
       expect(left).toBeLessThanOrEqual(7);
 
-      // Idempotente: una segunda llamada (otro humano / re-mount) ya no la pisa (round_deadline < 8s
-      // del guard).
+      // Idempotente: una segunda llamada (otro humano / re-mount) ya no la extiende (LEAST conserva
+      // el deadline ya comprimido).
       await asRole(c, "authenticated", users[1]);
       await c.query("select public.begin_presentation($1)", [tournamentId]);
       await resetRole(c);
