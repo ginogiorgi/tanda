@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { MatchPhase, ParticipantBrief, ScoreLivePayload } from "@/lib/realtime/score";
 import {
   buildBracketView,
+  type BracketFormat,
   type BracketSnapshot,
   type BracketTeam,
 } from "./bracket";
@@ -11,12 +12,16 @@ function brief(id: string): ParticipantBrief {
     participant_id: id,
     user_id: `u-${id}`,
     is_bot: false,
-    nation_id: `n-${id}`,
-    nation_code: id.toUpperCase(),
-    nation_name: id,
+    team_id: `n-${id}`,
+    team_code: id.toUpperCase(),
+    team_name: id,
+    team_short: id,
     flag: id,
+    crest: null,
     kit_primary: "#123456",
     kit_secondary: "#abcdef",
+    kit_tertiary: null,
+    kit_pattern: "solid",
     accent: "#123456",
   };
 }
@@ -79,10 +84,28 @@ function ko(
   };
 }
 
+const WC_FORMAT: BracketFormat = {
+  qualifiers_per_zone: 2,
+  best_thirds: 8,
+  knockout_start: "round_of_32",
+  third_place: true,
+  tiebreak: "gd_h2h",
+};
+
+const ARG_FORMAT: BracketFormat = {
+  qualifiers_per_zone: 8,
+  best_thirds: 0,
+  knockout_start: "round_of_16",
+  third_place: false,
+  tiebreak: "goals",
+};
+
 // Grupo A: a1 gana todo, a2 segundo, a3/a4 abajo. yo = a2.
 function snapshot(over: Partial<BracketSnapshot> = {}): BracketSnapshot {
   return {
     tournament_id: "t1",
+    mode_id: "worldcup",
+    format: WC_FORMAT,
     my_participant_id: "a2",
     current_phase: "groups",
     round_deadline: null,
@@ -167,5 +190,25 @@ describe("buildBracketView", () => {
     const rows = buildBracketView(snapshot(), live).groups[0]!.rows;
     // a2 ahora le ganó a a1 5-1 → a2 sube; el GF/DG cambia el orden de cabeza.
     expect(rows[0]!.team.participant_id).toBe("a2");
+  });
+
+  it("Argentina: los interzonales suman en cada zona y no hay repechaje", () => {
+    const inter: ScoreLivePayload = { ...gm("i1", "A", "a4", "b1", 5, 0), group_letter: null };
+    const v = buildBracketView(
+      snapshot({
+        mode_id: "arg",
+        format: ARG_FORMAT,
+        participants: [team("a1", "A"), team("a2", "A"), team("a3", "A"), team("a4", "A"), team("b1", "B")],
+        matches: [gm("m1", "A", "a1", "a2", 1, 0), inter],
+      }),
+      {},
+    );
+    expect(v.mode.id).toBe("arg");
+    const a = v.groups.find((g) => g.letter === "A")!.rows;
+    // a4 ganó el interzonal con 5 penales: mismos 3 pts que a1 pero más convertidos → primero.
+    expect(a.map((r) => r.team.participant_id).slice(0, 2)).toEqual(["a4", "a1"]);
+    expect(a.every((r) => r.outcome === "qualifies")).toBe(true); // pasan 8, nadie en repechaje
+    const b = v.groups.find((g) => g.letter === "B")!.rows;
+    expect(b[0]!.standing.lost).toBe(1);
   });
 });

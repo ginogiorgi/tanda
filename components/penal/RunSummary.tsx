@@ -16,16 +16,7 @@ import { ResultCard } from "@/components/penal/ResultCard";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import type { MatchPhase, ScoreLivePayload } from "@/lib/realtime/score";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
-
-const PHASE_LABEL: Record<MatchPhase, string> = {
-  group: "fase de grupos",
-  round_of_32: "16avos",
-  round_of_16: "octavos",
-  quarters: "cuartos",
-  semis: "semifinales",
-  third_place: "el partido por el 3er puesto",
-  final: "la final",
-};
+import { getMode, phaseInText, type ModeMeta } from "@/lib/modes";
 
 const PHASE_RANK: Record<MatchPhase, number> = {
   group: 0,
@@ -66,12 +57,12 @@ function PenalDots({
   );
 }
 
-function outcomeText(placement: number | null, eliminated: MatchPhase | null): string {
+function outcomeText(mode: ModeMeta, placement: number | null, eliminated: MatchPhase | null): string {
   if (placement === 1) return "¡Campeón!";
   if (placement === 2) return "Subcampeón 🥈";
   if (placement === 3) return "3er puesto 🥉";
   if (placement === 4) return "4º puesto";
-  if (eliminated) return `Eliminado en ${PHASE_LABEL[eliminated]}`;
+  if (eliminated) return `Eliminado en ${phaseInText(mode, eliminated)}`;
   return "Fin del torneo";
 }
 
@@ -90,6 +81,7 @@ export function RunSummary({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const mode = getMode(snapshot.mode_id);
   const me = snapshot.participants.find((p) => p.participant_id === myParticipantId);
   const isChampion = me?.placement === 1;
   // Mi último partido = el de fase más avanzada donde jugué y terminó.
@@ -118,7 +110,7 @@ export function RunSummary({
   async function playAgain() {
     setError(null);
     setBusy(true);
-    const { data, error: rpcError } = await supabase.rpc("quick_play");
+    const { data, error: rpcError } = await supabase.rpc("quick_play", { p_mode: mode.id });
     const ref = (data as { code: string }[] | null)?.[0];
     if (rpcError || !ref) {
       setBusy(false);
@@ -137,29 +129,31 @@ export function RunSummary({
       <div className="flex flex-col items-center gap-2">
         {isChampion && <span className="mb-2 text-7xl drop-shadow">🏆</span>}
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
-          {isChampion ? "Campeón del Mundo" : "Fin del torneo"}
+          {isChampion ? mode.championTitle : "Fin del torneo"}
         </span>
         <p
           className={`font-display font-bold uppercase tracking-tight text-gold ${
             isChampion ? "text-5xl" : "text-4xl"
           }`}
         >
-          {outcomeText(me?.placement ?? null, me?.eliminated_phase ?? null)}
+          {outcomeText(mode, me?.placement ?? null, me?.eliminated_phase ?? null)}
         </p>
       </div>
 
       {lastMatch && (
         <ResultCard
           left={{
-            code: lastMatch.home?.nation_code ?? null,
+            code: lastMatch.home?.team_code ?? null,
             kit: lastMatch.home?.kit_primary ?? null,
             flag: lastMatch.home?.flag ?? null,
+            crest: lastMatch.home?.crest ?? null,
             isMe: lastMatch.home?.participant_id === myParticipantId,
           }}
           right={{
-            code: lastMatch.away?.nation_code ?? null,
+            code: lastMatch.away?.team_code ?? null,
             kit: lastMatch.away?.kit_primary ?? null,
             flag: lastMatch.away?.flag ?? null,
+            crest: lastMatch.away?.crest ?? null,
             isMe: lastMatch.away?.participant_id === myParticipantId,
           }}
           leftScore={lastMatch.home_score}

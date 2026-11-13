@@ -13,7 +13,9 @@
  * la fija el server (`placement`/`eliminated_phase`) al cerrar los grupos.
  */
 
-import { rankGroup, type GroupMatchResult, type Standing } from "@/lib/engine/tournament";
+import type { GroupMatchResult, Standing } from "@/lib/engine/tournament";
+import { rankZone, type Tiebreak } from "@/lib/engine/formats";
+import { KO_PHASES, getMode, type ModeMeta } from "@/lib/modes";
 import {
   applyScoreUpdate,
   type MatchPhase,
@@ -39,9 +41,20 @@ export interface BracketTeam extends ParticipantBrief {
   eliminated_phase: MatchPhase | null;
 }
 
+/** Formato del torneo según `game_modes` (lo manda `get_bracket`). */
+export interface BracketFormat {
+  qualifiers_per_zone: number;
+  best_thirds: number;
+  knockout_start: MatchPhase;
+  third_place: boolean;
+  tiebreak: Tiebreak;
+}
+
 /** Foto inicial del bracket (RPC `get_bracket`). */
 export interface BracketSnapshot {
   tournament_id: string;
+  mode_id: string;
+  format: BracketFormat;
   my_participant_id: string | null;
   current_phase: TournamentPhase;
   round_deadline: string | null;
@@ -77,6 +90,7 @@ export interface KoPhaseView {
 }
 
 export interface BracketView {
+  mode: ModeMeta;
   /** Fase actual del torneo (gobierna qué se muestra: grupos vs árbol de eliminación). */
   phase: TournamentPhase;
   groups: GroupView[];
@@ -86,16 +100,6 @@ export interface BracketView {
   myNextMatch: ScoreLivePayload | null;
   champion: ParticipantBrief | null;
 }
-
-/** Orden de las fases de eliminación (el 3er puesto va antes de la final, que es el clímax). */
-const KO_ORDER: MatchPhase[] = [
-  "round_of_32",
-  "round_of_16",
-  "quarters",
-  "semis",
-  "third_place",
-  "final",
-];
 
 const ACTIVE: ScoreLivePayload["status"][] = ["pending", "in_progress", "sudden_death"];
 
@@ -125,11 +129,16 @@ function groupResults(matches: ScoreLivePayload[]): GroupMatchResult<string>[] {
     }));
 }
 
-function outcomeFor(team: BracketTeam, position: number, groupsClosed: boolean): GroupOutcome {
+function outcomeFor(
+  team: BracketTeam,
+  position: number,
+  groupsClosed: boolean,
+  format: BracketFormat,
+): GroupOutcome {
   if (team.eliminated_phase === "group") return "out";
-  if (groupsClosed) return "qualifies"; // sobrevivió a la fase de grupos
-  if (position <= 2) return "qualifies"; // heurística en vivo
-  if (position === 3) return "playoff"; // carrera de mejores terceros
+  if (groupsClosed) return "qualifies"; // sobrevivió a la fase de zonas
+  if (position <= format.qualifiers_per_zone) return "qualifies"; // heurística en vivo
+  if (format.best_thirds > 0 && position === format.qualifiers_per_zone + 1) return "playoff"; // mejores terceros
   return "out";
 }
 
@@ -142,18 +151,18 @@ export function buildBracketView(snap: BracketSnapshot, live: ScoreboardState): 
   const allMatches = [...merged.values()];
   const me = snap.my_participant_id;
   const teamById = new Map(snap.participants.map((t) => [t.participant_id, t]));
+  const groupPhase = allMatches.filter((m) => m.phase === "group");
 
-  // ── Grupos ──
+  // ── Zonas (incluye interzonales: group_letter null, suman para cada lado en su zona) ──
   const letters = [...new Set(snap.participants.map((t) => t.group_letter).filter(Boolean))].sort();
   const groups: GroupView[] = (letters as string[]).map((letter) => {
     const teams = snap.participants.filter((t) => t.group_letter === letter);
-    const matches = allMatches.filter((m) => m.phase === "group" && m.group_letter === letter);
-    const groupsClosed = teams.some((t) => t.eliminated_phase === "group");
-    const ranked = rankGroup(
-      teams.map((t) => t.participant_id),
-      groupResults(matches),
-      0,
+    const ids = new Set(teams.map((t) => t.participant_id));
+    const matches = groupPhase.filter(
+      (m) => m.group_letter === letter || (m.group_letter === null && participantIds(m).some((id) => ids.has(id))),
     );
+    const groupsClosed = teams.some((t) => t.eliminated_phase === "group");
+    const ranked = rankZone(snap.format.tiebreak, [...ids], groupResults(matches), 0);
     const rows: GroupRow[] = ranked.map((standing, i) => {
       const team = teamById.get(standing.team)!;
       const position = i + 1;
@@ -162,14 +171,14 @@ export function buildBracketView(snap: BracketSnapshot, live: ScoreboardState): 
         standing,
         position,
         isMe: standing.team === me,
-        outcome: outcomeFor(team, position, groupsClosed),
+        outcome: outcomeFor(team, position, groupsClosed, snap.format),
       };
     });
     return { letter, rows };
   });
 
   // ── Eliminación ──
-  const ko: KoPhaseView[] = KO_ORDER.map((phase) => ({
+  const ko: KoPhaseView[] = KO_PHASES.map((phase) => ({
     phase,
     matches: allMatches
       .filter((m) => m.phase === phase)
@@ -180,7 +189,7 @@ export function buildBracketView(snap: BracketSnapshot, live: ScoreboardState): 
   // ── Tu camino ──
   const myTeam = me ? teamById.get(me) : undefined;
   const phaseIndex = (m: ScoreLivePayload) =>
-    m.phase === "group" ? -1 : KO_ORDER.indexOf(m.phase);
+    m.phase === "group" ? -1 : KO_PHASES.indexOf(m.phase);
   const myNextMatch =
     me == null
       ? null
@@ -193,6 +202,7 @@ export function buildBracketView(snap: BracketSnapshot, live: ScoreboardState): 
     : undefined;
 
   return {
+    mode: getMode(snap.mode_id),
     phase: snap.current_phase,
     groups,
     ko,

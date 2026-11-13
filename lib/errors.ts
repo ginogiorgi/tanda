@@ -13,6 +13,7 @@ export const ROOM_ERROR_MESSAGES: Record<string, string> = {
   already_started: "Esa partida ya arrancó.",
   room_full: "Esa sala está llena.",
   no_match: "No tenés un partido en curso.",
+  invalid_mode: "Ese modo todavía no está disponible.",
 };
 
 /** Fallback genérico cuando el código no está mapeado (red caída, error inesperado del server). */

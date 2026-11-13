@@ -13,16 +13,19 @@ import {
   type LobbyPresence,
   type RosterEntry,
 } from "@/lib/lobby/presence";
+import { getMode, type ModeId } from "@/lib/modes";
 
 type LobbyProps = {
   code: string;
+  modeId: ModeId;
   startsAt: string;
   serverNow: string;
   userId: string;
   username: string;
 };
 
-export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProps) {
+export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: LobbyProps) {
+  const mode = getMode(modeId);
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [members, setMembers] = useState<LobbyMember[]>([]);
@@ -81,7 +84,7 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     return () => clearInterval(id);
   }, [startsAt, serverNow]);
 
-  // Al vencer el countdown, el server arma el torneo (start_tournament, disparado por el 48º join o
+  // Al vencer el countdown, el server arma el torneo (start_tournament, disparado por el join que llena el cupo o
   // por tick()). Acá hacemos polling de `get_active_match` y, cuando aparece el partido, vamos a la
   // pantalla de partido. Es el puente lobby → partido (8.2).
   const started = remaining <= 0;
@@ -145,7 +148,7 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
     <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
         <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
-          Sala de espera
+          Sala de espera · {mode.name}
         </span>
         <button
           onClick={onCopy}
@@ -177,7 +180,10 @@ export function Lobby({ code, startsAt, serverNow, userId, username }: LobbyProp
       <div className="w-full rounded-2xl border border-border bg-bg-elevated p-4 shadow-card">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm font-medium text-fg-muted">Conectados</span>
-          <span className="text-sm font-semibold text-gold">{members.length}</span>
+          <span className="text-sm font-semibold text-gold">
+            {members.length}
+            <span className="font-normal text-fg-subtle">/{mode.format.roomSize}</span>
+          </span>
         </div>
         <ul className="flex flex-col gap-2">
           {members.length === 0 ? (

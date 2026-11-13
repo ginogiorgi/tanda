@@ -7,6 +7,7 @@ import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
+import { isModeId, type ModeId } from "@/lib/modes";
 
 const ACCENTS = [
   "bg-accent-blue",
@@ -36,13 +37,16 @@ export default async function Home({
   // El torneo en curso permite ofrecer "Volver al partido" tras cerrar la pestaña.
   let username: string | null = null;
   let hasActiveMatch = false;
+  let activeModes: ModeId[] = [];
   if (user) {
-    const [{ data: profile }, { data: active }] = await Promise.all([
+    const [{ data: profile }, { data: active }, { data: modes }] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_active_tournament"),
+      supabase.from("game_modes").select("id").eq("active", true).order("sort"),
     ]);
     username = profile?.username ?? null;
-    hasActiveMatch = Boolean((active as { tournament_id?: string } | null)?.tournament_id);
+    hasActiveMatch = Boolean(active?.tournament_id);
+    activeModes = (modes ?? []).map((m) => m.id).filter(isModeId);
   }
 
   return (
@@ -87,7 +91,7 @@ export default async function Home({
               Volver al partido
             </Link>
           )}
-          <PlayMenu />
+          <PlayMenu activeModes={activeModes} />
           <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
             {isGuest ? (
               <Link

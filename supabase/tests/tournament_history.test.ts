@@ -11,7 +11,7 @@ afterAll(closePool);
 
 type HistoryEntry = {
   tournamentId: string;
-  nationName: string;
+  teamName: string;
   placement: number | null;
   eliminatedPhase: string | null;
   goalsFor: number;

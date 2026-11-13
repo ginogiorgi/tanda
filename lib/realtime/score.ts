@@ -17,18 +17,28 @@ export type MatchPhase =
   | "third_place"
   | "final";
 
-/** Resumen de un participante con su nación (lo arma `participant_brief` en la DB). */
+/** Patrón de camiseta (enum `kit_pattern` de la DB). */
+export type KitPattern = "solid" | "vstripes" | "hstripes" | "sash" | "halves" | "hoops" | "band" | "chevron" | "checks";
+
+/** Resumen de un participante con su equipo (lo arma `participant_brief` en la DB). */
 export type ParticipantBrief = {
   participant_id: string;
   user_id: string | null;
   is_bot: boolean;
-  nation_id: string | null;
-  nation_code: string | null;
-  nation_name: string | null;
+  team_id: string | null;
+  team_code: string | null;
+  team_name: string | null;
+  /** Nombre corto para chips/HUD ("Corea del Sur", "Newell's"). */
+  team_short: string | null;
+  /** Bandera ISO (selecciones) — null en clubes. */
   flag: string | null;
+  /** Escudo propio `arg/<slug>` (clubes) — null en selecciones. */
+  crest: string | null;
   kit_primary: string | null;
   /** Segundo color (banda diagonal cruzada de la remera). Si === kit_primary, la remera va lisa. */
   kit_secondary: string | null;
+  kit_tertiary: string | null;
+  kit_pattern: KitPattern | null;
   accent: string | null;
 };
 

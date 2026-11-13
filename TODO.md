@@ -1,6 +1,44 @@
 # TODO — TANDA ⚽
 
-## Estado: 4 fixes (fondo mobile, cartel de penal, timing de grupos, cuestionario) — HECHO
+## Estado: TANDA 2.0 en curso — Fase 3 (arquitectura de modos) HECHA
+
+Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
+a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
+
+> **Verde local completo:** `typecheck · lint · knip · build · 119 unit · 63 db` (incluye e2e AR).
+> **DB de prod:** `20261114000000_game_modes` + `20261114000001_seed_catalog_modes` aplicadas por
+> MCP, ledger reconciliado, advisors = lo esperado por diseño.
+
+### Hecho
+- **Fase 0** — footer "Gino Giorgi" → página de creador; favicon real (svg/ico/apple/PWA).
+- **Fase 1** — deps al día; wipe total de prod (0 usuarios); squash a baseline v2; catálogo
+  versionado en `data/` (zod + `pnpm catalog:check` / `pnpm catalog:build <ts_nombre>`); revoke
+  de helpers a anon; stats de acierto previos al wipe en `data/questions/stats-2026-11.csv`.
+- **Fase 3** — modos:
+  - DB: `game_modes` (formato por modo), `nations`→`teams` (mode_id, short_name, crest_asset,
+    kit_pattern, kit_tertiary, strength_rank), `mode_id` en rooms/tournaments/questions,
+    `create_room(p_mode)`/`quick_play(p_mode)`, `start_tournament`/standings/`build_knockout`/
+    `advance_ko_round` genéricos (zonas impares → interzonal de los libres; AR: 1A–8B… octavos,
+    sin 3er puesto, desempate pts→penales→moneda). Motor TS `lib/engine/formats.ts` + paridad.
+  - Front: registro `lib/modes` (labels de fase/zona unificados), `TeamMark` (bandera o escudo),
+    `TeamReveal`, bracket/resumen/historial por modo, selector de modo en Jugar/Crear sala
+    (modos inactivos = "Próximamente"), lobby muestra modo y cupo.
+  - Tests: `supabase/tests/tournament_arg_e2e.test.ts` (30 → zonas → octavos → campeón).
+
+### Próximo (en orden)
+1. **Fase 4 — Modo Argentina:** escudos originales `public/crests/arg/*.svg` (los referencia
+   `teams.crest_asset`), ~600 preguntas `data/questions/arg.json` (keys `arg-NNN`), después
+   `update game_modes set active = true where id = 'arg'` (por migración).
+   ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido).
+   Revisar con Gino los `kit_pattern` aproximados de `data/teams/arg.json`.
+2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,
+   primitivas, logo nuevo (reemplaza el favicon interino), todas las pantallas.
+3. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+4. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
+
+---
+
+## Estado anterior: 4 fixes (fondo mobile, cartel de penal, timing de grupos, cuestionario) — HECHO
 
 Cuarta tanda de pedidos de Gino: pulido de UI mobile, flujo de penal/presentación y una
 auditoría + expansión grande del cuestionario.
@@ -56,8 +94,8 @@ auditoría + expansión grande del cuestionario.
   derrota (`koRevealDone` + `KO_LOSS_REVEAL_MS` en `TournamentLive.tsx`).
 - **T10** — SEO: `FAQPage` JSON-LD agregado al `@graph` de la landing (rich results). El resto
   ya estaba (metadata/OG/sitemap con lastmod+priority/robots/JSON-LD/manifest/canonical).
-  **OPS manual pendiente de Gino:** verificar el dominio en Google Search Console + enviar el
-  sitemap (necesita su token/acceso; no se puede desde código).
+  **OPS:** ✅ dominio verificado en Search Console (propiedad de dominio) + `sitemap.xml` enviado
+  (2026-11-13, 3 páginas descubiertas).
 - **T11-T14** — Menú sin loguear reescrito (`app/page.tsx` + `GuestButton.tsx`): 3 botones de
   mismas dimensiones; "Crear cuenta" ahora primary/prominente, "Entrar" y "Jugar invitado"
   outline; orden mobile Crear/Entrar/Invitado; pirámide en desktop (Crear arriba centrado,

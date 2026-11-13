@@ -9,11 +9,11 @@
  */
 
 import { kitSwatchStyle } from "@/lib/realtime/score";
-import { Flag } from "@/components/common/Flag";
+import { TeamMark } from "@/components/common/TeamMark";
 import { Eyebrow } from "@/components/ui/Typography";
 import type { BracketTeam } from "@/lib/bracket/bracket";
 
-export function NationReveal({ me }: { me: BracketTeam }) {
+export function TeamReveal({ me }: { me: BracketTeam }) {
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-7 text-center">
       <Eyebrow className="tracking-[0.35em]">Te tocó</Eyebrow>
@@ -26,19 +26,20 @@ export function NationReveal({ me }: { me: BracketTeam }) {
             aria-hidden
           />
           {/* Bandera real montada sobre el kit (B5.1). */}
-          <Flag
-            code={me.flag}
-            name={me.nation_name}
+          <TeamMark
+            flag={me.flag}
+            crest={me.crest}
+            name={me.team_name}
             className="absolute -bottom-2 -right-2 h-10 rounded-md shadow-md ring-1 ring-black/40"
           />
         </div>
         <div className="flex flex-col items-center gap-1">
           <span className="font-display text-4xl font-bold uppercase tracking-tight text-fg">
-            {me.nation_name ?? "Tu selección"}
+            {me.team_name ?? "Tu selección"}
           </span>
-          {me.nation_code && (
+          {me.team_code && (
             <span className="font-mono text-sm uppercase tracking-[0.3em] text-gold">
-              {me.nation_code}
+              {me.team_code}
             </span>
           )}
         </div>

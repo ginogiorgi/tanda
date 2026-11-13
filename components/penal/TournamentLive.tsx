@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 import { PenalLive } from "@/components/penal/PenalLive";
 import { RunSummary } from "@/components/penal/RunSummary";
 import { Button } from "@/components/ui/Button";
-import { NationReveal } from "@/components/penal/NationReveal";
+import { TeamReveal } from "@/components/penal/TeamReveal";
 import { Bracket } from "@/components/bracket/Bracket";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
@@ -271,11 +271,11 @@ export function TournamentLive({
   // (no eliminado/coronado → así un refresh tardío cae directo al bracket/resumen, no a la revelación).
   if (
     !revealExpired &&
-    me?.nation_name &&
+    me?.team_name &&
     me.eliminated_phase == null &&
     me.placement == null
   ) {
-    return <NationReveal me={me} />;
+    return <TeamReveal me={me} />;
   }
 
   if (me && (me.eliminated_phase != null || me.placement != null)) {

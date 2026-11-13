@@ -6,13 +6,12 @@
  */
 
 import type { ReactNode } from "react";
-import { Flag } from "@/components/common/Flag";
+import { TeamMark } from "@/components/common/TeamMark";
 import { Badge, type BadgeProps } from "@/components/ui/Badge";
 import type { HistoryOutcome } from "@/lib/profile/history";
 
-/** `flag` opcional (B5.1): lo pasa RunSummary (tiene el brief con bandera); el historial del perfil
- * lo omite (su RPC no trae `flag`) → sin bandera, graceful. */
-type Team = { code: string | null; kit: string | null; isMe?: boolean; flag?: string | null };
+/** Insignia opcional: bandera (selecciones) o escudo (clubes); sin ninguna → solo kit + código. */
+type Team = { code: string | null; kit: string | null; isMe?: boolean; flag?: string | null; crest?: string | null };
 
 const OUTCOME: Record<
   NonNullable<HistoryOutcome>,
@@ -23,10 +22,10 @@ const OUTCOME: Record<
   abandoned: { label: "Abandonaste", variant: "neutral" },
 };
 
-function TeamChip({ code, kit, isMe, flag }: Team) {
+function TeamChip({ code, kit, isMe, flag, crest }: Team) {
   return (
     <span className="flex items-center gap-2">
-      <Flag code={flag} name={code} className="h-4" />
+      <TeamMark flag={flag} crest={crest} name={code} className="h-4" />
       <span
         className="h-3.5 w-3.5 shrink-0 rounded-full"
         style={{ backgroundColor: kit ?? "#666" }}

@@ -7,7 +7,7 @@
  */
 
 import { kitSwatchStyle, type ParticipantBrief } from "@/lib/realtime/score";
-import { Flag } from "@/components/common/Flag";
+import { TeamMark } from "@/components/common/TeamMark";
 import { Badge } from "@/components/ui/Badge";
 import { ScorePill } from "@/components/ui/ScorePill";
 
@@ -47,14 +47,14 @@ function Side({
   return (
     <div className={`flex flex-1 flex-col gap-1 ${align === "right" ? "items-end" : "items-start"}`}>
       <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
-        <Flag code={brief?.flag} name={brief?.nation_name} className="h-4" />
+        <TeamMark flag={brief?.flag} crest={brief?.crest} name={brief?.team_name} className="h-4" />
         <span
           className="h-3 w-3 shrink-0 rounded-full"
           style={kitSwatchStyle(brief)}
           aria-hidden
         />
         <span className="font-display text-sm font-bold uppercase text-fg">
-          {brief?.nation_code ?? "???"}
+          {brief?.team_code ?? "???"}
         </span>
         <ScorePill tone="neutral" size="sm">
           {score}

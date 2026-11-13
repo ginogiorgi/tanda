@@ -25,15 +25,23 @@ export const questionSchema = z
     message: "opciones repetidas",
   });
 
-export const nationSchema = z
+export const KIT_PATTERNS = ["solid", "vstripes", "hstripes", "sash", "halves", "hoops", "band", "chevron", "checks"] as const;
+export const MODES = ["worldcup", "arg"] as const;
+
+export const teamSchema = z
   .object({
     code: z.string().regex(/^[A-Z]{3}$/),
     name: z.string().min(2),
-    fifa_rank: z.number().int().positive(),
+    short_name: z.string().min(2).max(16),
+    strength_rank: z.number().int().positive(),
     difficulty_tier: z.enum(TIERS),
     accent_color: hex,
-    flag_asset: z.string().min(2),
+    flag_asset: z.string().min(2).nullable(),
+    crest_asset: z.string().regex(/^[a-z]+\/[a-z0-9-]+$/).nullable(),
+    kit_pattern: z.enum(KIT_PATTERNS),
     kit_primary: hex,
     kit_secondary: hex.nullable(),
+    kit_tertiary: hex.nullable(),
   })
-  .strict();
+  .strict()
+  .refine((t) => t.flag_asset !== null || t.crest_asset !== null, { message: "flag_asset o crest_asset" });

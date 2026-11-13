@@ -21,16 +21,16 @@ export async function makeMatchFixture(c: PoolClient): Promise<MatchFixture> {
   const userB = await createUser(c, `b_${randomUUID().slice(0, 8)}`);
   const roomId = (
     await c.query<{ id: string }>(
-      `insert into public.rooms (code, host_id, status, starts_at)
-       values ($1, $2, 'in_progress', now()) returning id`,
+      `insert into public.rooms (code, host_id, status, starts_at, mode_id)
+       values ($1, $2, 'in_progress', now(), 'worldcup') returning id`,
       [`T${randomUUID().slice(0, 8)}`, userA],
     )
   ).rows[0]!.id;
 
   const tournamentId = (
     await c.query<{ id: string }>(
-      `insert into public.tournaments (room_id, status, seed)
-       values ($1, 'in_progress', 12345) returning id`,
+      `insert into public.tournaments (room_id, status, seed, mode_id)
+       values ($1, 'in_progress', 12345, 'worldcup') returning id`,
       [roomId],
     )
   ).rows[0]!.id;
@@ -65,12 +65,13 @@ export async function makeMatchFixture(c: PoolClient): Promise<MatchFixture> {
 
 /**
  * Arma un lobby real con `nUsers` humanos vía las RPC de matchmaking (create_room + join_room) y
- * dispara `start_tournament` (rellena bots, arma 12 grupos + fixture, abre la jornada 1).
+ * dispara `start_tournament` (rellena bots, arma zonas + fixture según el modo, abre la jornada 1).
  * Devuelve roomId, tournamentId y los uids de los humanos. No avanza el torneo (eso es el driver).
  */
 export async function startRealTournament(
   c: PoolClient,
   nUsers: number,
+  mode: "worldcup" | "arg" = "worldcup",
 ): Promise<{ roomId: string; tournamentId: string; users: string[] }> {
   const { asRole, resetRole } = await import("./_db");
   const users: string[] = [];
@@ -80,7 +81,8 @@ export async function startRealTournament(
 
   await asRole(c, "authenticated", users[0]);
   const { rows } = await c.query<{ room_id: string; tournament_id: string; code: string }>(
-    "select * from public.create_room()",
+    "select * from public.create_room($1)",
+    [mode],
   );
   const { room_id: roomId, tournament_id: tournamentId, code } = rows[0]!;
   await resetRole(c);
@@ -114,4 +116,19 @@ export async function openManualPenalty(
     [matchId, idx, kicker, keeper],
   );
   return rows[0]!.id;
+}
+
+/**
+ * Habilita el modo Argentina dentro de la transacción del test: lo activa y, si todavía no hay banco
+ * propio, clona las preguntas del Mundial con `mode_id = 'arg'` (solo para ejercitar el formato).
+ */
+export async function enableArgMode(c: PoolClient): Promise<void> {
+  await c.query("update public.game_modes set active = true where id = 'arg'");
+  await c.query(
+    `insert into public.questions (mode_id, source_key, category, difficulty, prompt, options, correct_index)
+     select 'arg', 'test-' || source_key, category, difficulty, prompt, options, correct_index
+       from public.questions q
+      where q.mode_id = 'worldcup'
+        and not exists (select 1 from public.questions where mode_id = 'arg')`,
+  );
 }

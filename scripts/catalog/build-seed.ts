@@ -1,17 +1,17 @@
 /**
- * Genera la migración de seed del catálogo desde `data/` (fuente de verdad).
+ * Genera la migración de seed del catálogo desde `data/` (fuente de verdad), por modo.
  *
+ *   pnpm catalog:check                      → valida todo (CI)
  *   pnpm catalog:build <timestamp_nombre>   → escribe supabase/migrations/<timestamp_nombre>.sql
- *   pnpm catalog:check                      → solo valida (CI)
  *
- * La migración es un *sync* idempotente: upsert por clave natural (source_key / code). No borra
- * filas: retirar preguntas se hace con un flag explícito en una migración propia, para no romper
- * el historial que las referencia.
+ * Archivos por modo: data/teams/<mode>.json y data/questions/<mode>.json (opcional mientras se arma).
+ * La migración es un *sync* idempotente (upsert por clave natural). No borra filas: retirar preguntas
+ * se hace con una migración propia para no romper el historial que las referencia.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import { nationSchema, questionSchema } from "../../lib/catalog/schema";
+import { MODES, questionSchema, teamSchema } from "../../lib/catalog/schema";
 
 const root = join(import.meta.dirname, "..", "..");
 
@@ -25,63 +25,88 @@ function load<T>(rel: string, schema: z.ZodType<T>): T[] {
   return parsed.data;
 }
 
-function uniqueBy<T>(rows: T[], key: (r: T) => string, label: string): void {
+function assertUnique(values: string[], label: string): void {
   const seen = new Set<string>();
-  for (const r of rows) {
-    const k = key(r);
-    if (seen.has(k)) {
-      console.error(`✗ ${label} duplicado: ${k}`);
+  for (const v of values) {
+    if (seen.has(v)) {
+      console.error(`✗ ${label} duplicado: ${v}`);
       process.exit(1);
     }
-    seen.add(k);
+    seen.add(v);
   }
 }
 
 const lit = (s: string | null): string => (s === null ? "null" : `'${s.replaceAll("'", "''")}'`);
 
-const nations = load("data/teams/worldcup.json", nationSchema);
-const questions = load("data/questions/worldcup.json", questionSchema);
-uniqueBy(nations, (n) => n.code, "nación");
-uniqueBy(questions, (q) => q.key, "pregunta");
+const ROOM_SIZE: Record<(typeof MODES)[number], number> = { worldcup: 48, arg: 30 };
+
+const catalog = MODES.map((mode) => {
+  const teams = load(`data/teams/${mode}.json`, teamSchema);
+  const qPath = `data/questions/${mode}.json`;
+  const questions = existsSync(join(root, qPath)) ? load(qPath, questionSchema) : [];
+  assertUnique(teams.map((t) => t.code), `equipo (${mode})`);
+  assertUnique(teams.map((t) => String(t.strength_rank)), `strength_rank (${mode})`);
+  if (teams.length !== ROOM_SIZE[mode]) {
+    console.error(`✗ ${mode}: ${teams.length} equipos, el formato pide ${ROOM_SIZE[mode]}`);
+    process.exit(1);
+  }
+  const prefix = mode === "worldcup" ? "wc-" : `${mode}-`;
+  const bad = questions.find((q) => !q.key.startsWith(prefix));
+  if (bad) {
+    console.error(`✗ ${qPath}: ${bad.key} no empieza con ${prefix}`);
+    process.exit(1);
+  }
+  return { mode, teams, questions };
+});
+assertUnique(catalog.flatMap((c) => c.questions.map((q) => q.key)), "pregunta");
 
 const [, , target] = process.argv;
 if (!target) {
-  console.log(`✓ catálogo válido: ${nations.length} naciones, ${questions.length} preguntas`);
+  for (const c of catalog) console.log(`✓ ${c.mode}: ${c.teams.length} equipos, ${c.questions.length} preguntas`);
   process.exit(0);
 }
 
-const nationRows = nations
-  .map(
-    (n) =>
-      `  (${lit(n.code)}, ${lit(n.name)}, ${n.fifa_rank}, ${lit(n.difficulty_tier)}, ${lit(n.accent_color)}, ${lit(n.flag_asset)}, ${lit(n.kit_primary)}, ${lit(n.kit_secondary)})`,
-  )
-  .join(",\n");
-
-const questionRows = questions
-  .map(
-    (q) =>
-      `  (${lit(q.key)}, ${lit(q.category)}, ${lit(q.difficulty)}, ${lit(q.prompt)}, ${lit(JSON.stringify(q.options))}::jsonb, ${q.answer})`,
-  )
-  .join(",\n");
-
-const sql = `-- GENERADO por scripts/catalog/build-seed.ts desde data/. NO editar a mano.
--- ${nations.length} naciones · ${questions.length} preguntas
-
-insert into public.nations (code, name, fifa_rank, difficulty_tier, accent_color, flag_asset, kit_primary, kit_secondary)
+const blocks = catalog.map(({ mode, teams, questions }) => {
+  const teamRows = teams
+    .map(
+      (t) =>
+        `  (${lit(mode)}, ${lit(t.code)}, ${lit(t.name)}, ${lit(t.short_name)}, ${t.strength_rank}, ${lit(t.difficulty_tier)}, ${lit(t.accent_color)}, ${lit(t.flag_asset)}, ${lit(t.crest_asset)}, ${lit(t.kit_pattern)}, ${lit(t.kit_primary)}, ${lit(t.kit_secondary)}, ${lit(t.kit_tertiary)})`,
+    )
+    .join(",\n");
+  const teamSql = `insert into public.teams (mode_id, code, name, short_name, strength_rank, difficulty_tier, accent_color, flag_asset, crest_asset, kit_pattern, kit_primary, kit_secondary, kit_tertiary)
 values
-${nationRows}
-on conflict (code) do update set
-  name = excluded.name, fifa_rank = excluded.fifa_rank, difficulty_tier = excluded.difficulty_tier,
-  accent_color = excluded.accent_color, flag_asset = excluded.flag_asset,
-  kit_primary = excluded.kit_primary, kit_secondary = excluded.kit_secondary;
+${teamRows}
+on conflict (mode_id, code) do update set
+  name = excluded.name, short_name = excluded.short_name, strength_rank = excluded.strength_rank,
+  difficulty_tier = excluded.difficulty_tier, accent_color = excluded.accent_color,
+  flag_asset = excluded.flag_asset, crest_asset = excluded.crest_asset, kit_pattern = excluded.kit_pattern,
+  kit_primary = excluded.kit_primary, kit_secondary = excluded.kit_secondary, kit_tertiary = excluded.kit_tertiary;`;
 
-insert into public.questions (source_key, category, difficulty, prompt, options, correct_index)
+  if (questions.length === 0) return `-- ── ${mode} ──\n${teamSql}\n`;
+
+  const qRows = questions
+    .map(
+      (q) =>
+        `  (${lit(mode)}, ${lit(q.key)}, ${lit(q.category)}, ${lit(q.difficulty)}, ${lit(q.prompt)}, ${lit(JSON.stringify(q.options))}::jsonb, ${q.answer})`,
+    )
+    .join(",\n");
+  return `-- ── ${mode} ──
+${teamSql}
+
+insert into public.questions (mode_id, source_key, category, difficulty, prompt, options, correct_index)
 values
-${questionRows}
+${qRows}
 on conflict (source_key) do update set
-  category = excluded.category, difficulty = excluded.difficulty, prompt = excluded.prompt,
-  options = excluded.options, correct_index = excluded.correct_index;
+  mode_id = excluded.mode_id, category = excluded.category, difficulty = excluded.difficulty,
+  prompt = excluded.prompt, options = excluded.options, correct_index = excluded.correct_index;
 `;
+});
+
+const summary = catalog.map((c) => `${c.mode}: ${c.teams.length} equipos · ${c.questions.length} preguntas`).join(" | ");
+const sql = `-- GENERADO por scripts/catalog/build-seed.ts desde data/. NO editar a mano.
+-- ${summary}
+
+${blocks.join("\n")}`;
 
 const out = join(root, "supabase", "migrations", `${target}.sql`);
 writeFileSync(out, sql);

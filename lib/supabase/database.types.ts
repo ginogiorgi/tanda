@@ -1,6 +1,6 @@
 /**
  * Tipos de la base para el cliente de Supabase. El CLI nuevo exige login de plataforma para
- * `gen types`, así que este `Database` se mantiene a mano (es chico: 2 tablas consultadas por
+ * `gen types`, así que este `Database` se mantiene a mano (es chico: 3 tablas consultadas por
  * `.from` + las 17 RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
  * ARGS en compilación, y tipa el `data` con nuestros shapes reales (los `jsonb` se mapean a los
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
@@ -9,6 +9,7 @@ import type { AvatarConfig } from "@/lib/avatar/types";
 import type { ActiveMatch, MatchScene, PenalResultPayload } from "@/lib/realtime/penal";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import type { TournamentHistoryEntry } from "@/lib/profile/history";
+import type { ModeId } from "@/lib/engine/formats";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -25,16 +26,22 @@ export type Database = {
         Relationships: [];
       };
       rooms: {
-        Row: { id: string; code: string; host_id: string | null; status: string; starts_at: string; created_at: string };
-        Insert: { id?: string; code: string; host_id?: string | null; status?: string; starts_at: string; created_at?: string };
-        Update: { id?: string; code?: string; host_id?: string | null; status?: string; starts_at?: string; created_at?: string };
+        Row: { id: string; code: string; host_id: string | null; status: string; starts_at: string; created_at: string; mode_id: ModeId };
+        Insert: { id?: string; code: string; host_id?: string | null; status?: string; starts_at: string; created_at?: string; mode_id: ModeId };
+        Update: { id?: string; code?: string; host_id?: string | null; status?: string; starts_at?: string; created_at?: string; mode_id?: ModeId };
+        Relationships: [];
+      };
+      game_modes: {
+        Row: { id: ModeId; name: string; room_size: number; active: boolean; sort: number };
+        Insert: never;
+        Update: never;
         Relationships: [];
       };
     };
     Views: { [_ in never]: never };
     Functions: {
       get_active_match: { Args: Empty; Returns: ActiveMatch | null };
-      get_active_tournament: { Args: Empty; Returns: { tournament_id: string } | null };
+      get_active_tournament: { Args: Empty; Returns: { tournament_id: string; mode_id: ModeId } | null };
       get_bracket: { Args: { p_tournament: string }; Returns: BracketSnapshot };
       get_match_scene: { Args: { p_match: string }; Returns: MatchScene | null };
       get_match_penals: {
@@ -48,8 +55,8 @@ export type Database = {
       open_next_round: { Args: { p_tournament: string }; Returns: undefined };
       abandon: { Args: { p_match: string }; Returns: undefined };
       begin_presentation: { Args: { p_tournament: string }; Returns: undefined };
-      quick_play: { Args: Empty; Returns: RoomRef[] };
-      create_room: { Args: Empty; Returns: RoomRef[] };
+      quick_play: { Args: { p_mode?: ModeId }; Returns: RoomRef[] };
+      create_room: { Args: { p_mode?: ModeId }; Returns: RoomRef[] };
       join_room: { Args: { p_code: string }; Returns: RoomRef[] };
       leave_room: { Args: { p_code: string }; Returns: undefined };
       username_available: { Args: { check_name: string }; Returns: boolean };

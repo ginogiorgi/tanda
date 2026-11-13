@@ -32,7 +32,7 @@ export default async function SalaPage({
 
   // Tras el join, la sala y el perfil son independientes → en paralelo.
   const [{ data: room }, { data: profile }] = await Promise.all([
-    supabase.from("rooms").select("status, starts_at").eq("code", code).single(),
+    supabase.from("rooms").select("status, starts_at, mode_id").eq("code", code).single(),
     supabase.from("profiles").select("username").eq("id", user.id).single(),
   ]);
   if (!room) redirect("/?aviso=room_not_found");
@@ -42,6 +42,7 @@ export default async function SalaPage({
     <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-12">
       <Lobby
         code={code}
+        modeId={room.mode_id}
         startsAt={room.starts_at}
         serverNow={new Date().toISOString()}
         userId={user.id}

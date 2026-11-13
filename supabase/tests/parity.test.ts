@@ -8,6 +8,7 @@ import { makeRng } from "../../lib/engine/rng";
 import { botIntent, type DifficultyTier } from "../../lib/engine/bot";
 import { penaltyDifficulty, type Phase } from "../../lib/engine/difficulty";
 import { advanceMatch, type MatchKind } from "../../lib/engine/match";
+import { roundRobin, seedOrder } from "../../lib/engine/formats";
 
 afterAll(closePool);
 
@@ -215,6 +216,39 @@ describe("paridad advance_match (engine_advance_match ↔ advanceMatch, 10.4/10.
         }
       }
       expect({ cases: cases.length, mismatches }).toEqual({ cases: cases.length, mismatches: 0 });
+    } finally {
+      c.release();
+    }
+  });
+});
+
+describe("paridad fixture por círculo (engine_round_robin ↔ roundRobin)", () => {
+  it("idéntico para n=2..20 y todas las fechas posibles", async () => {
+    const c = await getPool().connect();
+    try {
+      for (let n = 2; n <= 20; n++) {
+        const rounds = n % 2 === 0 ? n - 1 : n;
+        const { rows } = await c.query<{ md: number; home_pos: number; away_pos: number }>(
+          "select md, home_pos, away_pos from public.engine_round_robin($1, $2)",
+          [n, rounds],
+        );
+        const sql = rows.map((r) => ({ md: r.md, home: r.home_pos, away: r.away_pos }));
+        expect({ n, sql }).toEqual({ n, sql: roundRobin(n, rounds) });
+      }
+    } finally {
+      c.release();
+    }
+  });
+});
+
+describe("paridad siembra (engine_seed_order ↔ seedOrder)", () => {
+  it("idéntico para cuadros de 1 a 32", async () => {
+    const c = await getPool().connect();
+    try {
+      for (const n of [1, 2, 4, 8, 16, 32]) {
+        const { rows } = await c.query<{ x: number }>("select x from public.engine_seed_order($1) x", [n]);
+        expect(rows.map((r) => r.x)).toEqual(seedOrder(n));
+      }
     } finally {
       c.release();
     }

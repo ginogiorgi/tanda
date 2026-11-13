@@ -418,7 +418,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       result.winner === "kicker"
         ? result.kicker_participant_id
         : result.keeper_participant_id;
-    const winnerNation = briefFor(winnerId)?.nation_name ?? "El rival";
+    const winnerNation = briefFor(winnerId)?.team_name ?? "El rival";
     const deltaMs =
       result.kicker_selected_at && result.keeper_selected_at
         ? Math.abs(
