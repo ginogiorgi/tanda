@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-## Estado: TANDA 2.0 en curso — Fase 3 (arquitectura de modos) HECHA
+## Estado: TANDA 2.0 en curso — Fases 0, 1, 3 y 4 HECHAS (Modo Argentina en prod)
 
 Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
 a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
@@ -25,12 +25,19 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
     (modos inactivos = "Próximamente"), lobby muestra modo y cupo.
   - Tests: `supabase/tests/tournament_arg_e2e.test.ts` (30 → zonas → octavos → campeón).
 
+- **Fase 4** — Modo Argentina **activo en prod**: 30 escudos originales `public/crests/arg/*.svg`
+  (generador `scripts/crests/build_crests.py <BigShouldersDisplay-Black.ttf>`), 700 preguntas
+  `data/questions/arg.json` (269/184/165/82), migración `20261114000002_seed_arg_questions`
+  (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
+
+### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
+- Preguntas AR (sesgo a `idolos`/`historia`, datos dudosos) y Mundial.
+- `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
+- ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
+  → migración chica de `teams` + regenerar escudos cuando se definan.
+
 ### Próximo (en orden)
-1. **Fase 4 — Modo Argentina:** escudos originales `public/crests/arg/*.svg` (los referencia
-   `teams.crest_asset`), ~600 preguntas `data/questions/arg.json` (keys `arg-NNN`), después
-   `update game_modes set active = true where id = 'arg'` (por migración).
-   ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido).
-   Revisar con Gino los `kit_pattern` aproximados de `data/teams/arg.json`.
+1. Pulido AR: tablas de 15 compactas en mobile (bracket), revisar TeamReveal con escudo.
 2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,
    primitivas, logo nuevo (reemplaza el favicon interino), todas las pantallas.
 3. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
