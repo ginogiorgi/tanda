@@ -3,6 +3,8 @@
  *
  *   pnpm catalog:check                      → valida todo (CI)
  *   pnpm catalog:build <timestamp_nombre>   → escribe supabase/migrations/<timestamp_nombre>.sql
+ *   pnpm catalog:build <timestamp_nombre> --mode arg [--activate]
+ *                                           → solo ese modo (y opcionalmente lo activa en game_modes)
  *
  * Archivos por modo: data/teams/<mode>.json y data/questions/<mode>.json (opcional mientras se arma).
  * La migración es un *sync* idempotente (upsert por clave natural). No borra filas: retirar preguntas
@@ -60,13 +62,20 @@ const catalog = MODES.map((mode) => {
 });
 assertUnique(catalog.flatMap((c) => c.questions.map((q) => q.key)), "pregunta");
 
-const [, , target] = process.argv;
+const [, , target, ...flags] = process.argv;
+const onlyMode = flags.includes("--mode") ? flags[flags.indexOf("--mode") + 1] : undefined;
+const activate = flags.includes("--activate");
+if (onlyMode && !MODES.some((m) => m === onlyMode)) {
+  console.error(`✗ modo desconocido: ${onlyMode}`);
+  process.exit(1);
+}
 if (!target) {
   for (const c of catalog) console.log(`✓ ${c.mode}: ${c.teams.length} equipos, ${c.questions.length} preguntas`);
   process.exit(0);
 }
 
-const blocks = catalog.map(({ mode, teams, questions }) => {
+const selected = onlyMode ? catalog.filter((c) => c.mode === onlyMode) : catalog;
+const blocks = selected.map(({ mode, teams, questions }) => {
   const teamRows = teams
     .map(
       (t) =>
@@ -102,11 +111,13 @@ on conflict (source_key) do update set
 `;
 });
 
-const summary = catalog.map((c) => `${c.mode}: ${c.teams.length} equipos · ${c.questions.length} preguntas`).join(" | ");
+const summary = selected.map((c) => `${c.mode}: ${c.teams.length} equipos · ${c.questions.length} preguntas`).join(" | ");
 const sql = `-- GENERADO por scripts/catalog/build-seed.ts desde data/. NO editar a mano.
 -- ${summary}
 
-${blocks.join("\n")}`;
+${blocks.join("\n")}${
+  activate && onlyMode ? `\nupdate public.game_modes set active = true where id = ${lit(onlyMode)};\n` : ""
+}`;
 
 const out = join(root, "supabase", "migrations", `${target}.sql`);
 writeFileSync(out, sql);

@@ -1,0 +1,8402 @@
+[
+  {
+    "key": "arg-001",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuántos equipos juegan la Liga Profesional en 2026?",
+    "options": [
+      "30",
+      "20",
+      "28"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-002",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuántos clubes de Rosario juegan la Primera en 2026?",
+    "options": [
+      "Dos",
+      "Tres",
+      "Uno"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-003",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuántos clubes de Córdoba capital juegan la Primera en 2026?",
+    "options": [
+      "Tres",
+      "Cuatro",
+      "Dos"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-004",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Lomas de Zamora juega en Primera en 2026?",
+    "options": [
+      "Los Andes",
+      "Banfield",
+      "Temperley"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-005",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el Torneo Apertura 2025, su primer título en Primera?",
+    "options": [
+      "Barracas Central",
+      "Huracán",
+      "Platense"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-006",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿A qué club volvió Ángel Di María en 2025?",
+    "options": [
+      "Rosario Central",
+      "Newell's",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-007",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino ganó la Copa Sudamericana 2024?",
+    "options": [
+      "Talleres",
+      "Lanús",
+      "Racing"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-008",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Racing a ganar la Copa Sudamericana 2024?",
+    "options": [
+      "Fernando Gago",
+      "Eduardo Coudet",
+      "Gustavo Costas"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-009",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Liga Profesional 2024?",
+    "options": [
+      "Racing",
+      "Talleres",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-010",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué ex DT de River volvió al club en 2024?",
+    "options": [
+      "Martín Demichelis",
+      "Ramón Díaz",
+      "Marcelo Gallardo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-011",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa de la Liga 2024?",
+    "options": [
+      "Racing",
+      "Vélez",
+      "Estudiantes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-012",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa Argentina 2024?",
+    "options": [
+      "Central Córdoba",
+      "Vélez",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-013",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Liga Profesional 2023?",
+    "options": [
+      "Talleres",
+      "Rosario Central",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-014",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club perdió Boca la final de la Libertadores 2023?",
+    "options": [
+      "Fluminense",
+      "Flamengo",
+      "Palmeiras"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-015",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿En qué estadio perdió Boca la final de la Libertadores 2023?",
+    "options": [
+      "Maracaná",
+      "Centenario",
+      "Monumental"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-016",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa de la Liga 2023, su primer título de liga desde 1987?",
+    "options": [
+      "Godoy Cruz",
+      "Rosario Central",
+      "Platense"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-017",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el campeonato 2022 en la última fecha?",
+    "options": [
+      "Racing",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-018",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT dirigió a River entre 2014 y 2022?",
+    "options": [
+      "Ramón Díaz",
+      "Matías Almeyda",
+      "Marcelo Gallardo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-019",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Liga Profesional 2021?",
+    "options": [
+      "River",
+      "Boca",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-020",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa Sudamericana 2020, su primer título grande?",
+    "options": [
+      "Talleres",
+      "Lanús",
+      "Defensa y Justicia"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-021",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club es ídolo Lisandro López, campeón en 2014 y 2019?",
+    "options": [
+      "Independiente",
+      "Arsenal",
+      "Racing"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-022",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el campeonato argentino 2019 conducido por Eduardo Coudet?",
+    "options": [
+      "Defensa y Justicia",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-023",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club perdió River la final de la Libertadores 2019?",
+    "options": [
+      "Palmeiras",
+      "Grêmio",
+      "Flamengo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-024",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad perdió River la final de la Libertadores 2019?",
+    "options": [
+      "Montevideo",
+      "Lima",
+      "Santiago"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-025",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la final de la Libertadores 2018 jugada en Madrid?",
+    "options": [
+      "Grêmio",
+      "River",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-026",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT ganó la Libertadores con River en 2015 y 2018?",
+    "options": [
+      "Marcelo Gallardo",
+      "Ariel Holan",
+      "Ramón Díaz"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-027",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad se jugó la final River-Boca de la Libertadores 2018?",
+    "options": [
+      "Buenos Aires",
+      "Madrid",
+      "Asunción"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-028",
+    "category": "goleadores",
+    "difficulty": "easy",
+    "prompt": "¿Quién marcó el primer gol de Boca en la final de Madrid 2018?",
+    "options": [
+      "Ramón Ábila",
+      "Carlos Tevez",
+      "Darío Benedetto"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-029",
+    "category": "goleadores",
+    "difficulty": "easy",
+    "prompt": "¿Quién convirtió el empate de River en el Bernabéu en 2018?",
+    "options": [
+      "Gonzalo Martínez",
+      "Lucas Pratto",
+      "Juan Fernando Quintero"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-030",
+    "category": "goleadores",
+    "difficulty": "easy",
+    "prompt": "¿Quién hizo el golazo del 2-1 de River en la final de Madrid 2018?",
+    "options": [
+      "Lucas Pratto",
+      "Juan Fernando Quintero",
+      "Ignacio Scocco"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-031",
+    "category": "goleadores",
+    "difficulty": "easy",
+    "prompt": "¿Quién marcó el tercer gol de River, con el arco vacío, en Madrid 2018?",
+    "options": [
+      "Gonzalo «Pity» Martínez",
+      "Rafael Santos Borré",
+      "Lucas Pratto"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-032",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino ganó la Copa Sudamericana 2017 en el Maracaná?",
+    "options": [
+      "Racing",
+      "Lanús",
+      "Independiente"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-033",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el Campeonato de Primera 2017-18?",
+    "options": [
+      "San Lorenzo",
+      "Boca",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-034",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién perdió Lanús la final de la Libertadores 2017?",
+    "options": [
+      "Palmeiras",
+      "Grêmio",
+      "Atlético Mineiro"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-035",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el Campeonato 2016 con un plantel dirigido por Jorge Almirón?",
+    "options": [
+      "San Lorenzo",
+      "Lanús",
+      "Godoy Cruz"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-036",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club ganó River la final de la Libertadores 2015?",
+    "options": [
+      "Nacional",
+      "Tigres",
+      "Atlético Nacional"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-037",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó su primera Libertadores en 2014?",
+    "options": [
+      "San Lorenzo",
+      "Lanús",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-038",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa Sudamericana 2014?",
+    "options": [
+      "Lanús",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-039",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el Torneo de Transición 2014 con Diego Milito?",
+    "options": [
+      "Lanús",
+      "Racing",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-040",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT ganó la Libertadores 2014 con San Lorenzo?",
+    "options": [
+      "Marcelo Bielsa",
+      "Ramón Díaz",
+      "Edgardo Bauza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-041",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién ganó San Lorenzo la final de la Libertadores 2014?",
+    "options": [
+      "Bolívar",
+      "Olimpia",
+      "Nacional de Paraguay"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-042",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó la Copa Sudamericana 2013?",
+    "options": [
+      "Arsenal",
+      "Vélez",
+      "Lanús"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-043",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club ganó el Torneo Final 2013 dirigido por Gerardo Martino?",
+    "options": [
+      "Vélez",
+      "Newell's",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-044",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club volvió a Primera en 2012 tras un año en la B Nacional?",
+    "options": [
+      "Huracán",
+      "Independiente",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-045",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club jugó River la Promoción en la que descendió en 2011?",
+    "options": [
+      "Huracán",
+      "Belgrano",
+      "Gimnasia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-046",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino ganó la Libertadores 2009?",
+    "options": [
+      "Vélez",
+      "Estudiantes",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-047",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT ganó la Libertadores 2009 con Estudiantes?",
+    "options": [
+      "Carlos Bilardo",
+      "Alejandro Sabella",
+      "Diego Simeone"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-048",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino ganó la Libertadores 2007 ante Grêmio?",
+    "options": [
+      "Boca",
+      "Vélez",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-049",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT ganó la Libertadores 2007 con Boca?",
+    "options": [
+      "Miguel Ángel Russo",
+      "Alfio Basile",
+      "Carlos Bianchi"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-050",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Boca a tres Libertadores en 2000, 2001 y 2003?",
+    "options": [
+      "Carlos Bianchi",
+      "Miguel Russo",
+      "Alfio Basile"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-051",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club ganó Boca la Intercontinental 2003?",
+    "options": [
+      "Porto",
+      "Real Madrid",
+      "Milan"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-052",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿A qué equipo le ganó Boca la Intercontinental 2000?",
+    "options": [
+      "Real Madrid",
+      "Milan",
+      "Bayern Múnich"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-053",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino le ganó la Intercontinental 1994 al Milan?",
+    "options": [
+      "River",
+      "Boca",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-054",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Vélez a ganar la Libertadores y la Intercontinental de 1994?",
+    "options": [
+      "Marcelo Bielsa",
+      "Osvaldo Piazza",
+      "Carlos Bianchi"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-055",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de San Lorenzo inaugurado en 1993?",
+    "options": [
+      "El Palacio",
+      "La Fortaleza",
+      "Nuevo Gasómetro"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-056",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega de local en la cancha conocida como «la Doble Visera»?",
+    "options": [
+      "Racing",
+      "Lanús",
+      "Independiente"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-057",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es ídolo el uruguayo Enzo Francescoli?",
+    "options": [
+      "Boca",
+      "River",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-058",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es máximo goleador histórico Martín Palermo?",
+    "options": [
+      "Estudiantes",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-059",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es ídolo y presidente Juan Román Riquelme?",
+    "options": [
+      "Boca",
+      "Argentinos Juniors",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-060",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club jugó toda su carrera Ricardo Bochini?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-061",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club argentino es ídolo Diego Milito?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Lanús"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-062",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es ídolo Carlos Tevez, el «Apache»?",
+    "options": [
+      "River",
+      "Boca",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-063",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿A qué club se asocia al «Burrito» Ariel Ortega?",
+    "options": [
+      "River",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-064",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino tiene más Copas Libertadores?",
+    "options": [
+      "Independiente",
+      "River",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-065",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club tiene más títulos de liga en el fútbol argentino?",
+    "options": [
+      "River",
+      "Racing",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-066",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué hinchada se conoce como «La Gloriosa Butteler»?",
+    "options": [
+      "Huracán",
+      "Vélez",
+      "San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-067",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Sergio «Kun» Agüero?",
+    "options": [
+      "Independiente",
+      "Racing",
+      "Huracán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-068",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club argentino debutó Julián Álvarez?",
+    "options": [
+      "Belgrano",
+      "River",
+      "Talleres"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-069",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club surgió Lautaro Martínez?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Lanús"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-070",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Enzo Fernández?",
+    "options": [
+      "Defensa y Justicia",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-071",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Rodrigo De Paul?",
+    "options": [
+      "Estudiantes",
+      "Independiente",
+      "Racing"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-072",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club surgió el «Dibu» Martínez antes de irse a Inglaterra?",
+    "options": [
+      "Independiente",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-073",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Javier Mascherano en Primera?",
+    "options": [
+      "River",
+      "San Lorenzo",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-074",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Pablo Aimar?",
+    "options": [
+      "Estudiantes",
+      "Belgrano",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-075",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Gonzalo Higuaín?",
+    "options": [
+      "River",
+      "Boca",
+      "Banfield"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-076",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es ídolo Hernán Crespo como jugador?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-077",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿A qué club se asocia al «Mellizo» Guillermo Barros Schelotto?",
+    "options": [
+      "Racing",
+      "Boca",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-078",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál de estos clubes nunca descendió de Primera?",
+    "options": [
+      "River",
+      "Independiente",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-079",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club tiene el estadio con mayor capacidad del país?",
+    "options": [
+      "Boca",
+      "River",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-080",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega en el barrio de Núñez?",
+    "options": [
+      "River",
+      "Platense",
+      "Excursionistas"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-081",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué equipos juegan el Superclásico del fútbol argentino?",
+    "options": [
+      "River y Racing",
+      "Boca y San Lorenzo",
+      "Boca y River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-082",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué rivales disputan el Clásico de Avellaneda?",
+    "options": [
+      "Lanús y Banfield",
+      "Arsenal y Racing",
+      "Racing e Independiente"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-083",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el clásico de Rosario?",
+    "options": [
+      "Central vs. Argentino",
+      "Central vs. Newell's",
+      "Newell's vs. Tiro Federal"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-084",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién juega Estudiantes el clásico platense?",
+    "options": [
+      "Cambaceres",
+      "Quilmes",
+      "Gimnasia y Esgrima La Plata"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-085",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Contra qué club juega Talleres el gran clásico cordobés?",
+    "options": [
+      "Belgrano",
+      "Estudiantes de Río Cuarto",
+      "Racing de Córdoba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-086",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Quién es el rival clásico de San Lorenzo?",
+    "options": [
+      "Huracán",
+      "Ferro",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-087",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Con quién disputa Lanús el clásico del sur?",
+    "options": [
+      "Banfield",
+      "Temperley",
+      "Talleres de Escalada"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-088",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué clásico se juega en la ciudad de Santa Fe?",
+    "options": [
+      "Unión vs. Colón",
+      "Talleres vs. Belgrano",
+      "Central vs. Newell's"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-089",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién juega Atlético Tucumán el clásico tucumano?",
+    "options": [
+      "San Martín de Tucumán",
+      "Gimnasia de Jujuy",
+      "Central Córdoba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-090",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Con qué club disputa Vélez el clásico del Oeste?",
+    "options": [
+      "Argentinos Juniors",
+      "Huracán",
+      "Ferro Carril Oeste"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-091",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce popularmente al estadio de Boca?",
+    "options": [
+      "El Cilindro",
+      "El Monumental",
+      "La Bombonera"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-092",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce popularmente al estadio de River?",
+    "options": [
+      "La Bombonera",
+      "El Gasómetro",
+      "El Monumental"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-093",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo le dicen al estadio de Racing?",
+    "options": [
+      "El Palacio",
+      "La Doble Visera",
+      "El Cilindro"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-094",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Rosario Central?",
+    "options": [
+      "Coloso del Parque",
+      "Monumental de Alta Córdoba",
+      "Gigante de Arroyito"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-095",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué nombre lleva el estadio de Newell's?",
+    "options": [
+      "Marcelo Bielsa",
+      "Mario Kempes",
+      "Gigante de Arroyito"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-096",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué nombre lleva el estadio de Argentinos Juniors?",
+    "options": [
+      "José Amalfitani",
+      "Diego Armando Maradona",
+      "Tomás Adolfo Ducó"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-097",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega de local en el estadio José Amalfitani?",
+    "options": [
+      "Ferro",
+      "Vélez",
+      "Huracán"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-098",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda el estadio de Lanús?",
+    "options": [
+      "El Cilindro",
+      "El Bosque",
+      "La Fortaleza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-099",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce la cancha de Gimnasia y Esgrima La Plata?",
+    "options": [
+      "La Fortaleza",
+      "El Bosque",
+      "El Fortín"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-100",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Huracán?",
+    "options": [
+      "Tomás Adolfo Ducó",
+      "Florencio Sola",
+      "Pedro Bidegain"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-101",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué estadio hace de local Talleres?",
+    "options": [
+      "Monumental de Alta Córdoba",
+      "Mario Alberto Kempes",
+      "Gigante de Alberdi"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-102",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club cordobés juega en el «Gigante de Alberdi»?",
+    "options": [
+      "Belgrano",
+      "Instituto",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-103",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué barrio porteño está la Bombonera?",
+    "options": [
+      "San Telmo",
+      "La Boca",
+      "Barracas"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-104",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué barrio de Buenos Aires está el estadio de Vélez?",
+    "options": [
+      "Liniers",
+      "Villa Luro",
+      "Floresta"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-105",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué barrio porteño tiene su estadio Argentinos Juniors?",
+    "options": [
+      "Villa Crespo",
+      "La Paternal",
+      "Agronomía"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-106",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué barrio porteño está la cancha de Huracán?",
+    "options": [
+      "Boedo",
+      "Pompeya",
+      "Parque Patricios"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-107",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Con qué barrio porteño se identifica históricamente a San Lorenzo?",
+    "options": [
+      "Boedo",
+      "Caballito",
+      "Palermo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-108",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo más conocido de Boca Juniors?",
+    "options": [
+      "Xeneize",
+      "Ciclón",
+      "Millonario"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-109",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene River Plate?",
+    "options": [
+      "Millonario",
+      "Pincha",
+      "Xeneize"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-110",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda a Racing Club?",
+    "options": [
+      "El Globo",
+      "El Rojo",
+      "La Academia"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-111",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Independiente?",
+    "options": [
+      "El Rojo",
+      "El Pincha",
+      "La Academia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-112",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo le dicen a San Lorenzo?",
+    "options": [
+      "El Ciclón",
+      "El Globo",
+      "El Fortín"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-113",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Huracán?",
+    "options": [
+      "El Globo",
+      "El Taladro",
+      "El Ciclón"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-114",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce a Vélez Sarsfield?",
+    "options": [
+      "El Bicho",
+      "El Halcón",
+      "El Fortín"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-115",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Estudiantes de La Plata?",
+    "options": [
+      "El Lobo",
+      "El Tatengue",
+      "El Pincha"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-116",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Gimnasia y Esgrima La Plata?",
+    "options": [
+      "El Lobo",
+      "El Tomba",
+      "El Pincha"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-117",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda a Rosario Central?",
+    "options": [
+      "El Canalla",
+      "El Sabalero",
+      "La Lepra"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-118",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Newell's Old Boys?",
+    "options": [
+      "La Lepra",
+      "El Canalla",
+      "El Pirata"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-119",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo le dicen a Argentinos Juniors?",
+    "options": [
+      "El Calamar",
+      "El Bicho",
+      "El Taladro"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-120",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Lanús?",
+    "options": [
+      "El Taladro",
+      "El Tomba",
+      "El Granate"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-121",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda a Banfield?",
+    "options": [
+      "El Taladro",
+      "El Granate",
+      "El Matador"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-122",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Talleres de Córdoba?",
+    "options": [
+      "La T",
+      "El Pirata",
+      "La Gloria"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-123",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo le dicen a Belgrano de Córdoba?",
+    "options": [
+      "La Gloria",
+      "El Pirata",
+      "La T"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-124",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Godoy Cruz?",
+    "options": [
+      "El Lobo",
+      "El Tomba",
+      "El Decano"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-125",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce a Atlético Tucumán?",
+    "options": [
+      "El Decano",
+      "El Santo",
+      "El Tomba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-126",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Unión de Santa Fe?",
+    "options": [
+      "El Sabalero",
+      "El Tiburón",
+      "El Tatengue"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-127",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda a Defensa y Justicia?",
+    "options": [
+      "El Taladro",
+      "El Globo",
+      "El Halcón"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-128",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Platense?",
+    "options": [
+      "El Calamar",
+      "El Tomba",
+      "El Bicho"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-129",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo le dicen a Tigre?",
+    "options": [
+      "El Calamar",
+      "El Matador",
+      "El Halcón"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-130",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Instituto de Córdoba?",
+    "options": [
+      "La T",
+      "El Pirata",
+      "La Gloria"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-131",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se conoce a Central Córdoba de Santiago del Estero?",
+    "options": [
+      "El Ferroviario",
+      "El Decano",
+      "El Tomba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-132",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Colón de Santa Fe?",
+    "options": [
+      "El Canalla",
+      "El Tatengue",
+      "El Sabalero"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-133",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué colores es la camiseta titular de Boca?",
+    "options": [
+      "Azul y blanco",
+      "Azul y oro",
+      "Rojo y blanco"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-134",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué distingue a la camiseta de River?",
+    "options": [
+      "Bastones rojos",
+      "Mitades roja y blanca",
+      "Una banda roja cruzada"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-135",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Cómo es la camiseta titular de Racing?",
+    "options": [
+      "Celeste y blanca a bastones",
+      "Roja",
+      "Azul y oro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-136",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué color es la camiseta titular de Independiente?",
+    "options": [
+      "Celeste",
+      "Verde",
+      "Roja"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-137",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué colores es la camiseta de San Lorenzo?",
+    "options": [
+      "Verde y blanco",
+      "Azul y grana",
+      "Rojo y blanco"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-138",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué colores tiene la camiseta de Newell's?",
+    "options": [
+      "Azul y amarillo",
+      "Rojo y negro",
+      "Celeste y blanco"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-139",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué colores usa Rosario Central?",
+    "options": [
+      "Azul y amarillo",
+      "Rojo y negro",
+      "Verde y blanco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-140",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué color es la camiseta de Lanús?",
+    "options": [
+      "Verde",
+      "Granate",
+      "Celeste"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-141",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué colores tiene la camiseta de Banfield?",
+    "options": [
+      "Granate",
+      "Verde y blanco",
+      "Rojo y blanco"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-142",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Cómo es la camiseta de Estudiantes de La Plata?",
+    "options": [
+      "Verde",
+      "Roja y blanca a bastones",
+      "Blanca con franja azul"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-143",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Cómo es la camiseta de Gimnasia y Esgrima La Plata?",
+    "options": [
+      "Amarilla",
+      "Blanca con franja azul",
+      "Roja y blanca a bastones"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-144",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué colores tiene la camiseta de Talleres?",
+    "options": [
+      "Celeste",
+      "Rojo y negro",
+      "Azul y blanco"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-145",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué color es la camiseta de Belgrano?",
+    "options": [
+      "Azul oscuro",
+      "Celeste",
+      "Roja"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-146",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué letra lleva en el pecho la camiseta de Vélez?",
+    "options": [
+      "Una V azul",
+      "Una T blanca",
+      "Una C roja"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-147",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué colores es la camiseta de Defensa y Justicia?",
+    "options": [
+      "Granate",
+      "Amarillo y verde",
+      "Azul y oro"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-148",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿Qué dibujo lleva en el pecho la camiseta de Huracán?",
+    "options": [
+      "Un rayo",
+      "Una estrella",
+      "Un globo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-149",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué color es la camiseta de Sarmiento de Junín?",
+    "options": [
+      "Verde",
+      "Celeste",
+      "Granate"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-150",
+    "category": "camisetas",
+    "difficulty": "easy",
+    "prompt": "¿De qué color es la camiseta de Argentinos Juniors?",
+    "options": [
+      "Verde",
+      "Roja",
+      "Celeste"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-151",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿De qué provincia es Godoy Cruz?",
+    "options": [
+      "San Luis",
+      "San Juan",
+      "Mendoza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-152",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿De qué provincia es Atlético Tucumán?",
+    "options": [
+      "Santiago del Estero",
+      "Tucumán",
+      "Salta"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-153",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿De qué provincia es Central Córdoba, el que juega en Primera?",
+    "options": [
+      "Santiago del Estero",
+      "Córdoba",
+      "Tucumán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-154",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad tiene su sede Unión?",
+    "options": [
+      "Paraná",
+      "Rosario",
+      "Santa Fe"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-155",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad bonaerense juega Sarmiento?",
+    "options": [
+      "Junín",
+      "Chivilcoy",
+      "Pergamino"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-156",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿De qué provincia es Independiente Rivadavia?",
+    "options": [
+      "Córdoba",
+      "San Juan",
+      "Mendoza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-157",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad juegan Talleres, Belgrano e Instituto?",
+    "options": [
+      "Rosario",
+      "Córdoba",
+      "Mendoza"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-158",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad juegan Estudiantes y Gimnasia?",
+    "options": [
+      "Bahía Blanca",
+      "La Plata",
+      "Mar del Plata"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-159",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad tienen su estadio Racing e Independiente?",
+    "options": [
+      "Quilmes",
+      "Avellaneda",
+      "Lanús"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-160",
+    "category": "geografia",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad juegan Central y Newell's?",
+    "options": [
+      "Rosario",
+      "Santa Fe",
+      "Córdoba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-161",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Diego Maradona en Primera?",
+    "options": [
+      "Huracán",
+      "Argentinos Juniors",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-162",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En las inferiores de qué club jugó Messi antes de irse al Barcelona?",
+    "options": [
+      "River",
+      "Newell's",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-163",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club es ídolo Juan Sebastián Verón, la «Brujita»?",
+    "options": [
+      "Estudiantes",
+      "River",
+      "Gimnasia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-164",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué arquero paraguayo hacía goles de tiro libre y de penal en Vélez?",
+    "options": [
+      "José Luis Chilavert",
+      "Antony Silva",
+      "Justo Villar"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-165",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál es el apodo de Marcelo Gallardo?",
+    "options": [
+      "Burrito",
+      "Muñeco",
+      "Tata"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-166",
+    "category": "apodos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo apodan a Gerardo Martino?",
+    "options": [
+      "Tata",
+      "Muñeco",
+      "Loco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-167",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Cuál era el apodo del arquero Hugo Gatti?",
+    "options": [
+      "El Mono",
+      "El Pato",
+      "El Loco"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-168",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT ganó la Libertadores con Vélez y también con Boca?",
+    "options": [
+      "Carlos Bianchi",
+      "Marcelo Bielsa",
+      "Ramón Díaz"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-169",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Cuántas Copas Libertadores ganó Boca?",
+    "options": [
+      "4",
+      "7",
+      "6"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-170",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Cuántas Copas Libertadores ganó Independiente?",
+    "options": [
+      "5",
+      "6",
+      "7"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-171",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿En qué año descendió River a la B Nacional?",
+    "options": [
+      "2015",
+      "2011",
+      "2001"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-172",
+    "category": "seleccion",
+    "difficulty": "easy",
+    "prompt": "¿En qué estadio se jugó la final del Mundial 78?",
+    "options": [
+      "El Monumental",
+      "La Bombonera",
+      "El Cilindro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-173",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama la división de ascenso inmediatamente inferior a la Primera?",
+    "options": [
+      "Primera B Metropolitana",
+      "Federal A",
+      "Primera Nacional"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-174",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué organismo organiza el fútbol argentino?",
+    "options": [
+      "Conmebol",
+      "FIFA",
+      "AFA"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-175",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad tiene su sede la AFA?",
+    "options": [
+      "Buenos Aires",
+      "Rosario",
+      "Córdoba"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-176",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el predio de entrenamiento de la Selección en Ezeiza?",
+    "options": [
+      "Lionel Andrés Messi",
+      "Diego Maradona",
+      "Julio Grondona"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-177",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama la hinchada de Racing?",
+    "options": [
+      "La Guardia Imperial",
+      "Los Borrachos del Tablón",
+      "La Gloriosa Butteler"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-178",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿A cuántas cuadras están aproximadamente las canchas de Racing e Independiente?",
+    "options": [
+      "Unas dos",
+      "Unas veinte",
+      "Unas cincuenta"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-179",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club argentino se formó Ángel Di María?",
+    "options": [
+      "River",
+      "Newell's",
+      "Rosario Central"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-180",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club se formó Alexis Mac Allister?",
+    "options": [
+      "Argentinos Juniors",
+      "Boca",
+      "Huracán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-181",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Gabriel Batistuta?",
+    "options": [
+      "Newell's",
+      "Rosario Central",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-182",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿De qué club cordobés surgió Paulo Dybala?",
+    "options": [
+      "Belgrano",
+      "Talleres",
+      "Instituto"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-183",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿En qué club debutó Javier Zanetti?",
+    "options": [
+      "Talleres de Remedios de Escalada",
+      "Lanús",
+      "Banfield"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-184",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué jugador de Boca era conocido como «el Titán»?",
+    "options": [
+      "Guillermo Barros Schelotto",
+      "Rolando Schiavi",
+      "Martín Palermo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-185",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué jugador de River es conocido como «el Príncipe»?",
+    "options": [
+      "Norberto Alonso",
+      "Enzo Francescoli",
+      "Ariel Ortega"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-186",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué ídolo de River era conocido como «Beto»?",
+    "options": [
+      "Daniel Passarella",
+      "Ramón Díaz",
+      "Norberto Alonso"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-187",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué defensor capitán de River y de la Selección era «el Kaiser»?",
+    "options": [
+      "Oscar Ruggeri",
+      "Daniel Passarella",
+      "Roberto Perfumo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-188",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué arquero de River era conocido como «el Pato»?",
+    "options": [
+      "Germán Burgos",
+      "Ubaldo Fillol",
+      "Amadeo Carrizo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-189",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué jugador de Racing era conocido como «el Licha»?",
+    "options": [
+      "Diego Milito",
+      "Gustavo Bou",
+      "Lisandro López"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-190",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué delantero de Racing era «el Príncipe»?",
+    "options": [
+      "Diego Milito",
+      "Claudio López",
+      "Lisandro López"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-191",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tenía Ricardo Bochini?",
+    "options": [
+      "El Beto",
+      "El Bocha",
+      "El Bambino"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-192",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Ramón Díaz?",
+    "options": [
+      "El Pelado",
+      "El Mono",
+      "El Turco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-193",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Juan Sebastián Verón?",
+    "options": [
+      "La Brujita",
+      "El Mago",
+      "El Pincha"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-194",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene el exarquero Sergio Romero?",
+    "options": [
+      "Pato",
+      "Dibu",
+      "Chiquito"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-195",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué apodo tiene Emiliano Martínez?",
+    "options": [
+      "Toto",
+      "Chiquito",
+      "Dibu"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-196",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el trofeo de clubes más importante de Sudamérica?",
+    "options": [
+      "Copa Libertadores",
+      "Recopa",
+      "Copa Sudamericana"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-197",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿En qué año descendió Independiente por primera vez?",
+    "options": [
+      "2018",
+      "2013",
+      "2003"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-198",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Qué sistema define descensos promediando los puntos de varias temporadas?",
+    "options": [
+      "La tabla anual",
+      "El Reducido",
+      "Los promedios"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-199",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el torneo por el segundo ascenso de la Primera Nacional?",
+    "options": [
+      "Repechaje",
+      "Reducido",
+      "Apertura"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-200",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿En qué año se fundó Boca Juniors?",
+    "options": [
+      "1901",
+      "1913",
+      "1905"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-201",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿En qué año se fundó River Plate?",
+    "options": [
+      "1901",
+      "1905",
+      "1911"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-202",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿En qué barrio nació River Plate antes de mudarse a Núñez?",
+    "options": [
+      "La Boca",
+      "Belgrano",
+      "Palermo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-203",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿A qué inmigrantes remite el apodo «Xeneize»?",
+    "options": [
+      "Gallegos",
+      "Vascos",
+      "Genoveses"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-204",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Por qué a River se le dice «Millonario»?",
+    "options": [
+      "Por grandes compras de jugadores en los años 30",
+      "Por el valor de su estadio",
+      "Por un premio de lotería"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-205",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué colores tomó Boca de la bandera de un barco sueco?",
+    "options": [
+      "Azul y amarillo",
+      "Azul y blanco",
+      "Rojo y blanco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-206",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué sacerdote dio nombre a San Lorenzo de Almagro?",
+    "options": [
+      "Lorenzo Bonaparte",
+      "Lorenzo Massa",
+      "Lorenzo Sarsfield"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-207",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de la Primera argentina lleva el nombre de un ex presidente argentino?",
+    "options": [
+      "Belgrano",
+      "Godoy Cruz",
+      "Sarmiento"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-208",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué prócer da nombre al club cordobés apodado «el Pirata»?",
+    "options": [
+      "Manuel Belgrano",
+      "Domingo Sarmiento",
+      "José de San Martín"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-209",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuántos jugadores tiene un equipo en cancha al empezar un partido?",
+    "options": [
+      "11",
+      "10",
+      "12"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-210",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club rosarino usa como apodo un término que fue insulto y luego orgullo, «Canalla»?",
+    "options": [
+      "Argentino de Rosario",
+      "Rosario Central",
+      "Newell's"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-211",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club rosarino adoptó el apodo «Leprosos» tras un partido benéfico?",
+    "options": [
+      "Rosario Central",
+      "Newell's",
+      "Tiro Federal"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-212",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué clásico se conoce como «el clásico de la ciudad de las diagonales»?",
+    "options": [
+      "Talleres vs. Belgrano",
+      "Unión vs. Colón",
+      "Estudiantes vs. Gimnasia"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-213",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué clásico enfrenta a Gimnasia de Mendoza e Independiente Rivadavia?",
+    "options": [
+      "El clásico mendocino",
+      "El clásico cuyano",
+      "El clásico del Oeste"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-214",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién juega Tigre el clásico de zona norte?",
+    "options": [
+      "Platense",
+      "Argentinos",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-215",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Liniers tiene a Ferro como rival clásico?",
+    "options": [
+      "Vélez",
+      "Huracán",
+      "Argentinos"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-216",
+    "category": "clasicos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién juega Instituto un clásico cordobés?",
+    "options": [
+      "Central Córdoba",
+      "Talleres",
+      "Godoy Cruz"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-217",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama oficialmente el estadio de Boca?",
+    "options": [
+      "Camilo Cichero",
+      "Juan Domingo Perón",
+      "Alberto J. Armando"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-218",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué nombre oficial tiene el estadio de Racing?",
+    "options": [
+      "Florencio Sola",
+      "Libertadores de América",
+      "Presidente Perón"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-219",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué ídolo le da nombre, junto a «Libertadores de América», al estadio de Independiente?",
+    "options": [
+      "Arsenio Erico",
+      "Diego Maradona",
+      "Ricardo Enrique Bochini"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-220",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Banfield?",
+    "options": [
+      "Ciudad de Lanús",
+      "Néstor Díaz Pérez",
+      "Florencio Sola"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-221",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Estudiantes de La Plata?",
+    "options": [
+      "Juan Carmelo Zerillo",
+      "Jorge Luis Hirschi",
+      "Único Diego Maradona"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-222",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Gimnasia y Esgrima La Plata?",
+    "options": [
+      "Jorge Luis Hirschi",
+      "Ciudad de La Plata",
+      "Juan Carmelo Zerillo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-223",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué estadio de La Plata se usa para partidos de Selección y finales?",
+    "options": [
+      "El Bosque",
+      "Estadio Único Diego Armando Maradona",
+      "UNO"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-224",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Godoy Cruz?",
+    "options": [
+      "Malvinas Argentinas",
+      "Feliciano Gambarte",
+      "Bautista Gargantini"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-225",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿En qué estadio juega Independiente Rivadavia?",
+    "options": [
+      "Víctor Legrotaglie",
+      "Malvinas Argentinas",
+      "Bautista Gargantini"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-226",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Unión?",
+    "options": [
+      "Brigadier López",
+      "15 de Abril",
+      "Cementerio de los Elefantes"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-227",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda el estadio de Colón de Santa Fe?",
+    "options": [
+      "La Fortaleza",
+      "El Templo",
+      "El Cementerio de los Elefantes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-228",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Atlético Tucumán?",
+    "options": [
+      "Madre de Ciudades",
+      "La Ciudadela",
+      "Monumental José Fierro"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-229",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué estadio de Santiago del Estero usa Central Córdoba?",
+    "options": [
+      "Monumental José Fierro",
+      "Alfredo Terrera",
+      "Madre de Ciudades"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-230",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega de local en el estadio Ciudad de Vicente López?",
+    "options": [
+      "Defensa y Justicia",
+      "Platense",
+      "Tigre"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-231",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega en el estadio Norberto «Tito» Tomaghello?",
+    "options": [
+      "Banfield",
+      "Defensa y Justicia",
+      "Sarmiento"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-232",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega en el estadio José Dellagiovanna?",
+    "options": [
+      "Huracán",
+      "Platense",
+      "Tigre"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-233",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Qué club juega en el estadio Eva Perón de Junín?",
+    "options": [
+      "Banfield",
+      "Sarmiento",
+      "Unión"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-234",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Barracas Central?",
+    "options": [
+      "Guillermo Laza",
+      "Ciudad de Vicente López",
+      "Claudio «Chiqui» Tapia"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-235",
+    "category": "estadios",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se llama el estadio de Lanús?",
+    "options": [
+      "Ciudad de Lanús – Néstor Díaz Pérez",
+      "Alfredo Beranger",
+      "Florencio Sola"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-236",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuántos puntos se suman por partido ganado en el fútbol argentino?",
+    "options": [
+      "1",
+      "3",
+      "2"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-237",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Avellaneda NO es uno de los cinco grandes?",
+    "options": [
+      "Independiente",
+      "Arsenal",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-238",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cuáles son los «cinco grandes» del fútbol argentino?",
+    "options": [
+      "Boca, River, Racing, Vélez y Estudiantes",
+      "Boca, River, Huracán, San Lorenzo y Newell's",
+      "Boca, River, Racing, Independiente y San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-239",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Cómo se apoda a los semilleros de Argentinos Juniors?",
+    "options": [
+      "La Fábrica",
+      "La Cantera de Oro",
+      "El Semillero del Mundo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-240",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Bajo Flores juega en Primera?",
+    "options": [
+      "Barracas Central",
+      "Deportivo Riestra",
+      "San Lorenzo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-241",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Florencio Varela juega en Primera?",
+    "options": [
+      "Defensa y Justicia",
+      "Quilmes",
+      "Banfield"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-242",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué club de Victoria, partido de San Fernando, juega en Primera?",
+    "options": [
+      "Platense",
+      "Tigre",
+      "Defensa y Justicia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-243",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Atlético Tucumán?",
+    "options": [
+      "Rojo",
+      "Celeste y blanco",
+      "Verde"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-244",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Independiente Rivadavia?",
+    "options": [
+      "Azul",
+      "Verde",
+      "Granate"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-245",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Instituto?",
+    "options": [
+      "Azul",
+      "Rojo y blanco",
+      "Celeste"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-246",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Colón?",
+    "options": [
+      "Rojo y negro",
+      "Rojo y blanco",
+      "Azul y oro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-247",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Platense?",
+    "options": [
+      "Blanco y marrón",
+      "Verde y blanco",
+      "Rojo y blanco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-248",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Tigre?",
+    "options": [
+      "Verde y blanco",
+      "Granate",
+      "Azul y rojo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-249",
+    "category": "curiosidades",
+    "difficulty": "easy",
+    "prompt": "¿Qué color predomina en la camiseta de Central Córdoba?",
+    "options": [
+      "Blanco y negro",
+      "Rojo y blanco",
+      "Celeste"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-250",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué equipo argentino ganó la Intercontinental 1986 ante el Steaua Bucarest?",
+    "options": [
+      "Boca",
+      "Independiente",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-251",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino ganó la Libertadores 1985 en su primera participación?",
+    "options": [
+      "Argentinos Juniors",
+      "Ferro",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-252",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué selección ganó el Mundial jugado en Argentina en 1978?",
+    "options": [
+      "Argentina",
+      "Países Bajos",
+      "Brasil"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-253",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Estudiantes a ganar tres Libertadores entre 1968 y 1970?",
+    "options": [
+      "Carlos Bilardo",
+      "Juan Carlos Lorenzo",
+      "Osvaldo Zubeldía"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-254",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿A qué club inglés le ganó Estudiantes la Intercontinental 1968?",
+    "options": [
+      "Leeds",
+      "Liverpool",
+      "Manchester United"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-255",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿A qué club le ganó Racing la Copa Intercontinental 1967?",
+    "options": [
+      "Milan",
+      "Celtic",
+      "Manchester United"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-256",
+    "category": "historia",
+    "difficulty": "easy",
+    "prompt": "¿Qué club argentino se fundó en 1903 y es «la Academia»?",
+    "options": [
+      "Estudiantes",
+      "Independiente",
+      "Racing"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-257",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién ganó Platense la final del Apertura 2025?",
+    "options": [
+      "San Lorenzo",
+      "Huracán",
+      "Estudiantes"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-258",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club volvió a Primera en 2025 tras ganar la Primera Nacional 2024?",
+    "options": [
+      "San Martín de Tucumán",
+      "Aldosivi",
+      "Godoy Cruz"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-259",
+    "category": "ascensos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club mendocino ascendió a Primera en 2025?",
+    "options": [
+      "Gimnasia y Esgrima de Mendoza",
+      "San Martín de Mendoza",
+      "Godoy Cruz"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-260",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién ganó Racing la final de la Copa Sudamericana 2024?",
+    "options": [
+      "Cruzeiro",
+      "Corinthians",
+      "Atlético Mineiro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-261",
+    "category": "internacionales",
+    "difficulty": "easy",
+    "prompt": "¿En qué ciudad se jugó la final de la Sudamericana 2024 que ganó Racing?",
+    "options": [
+      "Montevideo",
+      "Asunción",
+      "Lima"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-262",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Contra quién ganó Estudiantes la final de la Copa de la Liga 2024?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-263",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Estudiantes a ganar la Copa de la Liga 2024?",
+    "options": [
+      "Martín Palermo",
+      "Ricardo Zielinski",
+      "Eduardo Domínguez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-264",
+    "category": "tecnicos",
+    "difficulty": "easy",
+    "prompt": "¿Qué DT llevó a Vélez al título de la Liga 2024?",
+    "options": [
+      "Sebastián Méndez",
+      "Gustavo Quinteros",
+      "Alexander Medina"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-265",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué delantero de Racing fue goleador y figura en la Sudamericana 2024?",
+    "options": [
+      "Gustavo Bou",
+      "Adrián «Maravilla» Martínez",
+      "Lautaro Martínez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-266",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Quién hizo el gol de Racing que abrió la final de la Sudamericana 2024?",
+    "options": [
+      "Maximiliano Salas",
+      "Gastón Martirena",
+      "Juan Fernando Quintero"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-267",
+    "category": "idolos",
+    "difficulty": "easy",
+    "prompt": "¿Qué volante colombiano fue figura de Racing en la Sudamericana 2024?",
+    "options": [
+      "Roger Martínez",
+      "Juan Fernando Quintero",
+      "Johan Carbonero"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-268",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club perdió la final de la Copa Argentina 2024 ante Central Córdoba?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-269",
+    "category": "titulos",
+    "difficulty": "easy",
+    "prompt": "¿Qué club fue subcampeón de la Liga 2024 detrás de Vélez?",
+    "options": [
+      "Racing",
+      "Talleres",
+      "Huracán"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-270",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Supercopa Internacional 2024 ante River en Asunción?",
+    "options": [
+      "Talleres",
+      "Vélez",
+      "Estudiantes"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-271",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ascendió a Primera en 2024 ganando el Reducido?",
+    "options": [
+      "Deportivo Madryn",
+      "Gimnasia de Mendoza",
+      "San Martín de San Juan"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-272",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Central la final de la Copa de la Liga 2023?",
+    "options": [
+      "Godoy Cruz",
+      "Platense",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-273",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2023?",
+    "options": [
+      "Estudiantes",
+      "Defensa y Justicia",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-274",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Copa de la Liga 2023 con Rosario Central?",
+    "options": [
+      "Miguel Ángel Russo",
+      "Kily González",
+      "Carlos Tevez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-275",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Liga Profesional 2023 con River?",
+    "options": [
+      "Marcelo Gallardo",
+      "Ramón Díaz",
+      "Martín Demichelis"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-276",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club perdió la final de la Copa Argentina 2023 ante Estudiantes?",
+    "options": [
+      "Defensa y Justicia",
+      "River",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-277",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club de Mendoza ascendió a Primera en 2023?",
+    "options": [
+      "Independiente Rivadavia",
+      "Godoy Cruz",
+      "Gimnasia de Mendoza"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-278",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ascendió a Primera en 2023 junto a Independiente Rivadavia?",
+    "options": [
+      "Sarmiento",
+      "Barracas Central",
+      "Deportivo Riestra"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-279",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa de la Liga 2022?",
+    "options": [
+      "River",
+      "Boca",
+      "Tigre"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-280",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Trofeo de Campeones 2022 jugado en Abu Dabi?",
+    "options": [
+      "Racing",
+      "River",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-281",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Boca la final de la Copa de la Liga 2022?",
+    "options": [
+      "Tigre",
+      "Racing",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-282",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Liga 2022 con Boca?",
+    "options": [
+      "Hugo Ibarra",
+      "Miguel Ángel Russo",
+      "Sebastián Battaglia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-283",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero de River fue convocado al Mundial 2022?",
+    "options": [
+      "Franco Armani",
+      "Gerónimo Rulli",
+      "Agustín Rossi"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-284",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador del Mundial 2022 se formó en Vélez?",
+    "options": [
+      "Alexis Mac Allister",
+      "Julián Álvarez",
+      "Thiago Almada"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-285",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2022?",
+    "options": [
+      "Talleres",
+      "Boca",
+      "Patronato"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-286",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2021?",
+    "options": [
+      "Boca",
+      "Talleres",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-287",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Trofeo de Campeones 2021?",
+    "options": [
+      "Colón",
+      "River",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-288",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa de la Liga 2021?",
+    "options": [
+      "Boca",
+      "Racing",
+      "Colón"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-289",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué fue Colón al ganar la Copa de la Liga 2021?",
+    "options": [
+      "Su segunda liga",
+      "Su tercer título",
+      "Su primer título de Primera"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-290",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Diego Maradona 2020?",
+    "options": [
+      "Banfield",
+      "Boca",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-291",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Defensa y Justicia la final de la Sudamericana 2020?",
+    "options": [
+      "Lanús",
+      "Coquimbo Unido",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-292",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué clubes argentinos jugaron la final de la Sudamericana 2020?",
+    "options": [
+      "Lanús y Vélez",
+      "Defensa y Justicia y Lanús",
+      "Racing y Talleres"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-293",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿En qué estadio se jugó la final de la Sudamericana 2020?",
+    "options": [
+      "Centenario",
+      "Maracaná",
+      "Mario Alberto Kempes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-294",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Boca la final de la Copa Diego Maradona 2020?",
+    "options": [
+      "Vélez",
+      "Racing",
+      "Banfield"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-295",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Defensa y Justicia a la Sudamericana 2020?",
+    "options": [
+      "Sebastián Beccacece",
+      "Juan Pablo Vojvoda",
+      "Hernán Crespo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-296",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Superliga 2019-20, definida en la última fecha?",
+    "options": [
+      "Boca",
+      "River",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-297",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2019?",
+    "options": [
+      "Central Córdoba",
+      "River",
+      "Estudiantes de Buenos Aires"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-298",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó River la Recopa 2019?",
+    "options": [
+      "Athletico Paranaense",
+      "Chapecoense",
+      "Independiente del Valle"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-299",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Racing al título de 2019?",
+    "options": [
+      "Eduardo Coudet",
+      "Diego Cocca",
+      "Gustavo Costas"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-300",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club del ascenso llegó a la final de la Copa Argentina 2019?",
+    "options": [
+      "Almagro",
+      "Central Córdoba",
+      "Estudiantes de Buenos Aires"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-301",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club perdió Boca la final de la Libertadores 2018?",
+    "options": [
+      "Grêmio",
+      "Palmeiras",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-302",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero fue figura de River en la final de Madrid 2018?",
+    "options": [
+      "Germán Lux",
+      "Franco Armani",
+      "Marcelo Barovero"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-303",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2018?",
+    "options": [
+      "Gimnasia",
+      "River",
+      "Rosario Central"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-304",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2017?",
+    "options": [
+      "Boca",
+      "Atlético Tucumán",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-305",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club ganó Independiente la Sudamericana 2017?",
+    "options": [
+      "Flamengo",
+      "Junior",
+      "Libertad"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-306",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Campeonato 2016-17?",
+    "options": [
+      "Banfield",
+      "Boca",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-307",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2016?",
+    "options": [
+      "Rosario Central",
+      "River",
+      "Godoy Cruz"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-308",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el campeonato largo de 30 equipos de 2015?",
+    "options": [
+      "Rosario Central",
+      "San Lorenzo",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-309",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2015?",
+    "options": [
+      "River",
+      "Boca",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-310",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Supercopa Argentina 2015 ante Boca?",
+    "options": [
+      "San Lorenzo",
+      "River",
+      "Huracán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-311",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó River la Sudamericana 2014 en la final?",
+    "options": [
+      "Boca",
+      "Estudiantes",
+      "Atlético Nacional"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-312",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Torneo de Transición 2014 con Racing?",
+    "options": [
+      "Ricardo Zielinski",
+      "Diego Cocca",
+      "Facundo Sava"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-313",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Torneo Final 2014 con River?",
+    "options": [
+      "Ramón Díaz",
+      "Matías Almeyda",
+      "Marcelo Gallardo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-314",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2014?",
+    "options": [
+      "Rosario Central",
+      "Boca",
+      "Huracán"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-315",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Supercopa Argentina 2014 ante River?",
+    "options": [
+      "Boca",
+      "San Lorenzo",
+      "Huracán"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-316",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién jugó Independiente el desempate por el ascenso en 2014?",
+    "options": [
+      "Banfield",
+      "Atlético Tucumán",
+      "Huracán"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-317",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club perdió Independiente el partido que lo condenó al descenso de 2013?",
+    "options": [
+      "Boca",
+      "San Lorenzo",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-318",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Lanús la final de la Sudamericana 2013?",
+    "options": [
+      "São Paulo",
+      "Ponte Preta",
+      "Atlético Nacional"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-319",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Sudamericana 2013 con Lanús?",
+    "options": [
+      "Guillermo Barros Schelotto",
+      "Ramón Cabrero",
+      "Jorge Almirón"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-320",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Newell's al Torneo Final 2013?",
+    "options": [
+      "Américo Gallego",
+      "Gerardo Martino",
+      "Marcelo Bielsa"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-321",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Copa Argentina 2013?",
+    "options": [
+      "San Lorenzo",
+      "Boca",
+      "Arsenal de Sarandí"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-322",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién perdió Boca la final de la Libertadores 2012?",
+    "options": [
+      "Santos",
+      "Universidad de Chile",
+      "Corinthians"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-323",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Clausura 2012, su primer título de liga?",
+    "options": [
+      "Tigre",
+      "Arsenal de Sarandí",
+      "Belgrano"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-324",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Clausura 2012 con Arsenal?",
+    "options": [
+      "Jorge Burruchaga",
+      "Gustavo Alfaro",
+      "Ricardo Zielinski"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-325",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT devolvió a River a Primera en 2012?",
+    "options": [
+      "Matías Almeyda",
+      "Ramón Díaz",
+      "Marcelo Gallardo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-326",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT dirigió a River cuando descendió en 2011?",
+    "options": [
+      "Juan José López",
+      "Ángel Cappa",
+      "Matías Almeyda"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-327",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Independiente la Sudamericana 2010?",
+    "options": [
+      "LDU",
+      "Goiás",
+      "Flamengo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-328",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Clausura 2010, su primera liga en 25 años?",
+    "options": [
+      "Huracán",
+      "Argentinos Juniors",
+      "Banfield"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-329",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Clausura 2010 con Argentinos Juniors?",
+    "options": [
+      "Néstor Gorosito",
+      "Ricardo Caruso Lombardi",
+      "Claudio Borghi"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-330",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Estudiantes la final de la Libertadores 2009?",
+    "options": [
+      "Grêmio",
+      "Nacional",
+      "Cruzeiro"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-331",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Apertura 2009, su primer título de Primera?",
+    "options": [
+      "Argentinos Juniors",
+      "Arsenal",
+      "Banfield"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-332",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Banfield al título del Apertura 2009?",
+    "options": [
+      "Jorge Burruchaga",
+      "Matías Almeyda",
+      "Julio César Falcioni"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-333",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué delantero uruguayo fue figura del Banfield campeón 2009?",
+    "options": [
+      "Walter Erviti",
+      "Sebastián Abreu",
+      "Santiago Silva"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-334",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué capitán de Estudiantes levantó la Libertadores 2009?",
+    "options": [
+      "Mariano Andújar",
+      "Rodrigo Braña",
+      "Juan Sebastián Verón"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-335",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club argentino ganó la Sudamericana 2007?",
+    "options": [
+      "Lanús",
+      "Arsenal de Sarandí",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-336",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club ganó Arsenal la final de la Sudamericana 2007?",
+    "options": [
+      "Chivas",
+      "América de México",
+      "Pachuca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-337",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Apertura 2007, su primer título de Primera?",
+    "options": [
+      "Tigre",
+      "Banfield",
+      "Lanús"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-338",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Lanús al Apertura 2007?",
+    "options": [
+      "Ramón Cabrero",
+      "Luis Zubeldía",
+      "Gustavo Cuervo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-339",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿A qué rival le ganó Estudiantes el desempate del Apertura 2006?",
+    "options": [
+      "Racing",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-340",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Estudiantes al Apertura 2006 tras 23 años sin ligas?",
+    "options": [
+      "Diego Simeone",
+      "Alejandro Sabella",
+      "Carlos Bilardo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-341",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club argentino perdió la final de la Libertadores 2004 ante Once Caldas por penales?",
+    "options": [
+      "Boca",
+      "Vélez",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-342",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Boca la final de la Libertadores 2003?",
+    "options": [
+      "Palmeiras",
+      "Grêmio",
+      "Santos"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-343",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Apertura 2001 cortando una sequía de 35 años?",
+    "options": [
+      "Independiente",
+      "Racing",
+      "Huracán"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-344",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Boca la final de la Libertadores 2001?",
+    "options": [
+      "Santos",
+      "Palmeiras",
+      "Cruz Azul"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-345",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Apertura 2001 con Racing?",
+    "options": [
+      "Diego Simeone",
+      "Reinaldo Merlo",
+      "Ángel Cappa"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-346",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero colombiano atajó en las Libertadores 2000 y 2001 de Boca?",
+    "options": [
+      "Óscar Córdoba",
+      "Faryd Mondragón",
+      "René Higuita"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-347",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿A quién le ganó Boca la final de la Libertadores 2000?",
+    "options": [
+      "Santos",
+      "Cruz Azul",
+      "Palmeiras"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-348",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club cordobés ganó la Copa Conmebol 1999?",
+    "options": [
+      "Belgrano",
+      "Instituto",
+      "Talleres"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-349",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Apertura 1998 invicto?",
+    "options": [
+      "Vélez",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-350",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó River la Libertadores 1996?",
+    "options": [
+      "Universidad de Chile",
+      "América de Cali",
+      "Cruzeiro"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-351",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Libertadores 1996 con River?",
+    "options": [
+      "Héctor Veira",
+      "Ramón Díaz",
+      "Américo Gallego"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-352",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club rosarino ganó la Copa Conmebol 1995?",
+    "options": [
+      "Argentino",
+      "Newell's",
+      "Rosario Central"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-353",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club ganó Vélez la final de la Libertadores 1994?",
+    "options": [
+      "Cruzeiro",
+      "Palmeiras",
+      "São Paulo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-354",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Quién hizo el segundo gol de Vélez al Milan en la Intercontinental 1994?",
+    "options": [
+      "José Flores",
+      "Omar Asad",
+      "Roberto Trotta"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-355",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién perdió Newell's la final de la Libertadores 1992?",
+    "options": [
+      "Cruzeiro",
+      "São Paulo",
+      "Colo-Colo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-356",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club argentino jugaba Gabriel Batistuta en la Copa América 1991?",
+    "options": [
+      "Boca",
+      "Newell's",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-357",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿En qué club hizo Arsenio Erico la mayoría de sus goles?",
+    "options": [
+      "Independiente",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-358",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿En qué club argentino se formó Radamel Falcao?",
+    "options": [
+      "River",
+      "Lanús",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-359",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club argentino jugaba Daniel Passarella cuando levantó la Copa 78?",
+    "options": [
+      "River",
+      "Huracán",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-360",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿De qué club era el arquero Ubaldo Fillol en el Mundial 78?",
+    "options": [
+      "Boca",
+      "River",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-361",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Leandro Paredes?",
+    "options": [
+      "River",
+      "Boca",
+      "Argentinos"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-362",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club se formó Nahuel Molina?",
+    "options": [
+      "Defensa y Justicia",
+      "Boca",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-363",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club se formó Germán Pezzella?",
+    "options": [
+      "Banfield",
+      "Estudiantes",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-364",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Exequiel Palacios?",
+    "options": [
+      "River",
+      "Boca",
+      "Tucumán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-365",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club se formó Gonzalo Montiel?",
+    "options": [
+      "River",
+      "Racing",
+      "Banfield"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-366",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Guido Rodríguez?",
+    "options": [
+      "Defensa y Justicia",
+      "River",
+      "América"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-367",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Ángel Correa?",
+    "options": [
+      "Rosario Central",
+      "San Lorenzo",
+      "Newell's"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-368",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador de la historia del profesionalismo argentino?",
+    "options": [
+      "Martín Palermo",
+      "Arsenio Erico",
+      "Ángel Labruna"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-369",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿De qué nacionalidad era Arsenio Erico?",
+    "options": [
+      "Argentina",
+      "Uruguaya",
+      "Paraguaya"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-370",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de River?",
+    "options": [
+      "Enzo Francescoli",
+      "Bernabé Ferreyra",
+      "Ángel Labruna"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-371",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador de la historia de los Superclásicos?",
+    "options": [
+      "Ángel Labruna",
+      "Francisco Varallo",
+      "Martín Palermo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-372",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de Racing?",
+    "options": [
+      "Evaristo Barrera",
+      "Diego Milito",
+      "Lisandro López"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-373",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de San Lorenzo?",
+    "options": [
+      "Héctor Scotta",
+      "Néstor Gorosito",
+      "José Sanfilippo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-374",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de Vélez?",
+    "options": [
+      "Mauro Zárate",
+      "Carlos Bianchi",
+      "José Luis Chilavert"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-375",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de Huracán?",
+    "options": [
+      "Carlos Babington",
+      "Herminio Masantonio",
+      "René Houseman"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-376",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Quién es el máximo goleador histórico de Estudiantes?",
+    "options": [
+      "Juan Ramón Verón",
+      "Manuel Pelegrina",
+      "Mauro Boselli"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-377",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Cuántos goles oficiales hizo Martín Palermo en Boca, aproximadamente?",
+    "options": [
+      "180",
+      "301",
+      "236"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-378",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué Copa Sudamericanas ganó Boca?",
+    "options": [
+      "2004 y 2005",
+      "2008 y 2009",
+      "2002 y 2014"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-379",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Cuántas Copas Libertadores ganó River?",
+    "options": [
+      "5",
+      "4",
+      "3"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-380",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Cuántas Copas Libertadores ganó Estudiantes?",
+    "options": [
+      "3",
+      "2",
+      "4"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-381",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Cuántas Copas Libertadores ganó Racing?",
+    "options": [
+      "1",
+      "2",
+      "0"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-382",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿En qué año ganó Racing su única Copa Libertadores?",
+    "options": [
+      "1971",
+      "1967",
+      "1988"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-383",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de Estudiantes, padre de la «Brujita», era «la Bruja»?",
+    "options": [
+      "Carlos Bilardo",
+      "Juan Miguel Echecopar",
+      "Juan Ramón Verón"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-384",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué gran figura de Huracán y de la Selección 78 era «el Loco»?",
+    "options": [
+      "Carlos Babington",
+      "René Houseman",
+      "Osvaldo Ardiles"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-385",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿En qué club rosarino brilló Mario Kempes antes de irse a España?",
+    "options": [
+      "Newell's",
+      "Argentino de Rosario",
+      "Rosario Central"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-386",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador ganó más títulos con la camiseta de Boca?",
+    "options": [
+      "Sebastián Battaglia",
+      "Martín Palermo",
+      "Juan Román Riquelme"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-387",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué colombiano fue el «Patrón» de la defensa de Boca de Bianchi?",
+    "options": [
+      "Óscar Córdoba",
+      "Mauricio Serna",
+      "Jorge Bermúdez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-388",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero de River fue «Trapito»?",
+    "options": [
+      "Franco Armani",
+      "Marcelo Barovero",
+      "Juan Pablo Carrizo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-389",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué volante de River era conocido como «el Pity»?",
+    "options": [
+      "Gonzalo Martínez",
+      "Ignacio Fernández",
+      "Exequiel Palacios"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-390",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué colombiano de River fue «Juanfer»?",
+    "options": [
+      "Rafael Santos Borré",
+      "Jorge Carrascal",
+      "Juan Fernando Quintero"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-391",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué delantero colombiano fue «Teo» en River?",
+    "options": [
+      "Teófilo Gutiérrez",
+      "Rafael Santos Borré",
+      "Juan Pablo Ángel"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-392",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de San Lorenzo era «el Bambino»?",
+    "options": [
+      "Néstor Gorosito",
+      "José Sanfilippo",
+      "Héctor Veira"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-393",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de San Lorenzo era «Pipo»?",
+    "options": [
+      "Alberto Acosta",
+      "Néstor Gorosito",
+      "Leandro Romagnoli"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-394",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de San Lorenzo era «el Pipi»?",
+    "options": [
+      "Néstor Gorosito",
+      "Leandro Romagnoli",
+      "Ezequiel Lavezzi"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-395",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de San Lorenzo era «el Nene»?",
+    "options": [
+      "Héctor Veira",
+      "Rodolfo Fischer",
+      "José Sanfilippo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-396",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué goleador histórico de Lanús era «Pepe»?",
+    "options": [
+      "Diego Valeri",
+      "Lautaro Acosta",
+      "José Sand"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-397",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué colombiano jugó en Banfield antes de llegar a Europa?",
+    "options": [
+      "Radamel Falcao",
+      "Juan Guillermo Cuadrado",
+      "James Rodríguez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-398",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero de Independiente era «Pepé» en los 70?",
+    "options": [
+      "Miguel Ángel Santoro",
+      "Carlos Goyén",
+      "Luis Islas"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-399",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué arquero argentino fue figura de los penales en Italia 90?",
+    "options": [
+      "Nery Pumpido",
+      "Sergio Goycochea",
+      "Luis Islas"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-400",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club jugaba Sergio Goycochea al ir al Mundial 90?",
+    "options": [
+      "Racing",
+      "River",
+      "Millonarios"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-401",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club argentino se formó Marcos Acuña?",
+    "options": [
+      "Huracán",
+      "Racing",
+      "Ferro Carril Oeste"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-402",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Nicolás Otamendi?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-403",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Cristian «Cuti» Romero?",
+    "options": [
+      "Belgrano",
+      "Instituto",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-404",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club se formó Nicolás Tagliafico?",
+    "options": [
+      "Independiente",
+      "Lanús",
+      "Banfield"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-405",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Lisandro Martínez?",
+    "options": [
+      "Newell's",
+      "Boca",
+      "Defensa y Justicia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-406",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club argentino jugó Lisandro Martínez antes de ir a Europa?",
+    "options": [
+      "Defensa y Justicia",
+      "Independiente",
+      "Banfield"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-407",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Alejandro «Papu» Gómez?",
+    "options": [
+      "San Lorenzo",
+      "Lanús",
+      "Arsenal de Sarandí"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-408",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Juan Foyth?",
+    "options": [
+      "Boca",
+      "Estudiantes",
+      "Gimnasia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-409",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club debutó Gerónimo Rulli?",
+    "options": [
+      "Gimnasia",
+      "Racing",
+      "Estudiantes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-410",
+    "category": "seleccion",
+    "difficulty": "medium",
+    "prompt": "¿En qué club colombiano brilló Franco Armani antes de River?",
+    "options": [
+      "Atlético Nacional",
+      "Millonarios",
+      "Junior"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-411",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿En qué año descendió San Lorenzo, el primero de los cinco grandes en hacerlo?",
+    "options": [
+      "1983",
+      "1981",
+      "1970"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-412",
+    "category": "ascensos",
+    "difficulty": "medium",
+    "prompt": "¿En qué año descendió Racing a la B?",
+    "options": [
+      "1983",
+      "1993",
+      "1981"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-413",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club argentino ganó la Supercopa Sudamericana 1988?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-414",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club perdió Newell's la final de la Libertadores 1988?",
+    "options": [
+      "Nacional de Montevideo",
+      "Peñarol",
+      "Olimpia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-415",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó River su primera Libertadores, en 1986?",
+    "options": [
+      "Cobreloa",
+      "América de Cali",
+      "Peñarol"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-416",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Libertadores 1986 con River?",
+    "options": [
+      "Américo Gallego",
+      "Héctor Veira",
+      "Ramón Díaz"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-417",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Independiente la Intercontinental 1984?",
+    "options": [
+      "Hamburgo",
+      "Juventus",
+      "Liverpool"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-418",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club de Caballito ganó los Nacionales 1982 y 1984?",
+    "options": [
+      "Atlanta",
+      "Ferro Carril Oeste",
+      "Huracán"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-419",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Ferro a ganar los Nacionales 1982 y 1984?",
+    "options": [
+      "Carlos Griguol",
+      "Carlos Bilardo",
+      "Alfio Basile"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-420",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Metropolitano 1982?",
+    "options": [
+      "Ferro",
+      "Quilmes",
+      "Estudiantes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-421",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó el Metropolitano 1982 con Estudiantes?",
+    "options": [
+      "Eduardo Luján Manera",
+      "Carlos Bilardo",
+      "Osvaldo Zubeldía"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-422",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la liga 1978 en el Metropolitano?",
+    "options": [
+      "Ferro",
+      "Quilmes",
+      "Talleres"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-423",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra qué club ganó Boca la Intercontinental 1977?",
+    "options": [
+      "Liverpool",
+      "Borussia Mönchengladbach",
+      "Bayern Múnich"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-424",
+    "category": "goleadores",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de San Lorenzo hizo 60 goles en el año 1975?",
+    "options": [
+      "Héctor Scotta",
+      "José Sanfilippo",
+      "Rubén Ayala"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-425",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Cuántas Libertadores consecutivas ganó Independiente entre 1972 y 1975?",
+    "options": [
+      "Cuatro",
+      "Tres",
+      "Cinco"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-426",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién ganó Independiente la Intercontinental 1973?",
+    "options": [
+      "Juventus",
+      "Ajax",
+      "Liverpool"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-427",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Metropolitano 1973 con César Luis Menotti como DT?",
+    "options": [
+      "Rosario Central",
+      "Huracán",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-428",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT llevó a Huracán al título del Metropolitano 1973?",
+    "options": [
+      "César Luis Menotti",
+      "Alfio Basile",
+      "Carlos Bilardo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-429",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador de Independiente hizo el gol a la Juventus en la Intercontinental 1973?",
+    "options": [
+      "Daniel Bertoni",
+      "Ricardo Bochini",
+      "Ricardo Pavoni"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-430",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Metropolitano 1969 en su única liga de Primera?",
+    "options": [
+      "Chacarita Juniors",
+      "Huracán",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-431",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó el Metropolitano 1967, primer campeón fuera de los cinco grandes en el profesionalismo?",
+    "options": [
+      "Chacarita",
+      "Vélez",
+      "Estudiantes"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-432",
+    "category": "tecnicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué DT ganó la Libertadores 1967 con Racing?",
+    "options": [
+      "José María Minella",
+      "Juan José Pizzuti",
+      "Osvaldo Zubeldía"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-433",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Quién hizo el gol de Racing ante Celtic en el desempate de la Intercontinental 1967?",
+    "options": [
+      "Juan Carlos Cárdenas",
+      "Humberto Maschio",
+      "Juan José Rodríguez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-434",
+    "category": "titulos",
+    "difficulty": "medium",
+    "prompt": "¿Quién ganó el primer campeonato del profesionalismo, en 1931?",
+    "options": [
+      "Estudiantes",
+      "Boca",
+      "San Lorenzo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-435",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué clubes argentinos jugaron el Mundial de Clubes 2025?",
+    "options": [
+      "River y Racing",
+      "Boca y Estudiantes",
+      "Boca y River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-436",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿En qué país se jugó el Mundial de Clubes 2025?",
+    "options": [
+      "Estados Unidos",
+      "Qatar",
+      "Arabia Saudita"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-437",
+    "category": "historia",
+    "difficulty": "medium",
+    "prompt": "¿Qué competencia reemplazó a la Superliga en 2020?",
+    "options": [
+      "El Campeonato Nacional",
+      "La Liga Profesional de Fútbol",
+      "El Torneo de Transición"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-438",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club platense dirigió Maradona entre 2019 y 2020?",
+    "options": [
+      "Estudiantes",
+      "Cambaceres",
+      "Gimnasia"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-439",
+    "category": "clasicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la semifinal de la Libertadores 2019 ante Boca?",
+    "options": [
+      "Flamengo",
+      "Grêmio",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-440",
+    "category": "clasicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la final de la Supercopa Argentina 2018 jugada en Mendoza?",
+    "options": [
+      "Rosario Central",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-441",
+    "category": "clasicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué incidente suspendió la vuelta River-Boca en noviembre de 2018?",
+    "options": [
+      "Corte de luz",
+      "Ataque al micro de Boca",
+      "Lluvia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-442",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Recopa Sudamericana 2015?",
+    "options": [
+      "Boca",
+      "San Lorenzo",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-443",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la Suruga Bank 2015?",
+    "options": [
+      "Lanús",
+      "River",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-444",
+    "category": "clasicos",
+    "difficulty": "medium",
+    "prompt": "¿Qué Superclásico de 2015 fue suspendido por el ataque con gas pimienta?",
+    "options": [
+      "Octavos de la Libertadores",
+      "Semis de la Copa Argentina",
+      "Final de la Sudamericana"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-445",
+    "category": "clasicos",
+    "difficulty": "medium",
+    "prompt": "¿En qué estadio quedó suspendido el Superclásico de la Libertadores 2015?",
+    "options": [
+      "La Bombonera",
+      "El Cilindro",
+      "El Monumental"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-446",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién perdió River la final del Mundial de Clubes 2015?",
+    "options": [
+      "Bayern Múnich",
+      "Barcelona",
+      "Real Madrid"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-447",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué club argentino jugó el Mundial de Clubes 2014?",
+    "options": [
+      "Boca",
+      "San Lorenzo",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-448",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién perdió San Lorenzo la final del Mundial de Clubes 2014?",
+    "options": [
+      "Bayern Múnich",
+      "Barcelona",
+      "Real Madrid"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-449",
+    "category": "historia",
+    "difficulty": "medium",
+    "prompt": "¿Qué club ganó la primera edición de la Copa Argentina moderna, en 2012?",
+    "options": [
+      "Deportivo Merlo",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-450",
+    "category": "idolos",
+    "difficulty": "medium",
+    "prompt": "¿Qué campeón del mundo francés jugó en River en el ascenso 2012?",
+    "options": [
+      "Thierry Henry",
+      "David Trezeguet",
+      "Zinedine Zidane"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-451",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Contra quién perdió Estudiantes la final del Mundial de Clubes 2009?",
+    "options": [
+      "Barcelona",
+      "Manchester United",
+      "Inter"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-452",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Quién hizo el gol de Estudiantes en la final del Mundial de Clubes 2009?",
+    "options": [
+      "Mauro Boselli",
+      "Leandro Benítez",
+      "Juan Sebastián Verón"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-453",
+    "category": "internacionales",
+    "difficulty": "medium",
+    "prompt": "¿Qué jugador argentino del Barcelona le hizo el gol del título a Estudiantes en 2009?",
+    "options": [
+      "Lionel Messi",
+      "Gabriel Milito",
+      "Javier Mascherano"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-454",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Quién le hizo el gol del triunfo a Boca en la final de la Libertadores 2007 ante Grêmio en la vuelta?",
+    "options": [
+      "Rodrigo Palacio",
+      "Juan Román Riquelme (dos)",
+      "Martín Palermo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-455",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién perdió Boca el Mundial de Clubes 2007?",
+    "options": [
+      "Internacional",
+      "Barcelona",
+      "Milan"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-456",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra qué club ganó Boca la final de la Sudamericana 2005?",
+    "options": [
+      "Cerro Porteño",
+      "Universidad Católica",
+      "Pumas UNAM"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-457",
+    "category": "clasicos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de Boca hizo «la gallinita» festejando ante River en 2004?",
+    "options": [
+      "Rodrigo Palacio",
+      "Carlos Tevez",
+      "Guillermo Barros Schelotto"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-458",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra qué club ganó Boca la final de la Sudamericana 2004?",
+    "options": [
+      "Pumas UNAM",
+      "Bolívar",
+      "Atlético Paranaense"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-459",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club argentino perdió la final de la Sudamericana 2003?",
+    "options": [
+      "River",
+      "San Lorenzo",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-460",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Cómo terminó el partido de la Intercontinental 2003 entre Boca y Milan?",
+    "options": [
+      "2-1 para Boca",
+      "1-0 para Boca",
+      "1-1 y Boca ganó por penales"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-461",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Quién hizo el gol de Boca ante Milan en la Intercontinental 2003?",
+    "options": [
+      "Carlos Tevez",
+      "Matías Donnet",
+      "Guillermo Barros Schelotto"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-462",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién perdió River la final de la Sudamericana 2003?",
+    "options": [
+      "Internacional",
+      "Pumas",
+      "Cienciano"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-463",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Copa Sudamericana 2002?",
+    "options": [
+      "Boca",
+      "River",
+      "San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-464",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Copa Mercosur 2001?",
+    "options": [
+      "River",
+      "San Lorenzo",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-465",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién perdió Boca la Intercontinental 2001?",
+    "options": [
+      "Milan",
+      "Real Madrid",
+      "Bayern Múnich"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-466",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué estadio jugó Boca la Intercontinental 2000 ante el Real Madrid?",
+    "options": [
+      "Estadio Nacional de Tokio",
+      "Estadio Internacional de Yokohama",
+      "Bernabéu"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-467",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Quién hizo los dos goles de Boca al Real Madrid en la Intercontinental 2000?",
+    "options": [
+      "Martín Palermo",
+      "Marcelo Delgado",
+      "Juan Román Riquelme"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-468",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Supercopa Sudamericana 1997?",
+    "options": [
+      "River",
+      "Boca",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-469",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Supercopa 1996?",
+    "options": [
+      "River",
+      "Independiente",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-470",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club argentino ganó la Recopa Sudamericana 1995?",
+    "options": [
+      "River",
+      "Independiente",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-471",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué club de Avellaneda dirigió Maradona en 1995?",
+    "options": [
+      "Independiente",
+      "Racing",
+      "Arsenal"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-472",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Supercopa Sudamericana 1994?",
+    "options": [
+      "Boca",
+      "Independiente",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-473",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de Vélez hizo el gol de penal ante el Milan en la Intercontinental 1994?",
+    "options": [
+      "Omar Asad",
+      "Roberto Trotta",
+      "José Luis Chilavert"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-474",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué estadio se jugó la Intercontinental 1994 entre Vélez y Milan?",
+    "options": [
+      "Estadio Nacional de Tokio",
+      "Wembley",
+      "San Siro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-475",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Copa Interamericana 1994?",
+    "options": [
+      "Independiente",
+      "Vélez",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-476",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué club de Corrientes dirigió Maradona en 1994?",
+    "options": [
+      "Deportivo Mandiyú",
+      "Huracán Corrientes",
+      "Racing de Corrientes"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-477",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club rosarino jugó Maradona en 1993?",
+    "options": [
+      "Rosario Central",
+      "Newell's",
+      "Argentino"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-478",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino jugó Alexis Sánchez?",
+    "options": [
+      "Boca",
+      "Racing",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-479",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino jugó Sebastián «el Loco» Abreu?",
+    "options": [
+      "River",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-480",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino jugó el chileno Gary Medel?",
+    "options": [
+      "Racing",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-481",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino jugó el uruguayo Diego Forlán en inferiores?",
+    "options": [
+      "River",
+      "Independiente",
+      "Peñarol"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-482",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino jugó Edinson Cavani?",
+    "options": [
+      "River",
+      "Boca",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-483",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Ever Banega?",
+    "options": [
+      "Newell's",
+      "Boca",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-484",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Fernando Gago?",
+    "options": [
+      "Boca",
+      "River",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-485",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Claudio Caniggia?",
+    "options": [
+      "Boca",
+      "River",
+      "Atalanta"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-486",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Juan Román Riquelme?",
+    "options": [
+      "Boca",
+      "Platense",
+      "Argentinos Juniors"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-487",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Gabriel Milito?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Arsenal"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-488",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Carlos Bilardo como jugador?",
+    "options": [
+      "Deportivo Español",
+      "San Lorenzo",
+      "Estudiantes"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-489",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club se retiró Diego Maradona como jugador?",
+    "options": [
+      "Argentinos",
+      "Newell's",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-490",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Independiente?",
+    "options": [
+      "1905",
+      "1910",
+      "1903"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-491",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó San Lorenzo de Almagro?",
+    "options": [
+      "1908",
+      "1901",
+      "1914"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-492",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Huracán?",
+    "options": [
+      "1908",
+      "1903",
+      "1919"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-493",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Vélez Sarsfield?",
+    "options": [
+      "1910",
+      "1905",
+      "1922"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-494",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Estudiantes de La Plata?",
+    "options": [
+      "1905",
+      "1913",
+      "1887"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-495",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Rosario Central?",
+    "options": [
+      "1905",
+      "1903",
+      "1889"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-496",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Newell's Old Boys?",
+    "options": [
+      "1889",
+      "1910",
+      "1903"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-497",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Talleres de Córdoba?",
+    "options": [
+      "1921",
+      "1913",
+      "1905"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-498",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Belgrano de Córdoba?",
+    "options": [
+      "1913",
+      "1905",
+      "1918"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-499",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Lanús?",
+    "options": [
+      "1915",
+      "1925",
+      "1905"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-500",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Banfield?",
+    "options": [
+      "1896",
+      "1912",
+      "1905"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-501",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Argentinos Juniors?",
+    "options": [
+      "1910",
+      "1922",
+      "1904"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-502",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Godoy Cruz Antonio Tomba?",
+    "options": [
+      "1935",
+      "1908",
+      "1921"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-503",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Defensa y Justicia?",
+    "options": [
+      "1935",
+      "1910",
+      "1960"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-504",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Platense?",
+    "options": [
+      "1930",
+      "1905",
+      "1918"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-505",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se fundó Tigre?",
+    "options": [
+      "1915",
+      "1902",
+      "1927"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-506",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Con qué nombre nació Rosario Central?",
+    "options": [
+      "Club Atlético del Ferrocarril",
+      "Rosario Athletic",
+      "Central Argentine Railway Athletic Club"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-507",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Quién fue Isaac Newell, que da nombre a Newell's?",
+    "options": [
+      "Un ingeniero ferroviario",
+      "Un capitán de barco",
+      "Un docente inglés fundador de un colegio"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-508",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué empresa estaba ligada a la fundación de Rosario Central?",
+    "options": [
+      "Un frigorífico",
+      "Una cervecería",
+      "El Ferrocarril Central Argentino"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-509",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamó originalmente Independiente?",
+    "options": [
+      "Barracas Juniors",
+      "Independiente Football Club",
+      "Club Atlético Avellaneda"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-510",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué barrio porteño nació Independiente antes de mudarse a Avellaneda?",
+    "options": [
+      "Monserrat",
+      "Barracas",
+      "La Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-511",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club tenía como nombre original «Mártires de Chicago»?",
+    "options": [
+      "Huracán",
+      "Atlanta",
+      "Argentinos Juniors"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-512",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Por qué Vélez lleva el nombre de Dalmacio Vélez Sarsfield?",
+    "options": [
+      "Por la estación de tren cercana",
+      "Por un socio fundador",
+      "Por su escuela"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-513",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamaba el viejo estadio de San Lorenzo en Boedo?",
+    "options": [
+      "Estadio Olímpico",
+      "El Templo",
+      "Gasómetro de Avenida La Plata"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-514",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se jugó el último partido en el Viejo Gasómetro?",
+    "options": [
+      "1985",
+      "1979",
+      "1968"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-515",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año San Lorenzo recuperó por ley terrenos de Boedo?",
+    "options": [
+      "2012",
+      "2019",
+      "2001"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-516",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se inauguró el Monumental de River?",
+    "options": [
+      "1945",
+      "1923",
+      "1938"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-517",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se inauguró la Bombonera?",
+    "options": [
+      "1954",
+      "1940",
+      "1931"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-518",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se inauguró el Cilindro de Avellaneda?",
+    "options": [
+      "1950",
+      "1962",
+      "1940"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-519",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se inauguró el Libertadores de América de Independiente en su versión original?",
+    "options": [
+      "1950",
+      "1928",
+      "1940"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-520",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué arquitecto diseñó la Bombonera?",
+    "options": [
+      "Viktor Sulčič",
+      "Alejandro Bustillo",
+      "Clorindo Testa"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-521",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué presidente de River da nombre al Monumental?",
+    "options": [
+      "Antonio Vespucio Liberti",
+      "Hugo Santilli",
+      "Rodolfo D'Onofrio"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-522",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué presidente de Vélez da nombre a su estadio?",
+    "options": [
+      "Fernando Raffaini",
+      "Raúl Gámez",
+      "José Amalfitani"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-523",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Quién da nombre al estadio de Defensa y Justicia?",
+    "options": [
+      "Jorge Newbery",
+      "José Lemme",
+      "Norberto «Tito» Tomaghello"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-524",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué presidente de Tigre da nombre a su estadio?",
+    "options": [
+      "Rodrigo Molinos",
+      "José Dellagiovanna",
+      "Ezequiel Melaraña"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-525",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se profesionalizó el fútbol argentino?",
+    "options": [
+      "1925",
+      "1938",
+      "1931"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-526",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó más títulos en la era amateur?",
+    "options": [
+      "Alumni",
+      "Racing",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-527",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué temporada empezaron los torneos Apertura y Clausura?",
+    "options": [
+      "1990-91",
+      "1995-96",
+      "1985-86"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-528",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año debutó la Superliga Argentina?",
+    "options": [
+      "2020",
+      "2014",
+      "2017"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-529",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se jugó el primer Superclásico oficial en el profesionalismo?",
+    "options": [
+      "1913",
+      "1931",
+      "1928"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-530",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿En qué año se reanudó la Copa Argentina tras décadas sin jugarse?",
+    "options": [
+      "2011",
+      "2006",
+      "1999"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-531",
+    "category": "clasicos",
+    "difficulty": "hard",
+    "prompt": "¿En qué instancia fue el clásico rosarino de la «palomita» de Poy?",
+    "options": [
+      "Copa Libertadores",
+      "Semifinal del Nacional 1971",
+      "Final del Metropolitano"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-532",
+    "category": "clasicos",
+    "difficulty": "hard",
+    "prompt": "¿Qué clubes juegan el clásico de Villa Crespo y San Martín?",
+    "options": [
+      "Atlanta y Chacarita",
+      "All Boys y Argentinos",
+      "Ferro y Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-533",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador es el que más partidos disputó en la historia de River?",
+    "options": [
+      "Reinaldo Merlo",
+      "Amadeo Carrizo",
+      "Ángel Labruna"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-534",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador disputó más partidos en la historia de Boca?",
+    "options": [
+      "Hugo Gatti",
+      "Silvio Marzolini",
+      "Roberto Mouzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-535",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador disputó más partidos en la historia de Independiente?",
+    "options": [
+      "Arsenio Erico",
+      "Ricardo Bochini",
+      "Ricardo Pavoni"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-536",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador uruguayo de Independiente era «el Chivo»?",
+    "options": [
+      "Enzo Trossero",
+      "Daniel Bertoni",
+      "Ricardo Pavoni"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-537",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué volante de Independiente era «el Pato» en los 70?",
+    "options": [
+      "Rubén Galván",
+      "Ricardo Bochini",
+      "Ricardo Pastoriza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-538",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué ídolo de Racing de los 60 era «el Mariscal»?",
+    "options": [
+      "Alfio Basile",
+      "Juan Carlos Cárdenas",
+      "Roberto Perfumo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-539",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué ídolo de Racing era «el Coco» y luego DT de la Selección?",
+    "options": [
+      "Juan José Pizzuti",
+      "Roberto Perfumo",
+      "Alfio Basile"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-540",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué goleador de Racing fue «el Chango»?",
+    "options": [
+      "Norberto Raffo",
+      "Humberto Maschio",
+      "Juan Carlos Cárdenas"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-541",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué ídolo de Boca de los 60 era «el Rata»?",
+    "options": [
+      "Ángel Clemente Rojas",
+      "Antonio Rattín",
+      "Silvio Marzolini"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-542",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de Boca de los 60 era «Rojitas»?",
+    "options": [
+      "José Sanfilippo",
+      "Ángel Clemente Rojas",
+      "Antonio Rattín"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-543",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué lateral izquierdo de Boca es considerado de los mejores de la historia, de los 60?",
+    "options": [
+      "Silvio Marzolini",
+      "Alberto Tarantini",
+      "Roberto Mouzo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-544",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de River de los 40 integró «La Máquina»?",
+    "options": [
+      "Antonio Rattín",
+      "José Sanfilippo",
+      "Adolfo Pedernera"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-545",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamaba la famosa delantera de River de los años 40?",
+    "options": [
+      "La Máquina",
+      "El Ballet",
+      "Los Carasucias"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-546",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Quiénes completaban «La Máquina» con Muñoz, Moreno, Pedernera y Labruna?",
+    "options": [
+      "Amadeo Carrizo",
+      "Alfredo Di Stéfano",
+      "Félix Loustau"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-547",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué futura estrella del Real Madrid debutó en River y jugó en Huracán a préstamo?",
+    "options": [
+      "Omar Sívori",
+      "Alfredo Di Stéfano",
+      "Héctor Rial"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-548",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué parte del Monumental se construyó con la venta de Omar Sívori?",
+    "options": [
+      "El techo de la platea",
+      "La tribuna que cerró la herradura",
+      "La pista de atletismo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-549",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué goleador de River era «el Búfalo»?",
+    "options": [
+      "Juan Gilberto Funes",
+      "Ramón Díaz",
+      "Antonio Alzamendi"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-550",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club se formaron los mellizos Barros Schelotto?",
+    "options": [
+      "Gimnasia y Esgrima La Plata",
+      "Boca",
+      "Estudiantes"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-551",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué delantero de Boca era «el Chelo»?",
+    "options": [
+      "Diego Cagna",
+      "Sebastián Battaglia",
+      "Marcelo Delgado"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-552",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué lateral de Boca era «la Morsa»?",
+    "options": [
+      "Hugo Ibarra",
+      "Clemente Rodríguez",
+      "Rolando Schiavi"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-553",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué colombiano de Boca hacía de volante central en el ciclo Bianchi?",
+    "options": [
+      "Mauricio Serna",
+      "Juan Pablo Ángel",
+      "Jorge Bermúdez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-554",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué colombiano de River fue goleador en los 90?",
+    "options": [
+      "Radamel Falcao",
+      "Juan Pablo Ángel",
+      "Teófilo Gutiérrez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-555",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué chileno fue figura de River a fines de los 90?",
+    "options": [
+      "Alexis Sánchez",
+      "Iván Zamorano",
+      "Marcelo Salas"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-556",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué club argentino tuvo a David Trezeguet en sus inferiores?",
+    "options": [
+      "Platense",
+      "Independiente",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-557",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club argentino debutó Lucas Biglia?",
+    "options": [
+      "Independiente",
+      "River",
+      "Argentinos Juniors"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-558",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Maxi Rodríguez?",
+    "options": [
+      "Newell's",
+      "Rosario Central",
+      "Racing"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-559",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Ezequiel Lavezzi?",
+    "options": [
+      "San Lorenzo",
+      "Boca",
+      "Estudiantes de Buenos Aires"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-560",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Diego Simeone?",
+    "options": [
+      "Estudiantes",
+      "Racing",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-561",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Fernando Redondo?",
+    "options": [
+      "Argentinos Juniors",
+      "Vélez",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-562",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club jugó Riquelme sus inferiores antes de Boca?",
+    "options": [
+      "River",
+      "Platense",
+      "Argentinos Juniors"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-563",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Roberto Ayala?",
+    "options": [
+      "Ferro Carril Oeste",
+      "Huracán",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-564",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿En qué club debutó Walter Samuel?",
+    "options": [
+      "Boca",
+      "Rosario Central",
+      "Newell's"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-565",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Quién hizo el gol de River en la Intercontinental 1986?",
+    "options": [
+      "Antonio Alzamendi",
+      "Norberto Alonso",
+      "Juan Gilberto Funes"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-566",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué formato reemplazó al Metropolitano y Nacional en 1985?",
+    "options": [
+      "Campeonato largo europeo",
+      "Apertura y Clausura",
+      "Copa de la Liga"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-567",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué futbolista de Argentinos fue figura de la Libertadores 1985?",
+    "options": [
+      "Diego Maradona",
+      "Sergio Batista",
+      "Claudio Borghi"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-568",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Contra qué club ganó Argentinos Juniors la final de la Libertadores 1985?",
+    "options": [
+      "Cobreloa",
+      "Peñarol",
+      "América de Cali"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-569",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién perdió Argentinos Juniors la Intercontinental 1985?",
+    "options": [
+      "Porto",
+      "Liverpool",
+      "Juventus"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-570",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se definió la Intercontinental 1985 que perdió Argentinos?",
+    "options": [
+      "Por penales",
+      "Por gol de oro",
+      "En un desempate"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-571",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Quién hizo el gol de Independiente al Liverpool en la Intercontinental 1984?",
+    "options": [
+      "Ricardo Bochini",
+      "José Percudani",
+      "Jorge Burruchaga"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-572",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué figura de Independiente 1984 luego hizo el gol del título en México 86?",
+    "options": [
+      "Claudio Marangoni",
+      "Jorge Burruchaga",
+      "Ricardo Bochini"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-573",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Independiente la Libertadores 1984?",
+    "options": [
+      "Grêmio",
+      "Olimpia",
+      "América de Cali"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-574",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Libertadores 1978 además de la de 1977?",
+    "options": [
+      "Boca",
+      "Independiente",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-575",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Boca la Libertadores 1978?",
+    "options": [
+      "Cruzeiro",
+      "Deportivo Cali",
+      "Olimpia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-576",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó las Libertadores 1977 y 1978 con Boca?",
+    "options": [
+      "Carlos Bianchi",
+      "Juan Carlos Lorenzo",
+      "Alfio Basile"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-577",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Boca su primera Libertadores, en 1977?",
+    "options": [
+      "Cruzeiro",
+      "Peñarol",
+      "Deportivo Cali"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-578",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué arquero atajó el penal decisivo de la final de la Libertadores 1977?",
+    "options": [
+      "Ubaldo Fillol",
+      "Carlos Rodríguez",
+      "Hugo Gatti"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-579",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Copa Interamericana 1973?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Estudiantes"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-580",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de Huracán 1973 era «el Inglés»?",
+    "options": [
+      "Miguel Brindisi",
+      "Carlos Babington",
+      "René Houseman"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-581",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué hito logró San Lorenzo en 1972?",
+    "options": [
+      "Ganó la Libertadores",
+      "Ganó Metropolitano y Nacional",
+      "Ganó la Intercontinental"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-582",
+    "category": "clasicos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador hizo la famosa «palomita» del clásico rosarino de 1971?",
+    "options": [
+      "Mario Kempes",
+      "Aldo Pedro Poy",
+      "Carlos Aimar"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-583",
+    "category": "clasicos",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el «clásico de la palomita» y luego el Nacional 1971?",
+    "options": [
+      "San Lorenzo",
+      "Rosario Central",
+      "Newell's"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-584",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club perdió la Intercontinental 1969 ante el Milan?",
+    "options": [
+      "Independiente",
+      "Estudiantes",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-585",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamó al San Lorenzo campeón invicto del Metropolitano 1968?",
+    "options": [
+      "El Ciclón de Boedo",
+      "La Máquina",
+      "Los Matadores"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-586",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Estudiantes la Libertadores 1968?",
+    "options": [
+      "Palmeiras",
+      "Universidad Católica",
+      "Peñarol"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-587",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué arquero de Racing atajó en el Racing campeón del mundo 1967?",
+    "options": [
+      "Ubaldo Fillol",
+      "Agustín Cejas",
+      "Hugo Gatti"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-588",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Racing la final de la Libertadores 1967?",
+    "options": [
+      "Peñarol",
+      "Nacional de Montevideo",
+      "Universitario"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-589",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Libertadores 1965?",
+    "options": [
+      "Peñarol",
+      "Independiente",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-590",
+    "category": "internacionales",
+    "difficulty": "hard",
+    "prompt": "¿Contra quién ganó Independiente su primera Libertadores, en 1964?",
+    "options": [
+      "Nacional de Montevideo",
+      "Santos",
+      "Peñarol"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-591",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué jugador de River fue vendido a la Juventus en 1957 en una venta récord?",
+    "options": [
+      "Alfredo Di Stéfano",
+      "Omar Sívori",
+      "Antonio Angelillo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-592",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamaba el trío ofensivo de San Lorenzo de 1946?",
+    "options": [
+      "La Máquina",
+      "El Terceto de Oro",
+      "Los Matadores"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-593",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cómo se llamó la liga que organizó el primer torneo profesional en 1931?",
+    "options": [
+      "Federación Argentina",
+      "Asociación Amateurs",
+      "Liga Argentina de Football"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-594",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cuántos títulos amateurs consecutivos ganó Racing entre 1913 y 1919?",
+    "options": [
+      "Tres",
+      "Cinco",
+      "Siete"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-595",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT dirigía a Platense en el Apertura 2025?",
+    "options": [
+      "Fernando Gago",
+      "Martín Palermo",
+      "Favio Orsi y Sergio Gómez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-596",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Trofeo de Campeones 2024 ante Vélez?",
+    "options": [
+      "River",
+      "Estudiantes",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-597",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó la Copa de la Liga 2021 con Colón?",
+    "options": [
+      "Eduardo Domínguez",
+      "Pablo Lavallén",
+      "Gustavo Costas"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-598",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó la Superliga 2019-20 con Boca?",
+    "options": [
+      "Miguel Ángel Russo",
+      "Guillermo Barros Schelotto",
+      "Gustavo Alfaro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-599",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cuántos equipos jugaron el Campeonato 2016 corto?",
+    "options": [
+      "26",
+      "30",
+      "20"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-600",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Campeonato 2016-17 con Boca?",
+    "options": [
+      "Rodolfo Arruabarrena",
+      "Gustavo Alfaro",
+      "Guillermo Barros Schelotto"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-601",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Cuántos clubes jugaron el campeonato 2015?",
+    "options": [
+      "30",
+      "20",
+      "28"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-602",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Campeonato 2015 con Boca?",
+    "options": [
+      "Guillermo Barros Schelotto",
+      "Rodolfo Arruabarrena",
+      "Carlos Bianchi"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-603",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Torneo Final 2014?",
+    "options": [
+      "River",
+      "Gimnasia",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-604",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Torneo Inicial 2013?",
+    "options": [
+      "Lanús",
+      "River",
+      "San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-605",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó la Superfinal 2013 entre Vélez y Newell's?",
+    "options": [
+      "Empataron",
+      "Newell's",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-606",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Torneo Inicial 2013 con San Lorenzo?",
+    "options": [
+      "Edgardo Bauza",
+      "Juan Antonio Pizzi",
+      "Néstor Gorosito"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-607",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Torneo Inicial 2012?",
+    "options": [
+      "Lanús",
+      "Vélez",
+      "Newell's"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-608",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Apertura 2011?",
+    "options": [
+      "Racing",
+      "Vélez",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-609",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Clausura 2011?",
+    "options": [
+      "Vélez",
+      "Racing",
+      "Lanús"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-610",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Apertura 2011 invicto con Boca?",
+    "options": [
+      "Carlos Bianchi",
+      "Rodolfo Arruabarrena",
+      "Julio César Falcioni"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-611",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Apertura 2010?",
+    "options": [
+      "Arsenal",
+      "Estudiantes",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-612",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Apertura 2010 con Estudiantes?",
+    "options": [
+      "Alejandro Sabella",
+      "Diego Simeone",
+      "Leonardo Astrada"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-613",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Clausura 2009?",
+    "options": [
+      "Vélez",
+      "Huracán",
+      "Lanús"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-614",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club perdió el Clausura 2009 en la última fecha ante Vélez?",
+    "options": [
+      "Lanús",
+      "Huracán",
+      "Colón"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-615",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Clausura 2009 con Vélez?",
+    "options": [
+      "Ricardo Gareca",
+      "Hugo Tocalli",
+      "Miguel Russo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-616",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Clausura 2008?",
+    "options": [
+      "Estudiantes",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-617",
+    "category": "historia",
+    "difficulty": "hard",
+    "prompt": "¿Qué club ganó el Apertura 2008 en un triangular final?",
+    "options": [
+      "Tigre",
+      "Boca",
+      "San Lorenzo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-618",
+    "category": "idolos",
+    "difficulty": "hard",
+    "prompt": "¿Qué DT ganó el Clausura 2008 con River?",
+    "options": [
+      "Daniel Passarella",
+      "Leonardo Astrada",
+      "Diego Simeone"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-619",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2007?",
+    "options": [
+      "Boca",
+      "Estudiantes",
+      "San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-620",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2007 con San Lorenzo?",
+    "options": [
+      "Diego Simeone",
+      "Gustavo Alfaro",
+      "Ramón Díaz"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-621",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 2005 y el Clausura 2006?",
+    "options": [
+      "Estudiantes",
+      "River",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-622",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Apertura 2005 y el Clausura 2006 con Boca?",
+    "options": [
+      "Carlos Bianchi",
+      "Alfio Basile",
+      "Miguel Brindisi"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-623",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2005?",
+    "options": [
+      "Banfield",
+      "River",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-624",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2005 con Vélez?",
+    "options": [
+      "Miguel Ángel Russo",
+      "Ricardo Gareca",
+      "Carlos Bianchi"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-625",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 2004?",
+    "options": [
+      "Vélez",
+      "Newell's",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-626",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Apertura 2004 con Newell's?",
+    "options": [
+      "Américo Gallego",
+      "Gerardo Martino",
+      "Marcelo Bielsa"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-627",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2004 con River?",
+    "options": [
+      "Manuel Pellegrini",
+      "Ramón Díaz",
+      "Leonardo Astrada"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-628",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2003?",
+    "options": [
+      "Vélez",
+      "River",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-629",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 2003?",
+    "options": [
+      "River",
+      "Boca",
+      "Banfield"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-630",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2003 con River?",
+    "options": [
+      "Leonardo Astrada",
+      "Ramón Díaz",
+      "Manuel Pellegrini"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-631",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2002?",
+    "options": [
+      "River",
+      "Boca",
+      "Gimnasia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-632",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2002 con River?",
+    "options": [
+      "Ramón Díaz",
+      "Américo Gallego",
+      "Manuel Pellegrini"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-633",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2001?",
+    "options": [
+      "River",
+      "San Lorenzo",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-634",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 2001 con San Lorenzo?",
+    "options": [
+      "Oscar Ruggeri",
+      "Manuel Pellegrini",
+      "Rubén Darío Insúa"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-635",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 2000?",
+    "options": [
+      "River",
+      "Vélez",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-636",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 2000?",
+    "options": [
+      "Boca",
+      "River",
+      "Gimnasia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-637",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1999?",
+    "options": [
+      "River",
+      "Boca",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-638",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1999?",
+    "options": [
+      "Boca",
+      "River",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-639",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1998?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "River"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-640",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1996, el Clausura 1997 y el Apertura 1997?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-641",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Vélez la Recopa 1997?",
+    "options": [
+      "Cruzeiro",
+      "River",
+      "Colo-Colo"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-642",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1996?",
+    "options": [
+      "Gimnasia",
+      "Vélez",
+      "River"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-643",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1995?",
+    "options": [
+      "Vélez",
+      "Boca",
+      "San Lorenzo"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-644",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1995?",
+    "options": [
+      "Gimnasia",
+      "River",
+      "Vélez"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-645",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el Clausura 1995 con San Lorenzo?",
+    "options": [
+      "Oscar Ruggeri",
+      "Alfio Basile",
+      "Héctor Veira"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-646",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1994?",
+    "options": [
+      "Vélez",
+      "River",
+      "Independiente"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-647",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1994 invicto?",
+    "options": [
+      "River",
+      "Independiente",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-648",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1993?",
+    "options": [
+      "Boca",
+      "River",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-649",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1993 con Carlos Bianchi?",
+    "options": [
+      "River",
+      "Vélez",
+      "Boca"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-650",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Apertura 1992 cortando 11 años sin títulos?",
+    "options": [
+      "Racing",
+      "San Lorenzo",
+      "Boca"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-651",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Clausura 1992 dirigido por Marcelo Bielsa?",
+    "options": [
+      "Boca",
+      "Vélez",
+      "Newell's"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-652",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el primer campeonato argentino, en 1891?",
+    "options": [
+      "Alumni",
+      "Saint Andrew's",
+      "Lomas Athletic"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-653",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué escocés es considerado el padre del fútbol argentino?",
+    "options": [
+      "Isaac Newell",
+      "Alexander Watson Hutton",
+      "Thomas Hogg"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-654",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué colegio fundó Alexander Watson Hutton, origen de Alumni?",
+    "options": [
+      "St. George's College",
+      "English High School",
+      "Colegio Nacional de Buenos Aires"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-655",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Cuántos títulos de liga amateur ganó Alumni?",
+    "options": [
+      "10",
+      "7",
+      "12"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-656",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿En qué año se disolvió Alumni como equipo de fútbol?",
+    "options": [
+      "1911",
+      "1920",
+      "1931"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-657",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el primer campeonato de la era amateur con equipo de criollos?",
+    "options": [
+      "Estudiantes en 1913",
+      "Racing en 1913",
+      "Boca en 1919"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-658",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club del interior ganó primero un Torneo Nacional?",
+    "options": [
+      "Rosario Central (1971)",
+      "Newell's (1974)",
+      "Talleres (1977)"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-659",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Quién ganó la final 1990-91 entre los ganadores del Apertura y Clausura?",
+    "options": [
+      "Newell's",
+      "River",
+      "Boca"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-660",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el campeonato 1989-90?",
+    "options": [
+      "Boca",
+      "River",
+      "Independiente"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-661",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el campeonato 1988-89?",
+    "options": [
+      "Boca",
+      "Independiente",
+      "Vélez"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-662",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el campeonato 1987-88?",
+    "options": [
+      "Independiente",
+      "Newell's",
+      "Rosario Central"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-663",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el campeonato 1987-88 con Newell's?",
+    "options": [
+      "Marcelo Bielsa",
+      "José Yudica",
+      "Jorge Solari"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-664",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el campeonato 1986-87?",
+    "options": [
+      "River",
+      "Rosario Central",
+      "Newell's"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-665",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó el campeonato 1986-87 con Rosario Central?",
+    "options": [
+      "Edgardo Bauza",
+      "Carlos Griguol",
+      "Ángel Tulio Zof"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-666",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Nacional 1985, el último?",
+    "options": [
+      "Ferro",
+      "Vélez",
+      "Argentinos Juniors"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-667",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó la Libertadores 1985 con Argentinos?",
+    "options": [
+      "José Yudica",
+      "Ángel Labruna",
+      "Roberto Saporiti"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-668",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Metropolitano 1984?",
+    "options": [
+      "Ferro",
+      "Estudiantes",
+      "Argentinos Juniors"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-669",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué arquero de Independiente atajó en la final de la Libertadores 1984?",
+    "options": [
+      "Luis Islas",
+      "Miguel Ángel Santoro",
+      "Carlos Goyén"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-670",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó la Libertadores 1984 con Independiente?",
+    "options": [
+      "Pedro Dellacha",
+      "Jorge Solari",
+      "José Omar Pastoriza"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-671",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Metropolitano 1983?",
+    "options": [
+      "Independiente",
+      "San Lorenzo",
+      "Estudiantes"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-672",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién se definió el Metropolitano 1983 en la última fecha?",
+    "options": [
+      "Racing (Independiente le ganó 2-0)",
+      "Boca",
+      "San Lorenzo"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-673",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Metropolitano 1981 con Maradona?",
+    "options": [
+      "River",
+      "Boca",
+      "Argentinos"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-674",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Nacional 1981?",
+    "options": [
+      "Ferro",
+      "Newell's",
+      "River"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-675",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT dirigía a Boca al ganar el Metropolitano 1981 con Maradona?",
+    "options": [
+      "Juan Carlos Lorenzo",
+      "Carlos Bilardo",
+      "Silvio Marzolini"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-676",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Nacional 1980?",
+    "options": [
+      "Rosario Central",
+      "River",
+      "Talleres"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-677",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Nacional 1979 y el Metropolitano 1979?",
+    "options": [
+      "River",
+      "Boca",
+      "Vélez"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-678",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió Boca la final de la Libertadores 1979?",
+    "options": [
+      "Olimpia",
+      "Peñarol",
+      "Cruzeiro"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-679",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club perdió la final del Nacional 1977 ante Independiente en Córdoba?",
+    "options": [
+      "Belgrano",
+      "Instituto",
+      "Talleres"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-680",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Cómo ganó Independiente la final del Nacional 1977 con tres expulsados?",
+    "options": [
+      "Por mejor diferencia",
+      "Por penales",
+      "Con un gol de Bochini sobre el final"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-681",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió River la final de la Libertadores 1976?",
+    "options": [
+      "Cruzeiro",
+      "Peñarol",
+      "Olimpia"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-682",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Independiente la Libertadores 1975?",
+    "options": [
+      "Cruzeiro",
+      "Unión Española",
+      "Olimpia"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-683",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué DT ganó los campeonatos 1975 Metropolitano y Nacional con River?",
+    "options": [
+      "Alfredo Di Stéfano",
+      "Ángel Labruna",
+      "Carlos Timoteo Griguol"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-684",
+    "category": "idolos",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué sequía cortó River al ganar el Metropolitano 1975?",
+    "options": [
+      "18 años sin títulos",
+      "25 años sin títulos",
+      "10 años sin títulos"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-685",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el Metropolitano 1974?",
+    "options": [
+      "Newell's",
+      "Rosario Central",
+      "Huracán"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-686",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Independiente la Libertadores 1974?",
+    "options": [
+      "São Paulo",
+      "Cruzeiro",
+      "Peñarol"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-687",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Independiente la Libertadores 1973?",
+    "options": [
+      "Peñarol",
+      "Colo-Colo",
+      "Universitario"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-688",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Independiente la Libertadores 1972?",
+    "options": [
+      "Colo-Colo",
+      "Universitario de Lima",
+      "Peñarol"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-689",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra qué club perdió Independiente la Intercontinental 1972?",
+    "options": [
+      "Ajax",
+      "Bayern Múnich",
+      "Juventus"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-690",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió Estudiantes la final de la Libertadores 1971?",
+    "options": [
+      "Nacional de Montevideo",
+      "Peñarol",
+      "Palmeiras"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-691",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Estudiantes la Libertadores 1970?",
+    "options": [
+      "Nacional",
+      "Universitario",
+      "Peñarol"
+    ],
+    "answer": 2
+  },
+  {
+    "key": "arg-692",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió Estudiantes la Intercontinental 1970?",
+    "options": [
+      "Celtic",
+      "Feyenoord",
+      "Ajax"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-693",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién ganó Estudiantes la Libertadores 1969?",
+    "options": [
+      "Nacional de Montevideo",
+      "Palmeiras",
+      "Peñarol"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-694",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club fue el primer campeón del Torneo Nacional, en 1967?",
+    "options": [
+      "Racing",
+      "Independiente",
+      "Estudiantes"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-695",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió River la final de la Libertadores 1966?",
+    "options": [
+      "Santos",
+      "Peñarol",
+      "Nacional"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-696",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra qué club perdió Independiente la Intercontinental 1964?",
+    "options": [
+      "Real Madrid",
+      "Inter de Milán",
+      "Milan"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-697",
+    "category": "internacionales",
+    "difficulty": "very_hard",
+    "prompt": "¿Contra quién perdió Boca la final de la Libertadores 1963?",
+    "options": [
+      "Santos",
+      "Nacional",
+      "Peñarol"
+    ],
+    "answer": 0
+  },
+  {
+    "key": "arg-698",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el último campeonato amateur, en 1934, por la AFA amateur?",
+    "options": [
+      "Sportivo Barracas",
+      "Estudiantil Porteño",
+      "Banfield"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-699",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club ganó el título amateur de 1913 de la Federación Argentina disidente?",
+    "options": [
+      "Porteño",
+      "Estudiantes de La Plata",
+      "Racing"
+    ],
+    "answer": 1
+  },
+  {
+    "key": "arg-700",
+    "category": "historia",
+    "difficulty": "very_hard",
+    "prompt": "¿Qué club fue campeón amateur en 1912 por la AAF?",
+    "options": [
+      "Quilmes",
+      "Alumni",
+      "Racing"
+    ],
+    "answer": 0
+  }
+]
