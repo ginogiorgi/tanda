@@ -23,7 +23,10 @@ pnpm db:stop
 
 `pnpm test` sigue siendo unit-only (motor TS, sin Docker). En CI el job `db` hace start → reset →
 test:db, así una migración rota se atrapa antes del merge. Los `.sql` del repo son autocontenidos:
-`db reset` los aplica de cero (incl. el event trigger `ensure_rls` en `20260614090650`).
+`db reset` los aplica de cero (baseline v2 + wiring + seed del catálogo).
+
+El catálogo (preguntas y equipos) vive en `data/` y se valida/genera con `pnpm catalog:check` /
+`pnpm catalog:build <timestamp_nombre>` (nunca editar el SQL de seed a mano).
 
 ## Config de Auth (necesaria para login por username)
 

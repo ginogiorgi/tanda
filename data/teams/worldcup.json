@@ -1,0 +1,482 @@
+[
+ {
+  "code": "ARG",
+  "name": "Argentina",
+  "fifa_rank": 1,
+  "difficulty_tier": "elite",
+  "accent_color": "#75AADB",
+  "flag_asset": "ar",
+  "kit_primary": "#75AADB",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "FRA",
+  "name": "Francia",
+  "fifa_rank": 2,
+  "difficulty_tier": "elite",
+  "accent_color": "#1E3A8A",
+  "flag_asset": "fr",
+  "kit_primary": "#1E3A8A",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "ESP",
+  "name": "España",
+  "fifa_rank": 3,
+  "difficulty_tier": "elite",
+  "accent_color": "#C60B1E",
+  "flag_asset": "es",
+  "kit_primary": "#C60B1E",
+  "kit_secondary": "#FFC400"
+ },
+ {
+  "code": "ENG",
+  "name": "Inglaterra",
+  "fifa_rank": 4,
+  "difficulty_tier": "elite",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "gb-eng",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#001E62"
+ },
+ {
+  "code": "BRA",
+  "name": "Brasil",
+  "fifa_rank": 5,
+  "difficulty_tier": "elite",
+  "accent_color": "#FFDF00",
+  "flag_asset": "br",
+  "kit_primary": "#FFDF00",
+  "kit_secondary": "#009C3B"
+ },
+ {
+  "code": "POR",
+  "name": "Portugal",
+  "fifa_rank": 6,
+  "difficulty_tier": "elite",
+  "accent_color": "#C8102E",
+  "flag_asset": "pt",
+  "kit_primary": "#C8102E",
+  "kit_secondary": "#006600"
+ },
+ {
+  "code": "NED",
+  "name": "Países Bajos",
+  "fifa_rank": 7,
+  "difficulty_tier": "elite",
+  "accent_color": "#F36C21",
+  "flag_asset": "nl",
+  "kit_primary": "#F36C21",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "BEL",
+  "name": "Bélgica",
+  "fifa_rank": 8,
+  "difficulty_tier": "elite",
+  "accent_color": "#E30613",
+  "flag_asset": "be",
+  "kit_primary": "#E30613",
+  "kit_secondary": "#FFD700"
+ },
+ {
+  "code": "GER",
+  "name": "Alemania",
+  "fifa_rank": 9,
+  "difficulty_tier": "elite",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "de",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#000000"
+ },
+ {
+  "code": "CRO",
+  "name": "Croacia",
+  "fifa_rank": 10,
+  "difficulty_tier": "elite",
+  "accent_color": "#FF0000",
+  "flag_asset": "hr",
+  "kit_primary": "#FF0000",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "MAR",
+  "name": "Marruecos",
+  "fifa_rank": 11,
+  "difficulty_tier": "high",
+  "accent_color": "#C1272D",
+  "flag_asset": "ma",
+  "kit_primary": "#C1272D",
+  "kit_secondary": "#006233"
+ },
+ {
+  "code": "COL",
+  "name": "Colombia",
+  "fifa_rank": 12,
+  "difficulty_tier": "high",
+  "accent_color": "#FCD116",
+  "flag_asset": "co",
+  "kit_primary": "#FCD116",
+  "kit_secondary": "#003893"
+ },
+ {
+  "code": "URU",
+  "name": "Uruguay",
+  "fifa_rank": 13,
+  "difficulty_tier": "high",
+  "accent_color": "#5CBFEB",
+  "flag_asset": "uy",
+  "kit_primary": "#5CBFEB",
+  "kit_secondary": "#001E62"
+ },
+ {
+  "code": "NOR",
+  "name": "Noruega",
+  "fifa_rank": 14,
+  "difficulty_tier": "high",
+  "accent_color": "#BA0C2F",
+  "flag_asset": "no",
+  "kit_primary": "#BA0C2F",
+  "kit_secondary": "#00205B"
+ },
+ {
+  "code": "USA",
+  "name": "EE. UU.",
+  "fifa_rank": 15,
+  "difficulty_tier": "high",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "us",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#002868"
+ },
+ {
+  "code": "MEX",
+  "name": "México",
+  "fifa_rank": 16,
+  "difficulty_tier": "high",
+  "accent_color": "#006847",
+  "flag_asset": "mx",
+  "kit_primary": "#006847",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "SUI",
+  "name": "Suiza",
+  "fifa_rank": 17,
+  "difficulty_tier": "high",
+  "accent_color": "#D52B1E",
+  "flag_asset": "ch",
+  "kit_primary": "#D52B1E",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "JPN",
+  "name": "Japón",
+  "fifa_rank": 18,
+  "difficulty_tier": "high",
+  "accent_color": "#000080",
+  "flag_asset": "jp",
+  "kit_primary": "#000080",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "SEN",
+  "name": "Senegal",
+  "fifa_rank": 19,
+  "difficulty_tier": "high",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "sn",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#00853F"
+ },
+ {
+  "code": "KOR",
+  "name": "República de Corea",
+  "fifa_rank": 20,
+  "difficulty_tier": "high",
+  "accent_color": "#CD2E3A",
+  "flag_asset": "kr",
+  "kit_primary": "#CD2E3A",
+  "kit_secondary": "#001E62"
+ },
+ {
+  "code": "ECU",
+  "name": "Ecuador",
+  "fifa_rank": 21,
+  "difficulty_tier": "medium",
+  "accent_color": "#FFD100",
+  "flag_asset": "ec",
+  "kit_primary": "#FFD100",
+  "kit_secondary": "#0072CE"
+ },
+ {
+  "code": "AUT",
+  "name": "Austria",
+  "fifa_rank": 22,
+  "difficulty_tier": "medium",
+  "accent_color": "#ED2939",
+  "flag_asset": "at",
+  "kit_primary": "#ED2939",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "AUS",
+  "name": "Australia",
+  "fifa_rank": 23,
+  "difficulty_tier": "medium",
+  "accent_color": "#FFCD00",
+  "flag_asset": "au",
+  "kit_primary": "#FFCD00",
+  "kit_secondary": "#00843D"
+ },
+ {
+  "code": "TUR",
+  "name": "Turquía",
+  "fifa_rank": 24,
+  "difficulty_tier": "medium",
+  "accent_color": "#E30A17",
+  "flag_asset": "tr",
+  "kit_primary": "#E30A17",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "EGY",
+  "name": "Egipto",
+  "fifa_rank": 25,
+  "difficulty_tier": "medium",
+  "accent_color": "#CE1126",
+  "flag_asset": "eg",
+  "kit_primary": "#CE1126",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "CIV",
+  "name": "Costa de Marfil",
+  "fifa_rank": 26,
+  "difficulty_tier": "medium",
+  "accent_color": "#FF7F00",
+  "flag_asset": "ci",
+  "kit_primary": "#FF7F00",
+  "kit_secondary": "#009E60"
+ },
+ {
+  "code": "CAN",
+  "name": "Canadá",
+  "fifa_rank": 27,
+  "difficulty_tier": "medium",
+  "accent_color": "#D80621",
+  "flag_asset": "ca",
+  "kit_primary": "#D80621",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "SWE",
+  "name": "Suecia",
+  "fifa_rank": 28,
+  "difficulty_tier": "medium",
+  "accent_color": "#FECC00",
+  "flag_asset": "se",
+  "kit_primary": "#FECC00",
+  "kit_secondary": "#006AA7"
+ },
+ {
+  "code": "ALG",
+  "name": "Argelia",
+  "fifa_rank": 29,
+  "difficulty_tier": "medium",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "dz",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#006633"
+ },
+ {
+  "code": "TUN",
+  "name": "Túnez",
+  "fifa_rank": 30,
+  "difficulty_tier": "medium",
+  "accent_color": "#E70013",
+  "flag_asset": "tn",
+  "kit_primary": "#E70013",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "QAT",
+  "name": "Catar",
+  "fifa_rank": 31,
+  "difficulty_tier": "low",
+  "accent_color": "#8A1538",
+  "flag_asset": "qa",
+  "kit_primary": "#8A1538",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "KSA",
+  "name": "Arabia Saudita",
+  "fifa_rank": 32,
+  "difficulty_tier": "low",
+  "accent_color": "#006C35",
+  "flag_asset": "sa",
+  "kit_primary": "#006C35",
+  "kit_secondary": "#C9A227"
+ },
+ {
+  "code": "IRN",
+  "name": "RI de Irán",
+  "fifa_rank": 33,
+  "difficulty_tier": "low",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "ir",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#239F40"
+ },
+ {
+  "code": "IRQ",
+  "name": "Irak",
+  "fifa_rank": 34,
+  "difficulty_tier": "low",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "iq",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#2D8A3E"
+ },
+ {
+  "code": "UZB",
+  "name": "Uzbekistán",
+  "fifa_rank": 35,
+  "difficulty_tier": "low",
+  "accent_color": "#2266CC",
+  "flag_asset": "uz",
+  "kit_primary": "#2266CC",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "JOR",
+  "name": "Jordania",
+  "fifa_rank": 36,
+  "difficulty_tier": "low",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "jo",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#CE1126"
+ },
+ {
+  "code": "GHA",
+  "name": "Ghana",
+  "fifa_rank": 37,
+  "difficulty_tier": "low",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "gh",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#CE1126"
+ },
+ {
+  "code": "RSA",
+  "name": "Sudáfrica",
+  "fifa_rank": 38,
+  "difficulty_tier": "low",
+  "accent_color": "#FFB915",
+  "flag_asset": "za",
+  "kit_primary": "#FFB915",
+  "kit_secondary": "#007A4D"
+ },
+ {
+  "code": "PAR",
+  "name": "Paraguay",
+  "fifa_rank": 39,
+  "difficulty_tier": "low",
+  "accent_color": "#DA121A",
+  "flag_asset": "py",
+  "kit_primary": "#DA121A",
+  "kit_secondary": "#0038A8"
+ },
+ {
+  "code": "SCO",
+  "name": "Escocia",
+  "fifa_rank": 40,
+  "difficulty_tier": "low",
+  "accent_color": "#002663",
+  "flag_asset": "gb-sct",
+  "kit_primary": "#002663",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "CZE",
+  "name": "Chequia",
+  "fifa_rank": 41,
+  "difficulty_tier": "low",
+  "accent_color": "#D7141A",
+  "flag_asset": "cz",
+  "kit_primary": "#D7141A",
+  "kit_secondary": "#11457E"
+ },
+ {
+  "code": "BIH",
+  "name": "Bosnia y Herzegovina",
+  "fifa_rank": 42,
+  "difficulty_tier": "low",
+  "accent_color": "#002F6C",
+  "flag_asset": "ba",
+  "kit_primary": "#002F6C",
+  "kit_secondary": "#FFD700"
+ },
+ {
+  "code": "COD",
+  "name": "RD Congo",
+  "fifa_rank": 43,
+  "difficulty_tier": "low",
+  "accent_color": "#007FFF",
+  "flag_asset": "cd",
+  "kit_primary": "#007FFF",
+  "kit_secondary": "#F7D618"
+ },
+ {
+  "code": "CPV",
+  "name": "Cabo Verde",
+  "fifa_rank": 44,
+  "difficulty_tier": "low",
+  "accent_color": "#003893",
+  "flag_asset": "cv",
+  "kit_primary": "#003893",
+  "kit_secondary": "#FFFFFF"
+ },
+ {
+  "code": "NZL",
+  "name": "Nueva Zelanda",
+  "fifa_rank": 45,
+  "difficulty_tier": "low",
+  "accent_color": "#FFFFFF",
+  "flag_asset": "nz",
+  "kit_primary": "#FFFFFF",
+  "kit_secondary": "#000000"
+ },
+ {
+  "code": "CUW",
+  "name": "Curazao",
+  "fifa_rank": 46,
+  "difficulty_tier": "low",
+  "accent_color": "#002B7F",
+  "flag_asset": "cw",
+  "kit_primary": "#002B7F",
+  "kit_secondary": "#FFD100"
+ },
+ {
+  "code": "HAI",
+  "name": "Haití",
+  "fifa_rank": 47,
+  "difficulty_tier": "low",
+  "accent_color": "#00209F",
+  "flag_asset": "ht",
+  "kit_primary": "#00209F",
+  "kit_secondary": "#D21034"
+ },
+ {
+  "code": "PAN",
+  "name": "Panamá",
+  "fifa_rank": 48,
+  "difficulty_tier": "low",
+  "accent_color": "#D21034",
+  "flag_asset": "pa",
+  "kit_primary": "#D21034",
+  "kit_secondary": "#005293"
+ }
+]

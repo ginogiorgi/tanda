@@ -1,3 +1,13 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Tanda — BASELINE v2 (2026-11-13). pg_dump schema-only de `public` tras consolidar las 21
+-- migraciones previas (baseline jun-2026 + incrementales hasta questions_audit_and_expand +
+-- security_hardening). Verificado contra prod: las 59 funciones idénticas (normalizando
+-- whitespace/comentarios), mismas columnas, índices, policies y cron.
+--
+-- Lo que este dump NO captura vive en `..._wiring_v2.sql`; el catálogo en `..._seed_catalog.sql`
+-- (generado desde data/). Historial previo: git log antes de este commit.
+-- ════════════════════════════════════════════════════════════════════════════
+
 
 
 
@@ -312,7 +322,9 @@ CREATE OR REPLACE FUNCTION "public"."advance_tournament"("p_tournament" "uuid") 
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
     AS $$
-declare v_phase public.tournament_phase; v_pending int; v_total int; v_unfinished int;
+declare
+  v_phase public.tournament_phase; v_pending int; v_total int; v_unfinished int;
+  v_phase_after public.tournament_phase; v_groups_closed_at timestamptz;
 begin
   loop
     select current_phase into v_phase from public.tournaments
@@ -330,8 +342,24 @@ begin
         perform public.open_round(p_tournament);  -- abre la próxima jornada
         continue;
       else
-        perform public.build_knockout(p_tournament);  -- grupos completos → arma el bracket
-        continue;
+        -- Grupos completos. Enfoque B (T11): NO armar el bracket todavía.
+        select groups_closed_at into v_groups_closed_at from public.tournaments
+          where id = p_tournament;
+        if v_groups_closed_at is null then
+          -- 1ª llegada: ventana de 4s sobre los grupos finales (current_phase sigue 'groups').
+          update public.tournaments
+            set groups_closed_at = now(), round_deadline = now() + interval '4 seconds'
+            where id = p_tournament and status = 'in_progress';
+          perform public.notify_round_next(p_tournament);
+          return;
+        else
+          -- Ventana cumplida: armar el bracket + lead-in de 4s para ver los cruces (T7).
+          perform public.build_knockout(p_tournament);
+          update public.tournaments set round_deadline = now() + interval '4 seconds'
+            where id = p_tournament and status = 'in_progress';
+          perform public.notify_round_next(p_tournament);
+          return;
+        end if;
       end if;
     end if;
 
@@ -357,6 +385,15 @@ begin
       continue;
     elsif v_unfinished = 0 then
       perform public.advance_ko_round(p_tournament);  -- ronda completa → siguiente / corona
+      select current_phase into v_phase_after from public.tournaments
+        where id = p_tournament and status = 'in_progress';
+      -- ¿Se armó una fase nueva (no la final ya coronada)? → lead-in para ver el bracket/rival.
+      if v_phase_after is not null and v_phase_after is distinct from v_phase then
+        update public.tournaments set round_deadline = now() + interval '2 seconds'
+          where id = p_tournament and status = 'in_progress';
+        perform public.notify_round_next(p_tournament);
+        return;
+      end if;
       continue;
     else
       return;
@@ -401,6 +438,35 @@ $$;
 
 
 ALTER FUNCTION "public"."assign_round_question"("p_match" "uuid", "p_idx" integer) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."begin_presentation"("p_tournament" "uuid") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+declare uid uuid := (select auth.uid());
+begin
+  if uid is null then raise exception 'unauthenticated'; end if;
+  if not public.is_tournament_member(p_tournament) then raise exception 'not_participant'; end if;
+
+  perform pg_advisory_xact_lock(public.engine_hash32('tanda_round:' || p_tournament::text));
+
+  update public.tournaments
+    set round_deadline = least(round_deadline, now() + interval '7 seconds')
+    where id = p_tournament and status = 'in_progress' and current_phase = 'groups'
+      and round_deadline is not null
+      and not exists (
+        select 1 from public.penalties pe
+        join public.matches m on m.id = pe.match_id
+        where m.tournament_id = p_tournament
+      );
+
+  perform public.notify_round_next(p_tournament);
+end;
+$$;
+
+
+ALTER FUNCTION "public"."begin_presentation"("p_tournament" "uuid") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."bot_penalty_scored"("p_seedp" bigint, "p_k_tier" "public"."difficulty_tier", "p_g_tier" "public"."difficulty_tier", "p_kicker" "uuid", "p_keeper" "uuid") RETURNS boolean
@@ -577,7 +643,7 @@ begin
   perform public.enforce_rate_limit('create_room', 10, interval '1 minute');
   v_code := public.gen_room_code();
   insert into public.rooms (code, host_id, status, starts_at)
-    values (v_code, uid, 'lobby', now() + interval '2 minutes')
+    values (v_code, uid, 'lobby', now() + interval '1 minute')
     returning id into v_room;
   insert into public.tournaments (room_id, status, current_phase, seed)
     values (v_room, 'pending', 'groups', (random() * 9.2e18)::bigint)
@@ -945,11 +1011,12 @@ declare
   v_match record;
   v_pen record;
   v_my_option int;
+  v_my_removed int;
   v_phase public.answer_phase;
 begin
   if uid is null then raise exception 'unauthenticated'; end if;
 
-  select m.id as match_id, m.tournament_id, m.phase, m.home_score, m.away_score
+  select m.id as match_id, m.tournament_id, m.phase, m.home_score, m.away_score, p.id as my_part
     into v_match
     from public.matches m
     join public.tournaments t on t.id = m.tournament_id
@@ -962,7 +1029,8 @@ begin
     limit 1;
   if v_match.match_id is null then return null; end if;
 
-  select pe.id, pe.idx, pe.status, pe.started_at, pe.deadline, pe.removed_option,
+  select pe.id, pe.idx, pe.status, pe.started_at, pe.deadline,
+         pe.removed_option_kicker, pe.removed_option_keeper,
          pe.kicker_participant_id, pe.keeper_participant_id, q.prompt, q.options
     into v_pen
     from public.penalties pe
@@ -977,6 +1045,9 @@ begin
       from public.penalty_answers pa
       join public.participants p on p.id = pa.participant_id
       where pa.penalty_id = v_pen.id and p.user_id = uid and pa.phase = v_phase;
+    v_my_removed := case
+      when v_pen.kicker_participant_id = v_match.my_part then v_pen.removed_option_kicker
+      when v_pen.keeper_participant_id = v_match.my_part then v_pen.removed_option_keeper end;
   end if;
 
   return jsonb_build_object(
@@ -991,7 +1062,7 @@ begin
       'idx', v_pen.idx,
       'prompt', v_pen.prompt,
       'options', v_pen.options,
-      'removed_option', v_pen.removed_option,
+      'removed_option', v_my_removed,
       'phase', v_phase,
       'started_at', v_pen.started_at,
       'deadline', v_pen.deadline,
@@ -1157,6 +1228,57 @@ $$;
 ALTER FUNCTION "public"."get_match_scene"("p_match" "uuid") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") RETURNS "jsonb"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+declare
+  uid uuid := (select auth.uid());
+  v_match uuid; v_idx int; v_res jsonb; v_question uuid;
+  v_correct int; v_home_score int; v_away_score int;
+  v_kicker uuid; v_keeper uuid; v_k_sel timestamptz; v_g_sel timestamptz;
+  v_phase public.answer_phase;
+begin
+  if uid is null then raise exception 'unauthenticated'; end if;
+
+  select pe.match_id, pe.idx, pe.resolution, pe.question_id,
+         pe.kicker_participant_id, pe.keeper_participant_id
+    into v_match, v_idx, v_res, v_question, v_kicker, v_keeper
+    from public.penalties pe
+    where pe.id = p_penalty and pe.status = 'resolved';
+  if v_match is null then return null; end if;  -- aún no resuelto / no existe → el cliente sigue esperando
+  if not public.is_match_member(v_match) then raise exception 'not_participant'; end if;
+
+  select q.correct_index into v_correct
+    from public.questions q where q.id = v_question;
+  select home_score, away_score into v_home_score, v_away_score
+    from public.matches where id = v_match;
+
+  v_phase := coalesce((v_res->>'phase')::public.answer_phase, 'first');
+  select selected_at into v_k_sel from public.penalty_answers
+    where penalty_id = p_penalty and participant_id = v_kicker and phase = v_phase;
+  select selected_at into v_g_sel from public.penalty_answers
+    where penalty_id = p_penalty and participant_id = v_keeper and phase = v_phase;
+
+  return jsonb_build_object(
+    'penalty_id', p_penalty, 'match_id', v_match, 'idx', v_idx,
+    'outcome', 'resolved',
+    'winner', v_res->>'winner', 'scored', (v_res->>'scored')::boolean,
+    'reason', v_res->>'reason', 'variant', (v_res->>'variant')::int,
+    'phase', v_res->>'phase',
+    'correct_index', v_correct,
+    'home_score', v_home_score, 'away_score', v_away_score,
+    'won_by_speed', coalesce((v_res->>'won_by_speed')::boolean, false),
+    'kicker_participant_id', v_kicker, 'keeper_participant_id', v_keeper,
+    'kicker_selected_at', v_k_sel, 'keeper_selected_at', v_g_sel
+  );
+end;
+$$;
+
+
+ALTER FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_tournament_history"() RETURNS "jsonb"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -1174,13 +1296,28 @@ begin
       jsonb_build_object(
         'tournamentId', p.tournament_id,
         'nationName', coalesce(n.name, '—'),
+        'nationCode', n.code,
+        'kitPrimary', n.kit_primary,
         'placement', p.placement,
         'eliminatedPhase', p.eliminated_phase,
         'abandoned', p.abandoned,
         'goalsFor', coalesce(agg.goals_for, 0),
         'matchesPlayed', coalesce(agg.played, 0),
         'matchesWon', coalesce(agg.won, 0),
-        'playedAt', t.created_at
+        'playedAt', t.created_at,
+        -- Partido más avanzado y terminado del jugador (para la tarjeta tipo resultado, tarea 7).
+        'finalPhase', lm.phase,
+        'finalMyScore', lm.my_score,
+        'finalOppScore', lm.opp_score,
+        'finalOppNationCode', opn.code,
+        'finalOppKitPrimary', opn.kit_primary,
+        'outcome', case
+          when p.abandoned then 'abandoned'
+          -- Eliminado en grupos = derrota del torneo, aunque haya ganado el último partido de grupos.
+          when p.eliminated_phase = 'group' then 'lost'
+          when lm.match_id is null then null
+          when lm.winner_participant_id = p.id then 'won'
+          else 'lost' end
       ) as entry,
       t.created_at as played_at
     from public.participants p
@@ -1197,6 +1334,29 @@ begin
         where m.status = 'finished'
           and (m.home_participant_id = p.id or m.away_participant_id = p.id)
       ) agg on true
+      left join lateral (
+        select
+          m.match_id_v as match_id, m.phase, m.winner_participant_id,
+          case when m.home_participant_id = p.id then m.home_score else m.away_score end as my_score,
+          case when m.home_participant_id = p.id then m.away_score else m.home_score end as opp_score,
+          case when m.home_participant_id = p.id then m.away_participant_id
+               else m.home_participant_id end as opp_id
+        from (
+          select mm.id as match_id_v, mm.phase, mm.winner_participant_id,
+                 mm.home_participant_id, mm.away_participant_id, mm.home_score, mm.away_score
+          from public.matches mm
+          where mm.status = 'finished'
+            and (mm.home_participant_id = p.id or mm.away_participant_id = p.id)
+          order by case mm.phase::text
+            when 'group' then 0 when 'round_of_32' then 1 when 'round_of_16' then 2
+            when 'quarters' then 3 when 'semis' then 4 when 'third_place' then 5
+            when 'final' then 6 else -1 end desc,
+            mm.created_at desc
+          limit 1
+        ) m
+      ) lm on true
+      left join public.participants opp on opp.id = lm.opp_id
+      left join public.nations opn on opn.id = opp.nation_id
     where p.user_id = uid   -- los bots puros tienen user_id null → solo trae participaciones humanas
   ) sub;
 
@@ -1398,6 +1558,27 @@ $$;
 ALTER FUNCTION "public"."materialize_bot_intents"("p_penalty" "uuid", "p_force" boolean) OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."notify_round_next"("p_tournament" "uuid") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+declare v_rd timestamptz;
+begin
+  select round_deadline into v_rd from public.tournaments
+    where id = p_tournament and status = 'in_progress';
+  if v_rd is null then return; end if;
+
+  perform realtime.send(
+    jsonb_build_object('open_at', v_rd, 'server_now', now()),
+    'round:next', 'tournament:' || p_tournament::text, true
+  );
+end;
+$$;
+
+
+ALTER FUNCTION "public"."notify_round_next"("p_tournament" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."open_next_round"("p_tournament" "uuid") RETURNS "void"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -1442,7 +1623,12 @@ begin
     perform public.advance_tournament(p_tournament);
   end if;
 
-  update public.tournaments set round_deadline = null where id = p_tournament;
+  -- Limpiar SOLO el deadline ya vencido. `advance_tournament` pudo fijar un lead-in futuro (4s de
+  -- la pausa de grupos o 2s del reveal del bracket) en esta misma transacción; el early-return de
+  -- arriba garantiza que el deadline que nos habilitó está vencido (<= now()), así que esto nunca
+  -- pisa un lead-in legítimo, y la pausa de T11 "pega".
+  update public.tournaments set round_deadline = null
+    where id = p_tournament and status = 'in_progress' and round_deadline <= now();
 end;
 $$;
 
@@ -1750,9 +1936,8 @@ declare
 begin
   if uid is null then raise exception 'unauthenticated'; end if;
   perform public.enforce_rate_limit('quick_play', 20, interval '1 minute');
-  perform pg_advisory_xact_lock(hashtext('tanda_quick_play'));
 
-  -- 1) Reanudar: torneo en curso, o un lobby propio AÚN ABIERTO (no uno vencido).
+  -- 1) Reanudar: torneo en curso, o un lobby propio AÚN ABIERTO (no uno vencido). Sin lock.
   select r.id, t.id, r.code into v_room, v_tournament, v_code
     from public.participants p
     join public.tournaments t on t.id = p.tournament_id
@@ -1767,7 +1952,38 @@ begin
     return;
   end if;
 
-  -- 2) Lobby ABIERTO (dentro de los 2 min) con más humanos y cupo.
+  -- 2) Lobby ABIERTO con más humanos y cupo, tomado con FOR UPDATE SKIP LOCKED (sin lock global).
+  select r.id, t.id, r.code into v_room, v_tournament, v_code
+    from public.rooms r
+    join public.tournaments t on t.room_id = r.id
+    where r.status = 'lobby'
+      and r.starts_at > now()
+      and (select count(*) from public.participants pp where pp.tournament_id = t.id) < 48
+    order by
+      (select count(*) from public.participants pp
+        where pp.tournament_id = t.id and pp.is_bot = false) desc,
+      r.created_at asc
+    limit 1
+    for update of r skip locked;
+  if v_room is not null then
+    -- idempotente + re-chequeo de cupo BAJO el lock de fila → carrera no pasa de 48.
+    if not exists (
+      select 1 from public.participants pq
+      where pq.tournament_id = v_tournament and pq.user_id = uid
+    ) and (select count(*) from public.participants pp where pp.tournament_id = v_tournament) < 48
+    then
+      insert into public.participants (tournament_id, user_id, is_bot)
+        values (v_tournament, uid, false);
+    end if;
+    return query select v_room, v_tournament, v_code;
+    return;
+  end if;
+
+  -- 3) No hay lobby abierto → serializar SOLO la creación con un lock acotado y volver a buscar (otro
+  --    pudo crear bajo el lock) para no fragmentar en un burst. Mucho menos contención que el lock
+  --    global previo (solo se toma cuando no hay sala que reusar).
+  perform pg_advisory_xact_lock(hashtext('tanda_quick_play_create'));
+
   select r.id, t.id, r.code into v_room, v_tournament, v_code
     from public.rooms r
     join public.tournaments t on t.room_id = r.id
@@ -1780,11 +1996,11 @@ begin
       r.created_at asc
     limit 1;
   if v_room is not null then
-    -- idempotente: no duplicar si ya soy parte de esa sala.
     if not exists (
       select 1 from public.participants pq
       where pq.tournament_id = v_tournament and pq.user_id = uid
-    ) then
+    ) and (select count(*) from public.participants pp where pp.tournament_id = v_tournament) < 48
+    then
       insert into public.participants (tournament_id, user_id, is_bot)
         values (v_tournament, uid, false);
     end if;
@@ -1792,7 +2008,7 @@ begin
     return;
   end if;
 
-  -- 3) No hay ninguna abierta → crear.
+  -- Sigue sin haber → crear.
   return query select * from public.create_room();
 end;
 $$;
@@ -1850,13 +2066,13 @@ declare
   v_match uuid; v_idx int; v_status public.penalty_status;
   v_deadline timestamptz; v_question uuid; v_kicker uuid; v_keeper uuid;
   v_tournament uuid; v_t_seed bigint; v_seed bigint;
-  v_correct int; v_prompt text; v_options jsonb; v_explanation text;
+  v_correct int; v_prompt text; v_options jsonb;
   v_phase public.answer_phase;
   v_home uuid; v_away uuid; v_home_score int; v_away_score int;
   v_k_ans record; v_g_ans record;
   v_k_ok boolean; v_g_ok boolean;
   v_winner text; v_reason text; v_scored boolean; v_variant int;
-  v_removed int; v_wrong int[]; v_kw int; v_gw int;
+  v_wrong int[]; v_removed_k int; v_removed_g int;
   v_part uuid; v_new_deadline timestamptz;
   v_won_by_speed boolean := false;  -- 10.7: ganó por ser más rápido (ambos acertaron)
 begin
@@ -1880,8 +2096,8 @@ begin
     where m.id = v_match;
   v_seed := (coalesce(v_t_seed, 0) # public.engine_hash32(v_match::text || ':' || v_idx)) & 4294967295;
 
-  select q.correct_index, q.prompt, q.options, q.explanation
-    into v_correct, v_prompt, v_options, v_explanation
+  select q.correct_index, q.prompt, q.options
+    into v_correct, v_prompt, v_options
     from public.questions q where q.id = v_question;
 
   perform public.materialize_bot_intents(p_penalty, true);
@@ -1933,26 +2149,32 @@ begin
   end if;
 
   if v_winner is null and v_phase = 'first' then
+    -- Tarea 10: a cada jugador se le quita la opción que ÉL eligió (ambos erraron → su pick es
+    -- incorrecto). Borde sin opción (no debería pasar: se asigna una arriba) → una incorrecta por seed.
     select array_agg(i order by i) into v_wrong
       from generate_series(0, 2) i where i <> v_correct;
-    v_kw := case when v_k_ans.option_index <> v_correct then v_k_ans.option_index end;
-    v_gw := case when v_g_ans.option_index <> v_correct then v_g_ans.option_index end;
-    if v_kw is not null and v_kw = v_gw then
-      v_removed := v_kw;
-    else
-      v_removed := v_wrong[public.engine_rand_int(v_seed, 2) + 1];
-    end if;
+    v_removed_k := case
+      when v_k_ans.option_index is not null and v_k_ans.option_index <> v_correct
+        then v_k_ans.option_index
+      else v_wrong[public.engine_rand_int(v_seed, 2) + 1] end;
+    v_removed_g := case
+      when v_g_ans.option_index is not null and v_g_ans.option_index <> v_correct
+        then v_g_ans.option_index
+      else v_wrong[public.engine_rand_int((v_seed # 1757446635) & 4294967295, 2) + 1] end;
 
     v_new_deadline := now() + interval '5 seconds';
     update public.penalties
-      set status = 'second_chance', second_chance = true, removed_option = v_removed,
+      set status = 'second_chance', second_chance = true,
+          removed_option = v_removed_k,
+          removed_option_kicker = v_removed_k, removed_option_keeper = v_removed_g,
           started_at = now(), deadline = v_new_deadline
       where id = p_penalty;
 
     perform realtime.send(
       jsonb_build_object(
         'penalty_id', p_penalty, 'match_id', v_match, 'idx', v_idx,
-        'prompt', v_prompt, 'options', v_options, 'removed_option', v_removed,
+        'prompt', v_prompt, 'options', v_options,
+        'removed_option_kicker', v_removed_k, 'removed_option_keeper', v_removed_g,
         'phase', 'second_chance', 'reason', 'both_missed',  -- 10.13
         'started_at', now(), 'deadline', v_new_deadline,
         'server_now', now()
@@ -1974,7 +2196,7 @@ begin
     set status = 'resolved',
         resolution = jsonb_build_object(
           'winner', v_winner, 'scored', v_scored, 'reason', v_reason,
-          'variant', v_variant, 'phase', v_phase
+          'variant', v_variant, 'phase', v_phase, 'won_by_speed', v_won_by_speed
         )
     where id = p_penalty;
 
@@ -1995,9 +2217,8 @@ begin
       'penalty_id', p_penalty, 'match_id', v_match, 'idx', v_idx,
       'outcome', 'resolved', 'winner', v_winner, 'scored', v_scored,
       'reason', v_reason, 'variant', v_variant, 'phase', v_phase,
-      'correct_index', v_correct, 'explanation', v_explanation,
+      'correct_index', v_correct,
       'home_score', v_home_score, 'away_score', v_away_score,
-      -- 10.7/10.11: detalle de tiempos (ya resuelto → no es info sensible)
       'won_by_speed', v_won_by_speed,
       'kicker_participant_id', v_kicker, 'keeper_participant_id', v_keeper,
       'kicker_selected_at', v_k_ans.selected_at, 'keeper_selected_at', v_g_ans.selected_at
@@ -2035,15 +2256,16 @@ begin
     where m.tournament_id = p_tournament and not m.is_bot_only
       and m.status in ('in_progress', 'sudden_death')
   ) then
-    -- DENTRO del match: próximo penal del mismo match (10.2) → tiempo muerto corto
+    -- DENTRO del match: próximo penal del mismo match (10.2) → tiempo muerto = animación (3s).
     update public.tournaments set round_deadline = now() + interval '3 seconds'
       where id = p_tournament and status = 'in_progress';
   else
-    -- ENTRE matches: la jornada/fase terminó para los humanos → tiempo muerto largo para ver el
-    -- bracket/tabla del grupo (10.3). NO avanzamos acá; open_next_round lo hace al vencer el deadline.
-    update public.tournaments set round_deadline = now() + interval '6 seconds'
+    -- ENTRE matches → animación del último penal + ~4s para ver la tabla/grupo (10.3). T10: 6s → 7s.
+    update public.tournaments set round_deadline = now() + interval '7 seconds'
       where id = p_tournament and status = 'in_progress';
   end if;
+
+  perform public.notify_round_next(p_tournament);
 end;
 $$;
 
@@ -2093,6 +2315,10 @@ declare
   v_status public.penalty_status;
   v_started timestamptz;
   v_deadline timestamptz;
+  v_removed_k int;
+  v_removed_g int;
+  v_kicker uuid;
+  v_keeper uuid;
   v_removed int;
   v_participant uuid;
   v_phase public.answer_phase;
@@ -2102,8 +2328,9 @@ declare
 begin
   if uid is null then raise exception 'unauthenticated'; end if;
 
-  select match_id, status, started_at, deadline, removed_option
-    into v_match, v_status, v_started, v_deadline, v_removed
+  select match_id, status, started_at, deadline,
+         removed_option_kicker, removed_option_keeper, kicker_participant_id, keeper_participant_id
+    into v_match, v_status, v_started, v_deadline, v_removed_k, v_removed_g, v_kicker, v_keeper
     from public.penalties where id = p_penalty;
   if v_match is null then raise exception 'penalty_not_found'; end if;
 
@@ -2128,8 +2355,10 @@ begin
     raise exception 'out_of_window';
   end if;
 
-  -- Opción válida (0-2) y, en segunda chance, distinta de la quitada.
+  -- Opción válida (0-2) y, en segunda chance, distinta de la quitada A ESTE jugador (tarea 10).
   if p_option < 0 or p_option > 2 then raise exception 'invalid_option'; end if;
+  v_removed := case when v_participant = v_kicker then v_removed_k
+                    when v_participant = v_keeper then v_removed_g end;
   if v_phase = 'second_chance' and p_option = v_removed then
     raise exception 'invalid_option';
   end if;
@@ -2312,8 +2541,11 @@ begin
     where id = v_tournament;
   update public.rooms set status = 'in_progress' where id = p_room;
 
-  -- 6.4(b): arrancar la 1ª jornada (bot-only al instante, humanos abren su 1er penal).
-  perform public.advance_tournament(v_tournament);
+  -- BACKSTOP de presentación: 10s. La ventana REAL la fija begin_presentation al llegar el humano a
+  -- /partido (now()+7s desde la llegada). Esto solo actúa de red de seguridad si begin_presentation
+  -- fallara. El cron de 1s abre el 1er penal al vencer round_deadline.
+  update public.tournaments set round_deadline = now() + interval '10 seconds'
+    where id = v_tournament;
 end;
 $$;
 
@@ -2431,29 +2663,35 @@ begin
     where bi.penalty_id = pe.id and pe.status in ('open', 'second_chance')
       and not bi.materialized and bi.scheduled_answer_at <= now();
 
+  -- Techos por vuelta (C4): dimensionados para 1000+ concurrentes (~500 matches → ~500 penales
+  -- venciendo juntos). Si se superan, la próxima vuelta de pg_cron limpia el resto. El "switch" de
+  -- escala mayor = pg_cron más frecuente / subir estos números (ver SPEC §C).
   for r in
     select id from public.penalties
     where status in ('open', 'second_chance')
       and deadline is not null and deadline <= now()
     order by deadline
-    limit 200
+    limit 1000
   loop
-    begin perform public.resolve_penalty(r.id); exception when others then null; end;
+    begin perform public.resolve_penalty(r.id);
+    exception when others then raise warning 'tick resolve_penalty(%) failed: %', r.id, sqlerrm; end;
   end loop;
 
   -- Tiempo muerto entre rondas vencido → abrir la próxima ronda (backstop del poke del cliente).
   for r in
     select id from public.tournaments
     where status = 'in_progress' and round_deadline is not null and round_deadline <= now()
-    limit 100
+    limit 500
   loop
-    begin perform public.open_next_round(r.id); exception when others then null; end;
+    begin perform public.open_next_round(r.id);
+    exception when others then raise warning 'tick open_next_round(%) failed: %', r.id, sqlerrm; end;
   end loop;
 
   for r in
-    select id from public.rooms where status = 'lobby' and starts_at <= now() limit 100
+    select id from public.rooms where status = 'lobby' and starts_at <= now() limit 500
   loop
-    begin perform public.start_tournament(r.id); exception when others then null; end;
+    begin perform public.start_tournament(r.id);
+    exception when others then raise warning 'tick start_tournament(%) failed: %', r.id, sqlerrm; end;
   end loop;
 
   for r in
@@ -2464,9 +2702,10 @@ begin
         select 1 from public.matches m
         where m.tournament_id = t.id and m.status in ('in_progress', 'sudden_death')
       )
-    limit 100
+    limit 500
   loop
-    begin perform public.advance_tournament(r.id); exception when others then null; end;
+    begin perform public.advance_tournament(r.id);
+    exception when others then raise warning 'tick advance_tournament(%) failed: %', r.id, sqlerrm; end;
   end loop;
 end;
 $$;
@@ -2588,7 +2827,9 @@ CREATE TABLE IF NOT EXISTS "public"."penalties" (
     "second_chance" boolean DEFAULT false NOT NULL,
     "removed_option" integer,
     "resolution" "jsonb",
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "removed_option_kicker" integer,
+    "removed_option_keeper" integer
 );
 
 
@@ -2634,7 +2875,6 @@ CREATE TABLE IF NOT EXISTS "public"."questions" (
     "prompt" "text" NOT NULL,
     "options" "jsonb" NOT NULL,
     "correct_index" integer NOT NULL,
-    "explanation" "text",
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "source_key" "text",
     CONSTRAINT "correct_index_range" CHECK ((("correct_index" >= 0) AND ("correct_index" <= 2))),
@@ -2695,7 +2935,8 @@ CREATE TABLE IF NOT EXISTS "public"."tournaments" (
     "champion_participant_id" "uuid",
     "third_place_participant_id" "uuid",
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "round_deadline" timestamp with time zone
+    "round_deadline" timestamp with time zone,
+    "groups_closed_at" timestamp with time zone
 );
 
 
@@ -2707,6 +2948,10 @@ COMMENT ON COLUMN "public"."tournaments"."seed" IS 'Gobierna sorteos/bracket/bot
 
 
 COMMENT ON COLUMN "public"."tournaments"."round_deadline" IS 'Fin del tiempo muerto entre rondas de penales (barrier 4.6); null = no hay tiempo muerto en curso.';
+
+
+
+COMMENT ON COLUMN "public"."tournaments"."groups_closed_at" IS 'T11: inicio de la ventana de "grupos finales" antes del KO. Mientras está seteada y current_phase=groups, se muestran las tablas finales ~4s antes de armar el bracket.';
 
 
 
@@ -2876,6 +3121,10 @@ CREATE UNIQUE INDEX "profiles_username_lower_key" ON "public"."profiles" USING "
 
 
 
+CREATE INDEX "questions_difficulty_idx" ON "public"."questions" USING "btree" ("difficulty");
+
+
+
 CREATE INDEX "rooms_host_idx" ON "public"."rooms" USING "btree" ("host_id");
 
 
@@ -2889,6 +3138,10 @@ CREATE INDEX "tournament_questions_question_idx" ON "public"."tournament_questio
 
 
 CREATE INDEX "tournaments_champion_idx" ON "public"."tournaments" USING "btree" ("champion_participant_id");
+
+
+
+CREATE INDEX "tournaments_in_progress_idx" ON "public"."tournaments" USING "btree" ("round_deadline") WHERE ("status" = 'in_progress'::"public"."tournament_status");
 
 
 
@@ -3039,11 +3292,11 @@ ALTER TABLE "public"."penalty_answers" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "profiles_select_own" ON "public"."profiles" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "id"));
+CREATE POLICY "profiles_select_own" ON "public"."profiles" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
-CREATE POLICY "profiles_update_own" ON "public"."profiles" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
+CREATE POLICY "profiles_update_own" ON "public"."profiles" FOR UPDATE TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
@@ -3279,6 +3532,11 @@ REVOKE ALL ON FUNCTION "public"."assign_round_question"("p_match" "uuid", "p_idx
 
 
 
+REVOKE ALL ON FUNCTION "public"."begin_presentation"("p_tournament" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."begin_presentation"("p_tournament" "uuid") TO "authenticated";
+
+
+
 REVOKE ALL ON FUNCTION "public"."bot_penalty_scored"("p_seedp" bigint, "p_k_tier" "public"."difficulty_tier", "p_g_tier" "public"."difficulty_tier", "p_kicker" "uuid", "p_keeper" "uuid") FROM PUBLIC;
 
 
@@ -3373,6 +3631,11 @@ GRANT ALL ON FUNCTION "public"."get_match_scene"("p_match" "uuid") TO "authentic
 
 
 
+REVOKE ALL ON FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."get_penalty_result"("p_penalty" "uuid") TO "authenticated";
+
+
+
 REVOKE ALL ON FUNCTION "public"."get_tournament_history"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_tournament_history"() TO "authenticated";
 
@@ -3382,14 +3645,17 @@ REVOKE ALL ON FUNCTION "public"."handle_new_user"() FROM PUBLIC;
 
 
 
+REVOKE ALL ON FUNCTION "public"."is_match_member"("p_match" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."is_match_member"("p_match" "uuid") TO "authenticated";
 
 
 
+REVOKE ALL ON FUNCTION "public"."is_room_member"("p_room" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."is_room_member"("p_room" "uuid") TO "authenticated";
 
 
 
+REVOKE ALL ON FUNCTION "public"."is_tournament_member"("p_tournament" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."is_tournament_member"("p_tournament" "uuid") TO "authenticated";
 
 
@@ -3405,6 +3671,10 @@ GRANT ALL ON FUNCTION "public"."leave_room"("p_code" "text") TO "authenticated";
 
 
 REVOKE ALL ON FUNCTION "public"."materialize_bot_intents"("p_penalty" "uuid", "p_force" boolean) FROM PUBLIC;
+
+
+
+REVOKE ALL ON FUNCTION "public"."notify_round_next"("p_tournament" "uuid") FROM PUBLIC;
 
 
 
@@ -3447,10 +3717,12 @@ GRANT ALL ON FUNCTION "public"."quick_play"() TO "authenticated";
 
 
 
+REVOKE ALL ON FUNCTION "public"."realtime_match_member"("p_topic" "text") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."realtime_match_member"("p_topic" "text") TO "authenticated";
 
 
 
+REVOKE ALL ON FUNCTION "public"."realtime_tournament_member"("p_topic" "text") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."realtime_tournament_member"("p_topic" "text") TO "authenticated";
 
 
@@ -3654,15 +3926,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT REFERENCES
 
 
 
-
-
-
-
---
--- Dumped schema changes for auth and storage
---
-
-CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_new_user"();
 
 
 

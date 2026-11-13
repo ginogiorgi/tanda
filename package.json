@@ -16,7 +16,9 @@
     "test:db": "vitest run --project db",
     "db:start": "supabase start -x edge-runtime,gotrue,imgproxy,kong,logflare,mailpit,postgres-meta,postgrest,realtime,storage-api,studio,supavisor,vector",
     "db:stop": "supabase stop",
-    "db:reset": "supabase db reset"
+    "db:reset": "supabase db reset",
+    "catalog:check": "tsx scripts/catalog/build-seed.ts",
+    "catalog:build": "tsx scripts/catalog/build-seed.ts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
@@ -44,7 +46,9 @@
     "pg": "^8.23.1",
     "supabase": "^2.106.0",
     "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "zod": "^4.6.7"
   }
 }

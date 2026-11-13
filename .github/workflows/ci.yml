@@ -32,6 +32,9 @@ jobs:
       - name: Knip (código/deps muertos)
         run: pnpm knip
 
+      - name: Catálogo (preguntas + equipos)
+        run: pnpm catalog:check
+
       - name: Test
         run: pnpm test
 
