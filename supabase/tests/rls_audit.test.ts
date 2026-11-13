@@ -40,15 +40,10 @@ const AUTH_ALLOWLIST = [
   "realtime_tournament_member",
 ].sort();
 
-// `anon` (sesión sin login) solo necesita: username_available (form de registro) + los helpers de
-// pertenencia (booleanos que evalúan las policies RLS, no filtran nada).
+// `anon` (sin sesión) solo necesita username_available (form de registro). Los helpers de pertenencia
+// los evalúan policies `TO authenticated` (y RPCs definer como owner): no se exponen a anon (advisor 0028).
 const ANON_ALLOWLIST = [
   "username_available",
-  "is_match_member",
-  "is_room_member",
-  "is_tournament_member",
-  "realtime_match_member",
-  "realtime_tournament_member",
 ].sort();
 
 // Mutadores/internos autoritativos: NUNCA ejecutables por el cliente (solo dentro de RPCs SECURITY
@@ -124,7 +119,7 @@ describe("superficie ejecutable == allowlist intencional", () => {
     expect(await execNames("authenticated")).toEqual(AUTH_ALLOWLIST);
   });
 
-  it("anon solo ejecuta username_available + helpers de pertenencia", async () => {
+  it("anon solo ejecuta username_available", async () => {
     expect(await execNames("anon")).toEqual(ANON_ALLOWLIST);
   });
 });
