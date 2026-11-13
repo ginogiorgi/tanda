@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 /**
  * Web App Manifest (PWA): permite "agregar a pantalla de inicio" en mobile con identidad de app
- * (nombre, color, pantalla completa). Mobile-first, así que vale para el lanzamiento. El ícono lo
- * genera `app/icon.tsx` (servido en `/icon`).
+ * (nombre, color, pantalla completa). Mobile-first, así que vale para el lanzamiento. Íconos estáticos
+ * derivados de `app/icon.svg` (el favicon lo sirve Next desde `app/`).
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -18,8 +18,9 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "es-AR",
     categories: ["games", "sports", "trivia"],
     icons: [
-      { src: "/icon", sizes: "512x512", type: "image/png" },
-      { src: "/apple-icon", sizes: "180x180", type: "image/png" },
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
     ],
   };
 }

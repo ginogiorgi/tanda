@@ -15,12 +15,12 @@ export function Footer({ className }: { className?: string }) {
       <p className="text-xs text-fg-subtle">
         Hecho por{" "}
         <a
-          href="https://www.pyrux.com.ar/es"
+          href="https://www.pyrux.com.ar/es/creator/gino-ruben-giorgi"
           target="_blank"
           rel="noopener noreferrer"
           className="font-semibold text-pyrux transition-opacity hover:opacity-80"
         >
-          Pyrux
+          Gino Giorgi
         </a>{" "}
         y{" "}
         <a
