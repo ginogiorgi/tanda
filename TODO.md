@@ -1,5 +1,34 @@
 # TODO — TANDA ⚽
 
+## ✅ DB de prod al día (14/11, con OK de Gino) — migraciones `…18…`–`…21…` aplicadas; código SIN deployar
+- **Grants de prod (idea 1):** prod tenía `SELECT/INSERT/UPDATE/DELETE` para `anon` **y** `authenticated`
+  sobre TODAS las tablas de juego (`penalties`, `questions`, `matches`…), y el default ACL de `postgres`
+  seguía dando `arwdDxtm` a las tablas nuevas. RLS sin policy las bloqueaba, pero el grant no.
+  → `20261119000000_explicit_table_grants` ahora hace `revoke all` en todas las tablas de `public` +
+  `alter default privileges … revoke all on tables` y re-otorga solo la allowlist del test (d) (commit
+  `6a3210e`, **solo en `wip/fix-guest`**: `wip/e2e-flow`/`wip/ideas-e2e` tienen la versión vieja; al
+  mergear en orden queda la nueva). Verificado en prod: grants == allowlist; REST anon a
+  `questions/profiles/penalties` → 401, `game_modes` → 200. Antes chequeé que el código de main solo lee
+  `profiles/rooms/game_modes` y actualiza `profiles(username|avatar)`, que no hay `postgres_changes` y
+  que las funciones invoker solo corren dentro de RPC definer.
+- **`…20…` (build_knockout):** aplicada; cuerpo idéntico al local (hash sin comentarios), ACL intacto.
+- **`…18…` + `…21…` (catálogo):** 21 es el mismo seed upsert regenerado y reemplaza a 18 → se aplicó un
+  delta de las 454 filas que cambian (difficulty 129 · topic 341 · prompt/options ~100; 0 `correct_index`
+  cambiados, 0 filas nuevas). Hash del catálogo de prod == estado post-21 local (`d4a890d8…`). En el ledger
+  `…18…` figura como subsumida por `…21…`.
+- **Ledger reconciliado:** `…18… questions_matches`, `…19…`, `…20…`, `…21…` con los nombres del repo.
+- **Advisors:** iguales a antes (lo esperado por diseño: RLS sin policy en tablas de juego, RPC del
+  cliente ejecutables por `authenticated`, `username_available` por anon, anon sign-ins, leaked password).
+- **Smoke en prod (un invitado, como cualquier visita):** Mundial/Fútbol argentino habilitados, `/avatar`,
+  `/perfil`, `/ranking` 200; partido real: sala → partido (74 s) → penal (ya con una pregunta editada) →
+  respuesta → ATAJADO; 0 errores de página, 0 HTTP ≥400, 0 `correct_index` filtrado. El invitado quedó
+  en el torneo como desconectado (respuestas aleatorias hasta el final, como cualquier visita).
+- **Ojo:** el catálogo de prod va adelantado a `data/` de main hasta mergear `wip/post-6b` +
+  `wip/ideas-questions`; no regenerar ni aplicar seeds desde main antes de eso.
+- **Flake suelto:** en local, 1 de 4 corridas de `game` el home renderizó los modos como "Próximamente"
+  (la query de `game_modes` volvió vacía/error en ese render; grants OK, 3/3 al repetir). Sospecha: el
+  mismo PGRST303 que vence el único reintento. A mirar: que `app/page.tsx` no trague el error de esa query.
+
 ## 🧾 Resumen final de la tanda autónoma (14/11) — todo en ramas `wip/`, NADA en main/prod
 Ramas (todas sobre main, sin push). Orden de merge sugerido y qué trae cada una:
 1. `wip/avatar-glb` — Fase 6b (personajes GLB, cresta, botines).
@@ -8,7 +37,7 @@ Ramas (todas sobre main, sin push). Orden de merge sugerido y qué trae cada una
 3. `wip/post-6b` — micro-labels 12px, 100 preguntas nuevas verificadas. Migración `…18…`.
 4. `wip/ideas-questions` (sobre 3) — filtraciones lejanas en temas + pirámide de dificultad wc.
    Migración `…21…` (después de la `…18…`). Revisar las 50 recalibraciones de dificultad.
-5. `wip/e2e-flow` — e2e invitado→sala→partido contra Supabase local + grants explícitos. Migración `…19…`
+5. `wip/e2e-flow` — e2e invitado→sala→partido contra Supabase local + grants explícitos. Migración `…19…` (ya en prod)
    (**antes, mirar los grants reales de prod**: idea 1, query más abajo).
 6. `wip/ideas-e2e` (sobre 5) — fix de 16avos mismo grupo (bug real en prod, ~2% de torneos; migración
    `…20…`), e2e ranked, e2e campeón (`E2E_SLOW=1`), job de CI `e2e-flow` (sin probar en GitHub).
