@@ -57,8 +57,15 @@ en zigzag (ver arriba) y warning `toNonIndexed` de la pelota. Revisado headless:
 penal (idle, SAVE 2, GOAL 1) sin errores de consola. Nota: en este shell `pnpm` vive en `~/.npm-global/bin`.
 
 **Próximo paso:** que Gino mire `/dev/avatar` y `/dev/penal` (`pnpm dev`) → `git checkout main && git merge
-wip/avatar-glb && git push` (deploy). Para después: cresta propia del mohicano (hoy = rapado), botines con
-forma (hoy el pie va pintado del color), el `AvatarModel` procedural queda solo como fallback.
+wip/avatar-glb && git push` (deploy). El `AvatarModel` procedural queda solo como fallback.
+- ✅ **Cresta del mohicano** (`components/avatar/glbCrest.ts`, 14/11): 7 púas low-poly generadas sobre el
+  perfil sagital del rapado del cuerpo, colgadas del hueso `Head`, teñidas con el pelo. Fix: el rapado
+  de hombre flotaba sobre la cabeza de la mujer (ahora cada cuerpo usa el suyo). Galería: mujer con
+  mohicano + hombre en 3/4 de perfil.
+- ✅ **Botines con forma** (`components/avatar/glbShoes.ts`, 14/11): loft superelíptico medido sobre el pie
+  en reposo + suela que contrasta, skinneado a `foot_*`/`ball_*`; zapatillas (suela gruesa clara) /
+  botines (fina) / tapones (fina + 6 tapones). El shader del cuerpo descarta el pie descalzo (y<0.085).
+  Revisado en la galería y en la patada del penal.
 Los zips fuente ya no están; para rebajarlos sin cuenta: `curl` a `https://quaternius.itch.io/<slug>`,
 sacar `csrf_token`, `POST <slug>/file/<upload_id>?source=view_game&as_props=1` → JSON con `url` firmada
 (universal-base-characters 15861669).
