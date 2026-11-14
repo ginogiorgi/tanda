@@ -253,8 +253,10 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
    tiene SELECT/escritura sobre tablas de juego, sumar a la migración los `revoke` para dejar prod == repo.
 2. **Job de CI `e2e-flow`**: `supabase start` (stack de `e2e:stack`) + `db:reset` + `test:e2e:flow` en
    GitHub Actions (~4 min); hoy solo corre a mano.
-3. **E2E ranked 1v1**: dos contextos de Playwright (dos invitados) en la cola → partido → resultado y
-   puntos. Es el flujo más frágil en tiempo real y no tiene cobertura de navegador.
+3. ✅ **E2E ranked 1v1** (`e2e/flow/ranked.spec.ts`, rama `wip/ideas-e2e`): dos invitados en contextos
+   separados → cola → se emparejan entre sí → partido completo (A toca la 1ª opción, B la última → la
+   muerte súbita siempre termina) → "Ganaste"/"Perdiste" con deltas de signo opuesto. ~3 min. Helpers
+   compartidos en `e2e/flow/_helpers.ts`. `pnpm test:e2e:flow` (los dos specs) ✓ en 3,9 min.
 4. **E2E hasta el campeón**: seguir el torneo del invitado jugando todos los penales (bots al instante)
    y verificar bracket/resumen/historial; o un flag de test para acortar el lobby solo en local.
 5. **Pirámide de dificultad del Mundial** (easy 182 < medium 225): escribir ~45 fáciles nuevas (o

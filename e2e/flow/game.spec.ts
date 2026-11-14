@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { assertLocalSupabase, enterAsGuest } from "./_helpers";
 
 /**
  * Flujo de juego completo como invitado: sesión anónima → Jugar (Mundial) → sala → lobby (1 min
@@ -6,15 +7,7 @@ import { expect, test } from "@playwright/test";
  * `correct_index` no viaja al cliente (REST ni Realtime) mientras el penal está abierto.
  */
 
-const LOCAL = /^http:\/\/(127\.0\.0\.1|localhost)[:/]/;
-
-test.beforeAll(() => {
-  // Doble seguro (además de scripts/e2e/flow.sh): este test crea usuarios reales.
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  if (process.env.E2E_FLOW !== "1" || !LOCAL.test(url)) {
-    throw new Error(`e2e de flujo solo contra Supabase local (NEXT_PUBLIC_SUPABASE_URL=${url || "∅"})`);
-  }
-});
+test.beforeAll(assertLocalSupabase);
 
 test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   const errors: string[] = [];
@@ -38,9 +31,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   });
 
   await test.step("entra como invitado", async () => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Jugar como invitado" }).click();
-    await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible({ timeout: 20_000 });
+    await enterAsGuest(page);
   });
 
   await test.step("Jugar → Mundial → sala", async () => {
