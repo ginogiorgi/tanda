@@ -74,7 +74,7 @@ const v = {
 /** Pelota low-poly con gajos oscuros (colores por cara, sin texturas). */
 function useBallGeometry(): THREE.BufferGeometry {
   return useMemo(() => {
-    const g = new THREE.IcosahedronGeometry(BALL_R, 1).toNonIndexed();
+    const g = new THREE.IcosahedronGeometry(BALL_R, 1); // ya es no-indexada (caras planas)
     const n = g.getAttribute("position").count;
     const col: number[] = [];
     const white = new THREE.Color("#f7f5ef");

@@ -32,21 +32,29 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 
 ## ⏸ Fase 6b: personajes GLB de Quaternius — HECHA en la rama `wip/avatar-glb` (14/11), falta merge
 
-Verde local: `typecheck · lint · knip · build · 145 unit`. Revisado con screenshots headless en
+Verde local (14/11, tras el corte): `typecheck · lint · knip · build · 145 unit`. Revisado con screenshots headless en
 `/dev/penal` (idle, patada, estirada, festejo, banda diagonal) y en la galería nueva `/dev/avatar`.
 
 - `scripts/avatar/build-glb.mts` (`pnpm avatar:build <dir>`): cuerpo M/F + 5 peinados en el mismo skin,
   meshopt → `public/models/avatar/avatar-{male,female}.glb` (~700 KB c/u). **Sin animaciones de UAL**
   (se borró `avatar-anims.glb` de 3 MB): el rig propio anima los huesos.
 - `components/avatar/GlbAvatar.tsx`: carga el GLB (meshopt), elige y tiñe el peinado según `hair.part`,
-  y pinta la ropa en el shader por región one-hot (hueso dominante + altura de bind normalizada: cintura
-  1.02, dobladillo del short 0.66, mangas según `top.part`) + banda diagonal `kitSash`. El normal map
-  del "superhéroe" va a 0.3 para que la ropa no parezca pintada.
+  y pinta la ropa en el shader **por fragmento con planos sobre la posición de bind normalizada (T-pose)**:
+  tobillo 0.10, dobladillo del short 0.66, cintura 1.02 (planos en y) y manga = plano en |x| (por cuerpo:
+  musculosa 0.215/0.165, remera 0.32/0.28, manga larga 0.705/0.66) → cortes rectos (antes, one-hot por
+  vértice = zigzag). Cabeza/cuello = piel por hueso. Corte de ropa y colores van por uniforms (cambiar
+  remera/short no reclona). Banda diagonal `kitSash`. Normal map del "superhéroe" a 0.3.
 - `components/avatar/glbRig.ts`: retarget `deseado = D·C·Wbind`, `local = padre⁻¹·deseado` (C = bajar
   brazos de la T-pose, 1.38 rad). `GlbAvatar` registra pivotes fantasma → `applyPose`/`useRig` sin cambios.
 - `components/avatar/Avatar3D.tsx`: GLB dentro de un `<Suspense>` con el `AvatarModel` procedural de
   fallback mientras carga. Ya está usado en `AvatarCanvas` (creador/perfil) y `PenalScene`.
 - CSP: `'wasm-unsafe-eval'` (decoder meshopt; hoy la CSP es Report-Only).
+
+**Sesión 14/11 (post corte de luz):** `git fsck` OK (solo dangling viejos de junio), GLB íntegros
+(header glTF = tamaño real, chunks JSON+BIN completos, 673/728 KB, cargan 200 en el navegador), `.next` y
+`tsbuildinfo` regenerados. Verde: `typecheck · lint · knip · build · 145 unit`. Arreglado: cortes de ropa
+en zigzag (ver arriba) y warning `toNonIndexed` de la pelota. Revisado headless: galería `/dev/avatar` y
+penal (idle, SAVE 2, GOAL 1) sin errores de consola. Nota: en este shell `pnpm` vive en `~/.npm-global/bin`.
 
 **Próximo paso:** que Gino mire `/dev/avatar` y `/dev/penal` (`pnpm dev`) → `git checkout main && git merge
 wip/avatar-glb && git push` (deploy). Para después: cresta propia del mohicano (hoy = rapado), botines con
