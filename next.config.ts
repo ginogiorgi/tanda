@@ -1,17 +1,29 @@
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
 
-// CSP completa en modo Report-Only: no rompe nada, sólo reporta violaciones en consola para
-// poder validar y luego pasar a enforcing. Permite Supabase (REST + realtime por wss) y los
-// blobs/data que usa three/R3F. `frame-ancestors 'none'` sí va enforced (abajo) porque sólo
-// afecta el embebido en iframes y es justo lo que queremos bloquear (anti-clonado/clickjacking).
-const reportOnlyCsp = [
+// CSP ENFORCED (antes Report-Only; validada con los e2e + /dev/avatar y /dev/penal, 0 violaciones).
+// - connect-src: SOLO el Supabase del build (REST + realtime por ws/wss), derivado de la env → en prod el
+//   proyecto, en el e2e el local. `blob:` porque GLTFLoader pide por fetch las texturas embebidas en los GLB.
+// - script-src: 'unsafe-inline' por los scripts inline de Next (sin nonce: forzaría render dinámico en
+//   todo); 'wasm-unsafe-eval' para el decoder meshopt de los GLB (WebAssembly, no habilita eval de JS);
+//   'unsafe-eval' SOLO en `next dev` (HMR/React Refresh lo necesitan).
+// - img/worker con blob:/data: por three/R3F.
+function supabaseOrigins(): string[] {
+  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!raw) return ["https://*.supabase.co", "wss://*.supabase.co"];
+  const u = new URL(raw);
+  return [u.origin, `${u.protocol === "https:" ? "wss:" : "ws:"}//${u.host}`];
+}
+
+const isDev = process.env.NODE_ENV === "development";
+
+const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'", // wasm: decoder meshopt de los GLB del avatar
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  `connect-src 'self' blob: ${supabaseOrigins().join(" ")}`,
   "worker-src 'self' blob:",
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -23,8 +35,7 @@ const reportOnlyCsp = [
 const securityHeaders = [
   // Anti-clickjacking / anti-embebido: nadie puede meter Tanda en un iframe en otro dominio.
   { key: "X-Frame-Options", value: "DENY" },
-  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
-  { key: "Content-Security-Policy-Report-Only", value: reportOnlyCsp },
+  { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {

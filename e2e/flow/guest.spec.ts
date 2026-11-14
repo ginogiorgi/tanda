@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../_csp";
 import { assertLocalSupabase, enterAsGuest } from "./_helpers";
 
 /**

@@ -1,5 +1,29 @@
 # TODO — TANDA ⚽
 
+## 🔒 CSP enforced (14/11, OK de Gino) — rama `wip/csp-enforce` (sobre `wip/integration`), SIN deployar
+`wip/integration` = `wip/fix-modes-flake` (⊃ fix-guest ⊃ ideas-e2e ⊃ e2e-flow) + `wip/ideas-avatar`
+(⊃ avatar-glb) + `wip/ideas-questions` (⊃ post-6b): mergean limpio, verde completo (typecheck · lint ·
+knip · 150 unit · build · 78 db · 14 e2e). La CSP se validó contra eso, porque los GLB/meshopt viven ahí.
+- **Reportes:** no había `report-uri` → se juntaron de la consola (listener de `securitypolicyviolation`)
+  recorriendo landing, login, registro, ranking, invitado, avatar, perfil y un partido con escena 3D:
+  prod (código de main) 0; integración en local → `connect-src` a Supabase local (esperable) y
+  **`connect-src blob:`**: GLTFLoader pide por fetch las texturas embebidas de los GLB → enforced sin
+  `blob:` los muñecos se quedaban sin texturas.
+- **Cambio (`next.config.ts`):** `Content-Security-Policy` enforced (sale el Report-Only).
+  `connect-src 'self' blob:` + el origen de `NEXT_PUBLIC_SUPABASE_URL` (https + wss; ya no `*.supabase.co`,
+  y el e2e local funciona); `script-src` suma `'wasm-unsafe-eval'` (decoder meshopt) y `'unsafe-eval'`
+  solo en `next dev`. Resto igual (`'unsafe-inline'` sin nonce: un nonce forzaría render dinámico en todo).
+- **Fijado en tests:** `e2e/_csp.ts` (fixture auto) hace fallar cualquier test con una violación; lo usan
+  smoke y los 4 flow (ranked con `watchCsp` en sus 2 contextos). Probado con un canario que viola a
+  propósito → falla con `enforce img-src`.
+- **Corridas:** flow completo con CSP enforced: campeón 11,2 min · game 1,4 · guest · ranked 2,5 ✓ y 0
+  violaciones; smoke 14 ✓. `/dev/avatar`, `/dev/penal`, `/dev/kit` (next dev): 0 violaciones, GLB 200 y
+  render OK. Build de prod: partido con el arquero GLB texturizado, `WebAssembly.compile` permitido, 0
+  violaciones.
+- **Ojo al deployar:** los previews de Vercel inyectan el toolbar de `vercel.live` → bloqueado por la CSP
+  en previews (prod no lo usa). Si se quiere el toolbar en previews, sumar `https://vercel.live` solo
+  cuando `VERCEL_ENV=preview`. `NEXT_PUBLIC_SUPABASE_URL` tiene que estar en el build (ya lo está).
+
 ## ✅ DB de prod al día (14/11, con OK de Gino) — migraciones `…18…`–`…21…` aplicadas; código SIN deployar
 - **Grants de prod (idea 1):** prod tenía `SELECT/INSERT/UPDATE/DELETE` para `anon` **y** `authenticated`
   sobre TODAS las tablas de juego (`penalties`, `questions`, `matches`…), y el default ACL de `postgres`
