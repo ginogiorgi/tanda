@@ -1,4 +1,4 @@
-import { expect, test, type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { answerUntil, assertLocalSupabase, enterAsGuest } from "./_helpers";
 
 /**
@@ -10,9 +10,16 @@ import { answerUntil, assertLocalSupabase, enterAsGuest } from "./_helpers";
 
 test.beforeAll(assertLocalSupabase);
 
-async function guestInQueue(browser: Browser): Promise<Page> {
+const contexts: BrowserContext[] = [];
+test.afterEach(async () => {
+  await Promise.all(contexts.splice(0).map((c) => c.close()));
+});
+
+async function guestInQueue(browser: Browser, errors: string[]): Promise<Page> {
   const ctx = await browser.newContext({ ...test.info().project.use });
+  contexts.push(ctx);
   const page = await ctx.newPage();
+  page.on("pageerror", (e) => errors.push(e.message)); // desde el landing, no después de entrar
   await enterAsGuest(page);
   await page.getByRole("button", { name: "Jugar", exact: true }).click();
   await page.getByRole("button", { name: /ranked 1v1/i }).click();
@@ -23,8 +30,7 @@ async function guestInQueue(browser: Browser): Promise<Page> {
 test("ranked 1v1: dos invitados se emparejan, juegan y se reparten los puntos", async ({ browser }) => {
   test.setTimeout(420_000);
   const errors: string[] = [];
-  const [a, b] = await Promise.all([guestInQueue(browser), guestInQueue(browser)]);
-  for (const p of [a, b]) p.on("pageerror", (e) => errors.push(e.message));
+  const [a, b] = await Promise.all([guestInQueue(browser, errors), guestInQueue(browser, errors)]);
 
   await test.step("emparejados → /partido", async () => {
     await Promise.all([a, b].map((p) => expect(p).toHaveURL(/\/partido$/, { timeout: 60_000 })));
