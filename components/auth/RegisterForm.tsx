@@ -151,7 +151,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
           <span className="text-xs text-success">Disponible ✓</span>
         )}
         {showAvailability && availability === "taken" && (
-          <span className="text-xs text-danger">Ese usuario ya está tomado.</span>
+          <span className="text-xs font-semibold text-brand-ink">Ese usuario ya está tomado.</span>
         )}
       </Field>
 
@@ -166,7 +166,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
         />
       </Field>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
 
       <Button type="submit" disabled={loading || availability === "taken"} block size="lg" className="mt-2">
         {loading ? "Creando…" : "Crear cuenta"}
@@ -174,7 +174,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
 
       <p className="text-center text-sm text-fg-muted">
         ¿Ya tenés cuenta?{" "}
-        <Link href="/login" className="font-medium text-gold hover:underline">
+        <Link href="/login" className="font-medium text-brand hover:underline">
           Entrá
         </Link>
       </p>

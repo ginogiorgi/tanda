@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/brand/Wordmark";
 
 export default function AuthLayout({
   children,
@@ -6,14 +7,11 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-16">
-      <Link
-        href="/"
-        className="font-display text-5xl font-bold uppercase tracking-tight text-gold drop-shadow-[0_6px_24px_rgba(212,175,55,0.18)]"
-      >
-        TANDA
+    <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-16">
+      <Link href="/" aria-label="Tanda — inicio">
+        <Wordmark className="text-6xl" />
       </Link>
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-bg-elevated/60 p-6 shadow-card backdrop-blur-md sm:p-8">
+      <div className="w-full max-w-sm rounded-[6px] border-2 border-ink bg-bg-elevated p-6 shadow-pop sm:p-8">
         {children}
       </div>
     </main>

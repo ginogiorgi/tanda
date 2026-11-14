@@ -78,7 +78,7 @@ export function ResetPasswordForm() {
         />
       </Field>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
 
       <Button type="submit" disabled={loading} block size="lg" className="mt-2">
         {loading ? "Guardando…" : "Guardar contraseña"}

@@ -1,14 +1,14 @@
 import { cn } from "@/lib/cn";
 
-/** Input del sistema. Reemplaza el `rounded-lg border … focus:border-gold` repetido en los forms. */
+/** Input del sistema. Reemplaza el `rounded-[4px] border … focus:border-brand` repetido en los forms. */
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean };
 
 export function Input({ className, invalid, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        "w-full rounded-lg border border-border bg-bg-elevated px-4 py-3 text-sm text-fg placeholder:text-fg-subtle transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25 disabled:opacity-50",
-        invalid && "border-danger focus:border-danger focus:ring-danger/25",
+        "w-full rounded-[4px] border-2 border-ink bg-bg-raised px-4 py-3 text-base text-fg placeholder:text-fg-subtle transition-shadow focus:shadow-card focus:outline-none disabled:opacity-50",
+        invalid && "border-danger focus:shadow-[3px_3px_0_0_var(--danger)]",
         className,
       )}
       {...props}
@@ -35,13 +35,13 @@ export function Field({
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       {label && (
-        <label htmlFor={htmlFor} className="text-sm font-medium text-fg-muted">
+        <label htmlFor={htmlFor} className="text-xs font-bold uppercase tracking-[0.12em] text-fg">
           {label}
         </label>
       )}
       {children}
       {error ? (
-        <p className="text-xs text-danger">{error}</p>
+        <p className="text-xs font-semibold text-brand-ink">{error}</p>
       ) : hint ? (
         <p className="text-xs text-fg-subtle">{hint}</p>
       ) : null}

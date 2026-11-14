@@ -3,16 +3,16 @@ import { cn } from "@/lib/cn";
 
 /** Pill de estado/etiqueta (fase, EN VIVO, rol, resultado). */
 export const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide",
+  "inline-flex items-center gap-1 rounded-[3px] border-[1.5px] px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.12em]",
   {
     variants: {
       variant: {
-        neutral: "border border-border bg-bg-elevated text-fg-muted",
-        gold: "border border-gold/30 bg-gold/15 text-gold-soft",
-        accent: "border border-accent/30 bg-accent/15 text-accent",
-        blue: "border border-accent-blue/30 bg-accent-blue/15 text-accent-blue",
-        success: "border border-success/30 bg-success/15 text-success",
-        danger: "border border-danger/30 bg-danger/15 text-danger",
+        neutral: "border-ink bg-bg-elevated text-fg",
+        brand: "border-brand bg-brand text-white",
+        accent: "border-ink bg-accent text-white",
+        blue: "border-blue bg-blue text-white",
+        success: "border-success bg-success text-white",
+        danger: "border-ink bg-ink text-bg",
       },
     },
     defaultVariants: { variant: "neutral" },

@@ -8,7 +8,7 @@ export function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "mt-auto w-full border-t border-border/60 px-6 py-6 text-center",
+        "mt-auto w-full border-t-2 border-ink px-6 py-6 text-center",
         className,
       )}
     >
@@ -18,7 +18,7 @@ export function Footer({ className }: { className?: string }) {
           href="https://www.pyrux.com.ar/es/creator/gino-ruben-giorgi"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-semibold text-pyrux transition-opacity hover:opacity-80"
+          className="font-semibold text-pyrux underline-offset-2 hover:underline"
         >
           Gino Giorgi
         </a>{" "}
@@ -27,12 +27,12 @@ export function Footer({ className }: { className?: string }) {
           href="https://www.instagram.com/delpianojuan/"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-semibold text-fg transition-opacity hover:opacity-80"
+          className="font-semibold text-fg underline-offset-2 hover:underline"
         >
           JM10
         </a>
       </p>
-      <p className="mt-1 text-[0.7rem] text-fg-subtle/70">
+      <p className="mt-1 text-[0.7rem] text-fg-subtle">
         © 2026 Tanda — Pyrux. Todos los derechos reservados.
       </p>
     </footer>

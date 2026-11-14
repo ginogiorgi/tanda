@@ -135,9 +135,9 @@ export function AvatarCreator({
               key={b.id}
               type="button"
               onClick={() => setBodyType(b.id)}
-              className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition ${
+              className={`flex-1 rounded-[6px] px-3 py-2 text-sm font-medium ring-1 transition ${
                 avatar.bodyType === b.id
-                  ? "bg-gold/15 text-fg ring-gold/40"
+                  ? "bg-brand/15 text-fg ring-brand/40"
                   : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
               }`}
             >
@@ -188,7 +188,7 @@ export function AvatarCreator({
             <Button type="button" onClick={handleSave} disabled={saving} block size="lg">
               {saving ? "Guardando…" : saved ? "Guardado ✓" : saveLabel}
             </Button>
-            {saveError && <p className="text-sm text-danger">{saveError}</p>}
+            {saveError && <p className="text-sm font-semibold text-brand-ink">{saveError}</p>}
           </div>
         )}
       </div>
@@ -204,7 +204,7 @@ function Selector({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-bg-elevated p-3">
+    <div className="flex flex-col gap-2 rounded-[6px] border border-border bg-bg-elevated p-3">
       <span className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
         {label}
       </span>
@@ -255,9 +255,9 @@ function ChipRow({
           key={o.id}
           type="button"
           onClick={() => onSelect(o.id)}
-          className={`rounded-lg px-3 py-1.5 text-sm ring-1 transition ${
+          className={`rounded-[4px] px-3 py-1.5 text-sm ring-1 transition ${
             selected === o.id
-              ? "bg-gold/15 text-fg ring-gold/40"
+              ? "bg-brand/15 text-fg ring-brand/40"
               : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
           }`}
         >
@@ -286,7 +286,7 @@ function ColorRow({
           style={{ backgroundColor: color }}
           className={`h-7 w-7 rounded-full ring-2 transition ${
             selected.toLowerCase() === color.toLowerCase()
-              ? "ring-gold"
+              ? "ring-brand"
               : "ring-border hover:ring-ring"
           }`}
         />

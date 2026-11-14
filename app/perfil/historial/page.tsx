@@ -35,7 +35,7 @@ export default async function HistorialPage() {
 
       <div className="flex flex-col gap-1">
         <Eyebrow>Historial completo</Eyebrow>
-        <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-gold">
+        <h1 className="font-display text-4xl font-extrabold uppercase tracking-tight text-brand">
           Tus torneos
         </h1>
       </div>

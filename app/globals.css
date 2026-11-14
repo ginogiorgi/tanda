@@ -1,62 +1,60 @@
 @import "tailwindcss";
 
 /*
- * Tanda — design tokens (Mundial 2026)
- * Núcleo: negro / blanco / dorado. Acentos vibrantes por partido/selección.
- * Ver SPEC §4. No reproducir marcas/emblemas oficiales: solo paleta y feel.
+ * Tanda — design tokens · dirección "B · Programa de partido" (rebrand Tanda 2.0).
+ * Papel, tinta, rojo de imprenta y azul; trama de puntos, bordes duros y sombra offset de impresión.
+ * Tipos: Big Shoulders Display (titulares/marcadores) + Instrument Sans (lectura/UI).
+ * Assets originales: nada de emblemas/tipos oficiales de FIFA.
  */
 :root {
-  /* Fondos */
-  --bg: #0a0a0a;
-  --bg-elevated: #121212;
-  --bg-overlay: #1a1a1a;
-  --bg-raised: #161616; /* cards del HUD/broadcast (un punto más claras que elevated) */
+  /* Papel (fondos) */
+  --bg: #ede9df; /* papel */
+  --bg-elevated: #f7f4ec; /* hoja suelta / card */
+  --bg-overlay: #e2ddd1; /* papel más gastado (hover, pistas) */
+  --bg-raised: #fbf9f4; /* card destacada dentro de otra */
 
-  /* Texto */
-  --fg: #ffffff;
-  --fg-muted: #a1a1aa;
-  --fg-subtle: #71717a;
+  /* Tinta (texto). Todos AA sobre --bg. */
+  --fg: #141414;
+  --fg-muted: #45423b;
+  --fg-subtle: #6b665b;
 
-  /* Dorado (trofeo) */
-  --gold: #d4af37;
-  --gold-deep: #c9a227;
-  --gold-soft: #e8cf7e;
+  /* Marca: rojo de imprenta (CTA, "vos", destacados) + azul (segundo color / Mundial). */
+  --brand: #d7261e;
+  --brand-ink: #a51a14; /* rojo para texto chico sobre papel (AA) */
+  --blue: #1f3fa8;
 
-  /* Bordes / líneas */
-  --border: #262626;
-  --ring: #383838; /* hairline más visible para hover/focus */
+  /* Bordes: `ink` = línea dura de imprenta; `border` = filete suave; `ring` = filete visible. */
+  --ink: #141414;
+  --border: #cfc8b8;
+  --ring: #a39d8e;
 
-  /* Gradientes broadcast (premium). El de pitch usa el acento activo del partido. */
-  --grad-gold: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 48%, var(--gold-deep) 100%);
+  /* Gradiente de "cancha" para pantallas de partido: el acento del partido, muy suave sobre papel. */
   --grad-pitch: radial-gradient(
     120% 78% at 50% -12%,
-    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 0%,
     transparent 58%
-  );
-  --grad-accent: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 88%, white) 0%,
-    var(--accent) 55%,
-    color-mix(in srgb, var(--accent) 78%, black) 100%
   );
 
   /* Estados de juego */
-  --danger: #ef4444; /* barra de tiempo / últimos segundos */
-  --success: #22c55e; /* GOL */
+  --danger: #d7261e; /* barra de tiempo / últimos segundos (mismo rojo de imprenta) */
+  --success: #1d7a3e; /* GOL: verde imprenta */
 
-  /* Acentos vibrantes por partido/selección (SPEC §4.1) */
-  --accent-blue: #3b82f6;
-  --accent-green: #22e06b;
-  --accent-red: #ef4444;
-  --accent-magenta: #d946ef;
-  --accent-orange: #f97316;
-  --accent-teal: #14b8a6;
+  /* Acentos por partido/equipo (kits) — se usan en swatches y en el halo del partido. */
+  --accent-blue: #1f3fa8;
+  --accent-green: #1d7a3e;
+  --accent-red: #d7261e;
+  --accent-magenta: #a3247a;
+  --accent-orange: #d8661c; /* "repechaje/mejor tercero" en tablas */
+  --accent-teal: #0f7c74;
 
-  /* Acento activo del partido (se asigna en runtime; default dorado) */
-  --accent: var(--gold);
+  /* Acento activo del partido (se asigna en runtime; default = rojo de marca). */
+  --accent: var(--brand);
 
-  /* Marca Pyrux (coral empresarial) — solo para el crédito de autoría en la landing */
-  --pyrux: #ff7b3d;
+  /* Marca Pyrux (coral) — solo para el crédito de autoría. */
+  --pyrux: #e8602a;
+
+  /* Trama de puntos de imprenta (fondo general). */
+  --halftone: radial-gradient(rgba(20, 20, 20, 0.075) 1px, transparent 1.2px);
 }
 
 @theme inline {
@@ -69,9 +67,10 @@
   --color-fg-muted: var(--fg-muted);
   --color-fg-subtle: var(--fg-subtle);
 
-  --color-gold: var(--gold);
-  --color-gold-deep: var(--gold-deep);
-  --color-gold-soft: var(--gold-soft);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-blue: var(--blue);
+  --color-ink: var(--ink);
 
   --color-border: var(--border);
   --color-ring: var(--ring);
@@ -87,30 +86,44 @@
   --color-accent-orange: var(--accent-orange);
   --color-accent-teal: var(--accent-teal);
 
-  --font-sans: var(--font-outfit);
-  --font-display: var(--font-oswald);
+  --font-sans: var(--font-instrument);
+  --font-display: var(--font-big-shoulders);
+  /* "mono" = cifras y siglas: misma sans con números tabulares (ver .font-mono abajo). */
+  --font-mono: var(--font-instrument);
 
-  /* Sombras broadcast: cards con profundidad sutil, pops con más caída. */
-  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px -14px rgba(0, 0, 0, 0.8);
-  --shadow-pop: 0 18px 50px -20px rgba(0, 0, 0, 0.85);
+  /* Sombras de imprenta: offset duro en tinta, sin blur. */
+  --shadow-card: 3px 3px 0 0 var(--ink);
+  --shadow-pop: 5px 5px 0 0 var(--ink);
+  --shadow-press: 1px 1px 0 0 var(--ink);
 }
 
-/* Utilidades de fondo broadcast (gradientes que no salen de @theme). */
-.bg-gold-grad {
-  background-image: var(--grad-gold);
-}
-.bg-accent-grad {
-  background-image: var(--grad-accent);
-}
+/* Utilidades de fondo que no salen de @theme. */
 .bg-pitch {
   background-image: var(--grad-pitch);
 }
+.bg-halftone {
+  background-image: var(--halftone);
+  background-size: 6px 6px;
+}
+
+/* Cifras y siglas: tabulares y con un poco de aire (reemplaza a la mono de la v1). */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--halftone);
+  background-size: 6px 6px;
   color: var(--fg);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brand);
+  color: #fff;
 }
 
 /*
@@ -132,7 +145,7 @@ body {
   left: 100%;
   top: 50%;
   width: 2rem;
-  border-top: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+  border-top: 1px solid var(--ink);
 }
 /* Línea vertical que une el centro de la llave de arriba con el de abajo (entra al match siguiente). */
 [data-bracket-connect] > .bracket-cell:nth-child(odd)::before {
@@ -141,7 +154,7 @@ body {
   left: calc(100% + 2rem);
   top: 50%;
   height: 100%;
-  border-left: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+  border-left: 1px solid var(--ink);
 }
 
 /* Confeti del campeón (8.12). Lo neutraliza el bloque prefers-reduced-motion de abajo. */

@@ -13,10 +13,10 @@ export function StatCard({
 }) {
   return (
     <Card variant="raised" padding="none" className={cn("flex flex-col gap-1 px-4 py-3", className)}>
-      <span className="font-display text-3xl font-bold tabular-nums tracking-tight text-fg">
+      <span className="font-display text-4xl font-black tabular-nums text-fg">
         {value}
       </span>
-      <span className="text-xs font-medium uppercase tracking-wide text-fg-subtle">{label}</span>
+      <span className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-fg-muted">{label}</span>
     </Card>
   );
 }

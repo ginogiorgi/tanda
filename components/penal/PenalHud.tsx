@@ -25,7 +25,7 @@ function Dots({ dots, align }: { dots: PenalDot[]; align: "left" | "right" }) {
           <span
             key={d.idx}
             title={`Penal ${d.idx}`}
-            className={`h-2.5 w-2.5 rounded-full ${d.scored ? "bg-success" : "bg-danger/70"}`}
+            className={`h-2.5 w-2.5 rounded-full border-2 ${d.scored ? "border-ink bg-ink" : "border-brand bg-transparent"}`}
           />
         ))
       )}
@@ -49,11 +49,11 @@ function Side({
       <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
         <TeamMark flag={brief?.flag} crest={brief?.crest} name={brief?.team_name} className="h-4" />
         <span
-          className="h-3 w-3 shrink-0 rounded-full"
+          className="h-3 w-3 shrink-0 rounded-full ring-1 ring-ink"
           style={kitSwatchStyle(brief)}
           aria-hidden
         />
-        <span className="font-display text-sm font-bold uppercase text-fg">
+        <span className="font-display text-lg font-extrabold uppercase leading-none tracking-[0.04em] text-fg">
           {brief?.team_code ?? "???"}
         </span>
         <ScorePill tone="neutral" size="sm">
@@ -111,15 +111,15 @@ export function PenalHud({
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <div className="flex w-full items-start gap-3">
+      <div className="flex w-full items-start gap-3 border-t-[3px] border-b border-ink py-2">
         <Side brief={left.brief} score={left.score} dots={left.dots} align="left" />
-        <span className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
+        <span className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-fg-muted">
           {label}
         </span>
         <Side brief={right.brief} score={right.score} dots={right.dots} align="right" />
       </div>
       {role && (
-        <Badge variant={role === "kick" ? "gold" : "blue"}>
+        <Badge variant={role === "kick" ? "brand" : "blue"}>
           {role === "kick" ? "⚽ Pateás" : "🧤 Atajás"}
         </Badge>
       )}

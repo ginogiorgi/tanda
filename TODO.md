@@ -36,6 +36,24 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
   → migración chica de `teams` + regenerar escudos cuando se definan.
 
+### ⏸ Handoff — Fase 2 (rebrand "B · Programa") A MEDIAS en rama `wip/rebrand-programa`
+Cortado por usage ≥90% (13/11). La rama compila y pasa todo (typecheck/lint/knip/119 unit/build);
+NO está mergeada a main (prod sigue con el look oscuro).
+- **Hecho en la rama:** tokens papel/tinta/rojo/azul en `app/globals.css` (`gold`→`brand`, `ink`,
+  trama de puntos, sombras offset), fuentes Instrument Sans + Big Shoulders (`next/font`, opsz),
+  primitivas (Button/Card/Badge/ScorePill/Input/StatCard/Typography/Footer), `components/brand/Wordmark`
+  (TANDA + sello TA·26), landing y auth, PlayMenu (cards de modo con filete `mode.swatch`), PenalLive
+  (hoja de papel, opciones A/B/C, resultado), PenalHud, TimeBar, RunSummary/ResultCard/Lobby/Bracket
+  (pasada por sed), radios cuadrados, ícono nuevo (`scripts/brand/build_icons.py <bsd-black.ttf>` →
+  icon.svg/favicon.ico/apple-icon/icon-192/512).
+- **Falta:** revisar visualmente las pantallas de juego (sala, partido, bracket, resumen, perfil,
+  historial, avatar, 404/error) — capturas con Chrome headless; `app/opengraph-image.tsx` (sigue
+  negro/dorado); escena 3D (`PenalScene` fondo #0a0a0a — se rehace en Fase 6); actualizar el
+  `CLAUDE.md` del proyecto (marca nueva). Después merge a main + verificar deploy.
+- **Retomar:** `git checkout wip/rebrand-programa && pnpm dev` y capturas:
+  `google-chrome-stable --headless=new --window-size=390,1100 --virtual-time-budget=8000 --screenshot=<png> http://localhost:3000/<ruta>`
+  (ojo: `.env.local` apunta a la DB de PROD; el stack local de `db:start` no levanta auth/postgrest).
+
 ### Próximo (en orden)
 1. Pulido AR: tablas de 15 compactas en mobile (bracket), revisar TeamReveal con escudo.
 2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,

@@ -44,7 +44,7 @@ function TeamChip({
       <TeamMark flag={brief.flag} crest={brief.crest} name={brief.team_name} className={size === "xs" ? "h-3" : "h-3.5"} />
       <span
         className={`font-mono font-semibold ${size === "xs" ? "text-xs" : "text-sm"} ${
-          isMe ? "text-gold" : "text-fg"
+          isMe ? "text-brand" : "text-fg"
         }`}
       >
         {brief.team_code ?? "???"}
@@ -58,7 +58,7 @@ function GroupTable({ group, compact, mode }: { group: GroupView; compact?: bool
   const long = group.rows.length > 6;
   const cutoff = mode.format.qualifiersPerZone;
   return (
-    <div className="rounded-xl border border-border bg-bg-elevated p-3">
+    <div className="rounded-[6px] border-2 border-ink bg-bg-elevated p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
           {mode.zoneNoun} {group.letter}
@@ -69,8 +69,8 @@ function GroupTable({ group, compact, mode }: { group: GroupView; compact?: bool
         {group.rows.map((row) => (
           <li
             key={row.team.participant_id}
-            className={`flex items-center justify-between rounded-lg px-2 ${long ? "py-0.5" : "py-1"} ${
-              row.isMe ? "bg-gold/10" : ""
+            className={`flex items-center justify-between rounded-[4px] px-2 ${long ? "py-0.5" : "py-1"} ${
+              row.isMe ? "bg-brand/10" : ""
             } ${
               // Línea de corte: los de arriba pasan de ronda (en zonas largas orienta mucho más que el punto).
               long && row.position === cutoff ? "mb-1 rounded-b-none border-b border-dashed border-border" : ""
@@ -103,13 +103,13 @@ function VersusCard({ match, mode }: { match: ScoreLivePayload; mode: ModeMeta }
   const live = match.status === "in_progress" || match.status === "sudden_death";
   return (
     <div
-      className={`w-full rounded-2xl border bg-bg-elevated/70 p-5 text-center shadow-card backdrop-blur-md ${
-        live ? "border-danger/50" : "border-gold/40"
+      className={`w-full rounded-[6px] border bg-bg-elevated/70 p-5 text-center shadow-card backdrop-blur-md ${
+        live ? "border-danger/50" : "border-brand/40"
       }`}
     >
       <span
         className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] ${
-          live ? "text-danger" : "text-gold"
+          live ? "text-danger" : "text-brand"
         }`}
       >
         {live && (
@@ -121,17 +121,17 @@ function VersusCard({ match, mode }: { match: ScoreLivePayload; mode: ModeMeta }
         <div className="flex flex-1 flex-col items-center gap-1">
           <TeamMark flag={match.home?.flag} crest={match.home?.crest} name={match.home?.team_name} className="h-8" />
           <span className="h-3 w-3 rounded-full" style={kitSwatchStyle(match.home)} aria-hidden />
-          <span className="font-display text-xl font-bold uppercase text-fg">
+          <span className="font-display text-xl font-extrabold uppercase text-fg">
             {match.home?.team_code}
           </span>
         </div>
-        <span className="font-display text-3xl font-bold tabular-nums text-fg-muted">
+        <span className="font-display text-3xl font-extrabold tabular-nums text-fg-muted">
           {live ? `${match.home_score}–${match.away_score}` : "vs"}
         </span>
         <div className="flex flex-1 flex-col items-center gap-1">
           <TeamMark flag={match.away?.flag} crest={match.away?.crest} name={match.away?.team_name} className="h-8" />
           <span className="h-3 w-3 rounded-full" style={kitSwatchStyle(match.away)} aria-hidden />
-          <span className="font-display text-xl font-bold uppercase text-fg">
+          <span className="font-display text-xl font-extrabold uppercase text-fg">
             {match.away?.team_code}
           </span>
         </div>
@@ -162,7 +162,7 @@ function TreeMatch({ m }: { m: KoMatchView }) {
   return (
     <div
       className={`flex flex-col gap-1 rounded-md border px-2 py-1.5 ${
-        isMe ? "border-gold/70 bg-gold/10" : "border-border bg-bg-elevated"
+        isMe ? "border-brand/70 bg-brand/10" : "border-border bg-bg-elevated"
       }`}
     >
       {row(match.home, match.home_score, match.winner_participant_id === match.home?.participant_id)}
@@ -227,9 +227,9 @@ export function Bracket({ view }: { view: BracketView }) {
     return (
       <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-4">
         <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-4xl drop-shadow-[0_6px_24px_rgba(212,175,55,0.3)]">🏆</span>
+          <span className="text-4xl">🏆</span>
           <TeamMark flag={view.champion.flag} crest={view.champion.crest} name={view.champion.team_name} className="h-8" />
-          <span className="font-display text-2xl font-bold uppercase tracking-tight text-gold">
+          <span className="font-display text-2xl font-extrabold uppercase tracking-tight text-brand">
             {view.champion.team_code}
           </span>
           <span className="text-xs uppercase tracking-[0.3em] text-fg-subtle">{view.mode.championTitle}</span>
@@ -250,7 +250,7 @@ export function Bracket({ view }: { view: BracketView }) {
             <VersusCard match={view.myNextMatch} mode={view.mode} />
           </div>
         ) : (
-          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
             Eliminación directa
           </span>
         )}
@@ -264,13 +264,13 @@ export function Bracket({ view }: { view: BracketView }) {
   const otherGroups = view.groups.filter((g) => g.letter !== view.myGroupLetter);
   return (
     <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-5">
-      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
         Fase de {view.mode.zonesLabel.toLowerCase()}
       </span>
       {view.myNextMatch && <VersusCard match={view.myNextMatch} mode={view.mode} />}
       {myGroup && (
         <div className="w-full">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gold">
+          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-brand">
             Tu {view.mode.zoneNoun.toLowerCase()}
           </span>
           <GroupTable group={myGroup} mode={view.mode} />

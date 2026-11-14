@@ -385,7 +385,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           className="h-full w-full"
         />
         <div
-          className={`absolute inset-0 ${soft ? "bg-bg/15" : "bg-bg/60 backdrop-blur-sm"}`}
+          className={`absolute inset-0 ${soft ? "bg-bg/10" : "bg-bg/45"}`}
         />
       </div>
     ) : null;
@@ -433,11 +433,15 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             en el flujo centrado del wrapper de /partido (su `my-auto` recentra y tapaba la animación de
             la pateada). Placa sutil con blur para no confundirse con el arco claro del fondo. */}
         <div className="fade-in fixed left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
-          <div className="flex w-full flex-col items-center gap-3 rounded-2xl bg-bg/75 px-5 py-5 ring-1 ring-border/60 backdrop-blur-sm">
-            <span className="text-sm font-medium uppercase tracking-[0.2em] text-fg-muted">
+          <div className="flex w-full flex-col items-center gap-3 rounded-[6px] border-2 border-ink bg-bg-elevated px-5 py-5 shadow-pop">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
               Penal {result.idx} · {result.home_score}–{result.away_score}
             </span>
-            <p className="text-4xl font-extrabold tracking-tight text-gold drop-shadow-sm">
+            <p
+              className={`font-display text-6xl font-black uppercase leading-[0.85] ${
+                result.scored ? "text-brand" : "text-blue"
+              }`}
+            >
               {result.scored ? "¡GOL!" : "ATAJADO"}
             </p>
             {/* 10.7: motivo cuando empatan en aciertos y gana el más rápido. */}
@@ -451,8 +455,8 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             {/* T4: globo simple — solo la correcta, en verde si el jugador acertó, rojo si erró
                 (o no respondió). Sin repetir la pregunta ni "Tu respuesta". */}
             <p
-              className={`text-base font-semibold ${
-                selected === result.correct_index ? "text-success" : "text-danger"
+              className={`border-t-2 border-ink pt-2 text-base font-semibold ${
+                selected === result.correct_index ? "text-success" : "text-brand-ink"
               }`}
             >
               Correcta: {penal.options[result.correct_index]}
@@ -483,8 +487,12 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           —mismo criterio que el globo de resultado—, no en el flujo centrado del wrapper de /partido.
           `max-h-[90svh]` + scroll propio para que nunca desborde en pantallas chicas. */}
       <div
-        className={`fade-in fixed left-1/2 top-[5%] z-10 flex max-h-[90svh] w-full max-w-md -translate-x-1/2 flex-col gap-6 overflow-y-auto px-6 ${
-          isSecondChance ? "rounded-2xl ring-1 ring-amber-400/40" : ""
+        className="fade-in fixed left-1/2 top-[4%] z-10 w-full max-w-md -translate-x-1/2 px-4"
+      >
+      {/* Hoja del programa: papel con borde de tinta sobre la escena (se lee siempre, sin blur). */}
+      <div
+        className={`flex max-h-[90svh] flex-col gap-5 overflow-y-auto rounded-[6px] border-2 bg-bg-elevated p-4 shadow-pop ${
+          isSecondChance ? "border-accent-orange" : "border-ink"
         }`}
       >
       <PenalHud
@@ -500,11 +508,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
       />
       <div className="flex items-center justify-between text-sm">
         <span
-          className={`font-medium uppercase tracking-[0.2em] ${
-            isSecondChance ? "font-bold text-amber-300" : "text-fg-subtle"
+          className={`text-xs font-bold uppercase tracking-[0.18em] ${
+            isSecondChance ? "text-accent-orange" : "text-brand-ink"
           }`}
         >
-          {isSecondChance ? "2ª chance" : "Elegí tu respuesta"}
+          {isSecondChance ? "2ª chance" : `Penal Nº ${penal.idx} · Elegí`}
         </span>
         <div className="flex items-center gap-3">
           <button
@@ -515,18 +523,18 @@ export function PenalLive({ matchId }: PenalLiveProps) {
           >
             {muted ? "🔇" : "🔊"}
           </button>
-          <span className="font-mono text-2xl font-bold tabular-nums text-gold">{seconds}</span>
+          <span className="font-display text-4xl font-black leading-none tabular-nums text-fg">{seconds}</span>
         </div>
       </div>
       <TimeBar fraction={displayRemaining / totalMs} />
 
       {/* 10.13: banner prominente — que se note que entraste en otra fase del penal. */}
       {isSecondChance && (
-        <div className="fade-in rounded-xl border border-amber-400/60 bg-amber-500/15 px-4 py-3 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">
+        <div className="fade-in rounded-[4px] border-2 border-ink bg-accent-orange px-4 py-3 text-center text-white">
+          <p className="font-display text-2xl font-black uppercase leading-none">
             Segunda chance
           </p>
-          <p className="mt-1 text-sm font-medium text-amber-100">
+          <p className="mt-1 text-sm font-medium">
             Erraron los dos — quedan 2 opciones. ¡Última oportunidad!
           </p>
         </div>
@@ -539,7 +547,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         </p>
       )}
 
-      <p className="text-balance text-center text-xl font-semibold text-fg">
+      <p className="text-balance text-xl font-semibold leading-snug text-fg">
         {penal.prompt}
       </p>
 
@@ -557,16 +565,16 @@ export function PenalLive({ matchId }: PenalLiveProps) {
               onClick={() => onSelect(i)}
               disabled={disabled}
               aria-pressed={isSelected}
-              className={`flex items-center rounded-xl border px-4 py-3 text-left font-medium transition-colors disabled:cursor-not-allowed ${
+              className={`flex items-center rounded-[4px] border-2 border-ink px-4 py-3 text-left font-semibold transition-[background-color,color,transform,box-shadow] duration-100 disabled:cursor-not-allowed ${
                 isSelected
-                  ? "border-gold bg-gold/15 text-fg"
-                  : "border-border bg-bg-elevated text-fg hover:border-fg-subtle"
-              } ${disabled && !isSelected ? "opacity-50" : ""}`}
+                  ? "translate-x-[2px] translate-y-[2px] bg-ink text-bg shadow-press"
+                  : "bg-bg-raised text-fg shadow-card hover:bg-bg-overlay"
+              } ${disabled && !isSelected ? "opacity-45" : ""}`}
             >
               <span
-                className={`mr-3 font-mono ${isSelected ? "text-gold" : "text-fg-subtle"}`}
+                className={`mr-3 w-4 font-display text-xl font-black ${isSelected ? "text-bg" : "text-brand"}`}
               >
-                {i + 1}
+                {String.fromCharCode(65 + i)}
               </span>
               {option}
             </button>
@@ -586,7 +594,7 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         onBlur={() => setConfirmingAbandon(false)}
         disabled={abandoning}
         className={`mx-auto mt-2 text-xs font-medium transition-colors disabled:opacity-50 ${
-          confirmingAbandon ? "text-red-400" : "text-fg-subtle hover:text-fg-muted"
+          confirmingAbandon ? "font-bold text-brand-ink" : "text-fg-subtle underline-offset-2 hover:text-fg hover:underline"
         }`}
       >
         {abandoning
@@ -596,10 +604,11 @@ export function PenalLive({ matchId }: PenalLiveProps) {
             : "Abandonar"}
       </button>
       {abandonError && (
-        <p className="text-center text-xs text-danger">
+        <p className="text-center text-xs font-semibold text-brand-ink">
           No se pudo abandonar. Probá de nuevo.
         </p>
       )}
+      </div>
       </div>
     </>
   );

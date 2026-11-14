@@ -1,16 +1,16 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
-/** Superficie elevada del sistema (cards, paneles, shells). Reemplaza el `rounded-2xl border…`
- * copypasteado. `glass` para overlays del HUD; `raised` para destacar dentro de otra card. */
+/** Superficie del sistema: hoja de papel con borde de tinta y sombra offset de imprenta.
+ * `raised` = recuadro sin sombra para destacar dentro de otra card; `glass` = overlay sobre la
+ * escena 3D (papel translúcido); `bare` = sin piel. */
 export const cardVariants = cva("text-fg", {
   variants: {
     variant: {
-      default: "rounded-2xl border border-border bg-bg-elevated shadow-card",
-      raised: "rounded-2xl border border-ring bg-bg-raised shadow-card",
-      glass:
-        "rounded-2xl border border-white/10 bg-bg-elevated/60 shadow-card backdrop-blur-md",
-      bare: "rounded-2xl",
+      default: "rounded-[6px] border-2 border-ink bg-bg-elevated shadow-card",
+      raised: "rounded-[4px] border border-ink bg-bg-raised",
+      glass: "rounded-[6px] border-2 border-ink bg-bg-elevated/85 shadow-card backdrop-blur-sm",
+      bare: "rounded-[6px]",
     },
     padding: { none: "", sm: "p-4", md: "p-5", lg: "p-6" },
   },

@@ -50,7 +50,7 @@ function PenalDots({
         <span
           key={p.idx}
           title={`Penal ${p.idx}`}
-          className={`h-3 w-3 rounded-full ${p.scored ? "bg-success" : "bg-danger/60"}`}
+          className={`h-3 w-3 rounded-full border-2 ${p.scored ? "border-ink bg-ink" : "border-brand bg-transparent"}`}
         />
       ))}
     </span>
@@ -128,11 +128,11 @@ export function RunSummary({
           eliminado) quedan centrados parejo dentro del mismo contenedor max-w-md. */}
       <div className="flex flex-col items-center gap-2">
         {isChampion && <span className="mb-2 text-7xl drop-shadow">🏆</span>}
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-fg-subtle">
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
           {isChampion ? mode.championTitle : "Fin del torneo"}
         </span>
         <p
-          className={`font-display font-bold uppercase tracking-tight text-gold ${
+          className={`font-display font-extrabold uppercase tracking-tight text-brand ${
             isChampion ? "text-5xl" : "text-4xl"
           }`}
         >
@@ -171,7 +171,7 @@ export function RunSummary({
         <Button type="button" onClick={playAgain} disabled={busy} block size="lg">
           {busy ? "Buscando…" : "Jugar de nuevo"}
         </Button>
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
         {isGuest && (
           <Link
             href="/register"
@@ -179,7 +179,7 @@ export function RunSummary({
               variant: "outline",
               size: "lg",
               block: true,
-              className: "border-gold/50 text-gold hover:border-gold",
+              className: "border-brand/50 text-brand hover:border-brand",
             })}
           >
             Creá una cuenta para guardar tu progreso

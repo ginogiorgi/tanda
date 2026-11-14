@@ -14,7 +14,7 @@ const AvatarCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full w-full items-center justify-center text-sm text-white/40">
+      <div className="flex h-full w-full items-center justify-center text-sm text-fg-subtle">
         Cargando avatar…
       </div>
     ),

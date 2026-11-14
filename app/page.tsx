@@ -7,16 +7,8 @@ import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { isModeId, type ModeId } from "@/lib/modes";
-
-const ACCENTS = [
-  "bg-accent-blue",
-  "bg-accent-green",
-  "bg-accent-red",
-  "bg-accent-magenta",
-  "bg-accent-orange",
-  "bg-accent-teal",
-] as const;
 
 export default async function Home({
   searchParams,
@@ -50,27 +42,33 @@ export default async function Home({
   }
 
   return (
-    <main className="bg-pitch flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-16 text-center">
+    <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-16 text-center">
       <JsonLd />
       <div className="my-auto flex w-full flex-col items-center gap-8">
-      <div className="flex flex-col items-center gap-4">
-        <Eyebrow className="tracking-[0.3em]">Mundial · Trivia · Tiempo real</Eyebrow>
-        <h1 className="font-display text-7xl font-bold uppercase tracking-tight text-gold drop-shadow-[0_8px_30px_rgba(212,175,55,0.18)] sm:text-9xl">
-          TANDA
+      <div className="flex flex-col items-center gap-5">
+        <Eyebrow>Mundial · Fútbol argentino · En vivo</Eyebrow>
+        <h1 aria-label="Tanda">
+          <Wordmark className="text-[6.5rem] sm:text-[10rem]" />
         </h1>
+        {/* Filete de programa impreso: doble línea de tinta con la "edición" al medio. */}
+        <div className="flex w-full max-w-md items-center gap-3" aria-hidden>
+          <span className="h-[3px] flex-1 bg-ink" />
+          <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] text-fg">
+            Trivia de penales
+          </span>
+          <span className="h-[3px] flex-1 bg-ink" />
+        </div>
         <p className="max-w-md text-balance text-base text-fg-muted sm:text-lg">
-          Cada pregunta es un penal. Respondé bien y más rápido que tu rival para
-          meter el gol o atajar. 48 selecciones, una sola copa.
+          Cada pregunta es un penal. Respondé bien y más rápido que tu rival para meter el gol o
+          atajar. Mundial o fútbol argentino: una sola copa.
         </p>
       </div>
 
-      <div className="flex items-center gap-2" aria-hidden>
-        {ACCENTS.map((accent) => (
-          <span key={accent} className={`h-2.5 w-2.5 rounded-full ${accent}`} />
-        ))}
-      </div>
-
-      {avisoMsg && <p className="text-sm text-danger">{avisoMsg}</p>}
+      {avisoMsg && (
+        <p className="rounded-[4px] border-2 border-ink bg-bg-elevated px-3 py-2 text-sm font-semibold text-brand-ink">
+          {avisoMsg}
+        </p>
+      )}
 
       {username ? (
         <div className="flex flex-col items-center gap-6">
@@ -78,11 +76,11 @@ export default async function Home({
             {isGuest ? (
               <>
                 Estás jugando como{" "}
-                <span className="font-semibold text-gold">invitado</span>
+                <span className="font-semibold text-brand-ink">invitado</span>
               </>
             ) : (
               <>
-                Hola, <span className="font-semibold text-gold">{username}</span> 👋
+                Hola, <span className="font-semibold text-brand-ink">{username}</span> 👋
               </>
             )}
           </p>
@@ -139,7 +137,8 @@ export default async function Home({
 
       <p className="mt-4 max-w-xs text-balance text-[11px] leading-relaxed text-fg-subtle">
         Juego original e independiente. No está afiliado, asociado ni autorizado por la FIFA ni por
-        ninguna organización futbolística. Naciones y selecciones a modo ilustrativo.
+        ninguna organización futbolística. Selecciones y clubes a modo ilustrativo; los escudos son
+        diseños originales.
       </p>
       </div>
     </main>

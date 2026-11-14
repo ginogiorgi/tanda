@@ -301,7 +301,7 @@ export function TournamentLive({
       {everPlayed && (
         <div className="fade-in relative z-10 flex items-center gap-2 rounded-full border border-border bg-bg-elevated/80 px-4 py-1.5 text-xs font-medium text-fg-muted backdrop-blur-sm">
           <span className="flex gap-1" aria-hidden>
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
           </span>
           Esperando que todos terminen su tanda…
         </div>

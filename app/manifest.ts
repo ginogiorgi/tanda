@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Trivia de Mundiales en tiempo real. Cada pregunta es un penal: respondé bien y más rápido para meter el gol.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0a0a0a",
-    theme_color: "#0a0a0a",
+    background_color: "#ede9df",
+    theme_color: "#ede9df",
     lang: "es-AR",
     categories: ["games", "sports", "trivia"],
     icons: [

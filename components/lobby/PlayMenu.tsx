@@ -71,7 +71,7 @@ export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
             size="lg"
             aria-expanded={picking === action}
             aria-controls={`modes-${action}`}
-            className={action === "play" ? "h-14 text-lg font-bold" : undefined}
+            className={action === "play" ? "h-14 text-2xl" : undefined}
           >
             {ACTION_LABEL[action].title}
           </Button>
@@ -92,12 +92,14 @@ export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
                     type="button"
                     onClick={() => start(action, mode.id)}
                     disabled={!enabled || busy !== null}
-                    className="flex min-h-24 flex-col items-start justify-between gap-2 rounded-xl border border-border bg-bg-elevated p-3 text-left transition-colors hover:border-gold/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group relative flex min-h-26 flex-col items-start justify-between gap-2 overflow-hidden rounded-[4px] border-2 border-ink bg-bg-elevated p-3 pt-4 text-left shadow-card transition-colors hover:bg-ink hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-bg-elevated disabled:hover:text-fg"
                   >
-                    <span className="font-display text-lg font-bold uppercase leading-none text-fg">
+                    {/* Filete superior con el color del modo (sub-identidad). */}
+                    <span aria-hidden className={`absolute inset-x-0 top-0 h-1.5 ${mode.swatch}`} />
+                    <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">
                       {busy === key ? ACTION_LABEL[action].busy : mode.name}
                     </span>
-                    <span className="text-[11px] leading-snug text-fg-muted">
+                    <span className="text-[11px] font-medium leading-snug opacity-75">
                       {enabled ? mode.tagline : "Próximamente"}
                     </span>
                   </button>
@@ -133,7 +135,7 @@ export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
         </Button>
       </form>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
     </div>
   );
 }
