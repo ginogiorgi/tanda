@@ -54,6 +54,14 @@ competencia terminada (tabla `awards`).
      `participant_brief` (`avatar #>> '{top,color}'`) y default `'{}'`. Plan en sección C del plan file;
      migración SQL futura `20261123000003_avatar_v2` (verificar número libre vs otras ramas). Orden: front
      que lee v1+v2 primero, después la migración con backup `profiles_avatar_backup`.
+  3. **Pedido de Gino (14/11, va en F5 o antes):** al abrir penal/creador aparece primero el muñeco procedural
+     viejo (`AvatarModel`) y después el GLB → **borrar `AvatarModel` por completo** (y sus tests/usos en
+     `GlbAvatar`, `PenalScene`, `AvatarCanvas`, `/dev/*`), precargar el GLB antes de mostrar la escena
+     (Suspense con `preloadGlbBodies`), mientras carga un **placeholder neutro** (skeleton/loader, nunca otro
+     muñeco) y si el GLB falla un **estado de error claro** (error boundary). Sumar pasada de **código muerto/
+     legado**: knip, componentes, assets sin uso, compat temporales (`divisions: []` en `get_profile_stats` +
+     tipo, `placement_left` de `ranked_players` → migración de limpieza; actualizar CLAUDE.md que menciona
+     `AvatarModel` como fallback). Deploy a prod como las demás fases.
 
 ## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
 Entra todo: avatar-glb, ideas-avatar, post-6b, ideas-questions, e2e-flow, ideas-e2e, fix-guest,
