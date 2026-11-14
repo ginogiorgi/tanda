@@ -22,6 +22,7 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import { JOINTS } from "@/lib/avatar/rig";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
 import { attachCrest, CREST_NAME } from "./glbCrest";
+import { attachShoes, setShoes } from "./glbShoes";
 import { createGlbRig, driveGlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y, type RigRegister } from "./rigPose";
 
@@ -94,6 +95,8 @@ const BODY_HEIGHT = 1.85;
 const WAIST_Y = 1.02;
 /** Tobillo: botín abajo (pie hasta ≈0.11, pantorrilla desde ≈0.06). */
 const ANKLE_Y = 0.1;
+/** El pie descalzo queda adentro del zapato (`glbShoes`): se descarta para que no asomen los dedos. */
+const FOOT_HIDE_Y = 0.085;
 /** Por encima de esto y con |x| > manga es brazo (el torso no pasa |x| 0.21 ahí). */
 const ARM_Y = 1.36;
 
@@ -194,6 +197,7 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
           // Región por planos en el bind (T-pose): 0 piel (textura), 1 remera, 2 pantalón, 3 botín.
           "float ax = abs(vBind.x);",
           "int region = 0;",
+          `if (vBind.y < ${FOOT_HIDE_Y.toFixed(3)}) discard;`,
           `if (vBind.y < ${ANKLE_Y.toFixed(3)}) region = 3;`,
           `else if (vBind.y < ${WAIST_Y.toFixed(3)}) region = vBind.y < uHemY ? 0 : 2;`,
           // brazos (solo existen arriba de y≈1.39): manga hasta uSleeveX, después piel
@@ -254,6 +258,7 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
     if (buzzed instanceof THREE.SkinnedMesh) {
       attachCrest(buzzed, new THREE.MeshStandardMaterial({ roughness: 0.85, flatShading: true }));
     }
+    const bodies: THREE.SkinnedMesh[] = [];
     scene.traverse((obj) => {
       if (!(obj instanceof THREE.SkinnedMesh)) return;
       obj.frustumCulled = false; // el bounding box de bind no sigue la pose (patada, estirada)
@@ -262,8 +267,11 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
       if (mat.name.startsWith("MI_Superhero")) {
         prepareBody(obj);
         obj.material = kitMaterial(mat, uniforms);
+        bodies.push(obj);
       }
     });
+    // Fuera del traverse: agrega grupos a la escena.
+    for (const body of bodies) attachShoes(scene, body);
     return { scene, glbRig: createGlbRig(scene) };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
   }, [gltf, uniforms]);
@@ -292,6 +300,8 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
       }
     });
   }, [scene, hairName, config.hair.part, config.hair.color]);
+
+  useMemo(() => setShoes(scene, config.shoes.part, config.shoes.color), [scene, config.shoes.part, config.shoes.color]);
 
   // Pivotes fantasma para `applyPose` (no están en la escena; solo guardan la pose).
   const proxies = useMemo<ProxyRig>(() => {
