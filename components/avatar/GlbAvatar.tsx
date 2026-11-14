@@ -21,6 +21,7 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { JOINTS } from "@/lib/avatar/rig";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
+import { attachCrest, CREST_NAME } from "./glbCrest";
 import { createGlbRig, driveGlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y, type RigRegister } from "./rigPose";
 
@@ -29,20 +30,30 @@ const URL: Record<BodyType, string> = {
   female: "/models/avatar/avatar-female.glb",
 };
 
-/** `hair.part` → malla del pack. `mohawk` usa el rapado (la cresta propia queda pendiente). */
+/** `hair.part` → malla del pack. `mohawk` = rapado + cresta generada (`glbCrest`). */
 const HAIR_MESH: Record<string, string | null> = {
   none: null,
   short: "Hair_SimpleParted",
   long: "Hair_Long",
   bun: "Hair_Buns",
-  mohawk: "Hair_Buzzed",
 };
 const HAIR_MESHES = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"];
 
+/** El rapado está modelado por cuerpo (el de hombre flota sobre la cabeza de la mujer). */
+function buzzedMesh(body: BodyType): string {
+  return body === "female" ? "Hair_BuzzedFemale" : "Hair_Buzzed";
+}
+
 function hairMesh(part: string, body: BodyType): string | null {
-  if (part === "buzz") return body === "female" ? "Hair_BuzzedFemale" : "Hair_Buzzed";
+  if (part === "buzz" || part === "mohawk") return buzzedMesh(body);
   return HAIR_MESH[part] ?? null;
 }
+
+/**
+ * La textura del pelo es gris (~0.6) y se tiñe multiplicando: la cresta, sin textura, usa el color
+ * atenuado para que pegue con el rapado.
+ */
+const CREST_SHADE = 0.62;
 
 /** Mitad de la altura (~1.85 m) para centrar en el creador; en la escena va `grounded`. */
 const HALF_HEIGHT = 0.92;
@@ -238,6 +249,11 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   const { scene, glbRig } = useMemo(() => {
     const scene = cloneSkinned(gltf.scene);
     scene.updateMatrixWorld(true);
+    // La cresta se arma con el clon en reposo (antes de que el rig toque los huesos).
+    const buzzed = scene.getObjectByName(buzzedMesh(config.bodyType));
+    if (buzzed instanceof THREE.SkinnedMesh) {
+      attachCrest(buzzed, new THREE.MeshStandardMaterial({ roughness: 0.85, flatShading: true }));
+    }
     scene.traverse((obj) => {
       if (!(obj instanceof THREE.SkinnedMesh)) return;
       obj.frustumCulled = false; // el bounding box de bind no sigue la pose (patada, estirada)
@@ -249,6 +265,7 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
       }
     });
     return { scene, glbRig: createGlbRig(scene) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
   }, [gltf, uniforms]);
 
   // Peinado visible + tinte (material propio del clon, compartido por pelo y cejas).
@@ -256,6 +273,13 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   useMemo(() => {
     const tinted = new Map<THREE.Material, THREE.MeshStandardMaterial>();
     scene.traverse((obj) => {
+      if (obj.name === CREST_NAME && obj instanceof THREE.Mesh) {
+        obj.visible = config.hair.part === "mohawk";
+        if (obj.material instanceof THREE.MeshStandardMaterial) {
+          obj.material.color.set(config.hair.color).multiplyScalar(CREST_SHADE);
+        }
+        return;
+      }
       if (!(obj instanceof THREE.SkinnedMesh)) return;
       if (HAIR_MESHES.includes(obj.name)) obj.visible = obj.name === hairName;
       const mat = obj.material;
@@ -267,7 +291,7 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
         obj.material = own;
       }
     });
-  }, [scene, hairName, config.hair.color]);
+  }, [scene, hairName, config.hair.part, config.hair.color]);
 
   // Pivotes fantasma para `applyPose` (no están en la escena; solo guardan la pose).
   const proxies = useMemo<ProxyRig>(() => {
