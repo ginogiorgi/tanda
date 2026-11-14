@@ -64,7 +64,10 @@ wip/avatar-glb && git push` (deploy). El `AvatarModel` procedural queda solo com
   dev mode, SwiftShader): `templateOf` 10–22 ms a CPU 1× y **40–53 ms a CPU 4×** (~Android gama media),
   `instantiate` por avatar 1–6 ms, sin long tasks; GLB 673/728 KB (~0,6 s c/u en 4G). Gotcha: `useLoader`
   con array es OTRA clave de caché que con un URL → parseaba dos veces; va un `useLoader` por URL. Falta
-  medir en un teléfono real (shader + primer frame con GPU de verdad).
+  medir en un teléfono real (shader + primer frame con GPU de verdad). Code review: `ErrorFallback`
+  (error boundary) en la precarga (si falla el GLB del otro cuerpo, se ignora) y en `Avatar3D` (si
+  falla el GLB visible, queda el procedural en vez de caerse el canvas — pasaba ANTES de esta rama, en
+  el creador y en el penal). Probado con el GLB femenino bloqueado: 8/8 canvas de `/dev/avatar` vivos.
 - ✅ **Cresta del mohicano** (`components/avatar/glbCrest.ts`, 14/11): 7 púas low-poly generadas sobre el
   perfil sagital del rapado del cuerpo, colgadas del hueso `Head`, teñidas con el pelo. Fix: el rapado
   de hombre flotaba sobre la cabeza de la mujer (ahora cada cuerpo usa el suyo). Galería: mujer con
