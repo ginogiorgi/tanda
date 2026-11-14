@@ -16,13 +16,13 @@ competencia terminada (tabla `awards`).
   `auth.getUser()`), route groups `(app)`/`(game)`, `ScreenHeader` + mapa `lib/nav/routes.ts` (test), `loading.tsx`
   por grupo, footer solo en el sitio, `useNav()` (lint prohíbe `useRouter`), salir de sala/cancelar cola sin
   esperar el RPC, "Tabla" fuera de la cola. Reglas en `docs/DESIGN-RULES.md`.
-- **F2 ✅** (`e350fd8`) migraciones `20261122000000_phase_close` (fase cierra cuando actuaron todos o al deadline,
-  todos los modos) + `20261122000001_ranked_k32_window` (ventana ±300/±600 oculta, K=32 fijo, replay con backup
+- **F2 ✅** (`e350fd8`) migraciones `20261123000000_phase_close` (fase cierra cuando actuaron todos o al deadline,
+  todos los modos) + `20261123000001_ranked_k32_window` (ventana ±300/±600 oculta, K=32 fijo, replay con backup
   `ranked_players_backup_1411`: prod esperado Rosario 1516 / chese890 1484). Tests `phase_close.test.ts` + propiedades.
 - **F3 ✅** (`0bf6f74`) `/jugar` (partida rápida + ranked + crear sala + código; padre de sala y cola), home con
   JUGAR como única primaria (sin volanta, sin sello, sin Tabla/Salir), perfil con ficha de liga (posición + Ver
   tabla). Regla "una primaria por pantalla": `e2e/_primary.ts` (cuenta botones rojos, incluye hover pegado de touch).
-- **F3b ✅** (`818f2b0`) migración `20261122000002_awards`: tabla `awards` unique por (usuario, competencia);
+- **F3b ✅** (`818f2b0`) migración `20261123000002_awards`: tabla `awards` unique por (usuario, competencia);
   constraint trigger diferido al pasar el torneo a `finished`; división final al cerrar temporada
   (`ranked_season_results`); backfill; `get_profile_stats` lee solo `awards` (+ `current` = temporada en juego;
   `divisions: []` queda por el front viejo → dropear en la próxima). Tests `awards.test.ts` (a–e + torneo real).
