@@ -1,5 +1,28 @@
 # TODO — TANDA ⚽
 
+## 🧾 Resumen final de la tanda autónoma (14/11) — todo en ramas `wip/`, NADA en main/prod
+Ramas (todas sobre main, sin push). Orden de merge sugerido y qué trae cada una:
+1. `wip/avatar-glb` — Fase 6b (personajes GLB, cresta, botines).
+2. `wip/ideas-avatar` (sobre 1) — precarga de los dos GLB en el creador + **error boundary**: si un GLB
+   no carga, queda el avatar procedural en vez de caerse el canvas (pasaba en creador y penal).
+3. `wip/post-6b` — micro-labels 12px, 100 preguntas nuevas verificadas. Migración `…18…`.
+4. `wip/ideas-questions` (sobre 3) — filtraciones lejanas en temas + pirámide de dificultad wc.
+   Migración `…21…` (después de la `…18…`). Revisar las 50 recalibraciones de dificultad.
+5. `wip/e2e-flow` — e2e invitado→sala→partido contra Supabase local + grants explícitos. Migración `…19…`
+   (**antes, mirar los grants reales de prod**: idea 1, query más abajo).
+6. `wip/ideas-e2e` (sobre 5) — fix de 16avos mismo grupo (bug real en prod, ~2% de torneos; migración
+   `…20…`), e2e ranked, e2e campeón (`E2E_SLOW=1`), job de CI `e2e-flow` (sin probar en GitHub).
+7. `wip/fix-guest` (sobre 6) — **bug "Entrando…" del invitado (puede pegar en prod)**: 401 PGRST303
+   transitorio → el home caía al landing con el botón colgado. Fix en 3 capas (home decide por `user`,
+   reintento de PGRST303, `GuestButton` en transición y sin crear un 2º invitado). Si se quiere antes que
+   el resto: los cambios de `app/page.tsx`, `components/lobby/GuestButton.tsx` y `lib/supabase/*` no
+   dependen de 5/6 (cherry-pick de `a00ef87` + `daa9b31`, sin `e2e/flow/guest.spec.ts`).
+Verde en cada rama (typecheck · lint · knip · unit · build); test:db en las que tocan SQL; e2e de flujo
+completo ✓ (game 1,5 min · ranked 2,9 min · campeón 11,2 min · invitado ×20). Code review medium de las
+ideas-* + fix-guest: 9 hallazgos, 8 arreglados; el de reordenar `questions:check` era al revés (lo medí:
+0,54 s → 1,45 s) y quedó documentado. Para Gino: aprobar migraciones `…18…`–`…21…` en prod, idea 1
+(grants de prod), 9 (CSP enforcing) y 10 (deps mayores).
+
 ## Estado: TANDA 2.0 en curso — Fases 0, 1, 2, 3, 4 y 4b HECHAS (rebrand + Modo Argentina + Ranked en prod)
 
 Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
