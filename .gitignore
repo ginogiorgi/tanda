@@ -46,4 +46,5 @@ __pycache__/
 
 # playwright
 /test-results/
+/test-results-flow/
 /playwright-report/

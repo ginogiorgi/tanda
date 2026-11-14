@@ -1,5 +1,16 @@
 # TODO — TANDA ⚽
 
+## 🐛 Causa real del flake "Próximamente" (14/11) — rama `wip/fix-iat-dedupe` (sobre main), SIN deployar
+Los logs de Kong del stack local mostraron la firma: tras el sign-in del invitado, dos renders de la home;
+`get_active_tournament` (POST) recibió 401 PGRST303 y su reintento dio 200, pero `game_modes` (GET) tuvo
+un solo 401 y **ningún** reintento. Causa: en Server Components Next memoiza los `fetch` GET por
+URL+headers (`next/dist/server/lib/dedupe-fetch.js`) → el reintento de `withIatRetry` con los mismos
+argumentos devolvía el 401 cacheado sin salir a la red. Afectaba a todo GET de PostgREST en el render
+(`game_modes`, `profiles`…) y **también en prod**. Fix: el reintento pasa un `signal` propio (opt-out
+documentado de esa memoización). Test que imita el dedupe: rojo sin fix, verde con fix. Verde completo
+(151 unit · build · 78 db · flow game/guest/ranked · smoke 14). Independiente de las deps: se puede
+mergear sola.
+
 ## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
 Entra todo: avatar-glb, ideas-avatar, post-6b, ideas-questions, e2e-flow, ideas-e2e, fix-guest,
 fix-modes-flake (vía `wip/integration`) + **CSP enforced** (0 violaciones verificadas). DB de prod ya
