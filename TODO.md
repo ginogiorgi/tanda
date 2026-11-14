@@ -9,6 +9,23 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 > **DB de prod:** hasta `20261115000000_ranked` aplicada por MCP, ledger reconciliado, cron
 > `tanda-ranked` (2s) activo, advisors = lo esperado por diseño.
 
+## ⏸ Post-6b — rama `wip/post-6b` (desde main, 14/11), falta revisión + merge + deploy
+
+Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck · lint · knip · build ·
+145 unit · 76 db`.
+- **Micro-rótulos 10px → 12px** (`text-xs`) donde entran: perfil (divisiones/copas), bracket (fases, Pts),
+  ranked (Si ganás/Si perdés, rangos de la cola), ranking (línea secundaria, tracking 0.04em). Queda en
+  10px el rótulo central del HUD del penal ("PENAL 3 DE 5" no entra a 12px en 375px). Revisado en
+  `/dev/kit` a 375px.
+- **100 "¿De qué país es X?" → partidos y finales 1930–2022** (`data/questions/worldcup.json`, mismas keys;
+  quedan 27 icónicas/curiosas). `players_records` 37% → 23%. Sin hechos de 2026. `questions:check` ✓;
+  ⚠ pirámide: easy 182 < medium 225 (las que salieron eran casi todas fáciles; la dificultad solo ordena
+  preferencias con fallback, no rompe nada). Migración `20261118000000_questions_matches` (sync generado).
+
+**Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
+aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
+aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
+
 ### Hecho
 - **Fase 0** — footer "Gino Giorgi" → página de creador; favicon real (svg/ico/apple/PWA).
 - **Fase 1** — deps al día; wipe total de prod (0 usuarios); squash a baseline v2; catálogo
@@ -29,23 +46,6 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   (generador `scripts/crests/build_crests.py <BigShouldersDisplay-Black.ttf>`), 700 preguntas
   `data/questions/arg.json` (269/184/165/82), migración `20261114000002_seed_arg_questions`
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
-
-## ⏸ Post-6b — rama `wip/post-6b` (desde main, 14/11), falta revisión + merge + deploy
-
-Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck · lint · knip · build ·
-145 unit · 76 db`.
-- **Micro-rótulos 10px → 12px** (`text-xs`) donde entran: perfil (divisiones/copas), bracket (fases, Pts),
-  ranked (Si ganás/Si perdés, rangos de la cola), ranking (línea secundaria, tracking 0.04em). Queda en
-  10px el rótulo central del HUD del penal ("PENAL 3 DE 5" no entra a 12px en 375px). Revisado en
-  `/dev/kit` a 375px.
-- **100 "¿De qué país es X?" → partidos y finales 1930–2022** (`data/questions/worldcup.json`, mismas keys;
-  quedan 27 icónicas/curiosas). `players_records` 37% → 23%. Sin hechos de 2026. `questions:check` ✓;
-  ⚠ pirámide: easy 182 < medium 225 (las que salieron eran casi todas fáciles; la dificultad solo ordena
-  preferencias con fallback, no rompe nada). Migración `20261118000000_questions_matches` (sync generado).
-
-**Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
-aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
-aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
