@@ -58,6 +58,13 @@ penal (idle, SAVE 2, GOAL 1) sin errores de consola. Nota: en este shell `pnpm` 
 
 **Próximo paso:** que Gino mire `/dev/avatar` y `/dev/penal` (`pnpm dev`) → `git checkout main && git merge
 wip/avatar-glb && git push` (deploy). El `AvatarModel` procedural queda solo como fallback.
+- **Rama `wip/ideas-avatar` (sobre avatar-glb, idea 7):** el creador precarga los dos GLB y arma sus
+  templates de antemano (`WarmGlbBodies` en `AvatarCanvas`, Suspense propio sin fallback) → cambiar de
+  cuerpo ya no cae al avatar procedural ni paga `templateOf` en el tap. Medido headless (390×844 @2x,
+  dev mode, SwiftShader): `templateOf` 10–22 ms a CPU 1× y **40–53 ms a CPU 4×** (~Android gama media),
+  `instantiate` por avatar 1–6 ms, sin long tasks; GLB 673/728 KB (~0,6 s c/u en 4G). Gotcha: `useLoader`
+  con array es OTRA clave de caché que con un URL → parseaba dos veces; va un `useLoader` por URL. Falta
+  medir en un teléfono real (shader + primer frame con GPU de verdad).
 - ✅ **Cresta del mohicano** (`components/avatar/glbCrest.ts`, 14/11): 7 púas low-poly generadas sobre el
   perfil sagital del rapado del cuerpo, colgadas del hueso `Head`, teñidas con el pelo. Fix: el rapado
   de hombre flotaba sobre la cabeza de la mujer (ahora cada cuerpo usa el suyo). Galería: mujer con
