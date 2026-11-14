@@ -22,6 +22,17 @@ Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck �
   ⚠ pirámide: easy 182 < medium 225 (las que salieron eran casi todas fáciles; la dificultad solo ordena
   preferencias con fallback, no rompe nada). Migración `20261118000000_questions_matches` (sync generado).
 
+- **Verificación contra fuentes (14/11, WebSearch):** chequeadas las 100 (resultado, año, sede,
+  goleadores). Todas correctas; solo se reescribió **wc-507** (redacción ambigua → "¿Contra qué selección le
+  anularon un gol a Francia en 1982…" → Kuwait). Hechos menos obvios confirmados con fuente: dos pelotas en
+  la final 1930; Garrincha expulsado y habilitado 1962; Sanon cortó los 1.142' de Zoff (1974); hat-trick
+  de László Kiss en 7' (1982); jeque de Kuwait (1982); Núremberg 2006 (4 rojas/16 amarillas); Suiza 2006
+  sin goles en contra; 16 atajadas de Howard (2014); México 7 octavos seguidos (1994–2018); España 1-0 en
+  todo el mata-mata 2010; Mbappé 2 goles en 97" (2022); Molina–Messi vs Países Bajos (2022); Zúñiga–Neymar
+  (2014); panenka de Abreu (2010). De paso se confirmaron con múltiples fuentes **wc-504** (España 1-0
+  Argentina, Ferran Torres 106'), **wc-621** (Inglaterra 3ª, 6-4 a Francia) y **wc-622** (Paraguay 4-3 por
+  penales a Alemania, 16avos) → ya no hace falta que Gino las confirme.
+
 **Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
 aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
 aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
@@ -49,13 +60,12 @@ aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) 
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
-  gusto/tono. Las 100 nuevas de partidos/finales (post-6b) son de memoria del modelo sobre hechos muy
-  documentados (1930–2022); conviene una pasada rápida.
+  gusto/tono. Las 100 nuevas de partidos/finales (post-6b) ya están verificadas contra fuentes (ver
+  sección post-6b); queda solo la pasada de gusto.
 - Datos del Mundial 2026 tomados de Wikipedia/ESPN (jul 2026): España campeón 1-0 a Argentina en el
   alargue (Ferran Torres), Mbappé Bota de Oro (10) y máximo goleador histórico (22), Messi 21,
   Kane 14, Deschamps 27 partidos como DT, 308 goles, Paraguay eliminó a Alemania por penales,
-  Inglaterra 3ª. Recomendación: que Gino confirme wc-622 (Paraguay–Alemania) y wc-621 (3º puesto),
-  que tuvieron una sola fuente.
+  Inglaterra 3ª. wc-621/622/504 reconfirmadas con varias fuentes (14/11).
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
 - **3D con GLB (Fase 6 del plan)**: no bajé assets ni instalé Blender (descargar requiere tu OK
   explícito). Se hizo la Fase 6 **solo con código** (rig propio articulado, ver abajo). Recomendación:

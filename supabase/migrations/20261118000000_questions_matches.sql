@@ -566,7 +566,7 @@ values
   ('worldcup', 'wc-504', 'champions', 'easy', '¿Qué selección ganó el Mundial 2026?', '["España","Argentina","Francia"]'::jsonb, 0, 'wc-502'),
   ('worldcup', 'wc-505', 'upsets', 'hard', '¿Qué selección fue la única que le ganó a Argentina en el Mundial 1978?', '["Brasil","Italia","Polonia"]'::jsonb, 1, 'wc-003'),
   ('worldcup', 'wc-506', 'scorers', 'medium', '¿Qué italiano gritó su gol en la final de 1982 con un festejo que quedó en la historia?', '["Alessandro Altobelli","Marco Tardelli","Bruno Conti"]'::jsonb, 1, null),
-  ('worldcup', 'wc-507', 'trivia', 'very_hard', '¿A qué selección le anularon un gol francés en 1982 tras la protesta de un jeque que bajó al campo?', '["Kuwait","Arabia Saudita","Irak"]'::jsonb, 0, null),
+  ('worldcup', 'wc-507', 'trivia', 'very_hard', '¿Contra qué selección le anularon un gol a Francia en 1982 tras la protesta de un jeque que bajó al campo?', '["Kuwait","Arabia Saudita","Irak"]'::jsonb, 0, null),
   ('worldcup', 'wc-508', 'trivia', 'medium', '¿Ante qué selección fue expulsado Diego Maradona en el Mundial 1982?', '["Italia","Bélgica","Brasil"]'::jsonb, 2, null),
   ('worldcup', 'wc-509', 'upsets', 'hard', '¿Qué selección le ganó 1-0 a Argentina, campeona vigente, en el partido inaugural de 1982?', '["Hungría","El Salvador","Bélgica"]'::jsonb, 2, null),
   ('worldcup', 'wc-510', 'scorers', 'very_hard', '¿Qué húngaro hizo un hat-trick en siete minutos tras entrar desde el banco en 1982?', '["László Kiss","Tibor Nyilasi","Lázár Szentes"]'::jsonb, 0, null),
