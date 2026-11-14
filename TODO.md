@@ -1,13 +1,13 @@
 # TODO — TANDA ⚽
 
-## Estado: TANDA 2.0 en curso — Fases 0, 1, 2, 3 y 4 HECHAS (rebrand + Modo Argentina en prod)
+## Estado: TANDA 2.0 en curso — Fases 0, 1, 2, 3, 4 y 4b HECHAS (rebrand + Modo Argentina + Ranked en prod)
 
 Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
 a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 
-> **Verde local completo:** `typecheck · lint · knip · build · 119 unit · 63 db` (incluye e2e AR).
-> **DB de prod:** `20261114000000_game_modes` + `20261114000001_seed_catalog_modes` aplicadas por
-> MCP, ledger reconciliado, advisors = lo esperado por diseño.
+> **Verde local completo:** `typecheck · lint · knip · build · 132 unit · 74 db` (incluye e2e AR + ranked).
+> **DB de prod:** hasta `20261115000000_ranked` aplicada por MCP, ledger reconciliado, cron
+> `tanda-ranked` (2s) activo, advisors = lo esperado por diseño.
 
 ### Hecho
 - **Fase 0** — footer "Gino Giorgi" → página de creador; favicon real (svg/ico/apple/PWA).
@@ -43,13 +43,26 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   bracket/resultados/perfil/avatar/404/error, ícono + OG nuevos, kit visual `/dev/kit`, `CLAUDE.md` con
   reglas de marca. Pendiente menor: escena 3D sigue oscura (se rehace en Fase 6).
 
+- **Fase 4b** — **Ranked 1v1 en prod**:
+  - Motor `lib/engine/ranked.ts` (Elo K64 ubicación/K32, piso ±4, divisiones Potrero→Leyenda, escudo
+    de 3 derrotas, reset de temporada, dificultad por nivel) + port SQL con paridad.
+  - DB `20261115000000_ranked`: `ranked_{seasons,players,season_results,queue,matches}` (RLS sin
+    policies, todo por RPC), cola `ranked_enqueue/poll/cancel` (lock advisory, ventana ±100→±250→todos
+    a los 10/20s, latido 8s, purga 15s) + backstop `ranked_tick` por pg_cron. Partido = torneo
+    `ranked` (game_modes inactivo → no entra por quick_play) con 1 match `final`; settle idempotente
+    por trigger al terminar; abandonar = forfeit inmediato; preguntas de todos los bancos activos.
+    También versiona el trigger `on_auth_user_created` (estaba solo en prod).
+  - Front: card Ranked en Jugar, `/ranked` (cola), `/partido` → `RankedLive` (cara a cara con
+    "si ganás/si perdés", tanda, resultado con Δ/ascenso/escudo/"Otra ranked"), `/ranking` (top 50 +
+    tu puesto), botón Tabla en el home, perfil con 3 filas (divisiones + copas Mundial/AR).
+  - Escudos de división y copas: `scripts/brand/build_divisions.py` → `public/crests/div/`, `public/cups/`.
+  - Tests: `lib/engine/ranked.test.ts`, `supabase/tests/ranked.test.ts`.
+  - **Falta probar con 2 personas reales en prod** (Gino + JM10): cola → partido → puntos.
+
 ### Próximo (en orden)
-1. **Fase 4b — Ranked 1v1** (plan completo en el archivo de plan: Elo 1500, divisiones Potrero…Leyenda,
-   cola ±100→±250→todos a los 10/20s, solo humanos, invitados sí, temporadas Apertura/Clausura, botón
-   Tabla, perfil con 3 filas de estadísticas).
-2. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
-3. **Fase 5b** — verificar datos de las 1400 preguntas.
-4. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
+1. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+2. **Fase 5b** — verificar datos de las 1400 preguntas.
+3. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
 
 ---
 

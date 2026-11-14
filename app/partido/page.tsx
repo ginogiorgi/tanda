@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TournamentLive } from "@/components/penal/TournamentLive";
+import { RankedLive } from "@/components/ranked/RankedLive";
 
 // Privada y por usuario → fuera del índice (D2; robots.txt ya la bloquea, esto es el refuerzo a nivel meta).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -20,17 +21,18 @@ export default async function PartidoPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // Ranked (Fase 4b) usa el mismo stack pero su propia pantalla (cara a cara + puntos de liga).
   const { data } = await supabase.rpc("get_active_tournament");
-  const active = data as { tournament_id: string } | null;
-  if (!active?.tournament_id) redirect("/?aviso=no_match");
+  if (!data?.tournament_id) redirect("/?aviso=no_match");
 
   return (
     <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-12">
       <div className="my-auto flex w-full flex-col items-center gap-6">
-        <TournamentLive
-          tournamentId={active.tournament_id}
-          isGuest={user.is_anonymous === true}
-        />
+        {data.mode_id === "ranked" ? (
+          <RankedLive tournamentId={data.tournament_id} />
+        ) : (
+          <TournamentLive tournamentId={data.tournament_id} isGuest={user.is_anonymous === true} />
+        )}
       </div>
     </main>
   );

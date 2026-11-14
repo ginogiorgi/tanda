@@ -19,6 +19,31 @@ import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { HistoryEntryCard } from "@/components/profile/HistoryEntryCard";
 import { buildBracketView, type BracketSnapshot, type BracketTeam } from "@/lib/bracket/bracket";
 import type { KitPattern, ParticipantBrief, ScoreLivePayload } from "@/lib/realtime/score";
+import { DivisionProgress } from "@/components/ranked/DivisionProgress";
+import { RankedResult } from "@/components/ranked/RankedResult";
+import { ProfileStatsRows } from "@/components/profile/ProfileStatsRows";
+import type { RankedMatchView } from "@/lib/ranked/types";
+
+const RANKED_VIEW: RankedMatchView = {
+  tournament_id: "t-rk",
+  season_id: "clausura-2026",
+  status: "finished",
+  starts_at: null,
+  server_now: "2026-11-13T00:00:00Z",
+  settled: true,
+  won: true,
+  my_score: 4,
+  opp_score: 3,
+  me: {
+    participant_id: "p1",
+    username: "gino",
+    avatar: {},
+    rating: 1588,
+    stakes: { win: 18, loss: -14 },
+    result: { delta: 18, rating: 1606, promoted: true, demoted: false, shield_saved: false, shield: 3, placement_left: 0 },
+  },
+  opp: { participant_id: "p2", username: "jm10", avatar: {}, rating: 1640 },
+};
 
 /**
  * Kit visual de desarrollo (rebrand "B · Programa"): todas las primitivas y pantallas clave con datos de
@@ -180,6 +205,31 @@ export default function KitPage() {
       <section className="flex w-full max-w-md flex-col gap-4">
         <SectionTitle>Jugar</SectionTitle>
         <PlayMenu activeModes={["worldcup", "arg"]} />
+      </section>
+
+      <section className="flex w-full max-w-md flex-col gap-4">
+        <SectionTitle>Ranked</SectionTitle>
+        <Card className="flex flex-col gap-4">
+          <DivisionProgress rating={1525} placementLeft={2} />
+          <DivisionProgress rating={1712} shield={2} compact />
+        </Card>
+        <RankedResult view={RANKED_VIEW} result={RANKED_VIEW.me.result!} />
+        <Card>
+          <ProfileStatsRows
+            stats={{
+              divisions: [
+                { id: "potrero", season_id: "clausura-2026" },
+                { id: "barrio", season_id: "clausura-2026" },
+                { id: "ascenso", season_id: "clausura-2026" },
+                { id: "primera", season_id: "apertura-2027" },
+                { id: "libertadores", season_id: null },
+                { id: "leyenda", season_id: null },
+              ],
+              cups: { worldcup: { gold: 2, silver: 1, bronze: 0 }, arg: { gold: 0, silver: 3, bronze: 4 } },
+              ranked: { games: 12, wins: 8, rating: 1606 },
+            }}
+          />
+        </Card>
       </section>
 
       <section className="flex w-full max-w-md flex-col gap-4">

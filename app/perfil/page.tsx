@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow, SectionTitle } from "@/components/ui/Typography";
 import { StatCard } from "@/components/ui/StatCard";
 import { buttonVariants } from "@/components/ui/Button";
+import { ProfileStatsRows } from "@/components/profile/ProfileStatsRows";
 
 /**
  * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
@@ -32,11 +33,10 @@ export default async function PerfilPage() {
   // Invitado (sesión anónima): perfil efímero, sin editar avatar / sin recuperación / sin historial.
   // Su lugar es jugar; el CTA lo invita a volverse permanente. (§8.4)
   if (user.is_anonymous) {
-    const { data: guestProfile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single();
+    const [{ data: guestProfile }, { data: guestStats }] = await Promise.all([
+      supabase.from("profiles").select("username").eq("id", user.id).single(),
+      supabase.rpc("get_profile_stats"),
+    ]);
 
     return (
       <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-8 overflow-y-auto px-6 py-12">
@@ -54,6 +54,13 @@ export default async function PerfilPage() {
             {guestProfile?.username ?? "Invitado"}
           </h1>
         </div>
+
+        {guestStats && (
+          <section className="flex flex-col gap-3">
+            <SectionTitle>Estadísticas</SectionTitle>
+            <ProfileStatsRows stats={guestStats} />
+          </section>
+        )}
 
         <Card className="flex flex-col gap-3">
           <SectionTitle>Estás jugando como invitado</SectionTitle>
@@ -77,9 +84,10 @@ export default async function PerfilPage() {
     typeof recoveryEmailRaw === "string" && recoveryEmailRaw ? recoveryEmailRaw : null;
 
   // Perfil e historial son independientes → en paralelo.
-  const [{ data: profile }, history] = await Promise.all([
+  const [{ data: profile }, history, { data: profileStats }] = await Promise.all([
     supabase.from("profiles").select("username").eq("id", user.id).single(),
     getTournamentHistory(supabase, user.id),
+    supabase.rpc("get_profile_stats"),
   ]);
   const stats = aggregateStats(history);
 
@@ -109,6 +117,7 @@ export default async function PerfilPage() {
           <StatCard label="Victorias" value={`${Math.round(stats.winRate * 100)}%`} />
           <StatCard label="Goles" value={stats.goals} />
         </div>
+        {profileStats && <ProfileStatsRows stats={profileStats} />}
       </section>
 
       <section className="flex flex-col gap-3">

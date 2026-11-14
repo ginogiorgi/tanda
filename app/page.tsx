@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { isModeId, type ModeId } from "@/lib/modes";
+import type { RankedMe } from "@/lib/ranked/types";
 
 export default async function Home({
   searchParams,
@@ -30,12 +31,15 @@ export default async function Home({
   let username: string | null = null;
   let hasActiveMatch = false;
   let activeModes: ModeId[] = [];
+  let ranked: RankedMe | null = null;
   if (user) {
-    const [{ data: profile }, { data: active }, { data: modes }] = await Promise.all([
+    const [{ data: profile }, { data: active }, { data: modes }, { data: rankedMe }] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_active_tournament"),
       supabase.from("game_modes").select("id").eq("active", true).order("sort"),
+      supabase.rpc("get_ranked_me"),
     ]);
+    ranked = rankedMe ?? null;
     username = profile?.username ?? null;
     hasActiveMatch = Boolean(active?.tournament_id);
     activeModes = (modes ?? []).map((m) => m.id).filter(isModeId);
@@ -89,7 +93,7 @@ export default async function Home({
               Volver al partido
             </Link>
           )}
-          <PlayMenu activeModes={activeModes} />
+          <PlayMenu activeModes={activeModes} ranked={ranked} />
           <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
             {isGuest ? (
               <Link
@@ -106,6 +110,12 @@ export default async function Home({
                 Mi perfil
               </Link>
             )}
+            <Link
+              href="/ranking"
+              className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[9rem]" })}
+            >
+              Tabla
+            </Link>
             <LogoutButton size="lg" className="w-full sm:w-auto sm:min-w-[11rem]" />
           </div>
         </div>

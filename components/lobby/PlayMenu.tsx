@@ -7,6 +7,9 @@ import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { MODE_LIST, type ModeId } from "@/lib/modes";
+import { divisionFor } from "@/lib/engine/ranked";
+import type { RankedMe } from "@/lib/ranked/types";
+import { DivisionCrest } from "@/components/ranked/DivisionCrest";
 
 /** Las RPC de matchmaking devuelven `TABLE(room_id, tournament_id, code)`. */
 type RoomRef = { room_id: string; tournament_id: string; code: string };
@@ -20,9 +23,16 @@ const ACTION_LABEL: Record<Action, { title: string; busy: string }> = {
 /**
  * Menú de juego. "Jugar" y "Crear sala" despliegan el selector de MODO (escala a N modos: sale del
  * registro `lib/modes` + los activos de `game_modes`, que llegan del server). Unirse por código no
- * pregunta: el modo lo define la sala.
+ * pregunta: el modo lo define la sala. La cola RANKED (1v1, puntos de liga) aparece SOLO en Jugar.
  */
-export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
+export function PlayMenu({
+  activeModes,
+  ranked = null,
+}: {
+  activeModes: readonly ModeId[];
+  /** Ficha de liga del jugador (null = no se pudo cargar; la card igual lleva a la cola). */
+  ranked?: RankedMe | null;
+}) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [code, setCode] = useState("");
@@ -105,6 +115,7 @@ export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
                   </button>
                 );
               })}
+              {action === "play" && <RankedCard ranked={ranked} disabled={busy !== null} />}
             </div>
           )}
         </div>
@@ -137,5 +148,29 @@ export function PlayMenu({ activeModes }: { activeModes: readonly ModeId[] }) {
 
       {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
     </div>
+  );
+}
+
+/** Tercera cola, solo en Jugar: ranked 1v1 con la división y los puntos del jugador. */
+function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: boolean }) {
+  const router = useRouter();
+  const div = divisionFor(ranked?.rating ?? 1500);
+  return (
+    <button
+      type="button"
+      onClick={() => router.push("/ranked")}
+      disabled={disabled}
+      className="group col-span-2 flex items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
+    >
+      <DivisionCrest id={div.id} className="h-12" />
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
+        <span className="text-[11px] font-medium leading-snug opacity-75">
+          {div.name} · {ranked?.rating ?? 1500} pts
+          {ranked && ranked.placement_left > 0 ? " · en ubicación" : ""} · ganás o perdés puntos
+        </span>
+      </span>
+      <span aria-hidden className="font-display text-2xl font-black">→</span>
+    </button>
   );
 }

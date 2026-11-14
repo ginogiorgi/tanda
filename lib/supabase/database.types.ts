@@ -1,7 +1,7 @@
 /**
  * Tipos de la base para el cliente de Supabase. El CLI nuevo exige login de plataforma para
  * `gen types`, así que este `Database` se mantiene a mano (es chico: 3 tablas consultadas por
- * `.from` + las 17 RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
+ * `.from` + las RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
  * ARGS en compilación, y tipa el `data` con nuestros shapes reales (los `jsonb` se mapean a los
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
  */
@@ -10,6 +10,7 @@ import type { ActiveMatch, MatchScene, PenalResultPayload } from "@/lib/realtime
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import type { TournamentHistoryEntry } from "@/lib/profile/history";
 import type { ModeId } from "@/lib/engine/formats";
+import type { ProfileStats, Ranking, RankedMatchView, RankedMe, RankedPoll } from "@/lib/ranked/types";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -41,7 +42,7 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       get_active_match: { Args: Empty; Returns: ActiveMatch | null };
-      get_active_tournament: { Args: Empty; Returns: { tournament_id: string; mode_id: ModeId } | null };
+      get_active_tournament: { Args: Empty; Returns: { tournament_id: string; mode_id: ModeId | "ranked" } | null };
       get_bracket: { Args: { p_tournament: string }; Returns: BracketSnapshot };
       get_match_scene: { Args: { p_match: string }; Returns: MatchScene | null };
       get_match_penals: {
@@ -60,6 +61,13 @@ export type Database = {
       join_room: { Args: { p_code: string }; Returns: RoomRef[] };
       leave_room: { Args: { p_code: string }; Returns: undefined };
       username_available: { Args: { check_name: string }; Returns: boolean };
+      ranked_enqueue: { Args: Empty; Returns: RankedPoll };
+      ranked_poll: { Args: Empty; Returns: RankedPoll };
+      ranked_cancel: { Args: Empty; Returns: undefined };
+      get_ranked_me: { Args: Empty; Returns: RankedMe };
+      get_ranked_match: { Args: { p_tournament: string }; Returns: RankedMatchView };
+      get_ranking: { Args: { p_limit?: number }; Returns: Ranking };
+      get_profile_stats: { Args: Empty; Returns: ProfileStats };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

@@ -28,6 +28,8 @@ import { loadPrefs, savePrefs } from "@/lib/prefs";
 
 type PenalLiveProps = {
   matchId: string;
+  /** Ranked: abandonar es derrota inmediata (y cuesta puntos) → se avisa en la confirmación. */
+  ranked?: boolean;
 };
 
 /**
@@ -40,7 +42,7 @@ type PenalLiveProps = {
  * Canal **privado**: requiere `realtime.setAuth(token)` antes de suscribir; la lectura la
  * gobierna la policy `match_broadcast_select` en `realtime.messages` (solo participantes).
  */
-export function PenalLive({ matchId }: PenalLiveProps) {
+export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
@@ -600,7 +602,9 @@ export function PenalLive({ matchId }: PenalLiveProps) {
         {abandoning
           ? "Abandonando…"
           : confirmingAbandon
-            ? "¿Seguro? Tocá de nuevo para abandonar"
+            ? ranked
+              ? "Abandonar = derrota. Tocá de nuevo para confirmar"
+              : "¿Seguro? Tocá de nuevo para abandonar"
             : "Abandonar"}
       </button>
       {abandonError && (
