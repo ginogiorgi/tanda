@@ -54,6 +54,15 @@ Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck �
     línea secundaria (antes podía partirse en 2 líneas).
   - `test:db`: 1 flake en `tournament_e2e` en la primera corrida post-reset; 76/76 en las dos siguientes.
 
+- **Rama `wip/ideas-questions` (sobre post-6b, idea 6 del TODO):** `questions:check` ahora agrupa en el
+  mismo tema las filtraciones de las 600 viejas que no se parecían en el texto: comparten año + ≥10% de
+  contexto aparte de la respuesta, con "ganó/perdió/campeón/final…" como un mismo concepto, y "…en Chile"
+  ↔ "¿qué país organizó?" (ej.: "¿Qué DT llevó a Estudiantes a ganar la Copa de la Liga 2024?" ↔ "¿Qué club
+  la ganó?", "perdió la final 2018 ante Francia" ↔ "¿quién fue campeón 2018?"). Temas: wc 61 grupos/275
+  preguntas, arg 59/301 (el más grande, 106 de River/Boca: inofensivo, el tema solo ordena preferencias y
+  un torneo usa ~15 preguntas). Quedan 169 wc / 14 arg "posibles" débiles (`--leaks`). Migración de sync
+  `20261121000000_question_topics_leaks` (local ✓; prod con OK de Gino, después de la `…18…`).
+
 **Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
 aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
 aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
