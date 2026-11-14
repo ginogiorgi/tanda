@@ -30,6 +30,47 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   `data/questions/arg.json` (269/184/165/82), migración `20261114000002_seed_arg_questions`
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
+## ⏸ Handoff — Fase 6b: personajes GLB de Quaternius (rama `wip/avatar-glb`, 13/11 noche)
+
+Gino aprobó bajar los packs CC0 y pidió "mejorá los personajes 3D + seguí con todo lo que no requiera
+testeo". Se cortó por usage-guard (90%). `main` está limpio y deployado (Fases 6 y 7).
+
+**Hecho (en la rama):**
+- `scripts/avatar/build-glb.mts` (`pnpm avatar:build <dir>`): cuerpo M/F + 5 peinados atados al mismo
+  skin, texturas reducidas con PIL, meshopt → `public/models/avatar/avatar-{male,female}.glb`
+  (~700 KB c/u) y `avatar-anims.glb` + `LICENSE.txt` (CC0, crédito Quaternius).
+- Devdeps: `@gltf-transform/{core,extensions,functions}`, `meshoptimizer`.
+
+**A medias / próximo paso concreto:**
+1. `avatar-anims.glb` pesa 3 MB aunque quedó solo `Idle_Loop`: revisar si `prune` no está borrando
+   los nodos/accessors de los 42 clips descartados (probar `doc.getRoot().listAnimations().length`
+   tras el filtro) o directamente NO usar anims de UAL (el rig propio ya anima todo).
+2. `components/avatar/GlbAvatar.tsx`: cargar el GLB (`useLoader(GLTFLoader)` +
+   `setMeshoptDecoder` de `three/examples/jsm/libs/meshopt_decoder.module.js`), clonar con
+   `SkeletonUtils.clone`, mostrar el peinado según `hair.part` (short→SimpleParted, long→Long,
+   buzz→Buzzed/BuzzedFemale, bun→Buns, mohawk→Buzzed + cresta propia, none→ninguno), teñir el pelo.
+3. Ropa por región en shader (`onBeforeCompile`, atributo por vértice): hueso dominante del skin →
+   torso/clavículas = remera (+ banda diagonal `kitSash`), pelvis/muslo = short (corte a mitad de
+   muslo), antebrazo según manga, pie/ball = botines; cabeza/manos/piernas = textura de piel.
+4. Mapear el rig propio (`lib/avatar/rig.ts`) a los huesos: bind en T-pose, misma convención
+   (+X izquierda, mira a +Z, metros). Por hueso: `deseadoMundo = Dpuro · C · Wbind`, con
+   `C` = corrección de brazo (de T-pose a colgando) en upperarm/lowerarm/hand; local =
+   `padreMundo⁻¹ · deseadoMundo`. Mapa: hips→pelvis, spine→spine_02, head→Head,
+   shoulderL/R→upperarm_l/r, elbow→lowerarm, hipL/R→thigh_l/r, knee→calf; root mueve la pelvis.
+5. Reemplazar `AvatarModel` por `GlbAvatar` en `AvatarCanvas` y `PenalScene` (mantener la prop `rig`),
+   revisar con `/dev/penal` (screenshots headless, ver memoria), verificar, merge a main.
+
+**Retomar:** `git checkout wip/avatar-glb`. Los zips bajados están en el scratchpad de la sesión (se
+pueden borrar en un reboot). Para rebajarlos sin cuenta: `curl` a `https://quaternius.itch.io/<slug>`,
+sacar `csrf_token`, `POST <slug>/file/<upload_id>?source=view_game&as_props=1` con el token → JSON
+con `url` firmada. Upload ids: universal-base-characters 15861669, universal-animation-library
+17958403, universal-animation-library-2 17958478. Después: `pnpm avatar:build <dir>`.
+
+**Después de 6b (no requieren testeo humano):** subir micro-rótulos de 10px a 12px donde entren,
+reemplazar ~100 preguntas "¿De qué país es X?" (bajar `players_records`).
+
+---
+
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
   gusto/tono, y decidir si se baja `players_records` (37% del Mundial, mayoría "¿De qué país es X?").
