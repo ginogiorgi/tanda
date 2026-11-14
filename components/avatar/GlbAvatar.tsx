@@ -68,15 +68,22 @@ function outfitOf(config: AvatarConfig): Outfit {
   };
 }
 
-/** Corte del short a mitad de muslo (rodilla ≈0.54, cadera ≈0.97 en el modelo). */
-const SHORT_HEM_Y = 0.74;
+/**
+ * Corte del short (rodilla ≈0.54, cadera ≈0.97 en el modelo). Más largo que medio muslo: tapa la
+ * ropa interior que trae pintada la textura del pack.
+ */
+const SHORT_HEM_Y = 0.66;
+/** Cintura: remera arriba, short/pantalón abajo (por altura, no por hueso → corte parejo). */
+const WAIST_Y = 1.02;
+/** Altura del cuerpo en bind (m), para normalizar. */
+const BODY_HEIGHT = 1.85;
 
 function regionOf(bone: string, y: number, o: Outfit): Region {
   if (/^(foot|ball)_/.test(bone)) return Region.Shoes;
   if (/^calf_/.test(bone)) return o.shorts ? Region.Skin : Region.Bottom;
   if (/^thigh_/.test(bone)) return o.shorts && y < SHORT_HEM_Y ? Region.Skin : Region.Bottom;
-  if (bone === "pelvis") return Region.Bottom;
-  if (/^(spine_0\d|clavicle_)/.test(bone)) return Region.Top;
+  if (bone === "pelvis" || /^spine_0[12]$/.test(bone)) return y < WAIST_Y ? Region.Bottom : Region.Top;
+  if (/^(spine_03|clavicle_)/.test(bone)) return Region.Top;
   if (/^upperarm_/.test(bone)) return o.upperArm ? Region.Top : Region.Skin;
   if (/^lowerarm_/.test(bone)) return o.foreArm ? Region.Top : Region.Skin;
   return Region.Skin;
@@ -89,12 +96,32 @@ function paintRegions(mesh: THREE.SkinnedMesh, o: Outfit): void {
   const si = g.getAttribute("skinIndex");
   const sw = g.getAttribute("skinWeight");
   const bones = mesh.skeleton.bones;
-  const region = new Float32Array(pos.count);
+  const region = new Float32Array(pos.count * 3); // one-hot (remera, short, botines); 0 = piel
   const bind = new Float32Array(pos.count * 3);
   const v = new THREE.Vector3();
   for (let i = 0; i < pos.count; i++) {
     v.fromBufferAttribute(pos, i).applyMatrix4(mesh.bindMatrix);
     bind.set([v.x, v.y, v.z], i * 3);
+  }
+  // La geometría viene cuantizada: se re-escala a metros con los límites del propio cuerpo (pies en
+  // 0, coronilla en BODY_HEIGHT) para que los cortes por altura no dependan de la cuantización.
+  let minY = Infinity;
+  let maxY = -Infinity;
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (let i = 0; i < pos.count; i++) {
+    minY = Math.min(minY, bind[i * 3 + 1]!);
+    maxY = Math.max(maxY, bind[i * 3 + 1]!);
+    minX = Math.min(minX, bind[i * 3]!);
+    maxX = Math.max(maxX, bind[i * 3]!);
+  }
+  const k = BODY_HEIGHT / (maxY - minY);
+  const cx = (minX + maxX) / 2;
+  for (let i = 0; i < pos.count; i++) {
+    bind[i * 3] = (bind[i * 3]! - cx) * k;
+    bind[i * 3 + 1] = (bind[i * 3 + 1]! - minY) * k;
+    bind[i * 3 + 2] = bind[i * 3 + 2]! * k;
+    v.set(bind[i * 3]!, bind[i * 3 + 1]!, bind[i * 3 + 2]!);
     let best = 0;
     let w = -1;
     for (let k = 0; k < 4; k++) {
@@ -104,9 +131,10 @@ function paintRegions(mesh: THREE.SkinnedMesh, o: Outfit): void {
         best = si.getComponent(i, k);
       }
     }
-    region[i] = regionOf(bones[best]?.name ?? "", v.y, o);
+    const r = regionOf(bones[best]?.name ?? "", v.y, o);
+    if (r !== Region.Skin) region[i * 3 + r - 1] = 1;
   }
-  g.setAttribute("aRegion", new THREE.BufferAttribute(region, 1));
+  g.setAttribute("aRegion", new THREE.BufferAttribute(region, 3));
   g.setAttribute("aBind", new THREE.BufferAttribute(bind, 3));
   mesh.geometry = g;
 }
@@ -137,23 +165,26 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
     shader.vertexShader = shader.vertexShader
       .replace(
         "#include <common>",
-        "#include <common>\nattribute float aRegion;\nattribute vec3 aBind;\nvarying float vRegion;\nvarying vec3 vBind;",
+        "#include <common>\nattribute vec3 aRegion;\nattribute vec3 aBind;\nvarying vec3 vRegion;\nvarying vec3 vBind;",
       )
       .replace("#include <begin_vertex>", "#include <begin_vertex>\nvRegion = aRegion;\nvBind = aBind;");
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nvarying float vRegion;\nvarying vec3 vBind;",
+        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nvarying vec3 vRegion;\nvarying vec3 vBind;",
       )
       .replace(
         "#include <map_fragment>",
         [
           "#include <map_fragment>",
-          "if (vRegion > 0.5) {",
-          "  vec3 c = vRegion < 1.5 ? uTop : (vRegion < 2.5 ? uBottom : uShoes);",
+          // one-hot interpolado: gana el canal mayor; si ninguno pasa 0.5, piel (textura)
+          "float rm = max(vRegion.x, max(vRegion.y, vRegion.z));",
+          "if (rm > 0.5) {",
+          "  bool isTop = vRegion.x >= rm;",
+          "  vec3 c = isTop ? uTop : (vRegion.y >= rm ? uBottom : uShoes);",
           // banda diagonal: hombro izquierdo (+X) → cadera derecha, solo en la remera y adelante
           "  float d = abs((vBind.y - 1.22) - 1.15 * vBind.x);",
-          "  if (vRegion < 1.5 && uSashOn > 0.5 && d < 0.075) c = uSash;",
+          "  if (isTop && uSashOn > 0.5 && d < 0.075) c = uSash;",
           "  diffuseColor.rgb = c;",
           "}",
         ].join("\n"),
