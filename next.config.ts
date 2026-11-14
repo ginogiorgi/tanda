@@ -7,7 +7,7 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 // afecta el embebido en iframes y es justo lo que queremos bloquear (anti-clonado/clickjacking).
 const reportOnlyCsp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'", // wasm: decoder meshopt de los GLB del avatar
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",

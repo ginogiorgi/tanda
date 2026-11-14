@@ -86,6 +86,77 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   `data/questions/arg.json` (269/184/165/82), migración `20261114000002_seed_arg_questions`
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
+## ⏸ Fase 6b: personajes GLB de Quaternius — HECHA en la rama `wip/avatar-glb` (14/11), falta merge
+
+Verde local (14/11, tras el corte): `typecheck · lint · knip · build · 145 unit`. Revisado con screenshots headless en
+`/dev/penal` (idle, patada, estirada, festejo, banda diagonal) y en la galería nueva `/dev/avatar`.
+
+- `scripts/avatar/build-glb.mts` (`pnpm avatar:build <dir>`): cuerpo M/F + 5 peinados en el mismo skin,
+  meshopt → `public/models/avatar/avatar-{male,female}.glb` (~700 KB c/u). **Sin animaciones de UAL**
+  (se borró `avatar-anims.glb` de 3 MB): el rig propio anima los huesos.
+- `components/avatar/GlbAvatar.tsx`: carga el GLB (meshopt), elige y tiñe el peinado según `hair.part`,
+  y pinta la ropa en el shader **por fragmento con planos sobre la posición de bind normalizada (T-pose)**:
+  tobillo 0.10, dobladillo del short 0.66, cintura 1.02 (planos en y) y manga = plano en |x| (por cuerpo:
+  musculosa 0.215/0.165, remera 0.32/0.28, manga larga 0.705/0.66) → cortes rectos (antes, one-hot por
+  vértice = zigzag). Cabeza/cuello = piel por hueso. Corte de ropa y colores van por uniforms (cambiar
+  remera/short no reclona). Banda diagonal `kitSash`. Normal map del "superhéroe" a 0.3.
+- `components/avatar/glbRig.ts`: retarget `deseado = D·C·Wbind`, `local = padre⁻¹·deseado` (C = bajar
+  brazos de la T-pose, 1.38 rad). `GlbAvatar` registra pivotes fantasma → `applyPose`/`useRig` sin cambios.
+- `components/avatar/Avatar3D.tsx`: GLB dentro de un `<Suspense>` con el `AvatarModel` procedural de
+  fallback mientras carga. Ya está usado en `AvatarCanvas` (creador/perfil) y `PenalScene`.
+- CSP: `'wasm-unsafe-eval'` (decoder meshopt; hoy la CSP es Report-Only).
+
+**Sesión 14/11 (post corte de luz):** `git fsck` OK (solo dangling viejos de junio), GLB íntegros
+(header glTF = tamaño real, chunks JSON+BIN completos, 673/728 KB, cargan 200 en el navegador), `.next` y
+`tsbuildinfo` regenerados. Verde: `typecheck · lint · knip · build · 145 unit`. Arreglado: cortes de ropa
+en zigzag (ver arriba) y warning `toNonIndexed` de la pelota. Revisado headless: galería `/dev/avatar` y
+penal (idle, SAVE 2, GOAL 1) sin errores de consola. Nota: en este shell `pnpm` vive en `~/.npm-global/bin`.
+
+**Próximo paso:** que Gino mire `/dev/avatar` y `/dev/penal` (`pnpm dev`) → `git checkout main && git merge
+wip/avatar-glb && git push` (deploy). El `AvatarModel` procedural queda solo como fallback.
+- **Rama `wip/ideas-avatar` (sobre avatar-glb, idea 7):** el creador precarga los dos GLB y arma sus
+  templates de antemano (`WarmGlbBodies` en `AvatarCanvas`, Suspense propio sin fallback) → cambiar de
+  cuerpo ya no cae al avatar procedural ni paga `templateOf` en el tap. Medido headless (390×844 @2x,
+  dev mode, SwiftShader): `templateOf` 10–22 ms a CPU 1× y **40–53 ms a CPU 4×** (~Android gama media),
+  `instantiate` por avatar 1–6 ms, sin long tasks; GLB 673/728 KB (~0,6 s c/u en 4G). Gotcha: `useLoader`
+  con array es OTRA clave de caché que con un URL → parseaba dos veces; va un `useLoader` por URL. Falta
+  medir en un teléfono real (shader + primer frame con GPU de verdad). Code review: `ErrorFallback`
+  (error boundary) en la precarga (si falla el GLB del otro cuerpo, se ignora) y en `Avatar3D` (si
+  falla el GLB visible, queda el procedural en vez de caerse el canvas — pasaba ANTES de esta rama, en
+  el creador y en el penal). Probado con el GLB femenino bloqueado: 8/8 canvas de `/dev/avatar` vivos.
+- ✅ **Cresta del mohicano** (`components/avatar/glbCrest.ts`, 14/11): 7 púas low-poly generadas sobre el
+  perfil sagital del rapado del cuerpo, colgadas del hueso `Head`, teñidas con el pelo. Fix: el rapado
+  de hombre flotaba sobre la cabeza de la mujer (ahora cada cuerpo usa el suyo). Galería: mujer con
+  mohicano + hombre en 3/4 de perfil.
+- ✅ **Botines con forma** (`components/avatar/glbShoes.ts`, 14/11): loft superelíptico medido sobre el pie
+  en reposo + suela que contrasta, skinneado a `foot_*`/`ball_*`; zapatillas (suela gruesa clara) /
+  botines (fina) / tapones (fina + 6 tapones). El shader del cuerpo descarta el pie descalzo (y<0.085).
+  Revisado en la galería y en la patada del penal.
+- ✅ **Code review (/code-review high, 14/11)** — arreglado:
+  - Rig congelado tras re-suspender (cambio de cuerpo sin GLB en caché): el registro de pivotes pasó a
+    `useLayoutEffect` (React lo re-ejecuta al revelar el Suspense, después de que el fallback borra los suyos).
+  - Con `prefers-reduced-motion` (frameloop "demand") los cambios de color/corte/pelo/botines no se
+    dibujaban: ahora se aplican en un layout effect + `invalidate()` (antes se pisaban los uniforms cada frame).
+  - Lag de un frame: `applyPose` de `AvatarCanvas`/`PenalScene` va con prioridad -1 → corre antes que el
+    `useFrame` de `GlbAvatar` que lo traduce a huesos.
+  - Pérdida de memoria y CPU: la preparación pesada (geometría del cuerpo, cresta, botines) se hace una vez
+    por GLB (`templateOf`, WeakMap); cada instancia clona y crea solo sus materiales, que libera al desmontar.
+    Un esqueleto por pie (no por variante); `dominantBone()` compartido; sin regex por vértice.
+  - `footSlices` rellena huecos con la vecina más cercana con datos (antes podía perder secciones).
+  - `build-glb`: valida que bind (inversas) y nodo del pelo coincidan con el cuerpo y borra el temp
+    (⚠ no corrido: los packs fuente no están en disco; solo typecheck).
+  - Docs: CLAUDE.md / SPEC §8.2 / `parts.ts` decían "sin GLBs externos" → reflejan la decisión GLB.
+  Revisado headless: galería y penal, normal y reduced motion, sin errores de consola.
+Los zips fuente ya no están; para rebajarlos sin cuenta: `curl` a `https://quaternius.itch.io/<slug>`,
+sacar `csrf_token`, `POST <slug>/file/<upload_id>?source=view_game&as_props=1` → JSON con `url` firmada
+(universal-base-characters 15861669).
+
+**Después de 6b:** ✅ hecho en la rama aparte **`wip/post-6b`** (desde main, se mergea por separado):
+micro-rótulos 10px→12px y 100 "¿De qué país es X?" → partidos/finales (+ migración
+`20261118000000_questions_matches`). Detalle y pasos de deploy en el `TODO.md` de esa rama.
+
+---
+
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
   gusto/tono, y decidir si se baja `players_records` (37% del Mundial, mayoría "¿De qué país es X?").

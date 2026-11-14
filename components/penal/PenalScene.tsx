@@ -20,7 +20,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { AvatarModel } from "@/components/avatar/AvatarModel";
+import { Avatar3D } from "@/components/avatar/Avatar3D";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
 import {
   CELEBRATE,
@@ -74,7 +74,7 @@ const v = {
 /** Pelota low-poly con gajos oscuros (colores por cara, sin texturas). */
 function useBallGeometry(): THREE.BufferGeometry {
   return useMemo(() => {
-    const g = new THREE.IcosahedronGeometry(BALL_R, 1).toNonIndexed();
+    const g = new THREE.IcosahedronGeometry(BALL_R, 1); // ya es no-indexada (caras planas)
     const n = g.getAttribute("position").count;
     const col: number[] = [];
     const white = new THREE.Color("#f7f5ef");
@@ -239,7 +239,7 @@ function Actors({
     cam.position.lerpVectors(v.pos, v.rPos, w2);
     v.look.lerp(v.rLook, w2);
     cam.lookAt(v.look);
-  });
+  }, -1); // antes que el `useFrame` de `GlbAvatar` (traduce la pose a huesos en el mismo frame)
 
   return (
     <>
@@ -247,7 +247,7 @@ function Actors({
       <Crowd colors={crowdColors} groupRefs={setCrowd} />
 
       <group ref={kickerGroup} position={[KICKER_X, 0, KICKER_Z0]} rotation={[0, Math.PI, 0]}>
-        <AvatarModel
+        <Avatar3D
           config={kicker.avatar}
           kitTop={kicker.kitTop ?? undefined}
           kitSash={kicker.kitSash ?? undefined}
@@ -256,7 +256,7 @@ function Actors({
         />
       </group>
       <group position={[0, 0, KEEPER_Z]}>
-        <AvatarModel
+        <Avatar3D
           config={keeper.avatar}
           kitTop={keeper.kitTop ?? undefined}
           kitSash={keeper.kitSash ?? undefined}

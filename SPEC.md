@@ -23,7 +23,7 @@ penal/partido, reloj de ronda, anti-trampa, invitado anónimo). Lo que la 2.0 ca
 - **Preguntas** (`data/questions/*.json` → seed generado): 700 Mundial + 700 Argentina, `topic` por
   hecho (no se repite tema en un torneo) y categoría distinta a la del penal anterior.
   `pnpm questions:check` en CI.
-- **3D (§8.2)**: sigue sin GLBs. El avatar es **articulado** (rig propio de 11 articulaciones,
+- **3D (§8.2)**: personaje GLB CC0 (Quaternius, Fase 6b) sobre el mismo rig. El avatar es **articulado** (rig propio de 11 articulaciones,
   `lib/avatar/rig.ts`) y la escena del penal es un mini-estadio con jugada animada determinista
   (`lib/penal/shot.ts`). Ver nota en §8.2.
 - **Marca**: identidad "B · Programa de partido" (ver `CLAUDE.md`).
@@ -499,7 +499,13 @@ lobby ni en resultados, solo donde hay 3D.
   (`lib/avatar/rig.ts`: idle, patada, festejo, lamento, arquero en guardia/estirada/festejo) que la
   escena aplica por frame (`components/avatar/rigPose.ts`). La jugada (pelota, red, cámara) sale de
   `lib/penal/shot.ts` por `reason`+`variant` → igual en todos los clientes. Banco de pruebas:
-  `/dev/penal?shot=goal-1&t=0.3` (solo dev). Upgrade a GLB CC0 pendiente de OK de Gino.
+  `/dev/penal?shot=goal-1&t=0.3` (solo dev).
+- **2.0 (Fase 6b) — GLB CC0:** con OK de Gino, el personaje pasa a los Universal Base Characters de
+  Quaternius (`components/avatar/GlbAvatar.tsx`; GLBs en `public/models/avatar/` generados por
+  `scripts/avatar/build-glb.mts`). Misma API e igual rig (`glbRig` traduce los pivotes a huesos); la
+  ropa se pinta por shader con cortes por planos, el mohicano y el calzado se generan en runtime.
+  `AvatarModel` (primitivas) queda como fallback mientras baja el GLB. Lo de arriba sobre
+  primitivas describe ese fallback.
 - **Modelo:** humano low-poly de proporciones ~7 cabezas (no stocky), con cuello y miembros
   segmentados, mirando a +Z. La **cabeza es una caja con cara** (nariz + ojos al frente):
   marca la orientación para que la rotación se note (una esfera no servía). **Dos cuerpos
@@ -538,7 +544,8 @@ lobby ni en resultados, solo donde hay 3D.
    color de nación es un override de runtime —`kitTop`—, no se persiste en el avatar; sale
    del `kit_primary` de la nación, ver §2 / F5). La identidad de selección se refuerza en
    HUD/bandera **y** en la camiseta.
-2. **Assets — RESUELTO:** primitivas low-poly propias, sin GLBs externos (ver §8.2). El
+2. **Assets — RESUELTO (revisado en 6b):** GLB CC0 de Quaternius con primitivas propias de
+   fallback (ver §8.2). Texto original: El
    modular casual CC0 no se parte limpio en los 4 selectores; las primitivas son lo más
    liviano y controlable. Quaternius queda como upgrade opcional futuro.
 3. **Animación — procedural:** la patada de penal + estirada de arquero + festejo se hacen
