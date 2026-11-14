@@ -54,6 +54,9 @@ function TeamChip({
 }
 
 function GroupTable({ group, compact, mode }: { group: GroupView; compact?: boolean; mode: ModeMeta }) {
+  // Zonas largas (AR: 15) → filas más densas para que la tabla entre en mobile sin scrollear tanto.
+  const long = group.rows.length > 6;
+  const cutoff = mode.format.qualifiersPerZone;
   return (
     <div className="rounded-xl border border-border bg-bg-elevated p-3">
       <div className="mb-2 flex items-center justify-between">
@@ -62,12 +65,15 @@ function GroupTable({ group, compact, mode }: { group: GroupView; compact?: bool
         </span>
         {!compact && <span className="text-[10px] text-fg-subtle">Pts</span>}
       </div>
-      <ul className="flex flex-col gap-1.5">
+      <ul className={`flex flex-col ${long ? "gap-0.5" : "gap-1.5"}`}>
         {group.rows.map((row) => (
           <li
             key={row.team.participant_id}
-            className={`flex items-center justify-between rounded-lg px-2 py-1 ${
+            className={`flex items-center justify-between rounded-lg px-2 ${long ? "py-0.5" : "py-1"} ${
               row.isMe ? "bg-gold/10" : ""
+            } ${
+              // Línea de corte: los de arriba pasan de ronda (en zonas largas orienta mucho más que el punto).
+              long && row.position === cutoff ? "mb-1 rounded-b-none border-b border-dashed border-border" : ""
             }`}
           >
             <span className="flex items-center gap-2">
