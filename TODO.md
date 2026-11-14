@@ -31,6 +31,8 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
+- **Verificar los datos de TODAS las preguntas (1400: Mundial + AR)** contra fuente: la app se armó
+  durante el Mundial 2026 con datos sin cerrar (priorizar resultados/récords/actualidad 2025–26).
 - Preguntas AR (sesgo a `idolos`/`historia`, datos dudosos) y Mundial.
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
