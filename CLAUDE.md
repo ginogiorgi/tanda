@@ -1,7 +1,7 @@
 # CLAUDE.md — TANDA
 
 Juego de trivia mundialista multijugador en tiempo real. Cada pregunta es un penal.
-Calidad "app oficial de FIFA". Producto/reglas en `docs/BRIEF.md`, arquitectura y
+Calidad "app de multinacional", identidad propia "B · Programa de partido". Producto/reglas en `docs/BRIEF.md`, arquitectura y
 contratos en `SPEC.md`, estado actual en `TODO.md`.
 
 ## Protocolo de trabajo (reanudable)
@@ -24,6 +24,20 @@ pnpm typecheck  # tsc --noEmit
 pnpm test       # Vitest (motor de juego y de torneo)
 ```
 (Definir los scripts en F1; mantener estos nombres.)
+
+## Marca (rebrand Tanda 2.0 — "B · Programa de partido")
+- Papel `--bg #EDE9DF`, tinta `--ink/--fg #141414`, rojo de imprenta `--brand #D7261E` (texto chico:
+  `brand-ink`), azul `--blue #1F3FA8`. Tokens en `app/globals.css`; usar SIEMPRE las clases de token
+  (`bg-bg`, `text-fg`, `border-ink`, `bg-brand`…), nunca hex sueltos ni `white/black` de Tailwind.
+- Tipos: **Big Shoulders** (`font-display`, titulares/marcadores/botones, mayúscula) + **Instrument Sans**
+  (`font-sans`, lectura). `font-mono` = misma sans con cifras tabulares.
+- Lenguaje: bordes duros de tinta (`border-2 border-ink`), radios chicos (4–6px), **sombra offset sin blur**
+  (`shadow-card`/`shadow-pop`, el botón "se imprime" al apretar), trama de puntos de fondo. Nada de
+  gradientes dorados, glows ni glassmorphism.
+- Primitivas en `components/ui/*` + `components/brand/Wordmark`. Antes de inventar estilos, reusarlas.
+- Kit visual de desarrollo: `/dev/kit` (404 en producción) — revisar ahí los cambios de UI.
+- Íconos/escudos: `scripts/brand/build_icons.py` y `scripts/crests/build_crests.py` con
+  `assets/fonts/BigShouldersDisplay-Black.ttf` (OFL).
 
 ## Convenciones (Pyrux)
 - TS estricto: nunca `any`, `as any`, ni `@ts-ignore`.

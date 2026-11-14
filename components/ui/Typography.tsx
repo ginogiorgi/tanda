@@ -1,7 +1,6 @@
 import { cn } from "@/lib/cn";
 
-/** Etiqueta superior (eyebrow): el `uppercase tracking-[0.2em] text-fg-subtle` repetido en
- * landing, lobby, perfil, reveal, bracket. */
+/** Etiqueta superior (eyebrow) estilo "volanta" de revista: versalitas rojas. */
 export function Eyebrow({
   className,
   children,
@@ -12,7 +11,7 @@ export function Eyebrow({
   return (
     <span
       className={cn(
-        "text-sm font-medium uppercase tracking-[0.25em] text-fg-subtle",
+        "text-xs font-bold uppercase tracking-[0.2em] text-brand-ink",
         className,
       )}
     >
@@ -21,7 +20,7 @@ export function Eyebrow({
   );
 }
 
-/** Título de sección con tick de acento (motivo broadcast). Reemplaza los `<h2>` uppercase. */
+/** Título de sección con filete de tinta arriba (motivo de programa impreso). */
 export function SectionTitle({
   className,
   children,
@@ -34,11 +33,11 @@ export function SectionTitle({
   return (
     <h2
       className={cn(
-        "flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-fg-subtle",
+        "flex items-center gap-2 border-t-[3px] border-ink pt-1.5 font-display text-lg font-extrabold uppercase tracking-[0.04em] text-fg",
         className,
       )}
     >
-      {tick && <span aria-hidden className="h-3.5 w-1 rounded-full bg-accent" />}
+      {tick && <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-brand" />}
       {children}
     </h2>
   );

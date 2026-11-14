@@ -24,6 +24,8 @@ export interface ModeMeta {
   teamNoun: string;
   /** Título del campeón. */
   championTitle: string;
+  /** Sub-identidad del modo en el sistema "Programa": color de su filete/sello (clase Tailwind). */
+  swatch: string;
   format: FormatConfig;
 }
 
@@ -36,6 +38,7 @@ export const MODE_LIST: readonly ModeMeta[] = [
     zonesLabel: "Grupos",
     teamNoun: "selección",
     championTitle: "Campeón del Mundo",
+    swatch: "bg-blue",
     format: FORMATS.worldcup,
   },
   {
@@ -46,6 +49,7 @@ export const MODE_LIST: readonly ModeMeta[] = [
     zonesLabel: "Zonas",
     teamNoun: "club",
     championTitle: "Campeón de la Liga",
+    swatch: "bg-brand",
     format: FORMATS.arg,
   },
 ];

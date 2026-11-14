@@ -61,7 +61,7 @@ export function LoginForm() {
         />
       </Field>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
 
       <Button type="submit" disabled={loading} block size="lg" className="mt-2">
         {loading ? "Entrando…" : "Entrar"}
@@ -75,7 +75,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-fg-muted">
         ¿No tenés cuenta?{" "}
-        <Link href="/register" className="font-medium text-gold hover:underline">
+        <Link href="/register" className="font-medium text-brand hover:underline">
           Registrate
         </Link>
       </p>

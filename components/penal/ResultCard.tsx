@@ -31,7 +31,7 @@ function TeamChip({ code, kit, isMe, flag, crest }: Team) {
         style={{ backgroundColor: kit ?? "#666" }}
         aria-hidden
       />
-      <span className={`font-display text-base font-bold uppercase ${isMe ? "text-gold" : "text-fg"}`}>
+      <span className={`font-display text-base font-extrabold uppercase ${isMe ? "text-brand" : "text-fg"}`}>
         {code ?? "???"}
       </span>
     </span>
@@ -60,7 +60,7 @@ export function ResultCard({
 }) {
   const o = outcome ? OUTCOME[outcome] : null;
   return (
-    <div className="w-full rounded-2xl border border-border bg-bg-elevated p-5 shadow-card">
+    <div className="w-full rounded-[6px] border-2 border-ink bg-bg-elevated p-5 shadow-card">
       {caption && (
         <p className="mb-3 text-center text-[11px] font-medium uppercase tracking-wider text-fg-subtle">
           {caption}
@@ -68,7 +68,7 @@ export function ResultCard({
       )}
       <div className="flex items-center justify-between">
         <TeamChip {...left} />
-        <span className="font-display text-3xl font-bold tabular-nums text-fg">
+        <span className="font-display text-3xl font-extrabold tabular-nums text-fg">
           {`${leftScore ?? "–"}–${rightScore ?? "–"}`}
         </span>
         <TeamChip {...right} />

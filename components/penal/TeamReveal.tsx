@@ -30,13 +30,13 @@ export function TeamReveal({ me }: { me: BracketTeam }) {
               flag={null}
               crest={me.crest}
               name={me.team_name}
-              className="relative h-32 drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+              className="relative h-32 drop-shadow-[4px_4px_0_var(--ink)]"
             />
           </div>
         ) : (
           <div className="relative h-28 w-28">
             <div
-              className="h-full w-full rounded-3xl border border-white/10 shadow-pop"
+              className="h-full w-full rounded-[6px] border-2 border-ink shadow-pop"
               style={kitSwatchStyle(me)}
               aria-hidden
             />
@@ -44,16 +44,16 @@ export function TeamReveal({ me }: { me: BracketTeam }) {
             <TeamMark
               flag={me.flag}
               name={me.team_name}
-              className="absolute -bottom-2 -right-2 h-10 rounded-md shadow-md ring-1 ring-black/40"
+              className="absolute -bottom-2 -right-2 h-10 rounded-[3px] border-2 border-ink shadow-card"
             />
           </div>
         )}
         <div className="flex flex-col items-center gap-1">
-          <span className="font-display text-4xl font-bold uppercase tracking-tight text-fg">
+          <span className="font-display text-4xl font-extrabold uppercase tracking-tight text-fg">
             {me.team_name ?? "Tu equipo"}
           </span>
           {me.team_code && (
-            <span className="font-mono text-sm uppercase tracking-[0.3em] text-gold">
+            <span className="font-mono text-sm uppercase tracking-[0.3em] text-brand">
               {me.team_code}
             </span>
           )}

@@ -37,7 +37,7 @@ export function GuestButton({ className }: { className?: string }) {
       >
         {busy ? "Entrando…" : "Jugar como invitado"}
       </Button>
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
     </div>
   );
 }

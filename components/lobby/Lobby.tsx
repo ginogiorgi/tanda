@@ -147,12 +147,12 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
-        <span className="text-sm font-medium uppercase tracking-[0.3em] text-fg-subtle">
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
           Sala de espera · {mode.name}
         </span>
         <button
           onClick={onCopy}
-          className="font-mono text-5xl font-extrabold tracking-[0.2em] text-gold drop-shadow-[0_6px_24px_rgba(212,175,55,0.18)] transition-opacity hover:opacity-80"
+          className="font-mono text-5xl font-extrabold tracking-[0.2em] text-brand transition-opacity hover:opacity-80"
           title="Copiar código"
         >
           {code}
@@ -167,7 +167,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
           <p className="text-lg font-semibold text-fg">Armando torneo…</p>
         ) : (
           <>
-            <span className="font-display text-5xl font-bold tabular-nums text-fg">
+            <span className="font-display text-5xl font-extrabold tabular-nums text-fg">
               {formatRemaining(remaining)}
             </span>
             <span className="text-xs text-fg-subtle">
@@ -177,10 +177,10 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
         )}
       </div>
 
-      <div className="w-full rounded-2xl border border-border bg-bg-elevated p-4 shadow-card">
+      <div className="w-full rounded-[6px] border-2 border-ink bg-bg-elevated p-4 shadow-card">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm font-medium text-fg-muted">Conectados</span>
-          <span className="text-sm font-semibold text-gold">
+          <span className="text-sm font-semibold text-brand">
             {members.length}
             <span className="font-normal text-fg-subtle">/{mode.format.roomSize}</span>
           </span>

@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-## Estado: TANDA 2.0 en curso — Fases 0, 1, 3 y 4 HECHAS (Modo Argentina en prod)
+## Estado: TANDA 2.0 en curso — Fases 0, 1, 2, 3 y 4 HECHAS (rebrand + Modo Argentina en prod)
 
 Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
 a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
@@ -31,16 +31,24 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
+- **Verificar los datos de TODAS las preguntas (1400: Mundial + AR)** contra fuente: la app se armó
+  durante el Mundial 2026 con datos sin cerrar (priorizar resultados/récords/actualidad 2025–26).
 - Preguntas AR (sesgo a `idolos`/`historia`, datos dudosos) y Mundial.
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
   → migración chica de `teams` + regenerar escudos cuando se definan.
 
+- **Fase 2** — rebrand "B · Programa" **en prod**: tokens papel/tinta/rojo/azul, Big Shoulders + Instrument
+  Sans, primitivas con borde de tinta y sombra offset, `Wordmark` con sello, landing/auth/jugar/penal/HUD/
+  bracket/resultados/perfil/avatar/404/error, ícono + OG nuevos, kit visual `/dev/kit`, `CLAUDE.md` con
+  reglas de marca. Pendiente menor: escena 3D sigue oscura (se rehace en Fase 6).
+
 ### Próximo (en orden)
-1. Pulido AR: tablas de 15 compactas en mobile (bracket), revisar TeamReveal con escudo.
-2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,
-   primitivas, logo nuevo (reemplaza el favicon interino), todas las pantallas.
-3. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+1. **Fase 4b — Ranked 1v1** (plan completo en el archivo de plan: Elo 1500, divisiones Potrero…Leyenda,
+   cola ±100→±250→todos a los 10/20s, solo humanos, invitados sí, temporadas Apertura/Clausura, botón
+   Tabla, perfil con 3 filas de estadísticas).
+2. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+3. **Fase 5b** — verificar datos de las 1400 preguntas.
 4. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
 
 ---

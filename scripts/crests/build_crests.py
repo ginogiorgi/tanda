@@ -6,8 +6,8 @@ No reproducen escudos reales: es un sistema propio y uniforme —silueta (4 vari
 del código), campo con el patrón de camiseta del club (kit_pattern + colores) y una placa con las siglas
 del equipo (`code`) convertidas a TRAZOS (sin depender de fuentes en el navegador).
 
-Uso:  python3 scripts/crests/build_crests.py <font.ttf>
-      (la fuente es Big Shoulders Display Black, OFL — google/fonts ofl/bigshouldersdisplay, wght=900)
+Uso:  python3 scripts/crests/build_crests.py assets/fonts/BigShouldersDisplay-Black.ttf
+      (Big Shoulders Display Black, OFL — licencia en assets/fonts/OFL-BigShoulders.txt)
 Requiere: fonttools.
 """
 import hashlib

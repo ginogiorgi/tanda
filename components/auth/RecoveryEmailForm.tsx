@@ -72,7 +72,7 @@ export function RecoveryEmailForm({ initialEmail }: RecoveryEmailFormProps) {
           {saving ? "Guardando…" : saved ? "Guardado ✓" : "Guardar"}
         </Button>
       </div>
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
     </form>
   );
 }

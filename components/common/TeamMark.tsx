@@ -30,7 +30,7 @@ export function TeamMark({
         alt={name ? `Bandera de ${name}` : ""}
         loading="lazy"
         decoding="async"
-        className={`aspect-[4/3] w-auto shrink-0 rounded-[3px] object-cover ring-1 ring-black/10 ${className}`}
+        className={`aspect-[4/3] w-auto shrink-0 rounded-[3px] object-cover ring-1 ring-ink/25 ${className}`}
       />
     );
   }

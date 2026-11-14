@@ -35,7 +35,7 @@ export function ForgotPasswordForm() {
     return (
       <div className="flex flex-col gap-4 text-center">
         <p className="text-sm text-fg-muted">{message}</p>
-        <Link href="/login" className="text-sm font-medium text-gold hover:underline">
+        <Link href="/login" className="text-sm font-medium text-brand hover:underline">
           Volver a entrar
         </Link>
       </div>
@@ -56,14 +56,14 @@ export function ForgotPasswordForm() {
         />
       </Field>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
 
       <Button type="submit" disabled={loading} block size="lg" className="mt-2">
         {loading ? "Enviando…" : "Enviar link"}
       </Button>
 
       <p className="text-center text-sm text-fg-muted">
-        <Link href="/login" className="font-medium text-gold hover:underline">
+        <Link href="/login" className="font-medium text-brand hover:underline">
           Volver
         </Link>
       </p>

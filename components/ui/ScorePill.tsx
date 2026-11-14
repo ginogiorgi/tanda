@@ -1,16 +1,16 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
-/** Dígito de marcador estilo tablero de transmisión: fuente display condensada + tabular-nums. */
+/** Dígito de marcador de tablero impreso: Big Shoulders + tabular-nums, recuadro de tinta. */
 export const scorePillVariants = cva(
-  "inline-flex items-center justify-center rounded-lg font-display font-bold leading-none tabular-nums",
+  "inline-flex items-center justify-center rounded-[4px] font-display font-black leading-none tabular-nums",
   {
     variants: {
       tone: {
-        neutral: "border border-ring bg-bg-raised text-fg",
-        accent: "bg-accent-grad text-bg shadow-[0_8px_24px_-14px_var(--accent)]",
-        gold: "bg-gold-grad text-bg shadow-[0_8px_24px_-14px_var(--gold)]",
-        muted: "border border-border bg-bg-elevated text-fg-muted",
+        neutral: "border-2 border-ink bg-bg-raised text-fg",
+        accent: "border-2 border-ink bg-accent text-white",
+        brand: "border-2 border-ink bg-brand text-white",
+        muted: "border-2 border-border bg-bg-elevated text-fg-muted",
       },
       size: {
         sm: "h-8 min-w-[2ch] px-2 text-xl",
