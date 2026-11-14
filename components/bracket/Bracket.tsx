@@ -63,7 +63,7 @@ function GroupTable({ group, compact, mode }: { group: GroupView; compact?: bool
         <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
           {mode.zoneNoun} {group.letter}
         </span>
-        {!compact && <span className="text-[10px] text-fg-subtle">Pts</span>}
+        {!compact && <span className="text-xs text-fg-subtle">Pts</span>}
       </div>
       <ul className={`flex flex-col ${long ? "gap-0.5" : "gap-1.5"}`}>
         {group.rows.map((row) => (
@@ -189,7 +189,7 @@ function BracketTree({ ko, mode }: { ko: BracketView["ko"]; mode: ModeMeta }) {
         <div className="flex min-w-max gap-8 px-1">
           {columns.map(({ phase, matches }, ci) => (
             <div key={phase} className="flex w-32 shrink-0 flex-col">
-              <span className="mb-2 text-center text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+              <span className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-fg-muted">
                 {phaseLabel(mode, phase)}
               </span>
               {/* T16: celdas flex:1 + conectores CSS en todas las columnas menos la última (la final). */}
@@ -209,7 +209,7 @@ function BracketTree({ ko, mode }: { ko: BracketView["ko"]; mode: ModeMeta }) {
       </div>
       {thirdPlace.length > 0 && (
         <div className="mt-3 flex w-32 flex-col">
-          <span className="mb-2 text-center text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+          <span className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-fg-muted">
             {phaseLabel(mode, "third_place")}
           </span>
           {thirdPlace.map((m) => (

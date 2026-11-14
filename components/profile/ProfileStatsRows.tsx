@@ -42,7 +42,7 @@ function CupsRow({ title, counts }: { title: string; counts: CupCount | undefine
                 className={`aspect-[48/56] h-10 w-auto ${n === 0 ? "opacity-30 grayscale" : ""}`}
               />
               <span className="font-display text-3xl font-black leading-none tabular-nums text-fg">{n}</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-fg-muted">{c.label}</span>
+              <span className="text-xs font-bold uppercase tracking-[0.12em] text-fg-muted">{c.label}</span>
             </li>
           );
         })}
@@ -63,10 +63,10 @@ export function ProfileStatsRows({ stats }: { stats: ProfileStats }) {
             return (
               <li key={d.id} className="flex flex-col items-center gap-1 text-center">
                 <DivisionCrest id={d.id} locked={season === null} className="h-12" />
-                <span className="text-[10px] font-bold uppercase leading-tight tracking-[0.06em] text-fg">
+                <span className="text-xs font-bold uppercase leading-tight tracking-[0.06em] text-fg">
                   {d.name}
                 </span>
-                <span className="text-[10px] leading-tight text-fg-muted">
+                <span className="text-xs leading-tight text-fg-muted">
                   {season ? seasonName(season) : "—"}
                 </span>
               </li>
