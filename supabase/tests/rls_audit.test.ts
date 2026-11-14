@@ -5,6 +5,8 @@
 //       (cualquier grant accidental en una migración futura rompe el test → review consciente).
 //   (c) ningún mutador autoritativo interno es ejecutable por `anon`/`authenticated`
 //       (generaliza el check de 4 funciones de anticheat.test.ts a la lista completa de revocadas).
+//   (d) la superficie de TABLAS legible/escribible directo por el cliente == allowlist (una por policy
+//       RLS; `correct_index` y demás internos solo por RPC). Ver 20261119000000_explicit_table_grants.
 import { afterAll, describe, expect, it } from "vitest";
 import { closePool, query } from "./_db";
 
@@ -159,5 +161,42 @@ describe("mutadores autoritativos internos: revocados a anon/authenticated", () 
     const found = new Set(rows.map((r) => r.proname));
     const missing = INTERNAL_DENYLIST.filter((n) => !found.has(n));
     expect(missing).toEqual([]);
+  });
+});
+
+// (d) Lecturas/escrituras directas por PostgREST. Las tablas de juego (penalties, questions…) NUNCA.
+const AUTH_TABLE_SELECT = ["game_modes", "participants", "profiles", "rooms", "teams", "tournaments"].sort();
+const ANON_TABLE_SELECT = ["game_modes"];
+const AUTH_COLUMN_UPDATE = ["profiles.avatar", "profiles.username"];
+
+describe("9.1 (d) — superficie de tablas del cliente", () => {
+  it("SELECT directo de authenticated/anon == allowlist; sin INSERT/DELETE; UPDATE solo username/avatar", async () => {
+    const tables = await query<{ relname: string; auth_sel: boolean; anon_sel: boolean; writes: boolean }>(
+      `select c.relname,
+              has_table_privilege('authenticated', c.oid, 'SELECT') as auth_sel,
+              has_table_privilege('anon', c.oid, 'SELECT') as anon_sel,
+              has_table_privilege('authenticated', c.oid, 'INSERT')
+                or has_table_privilege('authenticated', c.oid, 'DELETE')
+                or has_table_privilege('authenticated', c.oid, 'UPDATE')
+                or has_table_privilege('anon', c.oid, 'INSERT')
+                or has_table_privilege('anon', c.oid, 'DELETE')
+                or has_any_column_privilege('anon', c.oid, 'UPDATE') as writes
+         from pg_class c join pg_namespace n on n.oid = c.relnamespace
+        where n.nspname = 'public' and c.relkind in ('r', 'v', 'm')`,
+    );
+    expect(tables.filter((t) => t.auth_sel).map((t) => t.relname).sort()).toEqual(AUTH_TABLE_SELECT);
+    expect(tables.filter((t) => t.anon_sel).map((t) => t.relname).sort()).toEqual(ANON_TABLE_SELECT);
+    expect(tables.filter((t) => t.writes).map((t) => t.relname)).toEqual([]);
+
+    const cols = await query<{ col: string }>(
+      `select c.relname || '.' || a.attname as col
+         from pg_attribute a
+         join pg_class c on c.oid = a.attrelid
+         join pg_namespace n on n.oid = c.relnamespace
+        where n.nspname = 'public' and c.relkind = 'r' and a.attnum > 0 and not a.attisdropped
+          and has_column_privilege('authenticated', c.oid, a.attnum, 'UPDATE')
+        order by 1`,
+    );
+    expect(cols.map((c) => c.col)).toEqual(AUTH_COLUMN_UPDATE);
   });
 });

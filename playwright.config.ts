@@ -7,6 +7,8 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "e2e",
+  // El flujo de juego crea usuarios: solo con `pnpm test:e2e:flow` (Supabase local).
+  testIgnore: "flow/**",
   timeout: 30_000,
   retries: 0,
   reporter: "list",

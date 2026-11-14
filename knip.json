@@ -5,7 +5,8 @@
     "app/**/actions.ts",
     "**/*.test.ts",
     "scripts/**/*.ts",
-    "e2e/**/*.spec.ts"
+    "e2e/**/*.spec.ts",
+    "playwright.flow.config.ts"
   ],
   "project": [
     "**/*.{ts,tsx}"

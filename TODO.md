@@ -217,3 +217,33 @@ pnpm db:start && pnpm db:reset && pnpm test:db   # suite SQL/RPC (Docker)
 
 > Protocolo: una cosa a la vez, verificar con output real, commit descriptivo. Cambios de
 > arquitectura grandes → consultar a Gino primero.
+
+## ⏸ E2E del flujo de juego — rama `wip/e2e-flow` (desde main, 14/11), falta revisión + merge
+
+Independiente de `wip/avatar-glb` y `wip/post-6b`. Verde: `typecheck · lint · knip · build · 145 unit ·
+77 db` + `test:e2e:flow` ✓ (2 corridas seguidas, ~1,5 min c/u).
+- **`pnpm test:e2e:flow`** (`scripts/e2e/flow.sh` + `playwright.flow.config.ts` + `e2e/flow/game.spec.ts`):
+  invitado (sesión anónima) → Jugar → Mundial → sala → lobby (minuto real) → `/partido` → responde el
+  primer penal (queda fijo, botones bloqueados) → resolución GOL/ATAJADO. Además verifica que
+  `correct_index` no viaja (REST ni frames de Realtime) mientras el penal está abierto.
+- **Solo contra Supabase LOCAL**: el script saca URL/keys de `supabase status`, aborta si la API no es
+  `127.0.0.1`/`localhost` y las exporta (pisan a `.env.local`, que apunta a prod); el spec tiene un
+  segundo seguro. `pnpm test:e2e` (smoke) ignora `e2e/flow/`. Stack: `pnpm e2e:stack` (auth, kong,
+  postgrest, realtime, cron; sin studio/storage/etc.) + `pnpm db:reset`. Ojo: deja `.next` construido
+  contra la DB local → `pnpm build` antes de otro uso.
+- **Hallazgo → migración `20261119000000_explicit_table_grants`**: en local, `authenticated` no tenía
+  SELECT sobre `profiles`/`rooms`/… (el baseline solo trae REFERENCES/TRIGGER/TRUNCATE/MAINTAIN y el
+  default ACL local nuevo no da más) → la home de un invitado/logueado quedaba como landing ("Entrando…")
+  y la sala no cargaba. Prod funciona porque sus tablas heredaron grants completos del default ACL viejo
+  de la plataforma. La migración da SELECT en `profiles, rooms, participants, tournaments, teams` y
+  UPDATE solo de `profiles(username, avatar)`; nada de tablas de juego. `rls_audit` (d) fija esa
+  superficie.
+  **Para Gino antes de aplicarla en prod** (solo lectura, por MCP `execute_sql`):
+  `select table_name, string_agg(privilege_type, ',') from information_schema.role_table_grants where
+  table_schema='public' and grantee='authenticated' group by 1;` → si prod da `SELECT/INSERT/UPDATE/DELETE`
+  sobre tablas de juego (`penalties`, `questions`…), RLS sin policy igual las bloquea, pero conviene
+  revocarlos y dejar prod == repo (el test (d) describe la superficie buscada).
+
+**Para mergear (con OK de Gino):** `git merge wip/e2e-flow` + aplicar `20261119000000_explicit_table_grants`
+por MCP `apply_migration` (después de mirar los grants de prod, arriba) + reconciliar ledger.
+
