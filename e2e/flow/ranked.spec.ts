@@ -24,7 +24,7 @@ async function guestInQueue(browser: Browser, errors: string[], csp: string[]): 
   page.on("pageerror", (e) => errors.push(e.message)); // desde el landing, no después de entrar
   // Flake 1/11 (14/11): el test se cortó a los 12 s de entrar a /partido sin ningún click → firma de
   // renderer caído (2 escenas WebGL a la vez). Si vuelve, que el reporte lo diga.
-  page.on("crash", () => errors.push(`renderer crash en ${page.url()}`));
+  page.on("crash", () => test.info().annotations.push({ type: "renderer crash", description: page.url() }));
   await enterAsGuest(page);
   await page.getByRole("button", { name: "Jugar", exact: true }).click();
   await page.getByRole("button", { name: /ranked 1v1/i }).click();
