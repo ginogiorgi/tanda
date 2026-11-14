@@ -3,11 +3,12 @@
  * genera los GLB livianos que sirve la app en `public/models/avatar/`:
  *
  *   avatar-male.glb / avatar-female.glb  cuerpo + ojos + cejas + los 6 peinados (mismo esqueleto)
- *   avatar-anims.glb                     solo los clips de UAL que usamos (sin malla)
+ *
+ * Sin animaciones de UAL: el rig propio (`lib/avatar/rig.ts`) anima los huesos directamente.
  *
  *   pnpm avatar:build <dir-de-descarga>
  *
- * `<dir>` contiene `universal-base-characters/` y `universal-animation-library/` tal cual salen del
+ * `<dir>` contiene `universal-base-characters/` tal cual salen del
  * zip. Texturas: se achican con PIL (python3) y van en JPEG/PNG chico; geometría con meshopt.
  * Los assets fuente NO se versionan (pesan ~170 MB); el resultado sí.
  */
@@ -17,7 +18,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Document, NodeIO, type Texture } from "@gltf-transform/core";
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from "@gltf-transform/extensions";
-import { dedup, meshopt, prune, quantize, resample } from "@gltf-transform/functions";
+import { dedup, meshopt, prune, quantize } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
 const src = process.argv[2];
@@ -35,12 +36,9 @@ const io = new NodeIO()
 const UBC = join(src, "universal-base-characters", "Universal Base Characters[Standard]");
 const BODY_DIR = join(UBC, "Base Characters", "Godot - UE");
 const HAIR_DIR = join(UBC, "Hairstyles", "Rigged to Head Bone", "glTF (Godot -Unreal)");
-const UAL1 = join(src, "universal-animation-library", "Universal Animation Library[Standard]", "Unreal-Godot", "UAL1_Standard.glb");
 
 /** Peinados del pack que mapean a los `hair.part` del avatar (ver `components/avatar/GlbAvatar`). */
 const HAIRS = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"] as const;
-/** Clips de UAL que usa la app. */
-const CLIPS = ["Idle_Loop"] as const;
 
 const work = mkdtempSync(join(tmpdir(), "tanda-avatar-"));
 const resizer = join(work, "resize.py");
@@ -119,34 +117,9 @@ for (const body of ["Male", "Female"] as const) {
   await finish(doc, `avatar-${body.toLowerCase()}.glb`);
 }
 
-// Animaciones: solo los clips que usamos; sin malla (se reproducen sobre el esqueleto del cuerpo).
-{
-  const doc = await io.read(UAL1);
-  const r = doc.getRoot();
-  for (const a of r.listAnimations()) if (!(CLIPS as readonly string[]).includes(a.getName())) a.dispose();
-  // Dedos y escalas no aportan a esta distancia; traslación solo en la pelvis (rebote del cuerpo).
-  for (const a of r.listAnimations())
-    for (const ch of a.listChannels()) {
-      const bone = ch.getTargetNode()?.getName() ?? "";
-      const path = ch.getTargetPath();
-      const finger = /(index|middle|pinky|ring|thumb)_/.test(bone);
-      if (finger || path === "scale" || (path === "translation" && bone !== "pelvis")) {
-        ch.getSampler()?.dispose();
-        ch.dispose();
-      }
-    }
-  await doc.transform(resample({ tolerance: 1e-3 }));
-  for (const node of r.listNodes()) {
-    node.setMesh(null);
-    node.setSkin(null);
-  }
-  for (const m of r.listMeshes()) m.dispose();
-  await finish(doc, "avatar-anims.glb");
-}
-
 writeFileSync(
   join(out, "LICENSE.txt"),
-  "Personajes y animaciones: Quaternius (https://quaternius.com) — Universal Base Characters y\n" +
-    "Universal Animation Library. Licencia CC0 1.0 (dominio público). Procesados con\n" +
+  "Personajes: Quaternius (https://quaternius.com) — Universal Base Characters.\n" +
+    "Licencia CC0 1.0 (dominio público). Procesados con\n" +
     "scripts/avatar/build-glb.mts (texturas reducidas, meshopt).\n",
 );
