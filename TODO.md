@@ -33,6 +33,24 @@ Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck �
   Argentina, Ferran Torres 106'), **wc-621** (Inglaterra 3ª, 6-4 a Francia) y **wc-622** (Paraguay 4-3 por
   penales a Alemania, 16avos) → ya no hace falta que Gino las confirme.
 
+- **Code review (/code-review high, 14/11)** — arreglado:
+  - **Filtraciones** (una pregunta regala la respuesta de otra del mismo Mundial con poco texto en común,
+    que `questions:check` no veía): reescritas wc-328/354/369/509/516/518/546/547/548/561/572/606/609/610/
+    612/619 (mismo hecho, mismas opciones salvo wc-606) y sacados los "(Argentina-Alemania Federal)" de las
+    finales wc-141/289/290/632 (regalaban wc-624/625 y las subcampeonas). **wc-614** reemplazada (filtraba
+    wc-698): "¿Qué selección le ganó al anfitrión en el inaugural de 2022?" → Ecuador.
+  - `questions:check` reporta "posibles filtraciones (mismo año, otro tema)" (informativo; detalle con
+    `--leaks`): no entran a los temas porque encadenadas arman grupos de 100+ preguntas. Quedan ~350 en
+    wc, casi todas débiles ("Argentina jugó en 2022" vs "¿quién ganó 2022?").
+  - Fix: `questions:topics` reescribía el JSON con indent 4 (tomaba la sangría de las claves).
+  - `stats-2026-11.csv`: fuera las 10 filas de keys reutilizadas (sus aciertos eran de la pregunta vieja).
+  - **Decisión a revisar con Gino:** se reutilizaron las 100 keys (upsert) en vez de retirarlas y crear
+    nuevas. La UI no muestra preguntas de partidos pasados (solo el penal en vivo; la respuesta correcta
+    mantiene su índice), así que el historial de prod no se ve afectado; si se quiere trazabilidad
+    estricta, pasar a keys nuevas + migración de retiro.
+  - ⚠ Pirámide: easy 182 < medium 225 (sin cambio; `take_tournament_question` cae a la dificultad vecina).
+  - `test:db`: 1 flake en `tournament_e2e` en la primera corrida post-reset; 76/76 en las dos siguientes.
+
 **Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
 aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
 aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.

@@ -11,6 +11,9 @@
  *    enunciados parecidos (≥ 0.4). Son las preguntas que un jugador siente "repetidas".
  *  · Filtraciones: dos preguntas sobre el mismo hecho donde el enunciado de una nombra la respuesta
  *    de la otra ("¿Qué club ganó X?" + "¿Qué DT ganó X con Estudiantes?").
+ *  · Posibles filtraciones lejanas (informativo): una nombra la respuesta de la otra y comparten año,
+ *    aunque el texto se parezca poco. No entran a los temas (encadenadas arman grupos de 100+); se
+ *    listan con `--leaks` para revisarlas a mano y reescribir el enunciado si regala el dato.
  *  · Balance de categorías (alerta si una supera el 25% del banco).
  *  · Posición de la correcta (alerta si alguna posición se aleja >5 pp del tercio).
  *  · Pirámide de dificultad (easy ≥ medium ≥ hard ≥ very_hard).
@@ -25,6 +28,7 @@ type Question = z.infer<typeof questionSchema>;
 const root = join(import.meta.dirname, "..", "..");
 const reportOnly = process.argv.includes("--report");
 const writeTopics = process.argv.includes("--write-topics");
+const listLeaks = process.argv.includes("--leaks");
 const pairsOut = process.argv.includes("--pairs") ? process.argv[process.argv.indexOf("--pairs") + 1] : undefined;
 const allPairs: { a: string; b: string; why: string }[] = [];
 
@@ -96,6 +100,23 @@ function nearDuplicates(qs: Question[]): Pair[] {
   return out.sort((x, y) => y.score - x.score);
 }
 
+const YEAR = /^(19[3-9]\d|20\d\d)$/;
+
+/** Filtraciones lejanas: mismo año y una nombra la respuesta de la otra, en temas distintos. */
+function farLeaks(qs: Question[], topicOf: Map<string, string>): [Question, Question][] {
+  const years = qs.map((q) => [...tokens(q.prompt)].filter((t) => YEAR.test(t)));
+  const out: [Question, Question][] = [];
+  for (let i = 0; i < qs.length; i++) {
+    for (let j = 0; j < qs.length; j++) {
+      if (i === j || !years[i]!.some((y) => years[j]!.includes(y))) continue;
+      const ti = topicOf.get(qs[i]!.key);
+      if (ti && ti === topicOf.get(qs[j]!.key)) continue;
+      if (names(qs[i]!.prompt, qs[j]!.options[qs[j]!.answer]!)) out.push([qs[i]!, qs[j]!]);
+    }
+  }
+  return out;
+}
+
 const pct = (n: number, d: number) => `${((100 * n) / d).toFixed(1)}%`;
 
 // Pares ya revisados a mano (misma plantilla, distinto dato): no se vuelven a reportar.
@@ -165,10 +186,17 @@ for (const mode of MODES) {
       return t ? { ...rest, topic: t } : rest;
     });
     // Respetar la indentación del archivo (diffs chicos).
-    const indent = /\n( +)"/.exec(rawText)?.[1]?.length ?? 1;
+    // Primer nivel del array (`[\n  {`), no el de las claves de cada pregunta.
+    const indent = /^\[\n( +)/.exec(rawText)?.[1]?.length ?? 2;
     writeFileSync(join(root, `data/questions/${mode}.json`), `${JSON.stringify(out, null, indent)}\n`);
     console.log(`  ✓ temas escritos en data/questions/${mode}.json`);
   }
+  const leaks = farLeaks(qs, topicOf);
+  console.log(`posibles filtraciones (mismo año, otro tema): ${leaks.length}${listLeaks ? "" : " · ver con --leaks"}`);
+  if (listLeaks) {
+    for (const [a, b] of leaks) console.log(`  ${a.key} nombra la respuesta de ${b.key} (${b.options[b.answer]})\n    · ${a.prompt}\n    · ${b.prompt}`);
+  }
+
   const dups = raw2.filter((d) => d.why !== "filtra la respuesta").filter(
     (d) => !reviewed.has(`${d.a.key}|${d.b.key}`) && !reviewed.has(`${d.b.key}|${d.a.key}`),
   );
