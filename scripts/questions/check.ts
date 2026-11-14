@@ -83,10 +83,7 @@ function numbers(t: Set<string>): string {
 
 const YEAR = /^(19[3-9]\d|20\d\d)$/;
 
-/**
- * ¿Hablan del mismo hecho aunque se parezcan poco? Comparten un año y ≥ 10% del resto del texto
- * (sin años ni las palabras de las respuestas, que justamente son lo que se filtra).
- */
+/** Ganar/perder un título es el mismo hecho → un solo token. */
 const TITLE = new Set(
   "campeon campeona campeones gano gana ganar ganaron ganador consagro final finales titulo subcampeon subcampeona perdio vencio levanto".split(
     " ",
@@ -102,6 +99,10 @@ function hostLeak(a: Question, b: Question): boolean {
   return new RegExp(`(^|[^a-z0-9])en ${host.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9]|$)`).test(norm(a.prompt));
 }
 
+/**
+ * ¿Hablan del mismo hecho aunque se parezcan poco? Comparten un año y ≥ 10% del resto del texto
+ * (sin años ni las palabras de las respuestas, que justamente son lo que se filtra).
+ */
 function sameEvent(a: Question, b: Question, ta: Set<string>, tb: Set<string>): boolean {
   const ya = [...ta].filter((t) => YEAR.test(t));
   if (!ya.some((y) => tb.has(y))) return false;
@@ -129,6 +130,8 @@ function nearDuplicates(qs: Question[]): Pair[] {
       // Con poco texto en común (< 0.3) cuenta igual si comparten año y algo de contexto aparte de la
       // respuesta ("¿Qué DT llevó a Estudiantes a ganar la Copa de la Liga 2024?" regala "¿Qué club
       // ganó la Copa de la Liga 2024?").
+      // Orden medido: `sameEvent` corta enseguida sin año compartido; `names` arma una RegExp por
+      // llamada → ponerlo primero triplica el tiempo (0,54 s → 1,45 s).
       else if (
         (s >= 0.3 || sameEvent(qs[i]!, qs[j]!, tk[i]!, tk[j]!)) &&
         (names(qs[j]!.prompt, qs[i]!.options[qs[i]!.answer]!) || names(qs[i]!.prompt, qs[j]!.options[qs[j]!.answer]!))
