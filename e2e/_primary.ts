@@ -9,7 +9,7 @@ import type { Page } from "@playwright/test";
 export async function visiblePrimaries(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     // Los botones animan el fondo (transition 100ms): se leen en su estado final, no a mitad de camino.
-    for (const a of document.getAnimations()) a.finish();
+    for (const a of document.getAnimations()) if (a instanceof CSSTransition) a.finish();
     const reds = new Set(
       ["bg-brand", "bg-brand-ink"].map((cls) => {
         const probe = document.createElement("div");
