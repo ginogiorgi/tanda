@@ -107,8 +107,13 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
     termina en el protagonista. Reduced motion → pose final estática.
   - Banco de pruebas `/dev/penal?shot=goal-1&t=0.3` (404 en prod).
 
-### Próximo (en orden)
-1. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT/advisors/SEO.
+- **Fase 7** — **cierre**: Lighthouse mobile en prod 98/100/96/100, Playwright + axe
+  (`pnpm test:e2e`, 14 verdes), texto mínimo 12px, índices de FKs (`20261117000000_fk_indexes`, en
+  prod), advisors revisados, SPEC §0 / BRIEF / CLAUDE.md al día. Informe: `docs/AUDIT-2026-11.md`.
+
+### Próximo
+- **Plan Tanda 2.0 completo.** Queda: la prueba de Ranked con 2 personas reales, la revisión final con
+  Gino (sección de arriba) y los pendientes de `docs/AUDIT-2026-11.md`.
 
 ---
 

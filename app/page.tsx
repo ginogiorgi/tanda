@@ -145,7 +145,7 @@ export default async function Home({
         </div>
       )}
 
-      <p className="mt-4 max-w-xs text-balance text-[11px] leading-relaxed text-fg-subtle">
+      <p className="mt-4 max-w-xs text-balance text-xs leading-relaxed text-fg-subtle">
         Juego original e independiente. No está afiliado, asociado ni autorizado por la FIFA ni por
         ninguna organización futbolística. Selecciones y clubes a modo ilustrativo; los escudos son
         diseños originales.

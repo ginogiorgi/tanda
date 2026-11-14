@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 /** Pill de estado/etiqueta (fase, EN VIVO, rol, resultado). */
 export const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-[3px] border-[1.5px] px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.12em]",
+  "inline-flex items-center gap-1 rounded-[3px] border-[1.5px] px-2 py-0.5 text-xs font-bold uppercase tracking-[0.12em]",
   {
     variants: {
       variant: {

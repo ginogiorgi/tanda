@@ -108,7 +108,7 @@ function VersusCard({ match, mode }: { match: ScoreLivePayload; mode: ModeMeta }
       }`}
     >
       <span
-        className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+        className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] ${
           live ? "text-danger" : "text-brand"
         }`}
       >
@@ -270,7 +270,7 @@ export function Bracket({ view }: { view: BracketView }) {
       {view.myNextMatch && <VersusCard match={view.myNextMatch} mode={view.mode} />}
       {myGroup && (
         <div className="w-full">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-brand">
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand">
             Tu {view.mode.zoneNoun.toLowerCase()}
           </span>
           <GroupTable group={myGroup} mode={view.mode} />
@@ -278,7 +278,7 @@ export function Bracket({ view }: { view: BracketView }) {
       )}
       {otherGroups.length > 0 && (
         <div className="flex w-full flex-col gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-fg-muted">
+          <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
             {otherGroups.length === 1 ? `La otra ${view.mode.zoneNoun.toLowerCase()}` : `Otros ${view.mode.zonesLabel.toLowerCase()}`}
           </span>
           <div className={`grid gap-2 ${otherGroups.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>

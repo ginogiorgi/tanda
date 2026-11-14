@@ -37,7 +37,7 @@ export function DivisionProgress({
         >
           <div className="h-full bg-brand" style={{ width: `${p.fraction * 100}%` }} />
         </div>
-        <span className="text-[11px] font-semibold text-fg-muted">
+        <span className="text-xs font-semibold text-fg-muted">
           {placementLeft > 0
             ? `Ubicación: ${placementLeft} ${placementLeft === 1 ? "partida" : "partidas"} con puntos dobles`
             : p.next

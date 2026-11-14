@@ -6,6 +6,32 @@
 
 ---
 
+## 0. Tanda 2.0 (nov 2026) — qué cambió respecto de este documento
+
+Las secciones de abajo describen la v1 y siguen valiendo para el **núcleo** (timing autoritativo,
+penal/partido, reloj de ronda, anti-trampa, invitado anónimo). Lo que la 2.0 cambió:
+
+- **Modos de juego** (`game_modes`, `20261114000000_game_modes`): `worldcup` (48 selecciones, 12
+  grupos de 4) y `arg` (30 equipos 2027, 2 zonas de 15, 5 fechas + interzonal, octavos→final sin 3er
+  puesto; desempate puntos → penales convertidos → moneda por seed). `nations` pasó a **`teams`**
+  con `mode_id`, `kit_pattern`, escudos originales. `quick_play(p_mode)` / `create_room(p_mode)`; el
+  formato sale de `game_modes.config`, no de constantes. Motor: `lib/engine/formats/`; registro de
+  front: `lib/modes/`.
+- **Ranked 1v1** (`20261115000000_ranked`): Elo con K variable, divisiones Potrero→Leyenda, escudo de
+  descenso, temporadas Apertura/Clausura, cola con ventana que se abre por tiempo. Motor
+  `lib/engine/ranked.ts` + port SQL con paridad. Partido = torneo `ranked` con un único match `final`.
+- **Preguntas** (`data/questions/*.json` → seed generado): 700 Mundial + 700 Argentina, `topic` por
+  hecho (no se repite tema en un torneo) y categoría distinta a la del penal anterior.
+  `pnpm questions:check` en CI.
+- **3D (§8.2)**: sigue sin GLBs. El avatar es **articulado** (rig propio de 11 articulaciones,
+  `lib/avatar/rig.ts`) y la escena del penal es un mini-estadio con jugada animada determinista
+  (`lib/penal/shot.ts`). Ver nota en §8.2.
+- **Marca**: identidad "B · Programa de partido" (ver `CLAUDE.md`).
+- **Verificación**: además de unit/db, `pnpm test:e2e` (Playwright + axe sobre las páginas públicas).
+  Informe de auditoría: `docs/AUDIT-2026-11.md`.
+
+---
+
 ## 1. Arquitectura
 
 ### 1.1 Capas
@@ -468,6 +494,12 @@ lobby ni en resultados, solo donde hay 3D.
   selectores y las primitivas propias son lo más liviano y 100% bajo nuestro control,
   coherente con el estilo minimal. (Quaternius queda como upgrade opcional futuro detrás de
   la misma interfaz `AvatarConfig`.)
+- **2.0 — rig y animación propios:** `AvatarModel` arma una jerarquía de pivotes (root, hips,
+  spine, head, hombros, codos, caderas, rodillas). Los clips son keyframes en TS puro
+  (`lib/avatar/rig.ts`: idle, patada, festejo, lamento, arquero en guardia/estirada/festejo) que la
+  escena aplica por frame (`components/avatar/rigPose.ts`). La jugada (pelota, red, cámara) sale de
+  `lib/penal/shot.ts` por `reason`+`variant` → igual en todos los clientes. Banco de pruebas:
+  `/dev/penal?shot=goal-1&t=0.3` (solo dev). Upgrade a GLB CC0 pendiente de OK de Gino.
 - **Modelo:** humano low-poly de proporciones ~7 cabezas (no stocky), con cuello y miembros
   segmentados, mirando a +Z. La **cabeza es una caja con cara** (nariz + ojos al frente):
   marca la orientación para que la rotación se note (una esfera no servía). **Dos cuerpos
@@ -541,8 +573,8 @@ el camino autoritativo real), **sin cuenta persistente ni progreso guardado**.
 
 ## 9. Fuera de alcance (v1)
 
-Chat, ranking/ELO persistente, monetización, app nativa, modos alternativos, edición
-libre de avatar, i18n a otros idiomas. Dejar el código preparado (estructura, tipos) pero
+Chat, monetización, app nativa, edición libre de avatar, i18n a otros idiomas. (Ranking/ELO
+y modos alternativos ya están implementados en la 2.0: ver §0.) Dejar el código preparado (estructura, tipos) pero
 no implementar.
 
 ---

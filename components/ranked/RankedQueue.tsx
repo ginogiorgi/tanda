@@ -155,7 +155,7 @@ export function RankedQueue({ me }: { me: RankedMe }) {
               })}
             </ol>
 
-            <p className="text-center text-[11px] text-fg-muted">
+            <p className="text-center text-xs text-fg-muted">
               Solo humanos · 5 penales + muerte súbita · Abandonar = derrota
               {inQueue !== null && inQueue > 1 && ` · ${inQueue} en la cola`}
             </p>

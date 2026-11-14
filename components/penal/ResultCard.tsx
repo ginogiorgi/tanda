@@ -62,7 +62,7 @@ export function ResultCard({
   return (
     <div className="w-full rounded-[6px] border-2 border-ink bg-bg-elevated p-5 shadow-card">
       {caption && (
-        <p className="mb-3 text-center text-[11px] font-medium uppercase tracking-wider text-fg-subtle">
+        <p className="mb-3 text-center text-xs font-medium uppercase tracking-wider text-fg-subtle">
           {caption}
         </p>
       )}

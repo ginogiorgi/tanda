@@ -2,6 +2,10 @@
 
 > Documento de diseño autocontenido. Es la **fuente de verdad** del producto.
 > Guardalo en el repo como `docs/BRIEF.md` y referencialo con `@docs/BRIEF.md`.
+>
+> **Tanda 2.0 (nov 2026):** se sumaron el Modo Fútbol Argentino, la cola Ranked 1v1, el rebrand
+> "B · Programa de partido" y el 3D articulado. El resumen de cambios está en `SPEC.md` §0; lo de
+> abajo sigue valiendo para el juego base del Mundial.
 
 ---
 

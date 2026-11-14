@@ -22,6 +22,8 @@ pnpm build      # build de producción
 pnpm lint       # ESLint
 pnpm typecheck  # tsc --noEmit
 pnpm test       # Vitest (motor de juego y de torneo)
+pnpm test:db    # Vitest contra Postgres local (pnpm db:start && pnpm db:reset antes)
+pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sistema)
 ```
 (Definir los scripts en F1; mantener estos nombres.)
 
@@ -72,7 +74,8 @@ pnpm test       # Vitest (motor de juego y de torneo)
   **reloj de ronda** compartido para sincronizar a todos los humanos.
 - **3D solo en dos lugares**: creador de avatar y escena de penal (cancha/arco/arquero/
   pateador/pelota). Todo lo demás es 2D. R3F code-splitteado; **primitivas low-poly propias**
-  (sin GLBs externos), animación procedural. El avatar del jugador ES el pateador/arquero
+  (sin GLBs externos), animación por **rig propio** (`lib/avatar/rig.ts`, clips por keyframes) +
+  jugada determinista (`lib/penal/shot.ts`); revisar en `/dev/penal`. El avatar del jugador ES el pateador/arquero
   del penal. Ver SPEC §8.2.
 - **Assets originales**: no reproducir emblemas/logos/mascotas/tipografías de FIFA. Solo
   inspirarse en paleta y feel del Mundial 2026.

@@ -32,7 +32,7 @@ export function Footer({ className }: { className?: string }) {
           JM10
         </a>
       </p>
-      <p className="mt-1 text-[0.7rem] text-fg-subtle">
+      <p className="mt-1 text-xs text-fg-subtle">
         © 2026 Tanda — Pyrux. Todos los derechos reservados.
       </p>
     </footer>

@@ -109,7 +109,7 @@ export function PlayMenu({
                     <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">
                       {busy === key ? ACTION_LABEL[action].busy : mode.name}
                     </span>
-                    <span className="text-[11px] font-medium leading-snug opacity-75">
+                    <span className="text-xs font-medium leading-snug opacity-75">
                       {enabled ? mode.tagline : "Próximamente"}
                     </span>
                   </button>
@@ -165,7 +165,7 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
       <DivisionCrest id={div.id} className="h-12" />
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
-        <span className="text-[11px] font-medium leading-snug opacity-75">
+        <span className="text-xs font-medium leading-snug opacity-75">
           {div.name} · {ranked?.rating ?? 1500} pts
           {ranked && ranked.placement_left > 0 ? " · en ubicación" : ""} · ganás o perdés puntos
         </span>

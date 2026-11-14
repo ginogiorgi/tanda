@@ -84,7 +84,7 @@ export default async function RankingPage() {
         </Card>
       )}
 
-      <p className="text-center text-[11px] text-fg-subtle">
+      <p className="text-center text-xs text-fg-subtle">
         Temporadas por torneo: Apertura (ene–jun) y Clausura (jul–dic). Al cerrar, tu mejor división
         queda en tu perfil y los puntos se acercan a 1500.
       </p>

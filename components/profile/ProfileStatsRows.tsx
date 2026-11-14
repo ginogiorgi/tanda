@@ -17,7 +17,7 @@ const CUPS = [
 
 function RowTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-fg-muted">{children}</h3>
+    <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-fg-muted">{children}</h3>
   );
 }
 

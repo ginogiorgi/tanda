@@ -16,7 +16,7 @@ export function StatCard({
       <span className="font-display text-4xl font-black tabular-nums text-fg">
         {value}
       </span>
-      <span className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-fg-muted">{label}</span>
+      <span className="text-xs font-bold uppercase tracking-[0.12em] text-fg-muted">{label}</span>
     </Card>
   );
 }

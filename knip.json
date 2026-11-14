@@ -4,7 +4,8 @@
     "app/**/{page,layout,route,error,not-found,sitemap,robots,manifest,icon,apple-icon,opengraph-image,template,loading,default}.{ts,tsx}",
     "app/**/actions.ts",
     "**/*.test.ts",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "e2e/**/*.spec.ts"
   ],
   "project": [
     "**/*.{ts,tsx}"
