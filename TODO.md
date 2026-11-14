@@ -57,6 +57,9 @@ NO está mergeada a main (prod sigue con el look oscuro).
   (ojo: `.env.local` apunta a la DB de PROD; el stack local de `db:start` no levanta auth/postgrest).
 
 ### Próximo (en orden)
+0. Cerrar Fase 2 (handoff de arriba) → merge a main. Después **Fase 4b — Ranked 1v1** (plan completo en el
+   archivo de plan: Elo 1500, divisiones Potrero…Leyenda, cola ±100→±250→todos a los 10/20s, solo humanos,
+   invitados sí, temporadas Apertura/Clausura, botón Tabla, perfil con 3 filas de estadísticas).
 1. Pulido AR: tablas de 15 compactas en mobile (bracket), revisar TeamReveal con escudo.
 2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,
    primitivas, logo nuevo (reemplaza el favicon interino), todas las pantallas.
