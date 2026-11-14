@@ -30,10 +30,27 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   `data/questions/arg.json` (269/184/165/82), migración `20261114000002_seed_arg_questions`
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
+## ⏸ Post-6b — rama `wip/post-6b` (desde main, 14/11), falta revisión + merge + deploy
+
+Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck · lint · knip · build ·
+145 unit · 76 db`.
+- **Micro-rótulos 10px → 12px** (`text-xs`) donde entran: perfil (divisiones/copas), bracket (fases, Pts),
+  ranked (Si ganás/Si perdés, rangos de la cola), ranking (línea secundaria, tracking 0.04em). Queda en
+  10px el rótulo central del HUD del penal ("PENAL 3 DE 5" no entra a 12px en 375px). Revisado en
+  `/dev/kit` a 375px.
+- **100 "¿De qué país es X?" → partidos y finales 1930–2022** (`data/questions/worldcup.json`, mismas keys;
+  quedan 27 icónicas/curiosas). `players_records` 37% → 23%. Sin hechos de 2026. `questions:check` ✓;
+  ⚠ pirámide: easy 182 < medium 225 (las que salieron eran casi todas fáciles; la dificultad solo ordena
+  preferencias con fallback, no rompe nada). Migración `20261118000000_questions_matches` (sync generado).
+
+**Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
+aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
+aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
+
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
-  gusto/tono, y decidir si se baja `players_records` (37% del Mundial, mayoría "¿De qué país es X?").
-  Recomendación: cambiar ~100 de esas por preguntas de partidos/finales en una tanda futura.
+  gusto/tono. Las 100 nuevas de partidos/finales (post-6b) son de memoria del modelo sobre hechos muy
+  documentados (1930–2022); conviene una pasada rápida.
 - Datos del Mundial 2026 tomados de Wikipedia/ESPN (jul 2026): España campeón 1-0 a Argentina en el
   alargue (Ferran Torres), Mbappé Bota de Oro (10) y máximo goleador histórico (22), Messi 21,
   Kane 14, Deschamps 27 partidos como DT, 308 goles, Paraguay eliminó a Alemania por penales,
