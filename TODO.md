@@ -265,8 +265,8 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
 6. ✅ **Filtraciones lejanas** (rama `wip/ideas-questions`): `questions:check` agrupa en temas los pares
    fuertes que no se parecían en el texto (mismo año + contexto, título ↔ campeón, sede). Migración de
    sync `20261121000000_question_topics_leaks` (incluye la idea 5). Quedan pistas débiles en `--leaks`.
-7. **Avatar**: `useLoader.preload` de los dos GLB en el creador (evita el fallback procedural al cambiar
-   de cuerpo) y medir en un Android de gama media el costo del template (`templateOf`) y del primer frame.
+7. ✅ **Avatar** (rama `wip/ideas-avatar`): `WarmGlbBodies` precarga los dos GLB y sus templates en el
+   creador. `templateOf` 40–53 ms a CPU 4× (headless), `instantiate` 1–6 ms. Falta medir en teléfono real.
 8. ✅ **"Flake" de `tournament_e2e` = bug real** (rama `wip/ideas-e2e`): el greedy de `build_knockout`
    (y `buildRoundOf32` en TS) a veces cruzaba en 16avos a dos del MISMO grupo según el seed (~2%: 7 de 300
    seeds; también en prod). Arreglo: pasada de reparación determinista en TS + migración
