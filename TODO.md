@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-## Estado: TANDA 2.0 en curso — Fases 0, 1, 3 y 4 HECHAS (Modo Argentina en prod)
+## Estado: TANDA 2.0 en curso — Fases 0, 1, 2, 3 y 4 HECHAS (rebrand + Modo Argentina en prod)
 
 Plan completo: `~/.claude/plans/que-onda-arme-esta-typed-pebble.md` (fases 0–7). Deploy directo
 a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
@@ -38,32 +38,17 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
   → migración chica de `teams` + regenerar escudos cuando se definan.
 
-### ⏸ Handoff — Fase 2 (rebrand "B · Programa") A MEDIAS en rama `wip/rebrand-programa`
-Cortado por usage ≥90% (13/11). La rama compila y pasa todo (typecheck/lint/knip/119 unit/build);
-NO está mergeada a main (prod sigue con el look oscuro).
-- **Hecho en la rama:** tokens papel/tinta/rojo/azul en `app/globals.css` (`gold`→`brand`, `ink`,
-  trama de puntos, sombras offset), fuentes Instrument Sans + Big Shoulders (`next/font`, opsz),
-  primitivas (Button/Card/Badge/ScorePill/Input/StatCard/Typography/Footer), `components/brand/Wordmark`
-  (TANDA + sello TA·26), landing y auth, PlayMenu (cards de modo con filete `mode.swatch`), PenalLive
-  (hoja de papel, opciones A/B/C, resultado), PenalHud, TimeBar, RunSummary/ResultCard/Lobby/Bracket
-  (pasada por sed), radios cuadrados, ícono nuevo (`scripts/brand/build_icons.py <bsd-black.ttf>` →
-  icon.svg/favicon.ico/apple-icon/icon-192/512).
-- **Falta:** revisar visualmente las pantallas de juego (sala, partido, bracket, resumen, perfil,
-  historial, avatar, 404/error) — capturas con Chrome headless; `app/opengraph-image.tsx` (sigue
-  negro/dorado); escena 3D (`PenalScene` fondo #0a0a0a — se rehace en Fase 6); actualizar el
-  `CLAUDE.md` del proyecto (marca nueva). Después merge a main + verificar deploy.
-- **Retomar:** `git checkout wip/rebrand-programa && pnpm dev` y capturas:
-  `google-chrome-stable --headless=new --window-size=390,1100 --virtual-time-budget=8000 --screenshot=<png> http://localhost:3000/<ruta>`
-  (ojo: `.env.local` apunta a la DB de PROD; el stack local de `db:start` no levanta auth/postgrest).
+- **Fase 2** — rebrand "B · Programa" **en prod**: tokens papel/tinta/rojo/azul, Big Shoulders + Instrument
+  Sans, primitivas con borde de tinta y sombra offset, `Wordmark` con sello, landing/auth/jugar/penal/HUD/
+  bracket/resultados/perfil/avatar/404/error, ícono + OG nuevos, kit visual `/dev/kit`, `CLAUDE.md` con
+  reglas de marca. Pendiente menor: escena 3D sigue oscura (se rehace en Fase 6).
 
 ### Próximo (en orden)
-0. Cerrar Fase 2 (handoff de arriba) → merge a main. Después **Fase 4b — Ranked 1v1** (plan completo en el
-   archivo de plan: Elo 1500, divisiones Potrero…Leyenda, cola ±100→±250→todos a los 10/20s, solo humanos,
-   invitados sí, temporadas Apertura/Clausura, botón Tabla, perfil con 3 filas de estadísticas).
-1. Pulido AR: tablas de 15 compactas en mobile (bracket), revisar TeamReveal con escudo.
-2. **Fase 2 — Rebrand "B · Programa"** (artifact Uu1NeNBEUnysnT2cGUdqrR): tipografías, tokens,
-   primitivas, logo nuevo (reemplaza el favicon interino), todas las pantallas.
-3. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+1. **Fase 4b — Ranked 1v1** (plan completo en el archivo de plan: Elo 1500, divisiones Potrero…Leyenda,
+   cola ±100→±250→todos a los 10/20s, solo humanos, invitados sí, temporadas Apertura/Clausura, botón
+   Tabla, perfil con 3 filas de estadísticas).
+2. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
+3. **Fase 5b** — verificar datos de las 1400 preguntas.
 4. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
 
 ---

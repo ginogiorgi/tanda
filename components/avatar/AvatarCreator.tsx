@@ -119,7 +119,7 @@ export function AvatarCreator({
       {/* Viewer rotable (sin recuadro, centrado) */}
       <div className="flex flex-col gap-3 lg:w-1/2">
         <div
-          className="aspect-square w-full cursor-grab touch-none select-none active:cursor-grabbing"
+          className="aspect-square w-full cursor-grab touch-none select-none rounded-[6px] border-2 border-ink bg-bg-raised shadow-card active:cursor-grabbing"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -137,8 +137,8 @@ export function AvatarCreator({
               onClick={() => setBodyType(b.id)}
               className={`flex-1 rounded-[6px] px-3 py-2 text-sm font-medium ring-1 transition ${
                 avatar.bodyType === b.id
-                  ? "bg-brand/15 text-fg ring-brand/40"
-                  : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
+                  ? "bg-ink text-bg ring-ink"
+                  : "bg-bg-raised text-fg ring-ink hover:bg-bg-overlay"
               }`}
             >
               {b.label}
@@ -204,8 +204,8 @@ function Selector({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-[6px] border border-border bg-bg-elevated p-3">
-      <span className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
+    <div className="flex flex-col gap-2 rounded-[6px] border-2 border-ink bg-bg-elevated p-3 shadow-card">
+      <span className="text-xs font-bold uppercase tracking-[0.14em] text-fg">
         {label}
       </span>
       {children}
@@ -257,8 +257,8 @@ function ChipRow({
           onClick={() => onSelect(o.id)}
           className={`rounded-[4px] px-3 py-1.5 text-sm ring-1 transition ${
             selected === o.id
-              ? "bg-brand/15 text-fg ring-brand/40"
-              : "bg-bg-elevated text-fg-muted ring-border hover:bg-bg-overlay"
+              ? "bg-ink text-bg ring-ink"
+              : "bg-bg-raised text-fg ring-ink hover:bg-bg-overlay"
           }`}
         >
           {o.label}
@@ -286,7 +286,7 @@ function ColorRow({
           style={{ backgroundColor: color }}
           className={`h-7 w-7 rounded-full ring-2 transition ${
             selected.toLowerCase() === color.toLowerCase()
-              ? "ring-brand"
+              ? "ring-ink ring-offset-2 ring-offset-bg"
               : "ring-border hover:ring-ring"
           }`}
         />

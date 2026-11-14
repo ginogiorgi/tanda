@@ -6,7 +6,7 @@ Genera el ícono de marca de Tanda (rebrand "B · Programa") desde la fuente Big
 Salidas: app/icon.svg (favicon vectorial), app/apple-icon.png (180), app/favicon.ico (16/32/48),
 public/icon-192.png, public/icon-512.png.
 
-Uso:  python3 scripts/brand/build_icons.py <BigShouldersDisplay-Black.ttf>
+Uso:  python3 scripts/brand/build_icons.py assets/fonts/BigShouldersDisplay-Black.ttf
 Requiere: fonttools, y `rsvg-convert` + `magick` (ImageMagick) en el PATH para los rasters.
 """
 import subprocess

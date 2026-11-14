@@ -36,6 +36,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Que el TS legible no se reconstruya desde prod. Ya es el default; lo dejamos explícito.
   productionBrowserSourceMaps: false,
+  // La imagen OG lee la fuente del wordmark desde disco: que viaje en el bundle de la función.
+  outputFileTracingIncludes: { "/opengraph-image": ["./assets/fonts/**"] },
   // Tree-shaking dirigido para libs con muchos sub-imports. three/R3F ya van por `next/dynamic`
   // (PenalSceneViewer / AvatarViewer), así que no entran al bundle inicial.
   experimental: {

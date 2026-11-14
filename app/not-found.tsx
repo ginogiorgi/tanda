@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/Button";
 
 /**
  * 404 amistoso (App Router): cualquier ruta inexistente cae acá con un camino claro de vuelta al
@@ -11,14 +12,14 @@ export default function NotFound() {
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
           Error 404
         </span>
-        <h1 className="text-5xl font-extrabold tracking-tight text-brand">Tiro desviado</h1>
+        <h1 className="font-display text-7xl font-black uppercase leading-[0.85] text-fg">Tiro desviado</h1>
         <p className="max-w-md text-balance text-sm text-fg-muted">
           Esta página no existe o se mudó de cancha.
         </p>
       </div>
       <Link
         href="/"
-        className="rounded-[4px] bg-brand px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-90"
+        className={buttonVariants({ size: "lg" })}
       >
         Volver al inicio
       </Link>
