@@ -869,7 +869,7 @@
   {
     "key": "wc-069",
     "category": "scorers",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Quién marcó los dos goles de Argentina en el tiempo regular y el alargue de la final del Mundial 2022?",
     "options": [
       "Ángel Di María",
@@ -1108,7 +1108,7 @@
   {
     "key": "wc-088",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué jugador tiene el récord de más partidos en Mundiales tras 2022?",
     "options": [
       "Lionel Messi",
@@ -1245,7 +1245,7 @@
   {
     "key": "wc-099",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Quién fue el capitán y símbolo de Argentina campeona en 1986?",
     "options": [
       "Jorge Valdano",
@@ -1308,7 +1308,7 @@
   {
     "key": "wc-104",
     "category": "champions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección ganó su único Mundial en 1966?",
     "options": [
       "Países Bajos",
@@ -1421,7 +1421,7 @@
   {
     "key": "wc-113",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección ganó el Mundial 1970, considerada de las mejores de la historia?",
     "options": [
       "Brasil",
@@ -1495,7 +1495,7 @@
   {
     "key": "wc-119",
     "category": "champions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección ganó el Mundial 1990 en Italia?",
     "options": [
       "Alemania Federal",
@@ -1641,7 +1641,7 @@
   {
     "key": "wc-131",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "easy",
     "prompt": "¿Quién hizo el \"Gol del Siglo\" ante Inglaterra en 1986?",
     "options": [
       "Jorge Valdano",
@@ -1704,7 +1704,7 @@
   {
     "key": "wc-136",
     "category": "records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué selección ganó dos Mundiales seguidos en 1958 y 1962?",
     "options": [
       "Brasil",
@@ -1791,7 +1791,7 @@
   {
     "key": "wc-143",
     "category": "scorers",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién es el máximo goleador de Portugal en la historia de los Mundiales?",
     "options": [
       "Eusébio",
@@ -1803,7 +1803,7 @@
   {
     "key": "wc-144",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué alemán superó el récord de goles mundialistas de Gerd Müller en 2014?",
     "options": [
       "Thomas Müller",
@@ -1852,7 +1852,7 @@
   {
     "key": "wc-148",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién dirigió a Argentina hasta la final del Mundial 2014?",
     "options": [
       "Gerardo Martino",
@@ -1889,7 +1889,7 @@
   {
     "key": "wc-151",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién fue el arquero capitán de España campeona en 2010?",
     "options": [
       "Pepe Reina",
@@ -1914,7 +1914,7 @@
   {
     "key": "wc-153",
     "category": "records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Cuál es la única selección que jugó todas las ediciones del Mundial?",
     "options": [
       "Alemania",
@@ -2026,7 +2026,7 @@
   {
     "key": "wc-162",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué uruguayo tapó un gol con la mano sobre la línea ante Ghana en 2010?",
     "options": [
       "Diego Forlán",
@@ -2100,7 +2100,7 @@
   {
     "key": "wc-168",
     "category": "upsets",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué selección eliminó a Argentina en octavos del Mundial 2018?",
     "options": [
       "Croacia",
@@ -2124,7 +2124,7 @@
   {
     "key": "wc-170",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "easy",
     "prompt": "¿Qué argentino disputó cinco Mundiales entre 2006 y 2022?",
     "options": [
       "Lionel Messi",
@@ -2137,7 +2137,7 @@
   {
     "key": "wc-171",
     "category": "champions",
-    "difficulty": "hard",
+    "difficulty": "easy",
     "prompt": "¿Qué selección ganó la final del Mundial 1978 ante Países Bajos?",
     "options": [
       "Brasil",
@@ -2150,7 +2150,7 @@
   {
     "key": "wc-172",
     "category": "hosts",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué estadio de Buenos Aires fue sede de la final 1978?",
     "options": [
       "Estadio Monumental",
@@ -2731,7 +2731,7 @@
   {
     "key": "wc-219",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién marcó por Francia en la final 2018 con apenas 19 años?",
     "options": [
       "Antoine Griezmann",
@@ -3206,7 +3206,7 @@
   {
     "key": "wc-257",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Quién es el máximo goleador histórico de Argentina en los Mundiales?",
     "options": [
       "Lionel Messi",
@@ -3370,7 +3370,7 @@
   {
     "key": "wc-270",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Cuántos Mundiales ganó España?",
     "options": [
       "Uno",
@@ -3480,7 +3480,7 @@
   {
     "key": "wc-279",
     "category": "records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿En qué año se juega el primer Mundial de la historia con 48 selecciones?",
     "options": [
       "2022",
@@ -3679,7 +3679,7 @@
   {
     "key": "wc-295",
     "category": "champions",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "La final del Mundial 2022 terminó 3-3 y se definió por penales. ¿Cuál fue el resultado de la tanda?",
     "options": [
       "3-1",
@@ -3691,7 +3691,7 @@
   {
     "key": "wc-296",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "easy",
     "prompt": "¿Quién marcó un triplete en la final del Mundial 2022, el primero en una final desde 1966?",
     "options": [
       "Lionel Messi",
@@ -3717,7 +3717,7 @@
   {
     "key": "wc-298",
     "category": "records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿En qué año ganó Argentina su primer título mundial?",
     "options": [
       "1986",
@@ -3964,7 +3964,7 @@
   {
     "key": "wc-318",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién marcó el segundo gol de Argentina (el 2-0) en la final del Mundial 2022?",
     "options": [
       "Ángel Di María",
@@ -3977,7 +3977,7 @@
   {
     "key": "wc-319",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Quién ganó el premio al mejor jugador joven del Mundial 2022?",
     "options": [
       "Jude Bellingham",
@@ -4684,7 +4684,7 @@
   {
     "key": "wc-377",
     "category": "champions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección fue subcampeona del Mundial 2022?",
     "options": [
       "Croacia",
@@ -4697,7 +4697,7 @@
   {
     "key": "wc-378",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenece Brasil?",
     "options": [
       "CONCACAF",
@@ -4709,7 +4709,7 @@
   {
     "key": "wc-379",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenecen las selecciones europeas?",
     "options": [
       "CAF",
@@ -4722,7 +4722,7 @@
   {
     "key": "wc-380",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenece Estados Unidos?",
     "options": [
       "CONMEBOL",
@@ -4735,7 +4735,7 @@
   {
     "key": "wc-381",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenecen las selecciones africanas?",
     "options": [
       "AFC",
@@ -4748,7 +4748,7 @@
   {
     "key": "wc-382",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿En qué club jugaba Diego Maradona durante el Mundial 1986?",
     "options": [
       "Barcelona",
@@ -5091,7 +5091,7 @@
   {
     "key": "wc-410",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenece México?",
     "options": [
       "CONCACAF",
@@ -5116,7 +5116,7 @@
   {
     "key": "wc-412",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿A qué confederación pertenece Marruecos?",
     "options": [
       "CAF (África)",
@@ -5140,7 +5140,7 @@
   {
     "key": "wc-414",
     "category": "trivia",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección tiene el apodo \"La Furia Roja\"?",
     "options": [
       "Chile",
@@ -5411,7 +5411,7 @@
   {
     "key": "wc-436",
     "category": "players_records",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "prompt": "¿Qué arquero argentino atajó penales claves en las tandas del Mundial 1990?",
     "options": [
       "Sergio Goycochea",
@@ -7947,7 +7947,7 @@
   {
     "key": "wc-642",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿En qué club jugaba Diego Maradona durante el Mundial 1990?",
     "options": [
       "Napoli",
@@ -7960,7 +7960,7 @@
   {
     "key": "wc-643",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿En qué club brilló Pelé durante casi toda su carrera?",
     "options": [
       "Santos",
@@ -8060,7 +8060,7 @@
   {
     "key": "wc-651",
     "category": "champions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección fue subcampeona del Mundial 1990?",
     "options": [
       "Argentina",
@@ -8085,7 +8085,7 @@
   {
     "key": "wc-653",
     "category": "players_records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 1986?",
     "options": [
       "Gary Lineker",
@@ -8122,7 +8122,7 @@
   {
     "key": "wc-656",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Cuántos partidos jugó cada selección en la fase de grupos del Mundial 2022?",
     "options": [
       "Tres",
@@ -8134,7 +8134,7 @@
   {
     "key": "wc-657",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Cuántas selecciones disputaron el Mundial 2022 en Catar?",
     "options": [
       "48",
@@ -8147,7 +8147,7 @@
   {
     "key": "wc-658",
     "category": "hosts",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿En qué año se jugará el Mundial siguiente al de 2026?",
     "options": [
       "2028",
@@ -8195,7 +8195,7 @@
   {
     "key": "wc-662",
     "category": "upsets",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Contra qué selección jugó Argentina la semifinal del Mundial 2022?",
     "options": [
       "Países Bajos",
@@ -8220,7 +8220,7 @@
   {
     "key": "wc-664",
     "category": "scorers",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Cuántos goles marcó Lionel Messi en la final del Mundial 2022?",
     "options": [
       "Uno",
@@ -8233,7 +8233,7 @@
   {
     "key": "wc-665",
     "category": "scorers",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Cuántos goles marcó Kylian Mbappé en la final del Mundial 2022?",
     "options": [
       "Tres",
@@ -8334,7 +8334,7 @@
   {
     "key": "wc-673",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿Qué selección fue la primera en ganar cinco Mundiales?",
     "options": [
       "Alemania",
@@ -8359,7 +8359,7 @@
   {
     "key": "wc-675",
     "category": "records",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "Además de Brasil y Argentina, ¿qué otra selección sudamericana ganó el Mundial?",
     "options": [
       "Uruguay",
@@ -8383,7 +8383,7 @@
   {
     "key": "wc-677",
     "category": "champions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "prompt": "¿En qué año ganó Inglaterra su único Mundial, jugando de local?",
     "options": [
       "1970",

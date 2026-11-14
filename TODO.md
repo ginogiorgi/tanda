@@ -62,6 +62,10 @@ Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck �
   preguntas, arg 59/301 (el más grande, 106 de River/Boca: inofensivo, el tema solo ordena preferencias y
   un torneo usa ~15 preguntas). Quedan 169 wc / 14 arg "posibles" débiles (`--leaks`). Migración de sync
   `20261121000000_question_topics_leaks` (local ✓; prod con OK de Gino, después de la `…18…`).
+  **Idea 5 (misma rama):** pirámide de dificultad wc arreglada → easy 215 · medium 212 · hard 188 · very_hard
+  85 (antes 182/225/208/85, hard ≥ medium rompía la pirámide). 34 → easy (30 medium muy conocidas + Gol del
+  Siglo, Messi 5 mundiales, Argentina 1978, triplete de Mbappé), 16 hard → medium (Klose, CR7, Casillas,
+  mano de Suárez…). Va en la misma migración de sync `…21…` (regenerada). Revisar el criterio con Gino.
 
 **Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
 aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
