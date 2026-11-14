@@ -259,10 +259,12 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
    compartidos en `e2e/flow/_helpers.ts`. `pnpm test:e2e:flow` (los dos specs) ✓ en 3,9 min.
 4. **E2E hasta el campeón**: seguir el torneo del invitado jugando todos los penales (bots al instante)
    y verificar bracket/resumen/historial; o un flag de test para acortar el lobby solo en local.
-5. **Pirámide de dificultad del Mundial** (easy 182 < medium 225): escribir ~45 fáciles nuevas (o
-   recalibrar con aciertos reales cuando haya datos post-wipe) y verificarlas con fuente como en post-6b.
-6. **Revisar `pnpm questions:check --leaks`** (~350 wc / ~98 arg): la mayoría son pistas débiles, pero
-   puede haber más casos fuertes en las 600 viejas.
+5. ✅ **Pirámide de dificultad del Mundial** (rama `wip/ideas-questions`): recalibrada a mano → easy 215 ·
+   medium 212 · hard 188 · very_hard 85 (34 suben a easy, 16 hard bajan a medium). Recalibrar con aciertos
+   reales cuando haya datos post-wipe.
+6. ✅ **Filtraciones lejanas** (rama `wip/ideas-questions`): `questions:check` agrupa en temas los pares
+   fuertes que no se parecían en el texto (mismo año + contexto, título ↔ campeón, sede). Migración de
+   sync `20261121000000_question_topics_leaks` (incluye la idea 5). Quedan pistas débiles en `--leaks`.
 7. **Avatar**: `useLoader.preload` de los dos GLB en el creador (evita el fallback procedural al cambiar
    de cuerpo) y medir en un Android de gama media el costo del template (`templateOf`) y del primer frame.
 8. ✅ **"Flake" de `tournament_e2e` = bug real** (rama `wip/ideas-e2e`): el greedy de `build_knockout`
