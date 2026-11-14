@@ -247,3 +247,25 @@ Independiente de `wip/avatar-glb` y `wip/post-6b`. Verde: `typecheck · lint · 
 **Para mergear (con OK de Gino):** `git merge wip/e2e-flow` + aplicar `20261119000000_explicit_table_grants`
 por MCP `apply_migration` (después de mirar los grants de prod, arriba) + reconciliar ledger.
 
+## 💡 Ideas para la próxima (14/11, al cerrar avatar-glb + post-6b + e2e-flow)
+Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18…`) → `wip/e2e-flow` (`…19…`).
+1. **Grants de prod** (antes de mergear e2e-flow): correr la query de solo lectura de arriba; si prod
+   tiene SELECT/escritura sobre tablas de juego, sumar a la migración los `revoke` para dejar prod == repo.
+2. **Job de CI `e2e-flow`**: `supabase start` (stack de `e2e:stack`) + `db:reset` + `test:e2e:flow` en
+   GitHub Actions (~4 min); hoy solo corre a mano.
+3. **E2E ranked 1v1**: dos contextos de Playwright (dos invitados) en la cola → partido → resultado y
+   puntos. Es el flujo más frágil en tiempo real y no tiene cobertura de navegador.
+4. **E2E hasta el campeón**: seguir el torneo del invitado jugando todos los penales (bots al instante)
+   y verificar bracket/resumen/historial; o un flag de test para acortar el lobby solo en local.
+5. **Pirámide de dificultad del Mundial** (easy 182 < medium 225): escribir ~45 fáciles nuevas (o
+   recalibrar con aciertos reales cuando haya datos post-wipe) y verificarlas con fuente como en post-6b.
+6. **Revisar `pnpm questions:check --leaks`** (~350 wc / ~98 arg): la mayoría son pistas débiles, pero
+   puede haber más casos fuertes en las 600 viejas.
+7. **Avatar**: `useLoader.preload` de los dos GLB en el creador (evita el fallback procedural al cambiar
+   de cuerpo) y medir en un Android de gama media el costo del template (`templateOf`) y del primer frame.
+8. **Flake de `tournament_e2e`** (1 de 3 corridas, primera post-reset): reproducir con `--repeat` y ver
+   si es un deadline de `now()` en el arranque.
+9. **CSP**: pasar `Content-Security-Policy-Report-Only` a enforcing (en local loguea las conexiones a
+   127.0.0.1; agregar `http://127.0.0.1:54321` solo en dev).
+10. **Supabase CLI 2.106 → 3.x** y deps mayores (three, @supabase/ssr): decisión de Gino (major).
+
