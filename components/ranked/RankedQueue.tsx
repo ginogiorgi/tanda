@@ -2,29 +2,23 @@
 
 /**
  * Cola ranked (Fase 4b). Al montar se encola (`ranked_enqueue`) y hace poll cada 2s (`ranked_poll`,
- * que también es el latido: sin poll el server te saca a los 15s). La ventana de rating se abre
- * con la espera (±100 → ±250 a los 10s → cualquier humano a los 20s) y se ve en pantalla. Al
- * emparejar → /partido. Al salir sin rival, cancela. El emparejamiento lo decide el server.
+ * que también es el latido: sin poll el server te saca a los 15s). El emparejamiento (y su ventana de
+ * rating, que se abre con la espera) lo decide el server y NO se muestra (feedback 14/11): acá solo
+ * reloj, "buscando rival" y cuántos hay en la cola. Al emparejar → /partido. Al salir, cancela.
  */
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { queueWindow } from "@/lib/engine/ranked";
 import type { RankedMe, RankedPoll } from "@/lib/ranked/types";
-import { Button, buttonVariants } from "@/components/ui/Button";
+import { buttonVariants } from "@/components/ui/Button";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useNav } from "@/lib/nav/useNav";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionProgress } from "./DivisionProgress";
 
 const POLL_MS = 2000;
-
-const STAGES = [
-  { label: "±100", from: 0 },
-  { label: "±250", from: 10 },
-  { label: "Cualquiera", from: 20 },
-] as const;
 
 type View = "searching" | "matched" | "busy" | "error";
 
@@ -34,7 +28,7 @@ function clock(ms: number): string {
 }
 
 export function RankedQueue({ me }: { me: RankedMe }) {
-  const router = useRouter();
+  const { push: navPush, leave: navLeave } = useNav();
   const [supabase] = useState(() => createClient());
   const [view, setView] = useState<View>("searching");
   const [waited, setWaited] = useState(0);
@@ -52,7 +46,7 @@ export function RankedQueue({ me }: { me: RankedMe }) {
       if (r.status === "matched") {
         matchedRef.current = true;
         setView("matched");
-        router.push("/partido");
+        navPush("/partido");
         return true;
       }
       if (r.status === "busy") {
@@ -95,28 +89,29 @@ export function RankedQueue({ me }: { me: RankedMe }) {
       clearInterval(tick);
       if (!matchedRef.current) void supabase.rpc("ranked_cancel");
     };
-  }, [supabase, router]);
+  }, [supabase, navPush]);
 
-  async function cancel() {
+  // Cancelar navega YA; el cancel corre en paralelo (si se perdiera, el server te saca de la cola a
+  // los 15s sin latido). Antes esperaba el RPC y el botón parecía colgado (feedback 14/11).
+  function cancel() {
     matchedRef.current = true; // evita el doble cancel del cleanup
-    await supabase.rpc("ranked_cancel");
-    router.push("/");
+    navLeave("/", () => supabase.rpc("ranked_cancel"));
   }
 
-  const seconds = waited / 1000;
-  const window = queueWindow(seconds);
-
   return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-6">
+    <>
+    <ScreenHeader onBack={cancel} backLabel="Cancelar" />
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-4 py-6">
+    <div className="my-auto flex w-full max-w-sm flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-1 text-center">
         <Eyebrow>Ranked · 1 contra 1</Eyebrow>
-        <h1 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+        <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
           {view === "matched" ? "¡Rival encontrado!" : "Buscando rival"}
-        </h1>
+        </h2>
       </div>
 
       <Card className="flex w-full flex-col gap-5">
-        <DivisionProgress rating={me.rating} placementLeft={me.placement_left} shield={me.shield} compact />
+        <DivisionProgress rating={me.rating} shield={me.shield} compact />
 
         {view === "searching" || view === "matched" ? (
           <>
@@ -128,32 +123,10 @@ export function RankedQueue({ me }: { me: RankedMe }) {
                 {clock(waited)}
               </span>
               <span className="text-xs font-semibold text-fg-muted" aria-live="polite">
-                {window === null
-                  ? "Abrimos a cualquier rival humano"
-                  : `De tu nivel: ${me.rating - window}–${me.rating + window} pts`}
+                Buscando a alguien de tu nivel
               </span>
             </div>
 
-            {/* La ventana se abre con la espera: el tramo actual va lleno. */}
-            <ol className="grid grid-cols-3 gap-1.5" aria-label="Rango de búsqueda">
-              {STAGES.map((s, i) => {
-                const on = seconds >= s.from;
-                const current = on && (STAGES[i + 1] === undefined || seconds < STAGES[i + 1]!.from);
-                return (
-                  <li
-                    key={s.label}
-                    className={`flex flex-col items-center gap-0.5 rounded-[4px] border-2 border-ink px-1 py-1.5 transition-colors ${
-                      current ? "bg-ink text-bg" : on ? "bg-bg-raised text-fg" : "bg-transparent text-fg-subtle"
-                    }`}
-                  >
-                    <span className="font-display text-lg font-extrabold uppercase leading-none">{s.label}</span>
-                    <span className="text-xs font-semibold opacity-75">
-                      {s.from === 0 ? "ya" : `a los ${s.from}s`}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
 
             <p className="text-center text-xs text-fg-muted">
               Solo humanos · 5 penales + muerte súbita · Abandonar = derrota
@@ -176,14 +149,8 @@ export function RankedQueue({ me }: { me: RankedMe }) {
         )}
       </Card>
 
-      <div className="flex w-full gap-3">
-        <Button variant="outline" block onClick={cancel} disabled={view === "matched"}>
-          Cancelar
-        </Button>
-        <Link href="/ranking" className={buttonVariants({ variant: "ghost", className: "shrink-0" })}>
-          Tabla
-        </Link>
-      </div>
     </div>
+    </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { freshUserMetadata, getSession } from "@/lib/supabase/session";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
 import { getTournamentHistory } from "@/lib/profile/queries";
@@ -23,36 +23,26 @@ import { ProfileStatsRows } from "@/components/profile/ProfileStatsRows";
  * vía `getTournamentHistory` (RPC `get_tournament_history`, 10.10).
  */
 export default async function PerfilPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
 
   if (!user) redirect("/login");
 
   // Invitado (sesión anónima): perfil efímero, sin editar avatar / sin recuperación / sin historial.
   // Su lugar es jugar; el CTA lo invita a volverse permanente. (§8.4)
-  if (user.is_anonymous) {
+  if (user.isAnonymous) {
     const [{ data: guestProfile }, { data: guestStats }] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_profile_stats"),
     ]);
 
     return (
-      <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-8 overflow-y-auto px-6 py-12">
-        {/* Tarea 4: navegación arriba de todo. */}
-        <nav className="flex items-center justify-between">
-          <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            ← Inicio
-          </Link>
-          <LogoutButton />
-        </nav>
+      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
 
         <div className="flex flex-col gap-1">
           <Eyebrow>Invitado</Eyebrow>
-          <h1 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+          <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
             {guestProfile?.username ?? "Invitado"}
-          </h1>
+          </h2>
         </div>
 
         {guestStats && (
@@ -75,37 +65,33 @@ export default async function PerfilPage() {
             Creá una cuenta
           </Link>
         </Card>
-      </main>
+
+        <LogoutButton className="self-center" />
+      </div>
     );
   }
 
-  const recoveryEmailRaw = user.user_metadata?.recovery_email;
-  const recoveryEmail =
-    typeof recoveryEmailRaw === "string" && recoveryEmailRaw ? recoveryEmailRaw : null;
-
-  // Perfil e historial son independientes → en paralelo.
-  const [{ data: profile }, history, { data: profileStats }] = await Promise.all([
+  // Todo independiente → en paralelo. El email de recuperación se edita acá mismo: lectura fresca
+  // de Auth (el JWT puede tenerlo viejo hasta refrescarse).
+  const [{ data: profile }, history, { data: profileStats }, meta] = await Promise.all([
     supabase.from("profiles").select("username").eq("id", user.id).single(),
     getTournamentHistory(supabase, user.id),
     supabase.rpc("get_profile_stats"),
+    freshUserMetadata(),
   ]);
+  const recoveryEmailRaw = meta.recovery_email;
+  const recoveryEmail =
+    typeof recoveryEmailRaw === "string" && recoveryEmailRaw ? recoveryEmailRaw : null;
   const stats = aggregateStats(history);
 
   return (
-    <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-8 overflow-y-auto px-6 py-12">
-      {/* Tarea 4: navegación arriba de todo (Inicio + Cerrar sesión). */}
-      <nav className="flex items-center justify-between">
-        <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          ← Inicio
-        </Link>
-        <LogoutButton />
-      </nav>
+    <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
 
       <div className="flex flex-col gap-1">
         <Eyebrow>Perfil</Eyebrow>
-        <h1 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+        <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
           {profile?.username ?? "Jugador"}
-        </h1>
+        </h2>
       </div>
 
       {/* Tarea 4: orden Estadísticas → Historial → Tu jugador → Email de recuperación. */}
@@ -172,6 +158,8 @@ export default async function PerfilPage() {
         <SectionTitle>Email de recuperación</SectionTitle>
         <RecoveryEmailForm initialEmail={recoveryEmail} />
       </Card>
-    </main>
+
+      <LogoutButton className="self-center" />
+    </div>
   );
 }

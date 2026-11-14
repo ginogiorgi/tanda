@@ -5,7 +5,9 @@ import { publicSupabaseEnv } from "@/lib/env";
 /**
  * Refresca la sesión de Supabase en cada request (cookies). Patrón oficial de
  * @supabase/ssr para App Router. No insertar lógica entre createServerClient y
- * getUser().
+ * getClaims(). `getClaims()` valida el JWT (ES256) localmente y solo va a la red para
+ * refrescarlo si venció; `getUser()` iba a Auth en CADA request, prefetches incluidos
+ * (docs/PERF-BASELINE.md).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -28,7 +30,7 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  await supabase.auth.getClaims();
 
   return supabaseResponse;
 }

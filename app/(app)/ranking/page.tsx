@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { seasonName } from "@/lib/engine/ranked";
 import { divisionById, type RankingRow } from "@/lib/ranked/types";
 import { DivisionCrest } from "@/components/ranked/DivisionCrest";
@@ -23,7 +23,7 @@ function Row({ r }: { r: RankingRow }) {
       <span className="flex min-w-0 flex-col">
         <span className="truncate text-sm font-bold">{r.username}</span>
         <span className={`truncate text-xs font-semibold uppercase tracking-[0.04em] ${r.is_me ? "opacity-75" : "text-fg-muted"}`}>
-          {divisionById(r.division).name} · {r.wins}/{r.games} G{r.placement ? " · ubicación" : ""}
+          {divisionById(r.division).name} · {r.wins}/{r.games} G
         </span>
       </span>
       <span className="font-mono text-base font-bold">{r.rating}</span>
@@ -33,10 +33,7 @@ function Row({ r }: { r: RankingRow }) {
 
 /** Tabla de posiciones ranked de la temporada en curso (top 50 + tu puesto). */
 export default async function RankingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
   if (!user) redirect("/login");
 
   const { data } = await supabase.rpc("get_ranking", { p_limit: 50 });
@@ -45,19 +42,17 @@ export default async function RankingPage() {
   const meInTop = rows.some((r) => r.is_me);
 
   return (
-    <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-6 overflow-y-auto px-4 py-10">
-      <nav className="flex items-center justify-between">
-        <Link href="/" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          ← Inicio
-        </Link>
+    <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
+      <div className="flex items-end justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <Eyebrow>Ranked</Eyebrow>
+          <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg">
+            {data ? seasonName(data.season_id) : "Temporada"}
+          </h2>
+        </div>
         <Link href="/ranked" className={buttonVariants({ variant: "primary", size: "sm" })}>
           Jugar ranked
         </Link>
-      </nav>
-
-      <div className="flex flex-col gap-1">
-        <Eyebrow>Ranked · {data ? seasonName(data.season_id) : "Temporada"}</Eyebrow>
-        <h1 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">Tabla</h1>
       </div>
 
       {rows.length === 0 ? (
@@ -88,6 +83,6 @@ export default async function RankingPage() {
         Temporadas por torneo: Apertura (ene–jun) y Clausura (jul–dic). Al cerrar, tu mejor división
         queda en tu perfil y los puntos se acercan a 1500.
       </p>
-    </main>
+    </div>
   );
 }

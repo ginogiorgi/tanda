@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import { createClient } from "@/lib/supabase/client";
 import { Button, type ButtonProps } from "@/components/ui/Button";
 
@@ -13,7 +13,7 @@ export function LogoutButton({
   size?: ButtonProps["size"];
   className?: string;
 }) {
-  const router = useRouter();
+  const router = useNav();
 
   async function onClick() {
     const supabase = createClient();

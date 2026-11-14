@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { isValidUsername, usernameToEmail } from "@/lib/auth";
@@ -12,7 +12,7 @@ import { Input, Field } from "@/components/ui/Input";
 type Availability = "idle" | "checking" | "free" | "taken";
 
 export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
-  const router = useRouter();
+  const router = useNav();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

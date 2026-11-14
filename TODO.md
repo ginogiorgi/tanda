@@ -1,5 +1,22 @@
 # TODO — TANDA ⚽
 
+## 🛠 Feedback de Gino 14/11 — rama `feat/feedback-1411` (worktree `/mnt/hera/Proyectos/tanda-feedback`)
+Plan: `~/.claude/plans/gino-prob-tanda-en-greedy-snail.md` (causas de fondo, no parches). Deploy **por fase**
+(Gino revisa solo en prod): verde completo → rebase sobre main → merge → push → migraciones por MCP + ledger
+→ smoke en prod → anotar acá. Decisiones: ELO ±300 <10 s / ±600 <20 s / cualquiera, oculto · K=32 fijo (sin
+ubicación) · peinados curados del pack gratis (sin comprar Source) · migrar avatares con backup · premios por
+competencia terminada (tabla `awards`).
+- **Tests en paralelo con la otra sesión** (que usa el stack local `tanda` en 54321/54322 y el puerto 3101):
+  stack propio con `SUPABASE_WORKDIR=<dir>` cuyo `supabase/config.toml` es copia con `project_id="tanda-fb"` y
+  puertos +100 (migraciones = symlink). `SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres
+  pnpm test:db` · `SUPABASE_WORKDIR=<dir> E2E_FLOW_PORT=3201 pnpm test:e2e:flow`.
+- **F0 ✅** línea de base → `docs/PERF-BASELINE.md`: funciones en **iad1**, DB en **sa-east-1**, JWT ES256, sin
+  `loading.tsx`, proxy con `getUser()` en cada request.
+- **F1 (en curso)** región `gru1` (`vercel.json`), `getSession()` con `getClaims` (proxy + páginas; lint prohíbe
+  `auth.getUser()`), route groups `(app)`/`(game)`, `ScreenHeader` + mapa `lib/nav/routes.ts` (test), `loading.tsx`
+  por grupo, footer solo en el sitio, `useNav()` (lint prohíbe `useRouter`), salir de sala/cancelar cola sin
+  esperar el RPC, "Tabla" fuera de la cola. Reglas en `docs/DESIGN-RULES.md`.
+
 ## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
 Entra todo: avatar-glb, ideas-avatar, post-6b, ideas-questions, e2e-flow, ideas-e2e, fix-guest,
 fix-modes-flake (vía `wip/integration`) + **CSP enforced** (0 violaciones verificadas). DB de prod ya

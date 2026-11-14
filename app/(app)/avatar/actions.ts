@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { isValidAvatar } from "@/lib/avatar/parts";
 
 export interface SaveAvatarResult {
@@ -18,10 +18,7 @@ export async function saveAvatar(avatar: unknown): Promise<SaveAvatarResult> {
     return { ok: false, error: "El avatar no es válido." };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
   if (!user) return { ok: false, error: "Sesión expirada. Volvé a entrar." };
 
   const { error } = await supabase

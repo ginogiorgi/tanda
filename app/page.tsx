@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { GuestButton } from "@/components/lobby/GuestButton";
@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { Footer } from "@/components/ui/Footer";
 import { MODE_LIST, isModeId, type ModeId } from "@/lib/modes";
 import type { RankedMe } from "@/lib/ranked/types";
 
@@ -19,12 +20,9 @@ export default async function Home({
   const { aviso } = await searchParams;
   const avisoMsg = aviso ? ROOM_ERROR_MESSAGES[aviso] : null;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
 
-  const isGuest = user?.is_anonymous === true;
+  const isGuest = user?.isAnonymous === true;
 
   // Perfil + torneo en curso son independientes → en paralelo (una sola ida, no dos secuenciales).
   // El torneo en curso permite ofrecer "Volver al partido" tras cerrar la pestaña.
@@ -49,7 +47,7 @@ export default async function Home({
     ranked = rankedRes.data ?? null;
     // Si `profiles` falla (p. ej. el 401 transitorio de un token recién emitido), el usuario sigue
     // logueado: el nombre sale de la metadata del alta (wip/fix-guest).
-    const metaName: unknown = user.user_metadata?.username;
+    const metaName: unknown = user.metadata.username;
     username = profile?.username ?? (typeof metaName === "string" ? metaName : null);
     hasActiveMatch = Boolean(active?.tournament_id);
     // Si `game_modes` falla, se ofrecen los del registro en vez de dejar todo en "Próximamente" (flake
@@ -60,9 +58,9 @@ export default async function Home({
   }
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-16 text-center">
+    <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto text-center">
       <JsonLd />
-      <div className="my-auto flex w-full flex-col items-center gap-8">
+      <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16">
       <div className="flex flex-col items-center gap-5">
         <Eyebrow>Mundial · Fútbol argentino · En vivo</Eyebrow>
         <h1 aria-label="Tanda">
@@ -165,6 +163,8 @@ export default async function Home({
         diseños originales.
       </p>
       </div>
+      {/* El footer es del sitio: en la landing sí; en la home de la app (logueado) no. */}
+      {!user && <Footer />}
     </main>
   );
 }

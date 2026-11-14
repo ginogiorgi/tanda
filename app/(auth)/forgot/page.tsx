@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 
 // Utilidad de auth → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function ForgotPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getSession();
   if (user) redirect("/");
 
   return (

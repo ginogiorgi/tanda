@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import { createClient } from "@/lib/supabase/client";
 import { Confetti } from "@/components/penal/Confetti";
 import { ResultCard } from "@/components/penal/ResultCard";
@@ -75,7 +75,7 @@ export function RunSummary({
   myParticipantId: string | null;
   isGuest: boolean;
 }) {
-  const router = useRouter();
+  const router = useNav();
   const [supabase] = useState(() => createClient());
   const [penals, setPenals] = useState<PenalRow[]>([]);
   const [busy, setBusy] = useState(false);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import { createClient } from "@/lib/supabase/client";
 import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
 import { Button } from "@/components/ui/Button";
@@ -33,7 +33,7 @@ export function PlayMenu({
   /** Ficha de liga del jugador (null = no se pudo cargar; la card igual lleva a la cola). */
   ranked?: RankedMe | null;
 }) {
-  const router = useRouter();
+  const router = useNav();
   const [supabase] = useState(() => createClient());
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -153,7 +153,7 @@ export function PlayMenu({
 
 /** Tercera cola, solo en Jugar: ranked 1v1 con la división y los puntos del jugador. */
 function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: boolean }) {
-  const router = useRouter();
+  const router = useNav();
   const div = divisionFor(ranked?.rating ?? 1500);
   return (
     <button
@@ -166,8 +166,7 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
         <span className="text-xs font-medium leading-snug opacity-75">
-          {div.name} · {ranked?.rating ?? 1500} pts
-          {ranked && ranked.placement_left > 0 ? " · en ubicación" : ""} · ganás o perdés puntos
+          {div.name} · {ranked?.rating ?? 1500} pts · ganás o perdés puntos
         </span>
       </span>
       <span aria-hidden className="font-display text-2xl font-black">→</span>

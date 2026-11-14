@@ -9,7 +9,7 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import type {
   AvatarConfig,
   BodyType,
@@ -23,7 +23,7 @@ import {
   PARTS,
   type PartOption,
 } from "@/lib/avatar/parts";
-import type { SaveAvatarResult } from "@/app/avatar/actions";
+import type { SaveAvatarResult } from "@/app/(app)/avatar/actions";
 import { Button } from "@/components/ui/Button";
 import { AvatarViewer } from "./AvatarViewer";
 
@@ -44,7 +44,7 @@ export function AvatarCreator({
   saveLabel = "Guardar avatar",
   redirectTo,
 }: AvatarCreatorProps) {
-  const router = useRouter();
+  const router = useNav();
   const [avatar, setAvatar] = useState<AvatarConfig>(initial);
   const [rotationY, setRotationY] = useState(0.4);
   const [saving, setSaving] = useState(false);

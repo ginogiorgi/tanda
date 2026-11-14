@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -43,7 +43,7 @@ type PenalLiveProps = {
  * gobierna la policy `match_broadcast_select` en `realtime.messages` (solo participantes).
  */
 export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
-  const router = useRouter();
+  const router = useNav();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
   const [scene, setScene] = useState<MatchScene | null>(null);
@@ -254,7 +254,8 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
 
   // Contador contra el `deadline` server, corregido por el offset estimado al recibir la fase
   // (SPEC §1.3). Al llegar a 0, el cliente hace el "poke": llama `resolve_penalty` una sola vez
-  // por fase. El server valida `now() >= deadline` y es idempotente (no se puede adelantar).
+  // por fase (idempotente). Regla de fase: si los dos ya respondieron, el server resuelve ANTES y el
+  // `penal:result` llega con el contador corriendo → el contador se frena (sin vibrar ni pokear).
   useEffect(() => {
     if (!penal) return;
     const offset = clockOffset(penal.server_now);
@@ -287,6 +288,7 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
     };
 
     const tick = () => {
+      if (resultRef.current?.penalty_id === penal.penalty_id) return; // ya resuelto (cierre temprano)
       const r = remainingMs(penal.deadline, offset);
       setRemaining(r);
       remainingRef.current = r;
@@ -314,7 +316,8 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
 
   // 10.11: elegir opción. PRIMER TAP GANA (no cambiable): el server rechaza un cambio con
   // `already_answered`. Optimista en el cliente; al tap congelo el contador (frozenRemaining) y
-  // bloqueo. El penal igual resuelve a los 10s server (la rapidez se mide por este `selected_at`).
+  // bloqueo. El penal resuelve cuando respondieron los dos o a los 10s (server; la rapidez se mide por
+  // este `selected_at`).
   async function onSelect(option: number) {
     if (!penal || remainingRef.current <= 0 || answeredRef.current) return;
     answeredRef.current = true;

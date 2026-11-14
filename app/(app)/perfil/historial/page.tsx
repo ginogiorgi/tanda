@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { getTournamentHistory } from "@/lib/profile/queries";
 import { HistoryPager } from "@/components/profile/HistoryPager";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
-import { buttonVariants } from "@/components/ui/Button";
 
 // Privada y por usuario → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -16,28 +14,19 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * últimos 5 y enlaza acá. Auth-gated; los invitados (sin historial) vuelven al perfil.
  */
 export default async function HistorialPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
   if (!user) redirect("/login");
-  if (user.is_anonymous) redirect("/perfil");
+  if (user.isAnonymous) redirect("/perfil");
 
   const history = await getTournamentHistory(supabase, user.id);
 
   return (
-    <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col gap-8 overflow-y-auto px-6 py-12">
-      <nav className="flex items-center justify-between">
-        <Link href="/perfil" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          ← Perfil
-        </Link>
-      </nav>
-
+    <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
       <div className="flex flex-col gap-1">
         <Eyebrow>Historial completo</Eyebrow>
-        <h1 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+        <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg">
           Tus torneos
-        </h1>
+        </h2>
       </div>
 
       {history.length === 0 ? (
@@ -49,6 +38,6 @@ export default async function HistorialPage() {
       ) : (
         <HistoryPager entries={history} />
       )}
-    </main>
+    </div>
   );
 }

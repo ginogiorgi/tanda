@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { Lobby } from "@/components/lobby/Lobby";
 import { isKnownRoomError } from "@/lib/errors";
 
@@ -20,10 +20,7 @@ export default async function SalaPage({
   const { code: rawCode } = await params;
   const code = rawCode.toUpperCase();
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
   if (!user) redirect("/login");
 
   // Idempotente: re-entra a un miembro (refresh) o une a quien llega por link compartido.
@@ -39,7 +36,7 @@ export default async function SalaPage({
   if (room.status === "cancelled") redirect("/?aviso=room_cancelled");
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-6 py-12">
+    <div className="flex min-h-0 w-full flex-1 flex-col">
       <Lobby
         code={code}
         modeId={room.mode_id}
@@ -48,6 +45,6 @@ export default async function SalaPage({
         userId={user.id}
         username={profile?.username ?? "Jugador"}
       />
-    </main>
+    </div>
   );
 }

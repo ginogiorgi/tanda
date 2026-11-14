@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Instrument_Sans } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
-import { Footer } from "@/components/ui/Footer";
 import { PitchBackground } from "@/components/ui/PitchBackground";
 import "./globals.css";
 
@@ -72,7 +71,6 @@ export default function RootLayout({
       <body className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
         <PitchBackground />
         {children}
-        <Footer />
       </body>
     </html>
   );

@@ -19,6 +19,40 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // Navegación (feedback 14/11): todo pasa por `useNav()` (transición + pending + salir sin esperar).
+  // `useRouter` directo es lo que dejaba botones "colgados" esperando un RPC antes de navegar.
+  {
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["lib/nav/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "next/navigation",
+              importNames: ["useRouter"],
+              message: "Usá useNav() de @/lib/nav/useNav (transición, pending y salidas sin esperar).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Sesión en el server: solo vía getSession() (getClaims local). `auth.getUser()` es una ida de red a
+  // Auth por página: era la mitad del delay de cada toque (docs/PERF-BASELINE.md).
+  {
+    files: ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "CallExpression[callee.property.name='getUser'][callee.object.property.name='auth']",
+          message: "Usá getSession() de @/lib/supabase/session (valida el JWT local con getClaims).",
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

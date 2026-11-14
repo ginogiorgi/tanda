@@ -1,8 +1,9 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Footer global: crédito de autoría al fondo de la página (Tarea 5). `mt-auto` lo empuja abajo
- * de todo dentro del `body` (flex-col, min-h-full). Se monta una vez en `app/layout.tsx`.
+ * Footer del SITIO (landing y auth): crédito de autoría al final del contenido scrolleable. NO va en
+ * la app ni en el juego (feedback 14/11: en partida la pantalla es fija, sin footer). `mt-auto` lo
+ * empuja al fondo cuando el contenido es corto.
  */
 export function Footer({ className }: { className?: string }) {
   return (

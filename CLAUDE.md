@@ -41,6 +41,15 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
 - Íconos/escudos: `scripts/brand/build_icons.py` y `scripts/crests/build_crests.py` con
   `assets/fonts/BigShouldersDisplay-Black.ttf` (OFL).
 
+## Pantallas, navegación y layouts (feedback 14/11 — ver `docs/DESIGN-RULES.md`)
+- Mapa de pantallas en `lib/nav/routes.ts` (título, **padre**, grupo). Toda página nueva va ahí
+  (`routes.test.ts` lo exige); el "volver" lo pinta `components/ui/ScreenHeader`.
+- Route groups: `app/(app)` (header + scroll interno), `app/(game)` (pantalla fija 100dvh, sin footer),
+  sitio = landing + `(auth)` (con `Footer`). Cada grupo tiene `loading.tsx`.
+- Navegación SOLO con `useNav()` (`lib/nav/useNav.ts`); `useRouter` está prohibido por lint fuera de `lib/nav`.
+- Sesión en el server SOLO con `getSession()` (`lib/supabase/session.ts`, `getClaims` local); `auth.getUser()`
+  prohibido por lint. Funciones de Vercel en `gru1` (`vercel.json`) = misma región que la DB (sa-east-1).
+
 ## Convenciones (Pyrux)
 - TS estricto: nunca `any`, `as any`, ni `@ts-ignore`.
 - Tailwind para todo, nunca CSS inline. Animaciones con CSS (keyframes en `globals.css` /

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
 export const metadata: Metadata = {
@@ -10,13 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RegisterPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getSession();
   // Un usuario permanente no se re-registra. El invitado (anónimo) SÍ entra: upgradea su sesión.
-  if (user && !user.is_anonymous) redirect("/");
-  const upgrade = user?.is_anonymous === true;
+  if (user && !user.isAnonymous) redirect("/");
+  const upgrade = user?.isAnonymous === true;
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/session";
 import { TournamentLive } from "@/components/penal/TournamentLive";
 import { RankedLive } from "@/components/ranked/RankedLive";
 
@@ -15,10 +15,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * activo, vuelve al home. Auth-gated (los invitados son usuarios anónimos → pasan).
  */
 export default async function PartidoPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getSession();
   if (!user) redirect("/login");
 
   // Ranked (Fase 4b) usa el mismo stack pero su propia pantalla (cara a cara + puntos de liga).
@@ -26,14 +23,16 @@ export default async function PartidoPage() {
   if (!data?.tournament_id) redirect("/?aviso=no_match");
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto px-6 py-12">
+    // Pantalla fija (layout de juego): la vista del penal ocupa el viewport; el bracket y los resúmenes,
+    // si no entran, scrollean solo este panel — nunca la página.
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-4 py-6">
       <div className="my-auto flex w-full flex-col items-center gap-6">
         {data.mode_id === "ranked" ? (
           <RankedLive tournamentId={data.tournament_id} />
         ) : (
-          <TournamentLive tournamentId={data.tournament_id} isGuest={user.is_anonymous === true} />
+          <TournamentLive tournamentId={data.tournament_id} isGuest={user.isAnonymous} />
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/lib/nav/useNav";
 import { createClient } from "@/lib/supabase/client";
 import { signInAsGuest } from "@/lib/guest/anon";
 import { Button } from "@/components/ui/Button";
@@ -14,7 +14,7 @@ import { cn } from "@/lib/cn";
  * `busy` nunca volvía a false — bug de wip/fix-guest).
  */
 export function GuestButton({ className }: { className?: string }) {
-  const router = useRouter();
+  const router = useNav();
   const [busy, setBusy] = useState(false);
   const [navigating, startNavigation] = useTransition();
   const [error, setError] = useState<string | null>(null);

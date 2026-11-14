@@ -37,3 +37,28 @@ test("metadatos SEO y OG en la landing", async ({ page }) => {
   const robots = await page.request.get("/robots.txt");
   expect(await robots.text()).toMatch(/sitemap/i);
 });
+
+// Navegación común (feedback 14/11): toda pantalla no raíz tiene "volver" al padre del mapa
+// (lib/nav/routes.ts), y el footer es SOLO del sitio.
+for (const { path, parent } of [
+  { path: "/login", parent: "/" },
+  { path: "/register", parent: "/" },
+  { path: "/forgot", parent: "/login" },
+]) {
+  test(`${path}: volver lleva a ${parent}`, async ({ page }) => {
+    await page.goto(path);
+    const back = page.locator("[data-nav=back]");
+    await expect(back).toBeVisible();
+    const box = await back.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44); // área táctil
+    await back.click();
+    await expect(page).toHaveURL(new RegExp(`${parent === "/" ? "/$" : parent}`));
+  });
+}
+
+test("la landing y el login tienen footer", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("footer")).toHaveCount(1);
+  await page.goto("/login");
+  await expect(page.locator("footer")).toHaveCount(1);
+});

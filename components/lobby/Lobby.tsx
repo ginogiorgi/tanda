@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useNav } from "@/lib/nav/useNav";
 import {
   formatRemaining,
   reconcileRoster,
@@ -26,7 +27,7 @@ type LobbyProps = {
 
 export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: LobbyProps) {
   const mode = getMode(modeId);
-  const router = useRouter();
+  const { push: navPush, leave: navLeave } = useNav();
   const [supabase] = useState(() => createClient());
   const [members, setMembers] = useState<LobbyMember[]>([]);
   const [remaining, setRemaining] = useState<number>(() =>
@@ -95,7 +96,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
       const { data } = await supabase.rpc("get_active_tournament");
       if (!active) return;
       if ((data as { tournament_id?: string } | null)?.tournament_id) {
-        router.push("/partido");
+        navPush("/partido");
       }
     };
     void poll();
@@ -106,14 +107,17 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
       active = false;
       clearInterval(id);
     };
-  }, [started, supabase, router]);
+  }, [started, supabase, navPush]);
 
-  async function onLeave() {
+  // Salir navega YA (feedback 14/11: "volver tarda un montón"); el leave corre en paralelo y, si se
+  // perdiera, la sala igual arranca sin vos (quedás como desconectado: respuestas al azar).
+  function onLeave() {
     setLeaving(true);
-    if (channelRef.current) await supabase.removeChannel(channelRef.current);
-    await supabase.rpc("leave_room", { p_code: code });
-    router.push("/");
-    router.refresh();
+    const channel = channelRef.current;
+    navLeave("/", async () => {
+      if (channel) await supabase.removeChannel(channel);
+      await supabase.rpc("leave_room", { p_code: code });
+    }, { refresh: true });
   }
 
   async function onCopy() {
@@ -145,7 +149,14 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
   }
 
   return (
-    <div className="flex w-full max-w-md flex-col items-center gap-8">
+    <>
+    <ScreenHeader
+      onBack={onLeave}
+      backLabel={leaving ? "Saliendo…" : "Salir"}
+      title={`Sala · ${mode.name}`}
+    />
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-6 py-6">
+    <div className="my-auto flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
           Sala de espera · {mode.name}
@@ -202,14 +213,11 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
         </ul>
       </div>
 
-      <div className="flex items-center gap-3">
-        <Button onClick={onShare} size="lg">
-          Compartir
-        </Button>
-        <Button onClick={onLeave} disabled={leaving} variant="outline" size="lg">
-          {leaving ? "Saliendo…" : "Salir"}
-        </Button>
-      </div>
+      <Button onClick={onShare} size="lg" block>
+        Compartir
+      </Button>
     </div>
+    </div>
+    </>
   );
 }

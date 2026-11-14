@@ -23,7 +23,8 @@ curl -fsS -o /dev/null "$api/auth/v1/health" -H "apikey: $(get PUBLISHABLE_KEY)"
 export NEXT_PUBLIC_SUPABASE_URL="$api"
 export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(get PUBLISHABLE_KEY)"
 export SUPABASE_SECRET_KEY="$(get SECRET_KEY)"
-export NEXT_PUBLIC_SITE_URL="http://localhost:3101"
+export E2E_FLOW_PORT="${E2E_FLOW_PORT:-3101}"
+export NEXT_PUBLIC_SITE_URL="http://localhost:$E2E_FLOW_PORT"
 export RESEND_API_KEY=""
 export E2E_DB_URL="$(get DB_URL)"   # solo el test (lee la correcta en champion.spec)
 export E2E_FLOW=1
