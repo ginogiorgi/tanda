@@ -114,7 +114,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
   function onLeave() {
     setLeaving(true);
     const channel = channelRef.current;
-    navLeave("/", async () => {
+    navLeave("/jugar", async () => {
       if (channel) await supabase.removeChannel(channel);
       await supabase.rpc("leave_room", { p_code: code });
     }, { refresh: true });

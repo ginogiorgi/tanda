@@ -78,14 +78,10 @@ export function RankedResult({ view, result }: { view: RankedMatchView; result: 
         <Link href="/ranked" className={buttonVariants({ variant: "primary", size: "lg", block: true })}>
           Otra ranked
         </Link>
-        <div className="grid grid-cols-2 gap-3">
-          <Link href="/ranking" className={buttonVariants({ variant: "outline", block: true })}>
-            Tabla
-          </Link>
-          <Link href="/" className={buttonVariants({ variant: "outline", block: true })}>
-            Inicio
-          </Link>
-        </div>
+        {/* La tabla vive en el perfil (mapa de pantallas, feedback 14/11): acá solo seguir o salir. */}
+        <Link href="/" className={buttonVariants({ variant: "outline", block: true })}>
+          Inicio
+        </Link>
       </div>
     </div>
   );

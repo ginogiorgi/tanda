@@ -14,7 +14,7 @@ export default async function RankedPage() {
   if (!user) redirect("/login");
 
   const { data: me } = await supabase.rpc("get_ranked_me");
-  if (!me) redirect("/?aviso=no_match");
+  if (!me) redirect("/jugar?aviso=no_match");
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col">

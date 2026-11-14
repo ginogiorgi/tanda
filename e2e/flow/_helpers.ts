@@ -15,7 +15,18 @@ export function assertLocalSupabase(): void {
 export async function enterAsGuest(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByRole("button", { name: "Jugar como invitado" }).click();
-  await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible({ timeout: 20_000 });
+  await expect(homePlay(page)).toBeVisible({ timeout: 20_000 });
+}
+
+/** La acción principal de la home logueada: el link JUGAR (lleva a `/jugar`). */
+export function homePlay(page: Page): Locator {
+  return page.getByRole("link", { name: "Jugar", exact: true });
+}
+
+/** Home → `/jugar` (partida rápida, ranked, salas). */
+export async function openPlay(page: Page): Promise<void> {
+  await homePlay(page).click();
+  await expect(page).toHaveURL(/\/jugar$/, { timeout: 20_000 });
 }
 
 /** Elige qué opción tocar entre las visibles y habilitadas del penal abierto. */

@@ -1,6 +1,6 @@
 import type { Browser, BrowserContext, Page } from "@playwright/test";
 import { expect, test, watchCsp } from "../_csp";
-import { answerUntil, assertLocalSupabase, enterAsGuest } from "./_helpers";
+import { answerUntil, assertLocalSupabase, enterAsGuest, openPlay } from "./_helpers";
 
 /**
  * Ranked 1v1 con dos humanos reales (dos contextos = dos invitados): cola → emparejados entre sí →
@@ -23,7 +23,7 @@ async function guestInQueue(browser: Browser, errors: string[], csp: string[]): 
   const page = await ctx.newPage();
   page.on("pageerror", (e) => errors.push(e.message)); // desde el landing, no después de entrar
   await enterAsGuest(page);
-  await page.getByRole("button", { name: "Jugar", exact: true }).click();
+  await openPlay(page);
   await page.getByRole("button", { name: /ranked 1v1/i }).click();
   await expect(page).toHaveURL(/\/ranked$/, { timeout: 20_000 });
   return page;

@@ -20,7 +20,7 @@ export default async function PartidoPage() {
 
   // Ranked (Fase 4b) usa el mismo stack pero su propia pantalla (cara a cara + puntos de liga).
   const { data } = await supabase.rpc("get_active_tournament");
-  if (!data?.tournament_id) redirect("/?aviso=no_match");
+  if (!data?.tournament_id) redirect("/jugar?aviso=no_match");
 
   return (
     // Pantalla fija (layout de juego): la vista del penal ocupa el viewport; el bracket y los resúmenes,

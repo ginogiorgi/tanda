@@ -15,6 +15,7 @@ import { Eyebrow, SectionTitle } from "@/components/ui/Typography";
 import { StatCard } from "@/components/ui/StatCard";
 import { buttonVariants } from "@/components/ui/Button";
 import { ProfileStatsRows } from "@/components/profile/ProfileStatsRows";
+import { LeagueCard } from "@/components/profile/LeagueCard";
 
 /**
  * Perfil del usuario. F2 2.5/2.6/2.7: username, editar jugador, email de recuperación,
@@ -30,9 +31,10 @@ export default async function PerfilPage() {
   // Invitado (sesión anónima): perfil efímero, sin editar avatar / sin recuperación / sin historial.
   // Su lugar es jugar; el CTA lo invita a volverse permanente. (§8.4)
   if (user.isAnonymous) {
-    const [{ data: guestProfile }, { data: guestStats }] = await Promise.all([
+    const [{ data: guestProfile }, { data: guestStats }, { data: guestRanked }] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_profile_stats"),
+      supabase.rpc("get_ranked_me"),
     ]);
 
     return (
@@ -44,6 +46,8 @@ export default async function PerfilPage() {
             {guestProfile?.username ?? "Invitado"}
           </h2>
         </div>
+
+        {guestRanked && <LeagueCard ranked={guestRanked} />}
 
         {guestStats && (
           <section className="flex flex-col gap-3">
@@ -73,11 +77,12 @@ export default async function PerfilPage() {
 
   // Todo independiente → en paralelo. El email de recuperación se edita acá mismo: lectura fresca
   // de Auth (el JWT puede tenerlo viejo hasta refrescarse).
-  const [{ data: profile }, history, { data: profileStats }, meta] = await Promise.all([
+  const [{ data: profile }, history, { data: profileStats }, meta, { data: ranked }] = await Promise.all([
     supabase.from("profiles").select("username").eq("id", user.id).single(),
     getTournamentHistory(supabase, user.id),
     supabase.rpc("get_profile_stats"),
     freshUserMetadata(),
+    supabase.rpc("get_ranked_me"),
   ]);
   const recoveryEmailRaw = meta.recovery_email;
   const recoveryEmail =
@@ -93,6 +98,8 @@ export default async function PerfilPage() {
           {profile?.username ?? "Jugador"}
         </h2>
       </div>
+
+      {ranked && <LeagueCard ranked={ranked} />}
 
       {/* Tarea 4: orden Estadísticas → Historial → Tu jugador → Email de recuperación. */}
       <section className="flex flex-col gap-3">

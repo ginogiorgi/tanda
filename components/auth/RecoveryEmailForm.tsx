@@ -68,7 +68,7 @@ export function RecoveryEmailForm({ initialEmail }: RecoveryEmailFormProps) {
           className="flex-1"
           placeholder="tu@email.com"
         />
-        <Button type="submit" disabled={saving} size="sm" className="shrink-0">
+        <Button type="submit" disabled={saving} variant="outline" size="sm" className="shrink-0">
           {saving ? "Guardando…" : saved ? "Guardado ✓" : "Guardar"}
         </Button>
       </div>

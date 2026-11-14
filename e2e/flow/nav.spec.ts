@@ -1,6 +1,7 @@
 import { expect, test } from "../_csp";
 import type { Page } from "@playwright/test";
-import { assertLocalSupabase, enterAsGuest } from "./_helpers";
+import { assertLocalSupabase, enterAsGuest, homePlay, openPlay } from "./_helpers";
+import { visiblePrimaries } from "../_primary";
 
 /**
  * Navegación y layout (feedback 14/11): "no hay botones para volver", "volver tarda un montón", "en
@@ -39,7 +40,7 @@ test("app: perfil y tabla tienen volver al padre, rápido y sin footer", async (
     await expect(page.getByRole("heading", { level: 1, name: "Perfil" })).toBeVisible();
   });
   const toHome = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/$/, async () => {
-    await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible();
+    await expect(homePlay(page)).toBeVisible();
   });
   console.log(`[nav] tabla→perfil ${toPerfil} ms · perfil→inicio ${toHome} ms`);
   // El header (layout) y el loading pintan al toque; el presupuesto fino lo mide la medición de prod.
@@ -47,8 +48,9 @@ test("app: perfil y tabla tienen volver al padre, rápido y sin footer", async (
   expect(toHome).toBeLessThan(1500);
 });
 
-test("juego: sala y cola ranked son pantalla fija, sin footer, y salir no espera al server", async ({ page }) => {
+test("juego: sala y cola ranked son pantalla fija, sin footer, y salir vuelve a Jugar sin esperar al server", async ({ page }) => {
   await enterAsGuest(page);
+  await openPlay(page);
 
   // Sala (crear sala Mundial).
   await page.getByRole("button", { name: "Crear sala" }).click();
@@ -56,22 +58,56 @@ test("juego: sala y cola ranked son pantalla fija, sin footer, y salir no espera
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]{6}$/, { timeout: 20_000 });
   await expect(page.locator("footer")).toHaveCount(0);
   expect(await pageIsFixed(page)).toBe(true);
-  const salir = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/$/, async () => {
-    await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible();
+  expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+  const salir = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
+    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
   });
 
   // Cola ranked: sin "Tabla", sin footer, Cancelar en el header.
-  await page.getByRole("button", { name: "Jugar", exact: true }).click();
   await page.getByRole("button", { name: /ranked 1v1/i }).click();
   await expect(page).toHaveURL(/\/ranked$/);
-  await expect(page.getByText("Buscando rival")).toBeVisible();
+  await expect(page.getByText(/Buscando/).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Tabla" })).toHaveCount(0);
   await expect(page.locator("footer")).toHaveCount(0);
   expect(await pageIsFixed(page)).toBe(true);
-  const cancelar = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/$/, async () => {
-    await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible();
+  const cancelar = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
+    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
   });
   console.log(`[nav] salir de sala ${salir} ms · cancelar cola ${cancelar} ms`);
   expect(salir).toBeLessThan(1500);
   expect(cancelar).toBeLessThan(1500);
+});
+
+test("información: home con una sola acción, Jugar con los caminos, perfil con posición y tabla", async ({ page }) => {
+  await enterAsGuest(page);
+
+  await test.step("home: sin volanta, sin sello, sin código ni Tabla; JUGAR es la única principal", async () => {
+    await expect(page.getByText("Mundial · Fútbol argentino · En vivo")).toHaveCount(0);
+    await expect(page.getByText("TA", { exact: false }).filter({ hasText: /^TA\s*26$/ })).toHaveCount(0);
+    await expect(page.getByPlaceholder("CÓDIGO")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Tabla" })).toHaveCount(0);
+    expect(await visiblePrimaries(page)).toEqual(["Jugar"]);
+  });
+
+  await test.step("jugar: partida rápida, ranked, crear sala y código; volver a la home", async () => {
+    await openPlay(page);
+    const quick = page.getByRole("group", { name: /elegí el modo para jugar/i });
+    await expect(quick.getByRole("button", { name: /mundial/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Crear sala" })).toBeVisible();
+    await expect(page.getByPlaceholder("CÓDIGO")).toBeVisible();
+    expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+    await page.locator("[data-nav=back]").click();
+    await expect(homePlay(page)).toBeVisible();
+  });
+
+  await test.step("perfil: posición en la liga + Ver tabla (la tabla cuelga del perfil)", async () => {
+    await page.getByRole("link", { name: "Perfil", exact: true }).click();
+    await expect(page).toHaveURL(/\/perfil$/);
+    await expect(page.getByTestId("ranked-position")).toBeVisible();
+    expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+    await page.getByRole("link", { name: "Ver tabla" }).click();
+    await expect(page).toHaveURL(/\/ranking$/);
+    expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+  });
 });

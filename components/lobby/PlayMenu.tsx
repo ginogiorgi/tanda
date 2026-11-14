@@ -10,6 +10,7 @@ import { MODE_LIST, type ModeId } from "@/lib/modes";
 import { divisionFor } from "@/lib/engine/ranked";
 import type { RankedMe } from "@/lib/ranked/types";
 import { DivisionCrest } from "@/components/ranked/DivisionCrest";
+import { SectionTitle } from "@/components/ui/Typography";
 
 /** Las RPC de matchmaking devuelven `TABLE(room_id, tournament_id, code)`. */
 type RoomRef = { room_id: string; tournament_id: string; code: string };
@@ -21,9 +22,10 @@ const ACTION_LABEL: Record<Action, { title: string; busy: string }> = {
 };
 
 /**
- * Menú de juego. "Jugar" y "Crear sala" despliegan el selector de MODO (escala a N modos: sale del
- * registro `lib/modes` + los activos de `game_modes`, que llegan del server). Unirse por código no
- * pregunta: el modo lo define la sala. La cola RANKED (1v1, puntos de liga) aparece SOLO en Jugar.
+ * Pantalla `/jugar` (feedback 14/11: la home acumulaba todo al mismo nivel). Tres caminos, cada uno en
+ * su sección: PARTIDA RÁPIDA (modos a la vista, un toque y estás en una sala) + RANKED 1v1, y CON
+ * AMIGOS (crear sala → elegís el modo; o unirte con un código, que no pregunta modo: lo define la
+ * sala). Los modos salen del registro `lib/modes` + los activos de `game_modes` (server).
  */
 export function PlayMenu({
   activeModes,
@@ -37,7 +39,7 @@ export function PlayMenu({
   const [supabase] = useState(() => createClient());
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [picking, setPicking] = useState<Action | null>(null);
+  const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
 
   async function go(key: string, rpc: () => PromiseLike<{ data: unknown; error: { message: string } | null }>) {
@@ -64,89 +66,97 @@ export function PlayMenu({
     );
   }
 
-  const toggle = (action: Action) => {
-    setError(null);
-    setPicking((cur) => (cur === action ? null : action));
-  };
+  const modeGrid = (action: Action) => (
+    <div
+      id={`modes-${action}`}
+      role="group"
+      aria-label={`Elegí el modo para ${ACTION_LABEL[action].title.toLowerCase()}`}
+      className="grid grid-cols-2 gap-2"
+    >
+      {MODE_LIST.map((mode) => {
+        const enabled = activeModes.includes(mode.id);
+        const key = `${action}:${mode.id}`;
+        return (
+          <button
+            key={mode.id}
+            type="button"
+            onClick={() => start(action, mode.id)}
+            disabled={!enabled || busy !== null}
+            className="group relative flex min-h-26 flex-col items-start justify-between gap-2 overflow-hidden rounded-[4px] border-2 border-ink bg-bg-elevated p-3 pt-4 text-left shadow-card transition-colors hover:bg-ink hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-bg-elevated disabled:hover:text-fg"
+          >
+            {/* Filete superior con el color del modo (sub-identidad). */}
+            <span aria-hidden className={`absolute inset-x-0 top-0 h-1.5 ${mode.swatch}`} />
+            <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">
+              {busy === key ? ACTION_LABEL[action].busy : mode.name}
+            </span>
+            <span className="text-xs font-medium leading-snug opacity-75">
+              {enabled ? mode.tagline : "Próximamente"}
+            </span>
+          </button>
+        );
+      })}
+      {action === "play" && <RankedCard ranked={ranked} disabled={busy !== null} />}
+    </div>
+  );
 
   return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-4">
-      {(["play", "create"] as const).map((action) => (
-        <div key={action} className="flex w-full flex-col gap-2">
-          <Button
-            onClick={() => toggle(action)}
-            disabled={busy !== null}
-            variant={action === "play" ? "primary" : "outline"}
-            block
-            size="lg"
-            aria-expanded={picking === action}
-            aria-controls={`modes-${action}`}
-            className={action === "play" ? "h-14 text-2xl" : undefined}
-          >
-            {ACTION_LABEL[action].title}
-          </Button>
+    <div className="flex w-full flex-col gap-8">
+      {error && (
+        <p role="alert" className="rounded-[4px] border-2 border-ink bg-bg-elevated px-3 py-2 text-sm font-semibold text-brand-ink">
+          {error}
+        </p>
+      )}
 
-          {picking === action && (
-            <div
-              id={`modes-${action}`}
-              role="group"
-              aria-label={`Elegí el modo para ${ACTION_LABEL[action].title.toLowerCase()}`}
-              className="fade-in grid grid-cols-2 gap-2"
-            >
-              {MODE_LIST.map((mode) => {
-                const enabled = activeModes.includes(mode.id);
-                const key = `${action}:${mode.id}`;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => start(action, mode.id)}
-                    disabled={!enabled || busy !== null}
-                    className="group relative flex min-h-26 flex-col items-start justify-between gap-2 overflow-hidden rounded-[4px] border-2 border-ink bg-bg-elevated p-3 pt-4 text-left shadow-card transition-colors hover:bg-ink hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-bg-elevated disabled:hover:text-fg"
-                  >
-                    {/* Filete superior con el color del modo (sub-identidad). */}
-                    <span aria-hidden className={`absolute inset-x-0 top-0 h-1.5 ${mode.swatch}`} />
-                    <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">
-                      {busy === key ? ACTION_LABEL[action].busy : mode.name}
-                    </span>
-                    <span className="text-xs font-medium leading-snug opacity-75">
-                      {enabled ? mode.tagline : "Próximamente"}
-                    </span>
-                  </button>
-                );
-              })}
-              {action === "play" && <RankedCard ranked={ranked} disabled={busy !== null} />}
-            </div>
-          )}
-        </div>
-      ))}
+      <section className="flex flex-col gap-3">
+        <SectionTitle>Partida rápida</SectionTitle>
+        <p className="text-sm text-fg-muted">Elegí el modo y entrás a un torneo con quien esté jugando.</p>
+        {modeGrid("play")}
+      </section>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const value = code.trim().toUpperCase();
-          if (value.length < 6) {
-            setError("El código tiene 6 caracteres.");
-            return;
-          }
-          void go("join", () => supabase.rpc("join_room", { p_code: value }));
-        }}
-        className="flex w-full gap-2"
-      >
-        <Input
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          maxLength={6}
-          placeholder="CÓDIGO"
-          className="text-center font-mono tracking-[0.2em]"
-        />
-        <Button type="submit" disabled={busy !== null} variant="outline" size="lg" className="shrink-0">
-          {busy === "join" ? "…" : "Unirse"}
+      <section className="flex flex-col gap-3">
+        <SectionTitle>Con amigos</SectionTitle>
+        <Button
+          onClick={() => {
+            setError(null);
+            setCreating((c) => !c);
+          }}
+          disabled={busy !== null}
+          variant="outline"
+          block
+          size="lg"
+          aria-expanded={creating}
+          aria-controls="modes-create"
+        >
+          {ACTION_LABEL.create.title}
         </Button>
-      </form>
+        {creating && <div className="fade-in">{modeGrid("create")}</div>}
 
-      {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const value = code.trim().toUpperCase();
+            if (value.length < 6) {
+              setError("El código tiene 6 caracteres.");
+              return;
+            }
+            void go("join", () => supabase.rpc("join_room", { p_code: value }));
+          }}
+          className="flex w-full gap-2"
+        >
+          <Input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            maxLength={6}
+            placeholder="CÓDIGO"
+            aria-label="Código de sala"
+            className="text-center font-mono tracking-[0.2em]"
+          />
+          <Button type="submit" disabled={busy !== null} variant="outline" size="lg" className="shrink-0">
+            {busy === "join" ? "…" : "Unirse"}
+          </Button>
+        </form>
+      </section>
     </div>
   );
 }

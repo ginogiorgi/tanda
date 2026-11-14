@@ -1,16 +1,11 @@
 import Link from "next/link";
 import { getSession } from "@/lib/supabase/session";
-import { LogoutButton } from "@/components/auth/LogoutButton";
-import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { GuestButton } from "@/components/lobby/GuestButton";
 import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
-import { Eyebrow } from "@/components/ui/Typography";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { Footer } from "@/components/ui/Footer";
-import { MODE_LIST, isModeId, type ModeId } from "@/lib/modes";
-import type { RankedMe } from "@/lib/ranked/types";
 
 export default async function Home({
   searchParams,
@@ -24,37 +19,24 @@ export default async function Home({
 
   const isGuest = user?.isAnonymous === true;
 
-  // Perfil + torneo en curso son independientes → en paralelo (una sola ida, no dos secuenciales).
-  // El torneo en curso permite ofrecer "Volver al partido" tras cerrar la pestaña.
+  // Perfil + torneo en curso son independientes → en paralelo. El torneo en curso permite ofrecer
+  // "Volver al partido" tras cerrar la pestaña. Modos y liga se cargan en `/jugar`, no acá.
   let username: string | null = null;
   let hasActiveMatch = false;
-  let activeModes: ModeId[] = [];
-  let ranked: RankedMe | null = null;
   if (user) {
-    const [profileRes, activeRes, modesRes, rankedRes] = await Promise.all([
+    const [profileRes, activeRes] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_active_tournament"),
-      supabase.from("game_modes").select("id").eq("active", true).order("sort"),
-      supabase.rpc("get_ranked_me"),
     ]);
     // Un error acá no debe pasar inadvertido (logs de Vercel) ni tumbar la home: se degrada.
-    for (const [name, res] of [["profiles", profileRes], ["get_active_tournament", activeRes],
-      ["game_modes", modesRes], ["get_ranked_me", rankedRes]] as const) {
+    for (const [name, res] of [["profiles", profileRes], ["get_active_tournament", activeRes]] as const) {
       if (res.error) console.error(`[home] ${name}`, res.error.code, res.error.message);
     }
-    const profile = profileRes.data;
-    const active = activeRes.data;
-    ranked = rankedRes.data ?? null;
     // Si `profiles` falla (p. ej. el 401 transitorio de un token recién emitido), el usuario sigue
     // logueado: el nombre sale de la metadata del alta (wip/fix-guest).
     const metaName: unknown = user.metadata.username;
-    username = profile?.username ?? (typeof metaName === "string" ? metaName : null);
-    hasActiveMatch = Boolean(active?.tournament_id);
-    // Si `game_modes` falla, se ofrecen los del registro en vez de dejar todo en "Próximamente" (flake
-    // del e2e): create_room/quick_play igual rechazan un modo inactivo en el server.
-    activeModes = modesRes.error
-      ? MODE_LIST.map((m) => m.id)
-      : (modesRes.data ?? []).map((m) => m.id).filter(isModeId);
+    username = profileRes.data?.username ?? (typeof metaName === "string" ? metaName : null);
+    hasActiveMatch = Boolean(activeRes.data?.tournament_id);
   }
 
   return (
@@ -62,22 +44,26 @@ export default async function Home({
       <JsonLd />
       <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16">
       <div className="flex flex-col items-center gap-5">
-        <Eyebrow>Mundial · Fútbol argentino · En vivo</Eyebrow>
         <h1 aria-label="Tanda">
-          <Wordmark className="text-[6.5rem] sm:text-[10rem]" />
+          <Wordmark stamp={false} className="text-[6.5rem] sm:text-[10rem]" />
         </h1>
-        {/* Filete de programa impreso: doble línea de tinta con la "edición" al medio. */}
-        <div className="flex w-full max-w-md items-center gap-3" aria-hidden>
-          <span className="h-[3px] flex-1 bg-ink" />
-          <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] text-fg">
-            Trivia de penales
-          </span>
-          <span className="h-[3px] flex-1 bg-ink" />
-        </div>
-        <p className="max-w-md text-balance text-base text-fg-muted sm:text-lg">
-          Cada pregunta es un penal. Respondé bien y más rápido que tu rival para meter el gol o
-          atajar. Mundial o fútbol argentino: una sola copa.
-        </p>
+        {/* Filete + bajada: presentación del juego, solo en la landing (logueado ya lo conocés). */}
+        {!user && (
+          <>
+            {/* Filete de programa impreso: doble línea de tinta con la "edición" al medio. */}
+            <div className="flex w-full max-w-md items-center gap-3" aria-hidden>
+              <span className="h-[3px] flex-1 bg-ink" />
+              <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] text-fg">
+                Trivia de penales
+              </span>
+              <span className="h-[3px] flex-1 bg-ink" />
+            </div>
+            <p className="max-w-md text-balance text-base text-fg-muted sm:text-lg">
+              Cada pregunta es un penal. Respondé bien y más rápido que tu rival para meter el gol o
+              atajar. Mundial o fútbol argentino: una sola copa.
+            </p>
+          </>
+        )}
       </div>
 
       {avisoMsg && (
@@ -87,49 +73,38 @@ export default async function Home({
       )}
 
       {user ? (
-        <div className="flex flex-col items-center gap-6">
+        // Feedback 14/11: una sola acción principal. JUGAR lleva a `/jugar` (los modos, ranked y salas
+        // viven ahí); perfil, tabla y salir cuelgan del perfil. Con un partido en curso, la
+        // principal pasa a ser volver a él.
+        <div className="flex w-full max-w-sm flex-col items-stretch gap-4">
           <p className="text-lg">
             {isGuest ? (
               <>
-                Estás jugando como{" "}
-                <span className="font-semibold text-brand-ink">invitado</span>
+                Estás jugando como <span className="font-semibold text-brand-ink">invitado</span>
               </>
             ) : (
               <>
-                Hola, <span className="font-semibold text-brand-ink">{username}</span> 👋
+                Hola, <span className="font-semibold text-brand-ink">{username}</span>
               </>
             )}
           </p>
-          {hasActiveMatch && (
-            <Link href="/partido" className={buttonVariants({ variant: "primary", size: "lg" })}>
-              Volver al partido
+          {hasActiveMatch ? (
+            <>
+              <Link href="/partido" className={buttonVariants({ variant: "primary", size: "lg", className: "h-14 text-2xl" })}>
+                Volver al partido
+              </Link>
+              <Link href="/jugar" className={buttonVariants({ variant: "outline", size: "lg" })}>
+                Jugar
+              </Link>
+            </>
+          ) : (
+            <Link href="/jugar" className={buttonVariants({ variant: "primary", size: "lg", className: "h-14 text-2xl" })}>
+              Jugar
             </Link>
           )}
-          <PlayMenu activeModes={activeModes} ranked={ranked} />
-          <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
-            {isGuest ? (
-              <Link
-                href="/register"
-                className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[11rem]" })}
-              >
-                Creá una cuenta
-              </Link>
-            ) : (
-              <Link
-                href="/perfil"
-                className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[11rem]" })}
-              >
-                Mi perfil
-              </Link>
-            )}
-            <Link
-              href="/ranking"
-              className={buttonVariants({ variant: "outline", size: "lg", className: "w-full sm:w-auto sm:min-w-[9rem]" })}
-            >
-              Tabla
-            </Link>
-            <LogoutButton size="lg" className="w-full sm:w-auto sm:min-w-[11rem]" />
-          </div>
+          <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
+            {isGuest ? "Perfil" : "Mi perfil"}
+          </Link>
         </div>
       ) : (
         <div className="grid w-full max-w-md grid-cols-1 justify-items-center gap-3 sm:grid-cols-2">

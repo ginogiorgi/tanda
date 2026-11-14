@@ -29,12 +29,13 @@ export const ROUTES: readonly RouteDef[] = [
   { pattern: "/register", title: "Crear cuenta", parent: "/", group: "site" },
   { pattern: "/forgot", title: "Recuperar contraseña", parent: "/login", group: "site" },
   { pattern: "/auth/reset", title: "Nueva contraseña", parent: "/", group: "site" },
+  { pattern: "/jugar", title: "Jugar", parent: "/", group: "app" },
   { pattern: "/perfil", title: "Perfil", parent: "/", group: "app" },
   { pattern: "/perfil/historial", title: "Historial", parent: "/perfil", group: "app" },
   { pattern: "/ranking", title: "Tabla", parent: "/perfil", group: "app" },
   { pattern: "/avatar", title: "Tu jugador", parent: "/perfil", group: "app" },
-  { pattern: "/sala/[code]", title: "Sala", parent: "/", group: "game" },
-  { pattern: "/ranked", title: "Ranked", parent: "/", group: "game" },
+  { pattern: "/sala/[code]", title: "Sala", parent: "/jugar", group: "game" },
+  { pattern: "/ranked", title: "Ranked", parent: "/jugar", group: "game" },
   { pattern: "/partido", title: "Partido", parent: null, group: "game" },
 ];
 

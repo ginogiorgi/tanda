@@ -1,5 +1,5 @@
 import { expect, test } from "../_csp";
-import { assertLocalSupabase, enterAsGuest } from "./_helpers";
+import { assertLocalSupabase, enterAsGuest, openPlay } from "./_helpers";
 
 /**
  * Flujo de juego completo como invitado: sesión anónima → Jugar (Mundial) → sala → lobby (1 min
@@ -35,7 +35,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   });
 
   await test.step("Jugar → Mundial → sala", async () => {
-    await page.getByRole("button", { name: "Jugar", exact: true }).click();
+    await openPlay(page);
     await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /mundial/i }).click();
     await expect(page).toHaveURL(/\/sala\/[A-Z0-9]+$/, { timeout: 20_000 });
   });

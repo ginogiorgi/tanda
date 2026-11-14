@@ -25,15 +25,15 @@ export default async function SalaPage({
 
   // Idempotente: re-entra a un miembro (refresh) o une a quien llega por link compartido.
   const { error: joinError } = await supabase.rpc("join_room", { p_code: code });
-  if (joinError) redirect(`/?aviso=${reasonFromError(joinError.message)}`);
+  if (joinError) redirect(`/jugar?aviso=${reasonFromError(joinError.message)}`);
 
   // Tras el join, la sala y el perfil son independientes → en paralelo.
   const [{ data: room }, { data: profile }] = await Promise.all([
     supabase.from("rooms").select("status, starts_at, mode_id").eq("code", code).single(),
     supabase.from("profiles").select("username").eq("id", user.id).single(),
   ]);
-  if (!room) redirect("/?aviso=room_not_found");
-  if (room.status === "cancelled") redirect("/?aviso=room_cancelled");
+  if (!room) redirect("/jugar?aviso=room_not_found");
+  if (room.status === "cancelled") redirect("/jugar?aviso=room_cancelled");
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col">

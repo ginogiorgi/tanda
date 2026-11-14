@@ -95,7 +95,7 @@ export function RankedQueue({ me }: { me: RankedMe }) {
   // los 15s sin latido). Antes esperaba el RPC y el botón parecía colgado (feedback 14/11).
   function cancel() {
     matchedRef.current = true; // evita el doble cancel del cleanup
-    navLeave("/", () => supabase.rpc("ranked_cancel"));
+    navLeave("/jugar", () => supabase.rpc("ranked_cancel"));
   }
 
   return (

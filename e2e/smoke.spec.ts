@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "./_csp";
+import { visiblePrimaries } from "./_primary";
 
 const PAGES = [
   { path: "/", heading: /tanda/i },
@@ -20,6 +21,8 @@ for (const p of PAGES) {
     // Sin scroll horizontal (mobile first).
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
+    // Una sola acción principal por pantalla (docs/DESIGN-RULES.md).
+    expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     const bad = axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
     expect(bad.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
@@ -55,6 +58,12 @@ for (const { path, parent } of [
     await expect(page).toHaveURL(new RegExp(`${parent === "/" ? "/$" : parent}`));
   });
 }
+
+test("landing sin volanta ni sello en el wordmark", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("Mundial · Fútbol argentino · En vivo")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^\s*Tanda\s*$/i);
+});
 
 test("la landing y el login tienen footer", async ({ page }) => {
   await page.goto("/");

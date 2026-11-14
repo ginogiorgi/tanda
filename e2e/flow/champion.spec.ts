@@ -1,5 +1,5 @@
 import { expect, test } from "../_csp";
-import { answerCorrectUntil, assertLocalSupabase, enterAsGuest } from "./_helpers";
+import { answerCorrectUntil, assertLocalSupabase, enterAsGuest, homePlay, openPlay } from "./_helpers";
 
 /**
  * Torneo completo del invitado hasta el campeón: Mundial → lobby → 3 de grupos → 16avos … final,
@@ -18,7 +18,7 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
   page.on("pageerror", (e) => errors.push(e.message));
 
   await enterAsGuest(page);
-  await page.getByRole("button", { name: "Jugar", exact: true }).click();
+  await openPlay(page);
   await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /mundial/i }).click();
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]+$/, { timeout: 20_000 });
   await expect(page).toHaveURL(/\/partido$/, { timeout: 120_000 });
@@ -38,7 +38,7 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
 
   await test.step("perfil: copa de oro del Mundial", async () => {
     await page.getByRole("link", { name: "Inicio", exact: true }).click();
-    await expect(page.getByRole("button", { name: "Jugar", exact: true })).toBeVisible({ timeout: 20_000 });
+    await expect(homePlay(page)).toBeVisible({ timeout: 20_000 });
     await page.goto("/perfil");
     const gold = page.getByRole("listitem").filter({ hasText: "Campeón" }).first();
     await expect(gold).toContainText("1");
