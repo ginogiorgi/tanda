@@ -1,5 +1,32 @@
 # TODO — TANDA ⚽
 
+## 📦 Deps mayores — rama `wip/deps-major` (sobre main + `wip/fix-iat-dedupe`), LISTA para que Gino decida
+Sin merge ni deploy. Un commit por paso, verde completo tras cada uno (typecheck · lint · knip · 151 unit ·
+build · 78 db · flow game/guest/ranked con CSP enforced · smoke 14); champion al final.
+1. **three / @types/three 0.184 → 0.187** (`a55dcfa`). Flake de ranked: 1 de 11 (se cortó a los 12 s de
+   entrar a /partido sin ningún click → firma de renderer caído; la traza se había pisado). 10/10 después.
+   Ahora el crash del renderer queda anotado en el reporte y las trazas de flow van a `test-results-flow/`.
+2. **@supabase/ssr 0.7 → 0.12.7** (`24a44d1`): sin cambios de API (`getAll/setAll`). Probado que una
+   sesión creada con 0.7 sigue logueada con 0.12 (mismo cookie `base64-`) → el deploy no desloguea a nadie.
+3. **vitest 3 → 5.1** (+ `vite` 8 como peer explícito) (`a234d2e`): `poolOptions.forks.singleFork` →
+   `fileParallelism: false` en el proyecto db. Requiere Node ≥22.12 (CI usa 22 → OK).
+4. **eslint 9 → 10.15** (`56ae9b6`): config flat igual. Las mismas reglas disparan que en 9 (probado con un
+   archivo-sonda). Warnings de peer de eslint-plugin-react/jsx-a11y/import (vía eslint-config-next): esperables.
+5. **supabase CLI 2.106 → 3.1** (`377385f`): `[inbucket]` → `[local_smtp]` en `config.toml`. La imagen de
+   Postgres de v3 destapó un agujero latente: el baseline (pg_dump) solo revoca funciones `FROM PUBLIC` →
+   con el default ACL nuevo TODAS las funciones internas quedaban ejecutables por anon/authenticated.
+   Nueva migración **`20261122000000_explicit_function_grants`** (revoca EXECUTE en todo `public`, re-otorga
+   la allowlist de rls_audit y cierra el default de funciones para `postgres`). **En prod es no-op** (query
+   de solo lectura: superficie == allowlist) salvo el default para funciones nuevas → **aplicarla en prod
+   al mergear** (por MCP + ledger, como las anteriores). CI usa la CLI del lockfile → v3.
+6. **typescript 5.9 → 6.0.3**, fijado `~6.0` (`08c9e09`, `b7b9412`): sin cambios de código.
+**Estado final de la rama:** champion (`E2E_SLOW=1`) ✓ 14 min con CSP enforced; `/dev/avatar`, `/dev/penal`,
+`/dev/kit` con three 0.187: 0 violaciones CSP, 0 errores de consola, render idéntico a 0.184 (capturas).
+**No se hace:** TS 7 (typescript-eslint 8.72 pide `<6.1.0` y TS 7 no trae la API programática → esperar
+TS 7.1) · @types/node 26 (queda 24 = runtime de Vercel).
+Orden de merge sugerido: `wip/fix-iat-dedupe` (bug de prod, independiente) → `wip/deps-major` → aplicar
+`…22…` en prod.
+
 ## 🐛 Causa real del flake "Próximamente" (14/11) — rama `wip/fix-iat-dedupe` (sobre main), SIN deployar
 Los logs de Kong del stack local mostraron la firma: tras el sign-in del invitado, dos renders de la home;
 `get_active_tournament` (POST) recibió 401 PGRST303 y su reintento dio 200, pero `game_modes` (GET) tuvo
