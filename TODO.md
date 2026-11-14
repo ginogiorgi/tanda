@@ -251,14 +251,20 @@ por MCP `apply_migration` (después de mirar los grants de prod, arriba) + recon
 Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18…`) → `wip/e2e-flow` (`…19…`).
 1. **Grants de prod** (antes de mergear e2e-flow): correr la query de solo lectura de arriba; si prod
    tiene SELECT/escritura sobre tablas de juego, sumar a la migración los `revoke` para dejar prod == repo.
-2. **Job de CI `e2e-flow`**: `supabase start` (stack de `e2e:stack`) + `db:reset` + `test:e2e:flow` en
-   GitHub Actions (~4 min); hoy solo corre a mano.
+2. ✅ **Job de CI `e2e-flow`** (rama `wip/ideas-e2e`, `.github/workflows/ci.yml`): `e2e:stack` + `db:reset` +
+   `test:e2e:flow` (game + ranked, ~4 min) con el Chrome del runner; sube las trazas si falla. Sin probar
+   en GitHub todavía (no hay push): mirarlo en el primer PR.
 3. ✅ **E2E ranked 1v1** (`e2e/flow/ranked.spec.ts`, rama `wip/ideas-e2e`): dos invitados en contextos
    separados → cola → se emparejan entre sí → partido completo (A toca la 1ª opción, B la última → la
    muerte súbita siempre termina) → "Ganaste"/"Perdiste" con deltas de signo opuesto. ~3 min. Helpers
    compartidos en `e2e/flow/_helpers.ts`. `pnpm test:e2e:flow` (los dos specs) ✓ en 3,9 min.
-4. **E2E hasta el campeón**: seguir el torneo del invitado jugando todos los penales (bots al instante)
-   y verificar bracket/resumen/historial; o un flag de test para acortar el lobby solo en local.
+4. ✅ **E2E hasta el campeón** (`e2e/flow/champion.spec.ts`, rama `wip/ideas-e2e`): el invitado juega el
+   Mundial entero acertando al toque (la correcta la lee el TEST directo del Postgres local vía
+   `E2E_DB_URL`; ni la secret key puede leer `questions`) → los bots tardan ≥4 s → gana todo → "¡Campeón!",
+   CTA de cuenta y copa de oro en `/perfil`. ✓ en 11,2 min → fuera de CI: `E2E_SLOW=1 pnpm test:e2e:flow
+   champion`. **Ojo, posible bug real:** 2 de 4 corridas se colgaron en "Entrando…" tras el sign-in
+   anónimo OK (200) — `GuestButton` hace `router.push("/") + router.refresh()` y no vuelve a habilitarse si
+   la navegación no llega. `game` pasó en el medio. Investigar (¿carrera push/refresh?).
 5. ✅ **Pirámide de dificultad del Mundial** (rama `wip/ideas-questions`): recalibrada a mano → easy 215 ·
    medium 212 · hard 188 · very_hard 85 (34 suben a easy, 16 hard bajan a medium). Recalibrar con aciertos
    reales cuando haya datos post-wipe.

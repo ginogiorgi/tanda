@@ -71,3 +71,41 @@ jobs:
 
       - name: DB tests (SQL/RPC)
         run: pnpm test:db
+
+  # Flujo de juego real en el navegador (invitado → sala → partido; ranked 1v1) contra el Supabase
+  # LOCAL del runner (auth anónima + realtime + pg_cron). `flow.sh` toma URL/keys de `supabase status`
+  # y aborta si la API no es local. Usa el Chrome preinstalado del runner (channel "chrome").
+  e2e-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Start Supabase (auth + realtime + cron)
+        run: pnpm e2e:stack
+
+      - name: Aplicar migraciones desde archivos
+        run: pnpm db:reset
+
+      - name: E2E de flujo (local)
+        run: pnpm test:e2e:flow
+
+      - name: Trazas de Playwright (si falla)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-flow-traces
+          path: test-results/
+          retention-days: 7
