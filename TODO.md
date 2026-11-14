@@ -65,6 +65,68 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
 > **DB de prod:** hasta `20261115000000_ranked` aplicada por MCP, ledger reconciliado, cron
 > `tanda-ranked` (2s) activo, advisors = lo esperado por diseño.
 
+## ⏸ Post-6b — rama `wip/post-6b` (desde main, 14/11), falta revisión + merge + deploy
+
+Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck · lint · knip · build ·
+145 unit · 76 db`.
+- **Micro-rótulos 10px → 12px** (`text-xs`) donde entran: perfil (divisiones/copas), bracket (fases, Pts),
+  ranked (Si ganás/Si perdés, rangos de la cola), ranking (línea secundaria, tracking 0.04em). Queda en
+  10px el rótulo central del HUD del penal ("PENAL 3 DE 5" no entra a 12px en 375px). Revisado en
+  `/dev/kit` a 375px.
+- **100 "¿De qué país es X?" → partidos y finales 1930–2022** (`data/questions/worldcup.json`, mismas keys;
+  quedan 27 icónicas/curiosas). `players_records` 37% → 23%. Sin hechos de 2026. `questions:check` ✓;
+  ⚠ pirámide: easy 182 < medium 225 (las que salieron eran casi todas fáciles; la dificultad solo ordena
+  preferencias con fallback, no rompe nada). Migración `20261118000000_questions_matches` (sync generado).
+
+- **Verificación contra fuentes (14/11, WebSearch):** chequeadas las 100 (resultado, año, sede,
+  goleadores). Todas correctas; solo se reescribió **wc-507** (redacción ambigua → "¿Contra qué selección le
+  anularon un gol a Francia en 1982…" → Kuwait). Hechos menos obvios confirmados con fuente: dos pelotas en
+  la final 1930; Garrincha expulsado y habilitado 1962; Sanon cortó los 1.142' de Zoff (1974); hat-trick
+  de László Kiss en 7' (1982); jeque de Kuwait (1982); Núremberg 2006 (4 rojas/16 amarillas); Suiza 2006
+  sin goles en contra; 16 atajadas de Howard (2014); México 7 octavos seguidos (1994–2018); España 1-0 en
+  todo el mata-mata 2010; Mbappé 2 goles en 97" (2022); Molina–Messi vs Países Bajos (2022); Zúñiga–Neymar
+  (2014); panenka de Abreu (2010). De paso se confirmaron con múltiples fuentes **wc-504** (España 1-0
+  Argentina, Ferran Torres 106'), **wc-621** (Inglaterra 3ª, 6-4 a Francia) y **wc-622** (Paraguay 4-3 por
+  penales a Alemania, 16avos) → ya no hace falta que Gino las confirme.
+
+- **Code review (/code-review high, 14/11)** — arreglado:
+  - **Filtraciones** (una pregunta regala la respuesta de otra del mismo Mundial con poco texto en común,
+    que `questions:check` no veía): reescritas wc-328/354/369/509/516/518/546/547/548/561/572/606/609/610/
+    612/619 (mismo hecho, mismas opciones salvo wc-606) y sacados los "(Argentina-Alemania Federal)" de las
+    finales wc-141/289/290/632 (regalaban wc-624/625 y las subcampeonas). **wc-614** reemplazada (filtraba
+    wc-698): "¿Qué selección le ganó al anfitrión en el inaugural de 2022?" → Ecuador.
+  - `questions:check` reporta "posibles filtraciones (mismo año, otro tema)" (informativo; detalle con
+    `--leaks`): no entran a los temas porque encadenadas arman grupos de 100+ preguntas. Quedan ~350 en
+    wc, casi todas débiles ("Argentina jugó en 2022" vs "¿quién ganó 2022?").
+  - Fix: `questions:topics` reescribía el JSON con indent 4 (tomaba la sangría de las claves).
+  - `stats-2026-11.csv`: fuera las 10 filas de keys reutilizadas (sus aciertos eran de la pregunta vieja).
+  - **Decisión a revisar con Gino:** se reutilizaron las 100 keys (upsert) en vez de retirarlas y crear
+    nuevas. La UI no muestra preguntas de partidos pasados (solo el penal en vivo; la respuesta correcta
+    mantiene su índice), así que el historial de prod no se ve afectado; si se quiere trazabilidad
+    estricta, pasar a keys nuevas + migración de retiro.
+  - ⚠ Pirámide: easy 182 < medium 225 (sin cambio; `take_tournament_question` cae a la dificultad vecina).
+  - Micro-rótulos: "LIBERTADORES" desbordaba su columna en /perfil a 360px (99px en 98,7) → sin tracking
+    hasta 400px y 11px por debajo de 360px (medido: entra en 320/360/375/430). Ranking: `truncate` en la
+    línea secundaria (antes podía partirse en 2 líneas).
+  - `test:db`: 1 flake en `tournament_e2e` en la primera corrida post-reset; 76/76 en las dos siguientes.
+
+- **Rama `wip/ideas-questions` (sobre post-6b, idea 6 del TODO):** `questions:check` ahora agrupa en el
+  mismo tema las filtraciones de las 600 viejas que no se parecían en el texto: comparten año + ≥10% de
+  contexto aparte de la respuesta, con "ganó/perdió/campeón/final…" como un mismo concepto, y "…en Chile"
+  ↔ "¿qué país organizó?" (ej.: "¿Qué DT llevó a Estudiantes a ganar la Copa de la Liga 2024?" ↔ "¿Qué club
+  la ganó?", "perdió la final 2018 ante Francia" ↔ "¿quién fue campeón 2018?"). Temas: wc 61 grupos/275
+  preguntas, arg 59/301 (el más grande, 106 de River/Boca: inofensivo, el tema solo ordena preferencias y
+  un torneo usa ~15 preguntas). Quedan 169 wc / 14 arg "posibles" débiles (`--leaks`). Migración de sync
+  `20261121000000_question_topics_leaks` (local ✓; prod con OK de Gino, después de la `…18…`).
+  **Idea 5 (misma rama):** pirámide de dificultad wc arreglada → easy 215 · medium 212 · hard 188 · very_hard
+  85 (antes 182/225/208/85, hard ≥ medium rompía la pirámide). 34 → easy (30 medium muy conocidas + Gol del
+  Siglo, Messi 5 mundiales, Argentina 1978, triplete de Mbappé), 16 hard → medium (Klose, CR7, Casillas,
+  mano de Suárez…). Va en la misma migración de sync `…21…` (regenerada). Revisar el criterio con Gino.
+
+**Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
+aplicar `20261118000000_questions_matches` por MCP `apply_migration` (es un sync de ~250 KB: en la 5b se
+aplicó como diff compacto — basta con los upserts de las 100 keys cambiadas) + reconciliar ledger.
+
 ### Hecho
 - **Fase 0** — footer "Gino Giorgi" → página de creador; favicon real (svg/ico/apple/PWA).
 - **Fase 1** — deps al día; wipe total de prod (0 usuarios); squash a baseline v2; catálogo
@@ -159,13 +221,12 @@ micro-rótulos 10px→12px y 100 "¿De qué país es X?" → partidos/finales (+
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
-  gusto/tono, y decidir si se baja `players_records` (37% del Mundial, mayoría "¿De qué país es X?").
-  Recomendación: cambiar ~100 de esas por preguntas de partidos/finales en una tanda futura.
+  gusto/tono. Las 100 nuevas de partidos/finales (post-6b) ya están verificadas contra fuentes (ver
+  sección post-6b); queda solo la pasada de gusto.
 - Datos del Mundial 2026 tomados de Wikipedia/ESPN (jul 2026): España campeón 1-0 a Argentina en el
   alargue (Ferran Torres), Mbappé Bota de Oro (10) y máximo goleador histórico (22), Messi 21,
   Kane 14, Deschamps 27 partidos como DT, 308 goles, Paraguay eliminó a Alemania por penales,
-  Inglaterra 3ª. Recomendación: que Gino confirme wc-622 (Paraguay–Alemania) y wc-621 (3º puesto),
-  que tuvieron una sola fuente.
+  Inglaterra 3ª. wc-621/622/504 reconfirmadas con varias fuentes (14/11).
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
 - **3D con GLB (Fase 6 del plan)**: no bajé assets ni instalé Blender (descargar requiere tu OK
   explícito). Se hizo la Fase 6 **solo con código** (rig propio articulado, ver abajo). Recomendación:

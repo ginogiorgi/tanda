@@ -1,5 +1,7 @@
 # Aciertos humanos en prod (no bots, no respuestas aleatorias) al 2026-11-13, antes del wipe.
 # Solo preguntas con n>=2. Muestra chica: señal orientativa para recalibrar, no concluyente.
+# 2026-11-14: sin las 100 keys reutilizadas en post-6b ("¿De qué país es X?" → partidos/finales):
+# sus aciertos eran de la pregunta vieja y no describen a la nueva.
 source_key,difficulty,n,accuracy
 wc-006,easy,2,1.00
 wc-012,easy,2,0.00
@@ -24,7 +26,6 @@ wc-111,medium,2,0.00
 wc-122,hard,2,0.00
 wc-154,hard,2,1.00
 wc-162,hard,2,0.50
-wc-243,easy,3,1.00
 wc-246,easy,4,0.75
 wc-261,medium,2,0.50
 wc-262,medium,2,0.50
@@ -36,11 +37,7 @@ wc-334,easy,2,1.00
 wc-335,easy,6,0.83
 wc-345,easy,2,1.00
 wc-348,easy,2,1.00
-wc-352,easy,3,0.67
-wc-354,easy,2,1.00
 wc-357,easy,2,1.00
-wc-360,easy,4,0.25
-wc-363,easy,2,1.00
 wc-387,medium,5,0.60
 wc-393,medium,4,0.25
 wc-397,medium,4,0.50
@@ -51,12 +48,7 @@ wc-424,hard,2,1.00
 wc-442,hard,2,0.00
 wc-488,hard,2,0.00
 wc-501,easy,2,0.50
-wc-542,easy,2,1.00
-wc-560,easy,2,1.00
 wc-568,easy,2,1.00
-wc-609,easy,3,0.33
-wc-611,easy,3,0.33
-wc-620,easy,2,1.00
 wc-636,medium,2,0.00
 wc-655,medium,2,0.00
 wc-664,medium,3,0.67

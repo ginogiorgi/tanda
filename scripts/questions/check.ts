@@ -11,6 +11,10 @@
  *    enunciados parecidos (≥ 0.4). Son las preguntas que un jugador siente "repetidas".
  *  · Filtraciones: dos preguntas sobre el mismo hecho donde el enunciado de una nombra la respuesta
  *    de la otra ("¿Qué club ganó X?" + "¿Qué DT ganó X con Estudiantes?").
+ *    Con poco texto en común también cuenta si comparten año y ≥10% del contexto (`sameEvent`).
+ *  · Posibles filtraciones lejanas (informativo): una nombra la respuesta de la otra y comparten año
+ *    pero casi nada más ("Argentina jugó en 2022" vs "¿quién ganó 2022?"): pistas débiles, no entran a
+ *    los temas; se listan con `--leaks` para revisarlas a mano.
  *  · Balance de categorías (alerta si una supera el 25% del banco).
  *  · Posición de la correcta (alerta si alguna posición se aleja >5 pp del tercio).
  *  · Pirámide de dificultad (easy ≥ medium ≥ hard ≥ very_hard).
@@ -25,6 +29,7 @@ type Question = z.infer<typeof questionSchema>;
 const root = join(import.meta.dirname, "..", "..");
 const reportOnly = process.argv.includes("--report");
 const writeTopics = process.argv.includes("--write-topics");
+const listLeaks = process.argv.includes("--leaks");
 const pairsOut = process.argv.includes("--pairs") ? process.argv[process.argv.indexOf("--pairs") + 1] : undefined;
 const allPairs: { a: string; b: string; why: string }[] = [];
 
@@ -76,6 +81,39 @@ function numbers(t: Set<string>): string {
   return [...t].filter((x) => /^\d+$/.test(x)).sort().join(",");
 }
 
+const YEAR = /^(19[3-9]\d|20\d\d)$/;
+
+/** Ganar/perder un título es el mismo hecho → un solo token. */
+const TITLE = new Set(
+  "campeon campeona campeones gano gana ganar ganaron ganador consagro final finales titulo subcampeon subcampeona perdio vencio levanto".split(
+    " ",
+  ),
+);
+
+const HOST_Q = /organiz|sede|se jugo|se juega|en que pais/;
+
+/** "¿Qué selección ganó el Mundial 1962 en Chile?" regala "¿Qué país organizó el Mundial 1962?". */
+function hostLeak(a: Question, b: Question): boolean {
+  if (!HOST_Q.test(norm(b.prompt))) return false;
+  const host = norm(b.options[b.answer]!);
+  return new RegExp(`(^|[^a-z0-9])en ${host.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9]|$)`).test(norm(a.prompt));
+}
+
+/**
+ * ¿Hablan del mismo hecho aunque se parezcan poco? Comparten un año y ≥ 10% del resto del texto
+ * (sin años ni las palabras de las respuestas, que justamente son lo que se filtra).
+ */
+function sameEvent(a: Question, b: Question, ta: Set<string>, tb: Set<string>): boolean {
+  const ya = [...ta].filter((t) => YEAR.test(t));
+  if (!ya.some((y) => tb.has(y))) return false;
+  if (hostLeak(a, b) || hostLeak(b, a)) return true;
+  const skip = new Set([...tokens(a.options[a.answer]!), ...tokens(b.options[b.answer]!)]);
+  // Ganar/perder un título es el mismo hecho ("perdió la final ante Francia" ↔ "¿quién fue campeón?").
+  const rest = (t: Set<string>) =>
+    new Set([...t].filter((x) => !YEAR.test(x) && !skip.has(x)).map((x) => (TITLE.has(x) ? "·titulo" : x)));
+  return jaccard(rest(ta), rest(tb)) >= 0.1;
+}
+
 function nearDuplicates(qs: Question[]): Pair[] {
   const tk = qs.map((q) => tokens(q.prompt));
   const nums = tk.map(numbers);
@@ -89,11 +127,34 @@ function nearDuplicates(qs: Question[]): Pair[] {
       else if (s >= 0.4 && ans[i] === ans[j]) out.push({ a: qs[i]!, b: qs[j]!, score: s, why: "misma respuesta" });
       // Filtración: dos preguntas sobre el mismo hecho donde una nombra la respuesta de la otra
       // (si salen en el mismo partido, una regala la otra).
-      else if (s >= 0.3 && (names(qs[j]!.prompt, qs[i]!.options[qs[i]!.answer]!) || names(qs[i]!.prompt, qs[j]!.options[qs[j]!.answer]!)))
+      // Con poco texto en común (< 0.3) cuenta igual si comparten año y algo de contexto aparte de la
+      // respuesta ("¿Qué DT llevó a Estudiantes a ganar la Copa de la Liga 2024?" regala "¿Qué club
+      // ganó la Copa de la Liga 2024?").
+      // Orden medido: `sameEvent` corta enseguida sin año compartido; `names` arma una RegExp por
+      // llamada → ponerlo primero triplica el tiempo (0,54 s → 1,45 s).
+      else if (
+        (s >= 0.3 || sameEvent(qs[i]!, qs[j]!, tk[i]!, tk[j]!)) &&
+        (names(qs[j]!.prompt, qs[i]!.options[qs[i]!.answer]!) || names(qs[i]!.prompt, qs[j]!.options[qs[j]!.answer]!))
+      )
         out.push({ a: qs[i]!, b: qs[j]!, score: s, why: "filtra la respuesta" });
     }
   }
   return out.sort((x, y) => y.score - x.score);
+}
+
+/** Filtraciones lejanas: mismo año y una nombra la respuesta de la otra, en temas distintos. */
+function farLeaks(qs: Question[], topicOf: Map<string, string>): [Question, Question][] {
+  const years = qs.map((q) => [...tokens(q.prompt)].filter((t) => YEAR.test(t)));
+  const out: [Question, Question][] = [];
+  for (let i = 0; i < qs.length; i++) {
+    for (let j = 0; j < qs.length; j++) {
+      if (i === j || !years[i]!.some((y) => years[j]!.includes(y))) continue;
+      const ti = topicOf.get(qs[i]!.key);
+      if (ti && ti === topicOf.get(qs[j]!.key)) continue;
+      if (names(qs[i]!.prompt, qs[j]!.options[qs[j]!.answer]!)) out.push([qs[i]!, qs[j]!]);
+    }
+  }
+  return out;
 }
 
 const pct = (n: number, d: number) => `${((100 * n) / d).toFixed(1)}%`;
@@ -165,10 +226,17 @@ for (const mode of MODES) {
       return t ? { ...rest, topic: t } : rest;
     });
     // Respetar la indentación del archivo (diffs chicos).
-    const indent = /\n( +)"/.exec(rawText)?.[1]?.length ?? 1;
+    // Primer nivel del array (`[\n  {`), no el de las claves de cada pregunta.
+    const indent = /^\[\n( +)/.exec(rawText)?.[1]?.length ?? 2;
     writeFileSync(join(root, `data/questions/${mode}.json`), `${JSON.stringify(out, null, indent)}\n`);
     console.log(`  ✓ temas escritos en data/questions/${mode}.json`);
   }
+  const leaks = farLeaks(qs, topicOf);
+  console.log(`posibles filtraciones (mismo año, otro tema): ${leaks.length}${listLeaks ? "" : " · ver con --leaks"}`);
+  if (listLeaks) {
+    for (const [a, b] of leaks) console.log(`  ${a.key} nombra la respuesta de ${b.key} (${b.options[b.answer]})\n    · ${a.prompt}\n    · ${b.prompt}`);
+  }
+
   const dups = raw2.filter((d) => d.why !== "filtra la respuesta").filter(
     (d) => !reviewed.has(`${d.a.key}|${d.b.key}`) && !reviewed.has(`${d.b.key}|${d.a.key}`),
   );

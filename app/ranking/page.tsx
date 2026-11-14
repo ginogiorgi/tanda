@@ -22,7 +22,7 @@ function Row({ r }: { r: RankingRow }) {
       <DivisionCrest id={r.division} className="h-7" />
       <span className="flex min-w-0 flex-col">
         <span className="truncate text-sm font-bold">{r.username}</span>
-        <span className={`text-[10px] font-semibold uppercase tracking-[0.1em] ${r.is_me ? "opacity-75" : "text-fg-muted"}`}>
+        <span className={`truncate text-xs font-semibold uppercase tracking-[0.04em] ${r.is_me ? "opacity-75" : "text-fg-muted"}`}>
           {divisionById(r.division).name} · {r.wins}/{r.games} G{r.placement ? " · ubicación" : ""}
         </span>
       </span>

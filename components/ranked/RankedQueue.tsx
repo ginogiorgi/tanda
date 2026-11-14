@@ -147,7 +147,7 @@ export function RankedQueue({ me }: { me: RankedMe }) {
                     }`}
                   >
                     <span className="font-display text-lg font-extrabold uppercase leading-none">{s.label}</span>
-                    <span className="text-[10px] font-semibold opacity-75">
+                    <span className="text-xs font-semibold opacity-75">
                       {s.from === 0 ? "ya" : `a los ${s.from}s`}
                     </span>
                   </li>

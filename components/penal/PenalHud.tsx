@@ -19,7 +19,7 @@ function Dots({ dots, align }: { dots: PenalDot[]; align: "left" | "right" }) {
   return (
     <span className={`flex flex-wrap gap-1 ${align === "right" ? "justify-end" : ""}`}>
       {dots.length === 0 ? (
-        <span className="text-[10px] text-fg-subtle">—</span>
+        <span className="text-xs text-fg-subtle">—</span>
       ) : (
         dots.map((d) => (
           <span
@@ -113,6 +113,7 @@ export function PenalHud({
     <div className="flex w-full flex-col items-center gap-2">
       <div className="flex w-full items-start gap-3 border-t-[3px] border-b border-ink py-2">
         <Side brief={left.brief} score={left.score} dots={left.dots} align="left" />
+        {/* 10px a propósito: a 12px "PENAL 3 DE 5" no entra entre los dos lados en 375px. */}
         <span className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-fg-muted">
           {label}
         </span>

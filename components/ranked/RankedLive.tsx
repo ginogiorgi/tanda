@@ -52,11 +52,11 @@ function Versus({ view, remaining }: { view: RankedMatchView; remaining: number 
       {/* La apuesta: lo que se gana o pierde antes de patear. */}
       <div className="grid w-full grid-cols-2 border-2 border-ink">
         <div className="flex flex-col items-center gap-0.5 bg-ink py-3 text-bg">
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-80">Si ganás</span>
+          <span className="text-xs font-bold uppercase tracking-[0.14em] opacity-80">Si ganás</span>
           <span className="font-display text-4xl font-black leading-none">{signed(win)}</span>
         </div>
         <div className="flex flex-col items-center gap-0.5 bg-bg-elevated py-3 text-fg">
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-fg-muted">Si perdés</span>
+          <span className="text-xs font-bold uppercase tracking-[0.14em] text-fg-muted">Si perdés</span>
           <span className="font-display text-4xl font-black leading-none text-brand-ink">{signed(loss)}</span>
         </div>
       </div>
