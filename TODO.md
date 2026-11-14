@@ -66,6 +66,21 @@ wip/avatar-glb && git push` (deploy). El `AvatarModel` procedural queda solo com
   en reposo + suela que contrasta, skinneado a `foot_*`/`ball_*`; zapatillas (suela gruesa clara) /
   botines (fina) / tapones (fina + 6 tapones). El shader del cuerpo descarta el pie descalzo (y<0.085).
   Revisado en la galería y en la patada del penal.
+- ✅ **Code review (/code-review high, 14/11)** — arreglado:
+  - Rig congelado tras re-suspender (cambio de cuerpo sin GLB en caché): el registro de pivotes pasó a
+    `useLayoutEffect` (React lo re-ejecuta al revelar el Suspense, después de que el fallback borra los suyos).
+  - Con `prefers-reduced-motion` (frameloop "demand") los cambios de color/corte/pelo/botines no se
+    dibujaban: ahora se aplican en un layout effect + `invalidate()` (antes se pisaban los uniforms cada frame).
+  - Lag de un frame: `applyPose` de `AvatarCanvas`/`PenalScene` va con prioridad -1 → corre antes que el
+    `useFrame` de `GlbAvatar` que lo traduce a huesos.
+  - Pérdida de memoria y CPU: la preparación pesada (geometría del cuerpo, cresta, botines) se hace una vez
+    por GLB (`templateOf`, WeakMap); cada instancia clona y crea solo sus materiales, que libera al desmontar.
+    Un esqueleto por pie (no por variante); `dominantBone()` compartido; sin regex por vértice.
+  - `footSlices` rellena huecos con la vecina más cercana con datos (antes podía perder secciones).
+  - `build-glb`: valida que bind (inversas) y nodo del pelo coincidan con el cuerpo y borra el temp
+    (⚠ no corrido: los packs fuente no están en disco; solo typecheck).
+  - Docs: CLAUDE.md / SPEC §8.2 / `parts.ts` decían "sin GLBs externos" → reflejan la decisión GLB.
+  Revisado headless: galería y penal, normal y reduced motion, sin errores de consola.
 Los zips fuente ya no están; para rebajarlos sin cuenta: `curl` a `https://quaternius.itch.io/<slug>`,
 sacar `csrf_token`, `POST <slug>/file/<upload_id>?source=view_game&as_props=1` → JSON con `url` firmada
 (universal-base-characters 15861669).

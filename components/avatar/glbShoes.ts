@@ -3,12 +3,13 @@
  * un zapato que envuelve el pie (loft de secciones superelípticas medidas sobre los vértices del
  * pie en reposo) + suela, skinneado a `foot_*`/`ball_*` para que la puntera doble con los dedos.
  *
- * Se arman las tres variantes (`sneakers`/`boots`/`cleats`) una vez por clon y se prende la elegida
- * (`setShoes`). Todo se mide en el "mundo de reposo" del clon recién creado (Y arriba, +Z adelante).
+ * Se arman las tres variantes (`sneakers`/`boots`/`cleats`) una vez por GLB (en el template de
+ * `GlbAvatar`, cada instancia las clona) y se prende la elegida (`setShoes`). Todo se mide en el "mundo de reposo" del clon recién creado (Y arriba, +Z adelante).
  */
 
 import * as THREE from "three";
 import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { dominantBone } from "./glbRig";
 
 export type ShoePart = "sneakers" | "boots" | "cleats";
 const PARTS: readonly ShoePart[] = ["sneakers", "boots", "cleats"];
@@ -68,12 +69,17 @@ function footSlices(points: THREE.Vector3[]): Slice[] {
     }
     slices.push(Number.isFinite(yTop) ? { z, xMin, xMax, yTop } : null);
   }
-  const out: Slice[] = [];
-  for (let j = 0; j < SLICES; j++) {
-    const s = slices[j] ?? slices[j - 1] ?? slices[j + 1];
-    if (s) out.push({ ...s, z: zMin + j * step });
-  }
-  return out;
+  // Franjas vacías: copia de la vecina más cercana con datos (siempre SLICES secciones parejas: los
+  // tapones se ubican por fracción del largo).
+  const filled = slices.map((s, j) => {
+    if (s) return s;
+    for (let d = 1; d < SLICES; d++) {
+      const n = slices[j - d] ?? slices[j + d];
+      if (n) return n;
+    }
+    return null;
+  });
+  return filled.flatMap((s, j) => (s ? [{ ...s, z: zMin + j * step }] : []));
 }
 
 /** Peso del hueso `ball` según z (transición de 3 cm alrededor de la articulación). */
@@ -83,7 +89,7 @@ function ballWeight(z: number, ballZ: number): number {
 
 /**
  * Loft cerrado: anillos superelípticos (x, y) por sección, de `y0` a `yTop`, con tapas en talón y
- * punta. `grow` agranda todo (margen); `taper` achica las puntas para redondear.
+ * punta. `grow` agranda todo (margen); las secciones extremas se achican para redondear.
  */
 function loft(slices: Slice[], y0: (s: Slice) => number, y1: (s: Slice) => number, grow: number): number[] {
   const rings: THREE.Vector3[][] = [];
@@ -193,23 +199,14 @@ function skinned(pos: number[], skeleton: THREE.Skeleton, ballZ: number, name: s
 export function attachShoes(scene: THREE.Object3D, body: THREE.SkinnedMesh): void {
   const bones = body.skeleton.bones;
   const pos = body.geometry.getAttribute("position");
-  const si = body.geometry.getAttribute("skinIndex");
-  const sw = body.geometry.getAttribute("skinWeight");
+  const sideOf = bones.map((b) => /^(?:foot|ball)_([lr])$/.exec(b.name)?.[1] as "l" | "r" | undefined);
   const feet: Record<"l" | "r", THREE.Vector3[]> = { l: [], r: [] };
   for (let i = 0; i < pos.count; i++) {
-    let best = 0;
-    let w = -1;
-    for (let k = 0; k < 4; k++) {
-      if (sw.getComponent(i, k) > w) {
-        w = sw.getComponent(i, k);
-        best = si.getComponent(i, k);
-      }
-    }
-    const m = /^(?:foot|ball)_([lr])$/.exec(bones[best]?.name ?? "");
-    if (!m) continue;
+    const side = sideOf[dominantBone(body.geometry, i)];
+    if (!side) continue;
     const v = new THREE.Vector3().fromBufferAttribute(pos, i);
     body.applyBoneTransform(i, v);
-    feet[m[1] as "l" | "r"].push(v.applyMatrix4(body.matrixWorld));
+    feet[side].push(v.applyMatrix4(body.matrixWorld));
   }
 
   const groups = new Map<ShoePart, THREE.Group>();
@@ -227,10 +224,11 @@ export function attachShoes(scene: THREE.Object3D, body: THREE.SkinnedMesh): voi
     if (!foot || !ball || points.length < 20) continue;
     const ballZ = new THREE.Vector3().setFromMatrixPosition(ball.matrixWorld).z;
     const slices = footSlices(points);
+    // Un esqueleto propio con los dos huesos (compartido por las variantes): inversas = reposo
+    // actual (identidad al bindear).
+    const skeleton = new THREE.Skeleton([foot, ball]);
     for (const part of PARTS) {
       const st = STYLE[part];
-      // Un esqueleto propio con los dos huesos: inversas = reposo actual (identidad al bindear).
-      const skeleton = new THREE.Skeleton([foot, ball]);
       const upper = loft(slices, () => 0.004, (s) => s.yTop, st.margin);
       const sole = loft(slices, () => 0, () => st.sole, st.margin + 0.004);
       if (st.studs) sole.push(...studs(slices));

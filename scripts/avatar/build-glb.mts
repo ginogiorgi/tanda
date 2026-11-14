@@ -2,7 +2,7 @@
  * Pipeline de los personajes 3D (Fase 6b). Toma los packs CC0 de Quaternius ya descomprimidos y
  * genera los GLB livianos que sirve la app en `public/models/avatar/`:
  *
- *   avatar-male.glb / avatar-female.glb  cuerpo + ojos + cejas + los 6 peinados (mismo esqueleto)
+ *   avatar-male.glb / avatar-female.glb  cuerpo + ojos + cejas + los 5 peinados (mismo esqueleto)
  *
  * Sin animaciones de UAL: el rig propio (`lib/avatar/rig.ts`) anima los huesos directamente.
  *
@@ -13,7 +13,7 @@
  * Los assets fuente NO se versionan (pesan ~170 MB); el resultado sí.
  */
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Document, NodeIO, type Texture } from "@gltf-transform/core";
@@ -67,6 +67,13 @@ function shrink(tex: Texture, size: number, jpeg: boolean): void {
   tex.setURI("");
 }
 
+/** Igualdad de matrices/arrays numéricos con tolerancia (el pack exporta floats con ruido). */
+function close(a: ArrayLike<number>, b: ArrayLike<number>, eps = 1e-4): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (Math.abs(a[i]! - b[i]!) > eps) return false;
+  return true;
+}
+
 async function finish(doc: Document, file: string): Promise<void> {
   await doc.transform(dedup(), prune(), quantize(), meshopt({ encoder: MeshoptEncoder, level: "medium" }));
   doc.createExtension(EXTMeshoptCompression).setRequired(true);
@@ -86,7 +93,14 @@ for (const body of ["Male", "Female"] as const) {
     const hskin = hdoc.getRoot().listSkins()[0]!;
     const names = hskin.listJoints().map((j) => j.getName());
     if (names.join() !== skin.listJoints().map((j) => j.getName()).join()) throw new Error(`${hair}: esqueleto distinto`);
+    // Se re-ata al skin del cuerpo: el bind (inversas) y la transformación del nodo tienen que ser
+    // los mismos, si no el pelo queda corrido o deformado sin ningún error.
+    const ibm = hskin.getInverseBindMatrices()?.getArray();
+    const bodyIbm = skin.getInverseBindMatrices()?.getArray();
+    if (!ibm || !bodyIbm || !close(ibm, bodyIbm)) throw new Error(`${hair}: bind distinto del cuerpo`);
     const hnode = hdoc.getRoot().listNodes().find((x) => x.getMesh())!;
+    const bodyNode = r.listNodes().find((x) => x.getMesh() && x.getSkin() === skin);
+    if (!bodyNode || !close(hnode.getWorldMatrix(), bodyNode.getWorldMatrix())) throw new Error(`${hair}: nodo con otra transformación`);
     const hmesh = hnode.getMesh()!;
     const mesh = doc.createMesh(hair);
     for (const hp of hmesh.listPrimitives()) {
@@ -116,6 +130,8 @@ for (const body of ["Male", "Female"] as const) {
   }
   await finish(doc, `avatar-${body.toLowerCase()}.glb`);
 }
+
+rmSync(work, { recursive: true, force: true });
 
 writeFileSync(
   join(out, "LICENSE.txt"),

@@ -82,6 +82,22 @@ function modelQuat(obj: THREE.Object3D, scene: THREE.Object3D, out: THREE.Quater
   return out;
 }
 
+/** Hueso de mayor peso del vértice `i` (índice en `skeleton.bones`). */
+export function dominantBone(geometry: THREE.BufferGeometry, i: number): number {
+  const si = geometry.getAttribute("skinIndex");
+  const sw = geometry.getAttribute("skinWeight");
+  let best = 0;
+  let w = -1;
+  for (let k = 0; k < 4; k++) {
+    const wk = sw.getComponent(i, k);
+    if (wk > w) {
+      w = wk;
+      best = si.getComponent(i, k);
+    }
+  }
+  return best;
+}
+
 export function createGlbRig(scene: THREE.Object3D): GlbRig {
   const mapped: Mapped[] = [];
   for (const [joint, name] of BONE_OF) {

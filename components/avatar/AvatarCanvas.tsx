@@ -22,9 +22,10 @@ suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3
 
 function AnimatedAvatar({ config, animate }: { config: AvatarConfig; animate: boolean }) {
   const { handles, register } = useRig();
+  // Prioridad -1: la pose se aplica antes de que `GlbAvatar` la traduzca a huesos (mismo frame).
   useFrame((state) => {
     applyPose(handles.current, animate ? samplePose(IDLE, state.clock.elapsedTime) : REST);
-  });
+  }, -1);
   return <Avatar3D config={config} rig={register} />;
 }
 

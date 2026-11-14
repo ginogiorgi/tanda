@@ -239,7 +239,7 @@ function Actors({
     cam.position.lerpVectors(v.pos, v.rPos, w2);
     v.look.lerp(v.rLook, w2);
     cam.lookAt(v.look);
-  });
+  }, -1); // antes que el `useFrame` de `GlbAvatar` (traduce la pose a huesos en el mismo frame)
 
   return (
     <>

@@ -10,11 +10,13 @@
  *   (largo de manga, short o pantalón) va por uniforms.
  * - **Pelo:** se muestra el peinado de `hair.part` y se tiñe (textura gris del pack).
  *
- * Requiere `<Suspense>` arriba (useLoader).
+ * Requiere `<Suspense>` arriba (useLoader). La preparación pesada (geometría del cuerpo, cresta,
+ * botines) se hace una vez por GLB (`templateOf`); cada instancia clona el template y crea solo sus
+ * materiales (colores propios), que libera al desmontarse.
  */
 
-import { useFrame, useLoader } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -23,7 +25,7 @@ import { JOINTS } from "@/lib/avatar/rig";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
 import { attachCrest, CREST_NAME } from "./glbCrest";
 import { attachShoes, setShoes } from "./glbShoes";
-import { createGlbRig, driveGlbRig, type ProxyRig } from "./glbRig";
+import { createGlbRig, dominantBone, driveGlbRig, type GlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y, type RigRegister } from "./rigPose";
 
 const URL: Record<BodyType, string> = {
@@ -108,9 +110,7 @@ const ARM_Y = 1.36;
 function prepareBody(mesh: THREE.SkinnedMesh): void {
   const g = mesh.geometry.clone();
   const pos = g.getAttribute("position");
-  const si = g.getAttribute("skinIndex");
-  const sw = g.getAttribute("skinWeight");
-  const bones = mesh.skeleton.bones;
+  const isHead = mesh.skeleton.bones.map((b) => /^(neck|head)/i.test(b.name));
   const head = new Float32Array(pos.count);
   const bind = new Float32Array(pos.count * 3);
   const v = new THREE.Vector3();
@@ -136,16 +136,7 @@ function prepareBody(mesh: THREE.SkinnedMesh): void {
     bind[i * 3] = (bind[i * 3]! - cx) * k;
     bind[i * 3 + 1] = (bind[i * 3 + 1]! - minY) * k;
     bind[i * 3 + 2] = bind[i * 3 + 2]! * k;
-    let best = 0;
-    let w = -1;
-    for (let j = 0; j < 4; j++) {
-      const wj = sw.getComponent(i, j);
-      if (wj > w) {
-        w = wj;
-        best = si.getComponent(i, j);
-      }
-    }
-    if (/^(neck|head)/i.test(bones[best]?.name ?? "")) head[i] = 1;
+    if (isHead[dominantBone(g, i)]) head[i] = 1;
   }
   g.setAttribute("aHead", new THREE.BufferAttribute(head, 1));
   g.setAttribute("aBind", new THREE.BufferAttribute(bind, 3));
@@ -218,6 +209,80 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
   return m;
 }
 
+const isBody = (m: THREE.Material) => m.name.startsWith("MI_Superhero");
+
+/** GLB → clon preparado (en reposo, nunca se anima ni se renderiza): solo se clona. */
+const templates = new WeakMap<THREE.Object3D, THREE.Object3D>();
+
+function templateOf(source: THREE.Object3D, body: BodyType): THREE.Object3D {
+  const cached = templates.get(source);
+  if (cached) return cached;
+  const t = cloneSkinned(source);
+  t.updateMatrixWorld(true);
+  // La cresta se arma en reposo (antes de que el rig toque los huesos); el material es un molde.
+  const buzzed = t.getObjectByName(buzzedMesh(body));
+  if (buzzed instanceof THREE.SkinnedMesh) {
+    attachCrest(buzzed, new THREE.MeshStandardMaterial({ roughness: 0.85, flatShading: true }));
+  }
+  const bodies: THREE.SkinnedMesh[] = [];
+  t.traverse((obj) => {
+    if (!(obj instanceof THREE.SkinnedMesh)) return;
+    obj.frustumCulled = false; // el bounding box de bind no sigue la pose (patada, estirada)
+    const mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+    if (mat && isBody(mat)) {
+      prepareBody(obj);
+      bodies.push(obj);
+    }
+  });
+  // Fuera del traverse: agrega grupos a la escena.
+  for (const b of bodies) attachShoes(t, b);
+  templates.set(source, t);
+  return t;
+}
+
+interface Instance {
+  scene: THREE.Object3D;
+  glbRig: GlbRig;
+  /** Materiales propios de esta instancia (se liberan al desmontar). */
+  materials: THREE.Material[];
+}
+
+/**
+ * Clon del template con materiales propios: el del cuerpo con los uniforms del kit y una copia de
+ * cada uno de los demás (pelo, cresta, botines se tiñen por instancia). Se respeta el material
+ * compartido (pelo y cejas usan el mismo).
+ */
+function instantiate(template: THREE.Object3D, uniforms: KitUniforms): Instance {
+  const scene = cloneSkinned(template);
+  const own = new Map<THREE.Material, THREE.Material>();
+  const copy = (m: THREE.Material) => {
+    const c = own.get(m) ?? (isBody(m) ? kitMaterial(m, uniforms) : m.clone());
+    own.set(m, c);
+    return c;
+  };
+  scene.traverse((obj) => {
+    if (!(obj instanceof THREE.Mesh)) return;
+    obj.material = Array.isArray(obj.material) ? obj.material.map(copy) : copy(obj.material);
+  });
+  return { scene, glbRig: createGlbRig(scene), materials: [...own.values()] };
+}
+
+/** Peinado visible + tinte (los materiales ya son de la instancia). */
+function applyHair(scene: THREE.Object3D, mesh: string | null, crest: boolean, color: HexColor): void {
+  scene.traverse((obj) => {
+    if (!(obj instanceof THREE.Mesh)) return;
+    if (obj.name === CREST_NAME) {
+      obj.visible = crest;
+      if (obj.material instanceof THREE.MeshStandardMaterial) obj.material.color.set(color).multiplyScalar(CREST_SHADE);
+      return;
+    }
+    if (HAIR_MESHES.includes(obj.name)) obj.visible = obj.name === mesh;
+    if (obj.material instanceof THREE.MeshStandardMaterial && obj.material.name.startsWith("MI_Hair")) {
+      obj.material.color.set(color);
+    }
+  });
+}
+
 interface GlbAvatarProps {
   config: AvatarConfig;
   /** Color de camiseta de la selección (escena de penal). Ver `AvatarModel`. */
@@ -250,58 +315,21 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
     [],
   );
 
-  const { scene, glbRig } = useMemo(() => {
-    const scene = cloneSkinned(gltf.scene);
-    scene.updateMatrixWorld(true);
-    // La cresta se arma con el clon en reposo (antes de que el rig toque los huesos).
-    const buzzed = scene.getObjectByName(buzzedMesh(config.bodyType));
-    if (buzzed instanceof THREE.SkinnedMesh) {
-      attachCrest(buzzed, new THREE.MeshStandardMaterial({ roughness: 0.85, flatShading: true }));
-    }
-    const bodies: THREE.SkinnedMesh[] = [];
-    scene.traverse((obj) => {
-      if (!(obj instanceof THREE.SkinnedMesh)) return;
-      obj.frustumCulled = false; // el bounding box de bind no sigue la pose (patada, estirada)
-      const mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
-      if (!mat) return;
-      if (mat.name.startsWith("MI_Superhero")) {
-        prepareBody(obj);
-        obj.material = kitMaterial(mat, uniforms);
-        bodies.push(obj);
-      }
-    });
-    // Fuera del traverse: agrega grupos a la escena.
-    for (const body of bodies) attachShoes(scene, body);
-    return { scene, glbRig: createGlbRig(scene) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
-  }, [gltf, uniforms]);
+  const inst = useMemo(() => instantiate(templateOf(gltf.scene, config.bodyType), uniforms), [gltf, uniforms]); // eslint-disable-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
+  useEffect(() => () => inst.materials.forEach((m) => m.dispose()), [inst]);
 
-  // Peinado visible + tinte (material propio del clon, compartido por pelo y cejas).
+  // Colores, cortes, peinado y botines: se mutan uniforms/materiales (sin reclonar ni recompilar) y
+  // se pide un frame (con frameloop "demand" nada más lo dibujaría).
+  const invalidate = useThree((s) => s.invalidate);
+  const { sleeveX, hemY } = outfitOf(config);
   const hairName = hairMesh(config.hair.part, config.bodyType);
-  useMemo(() => {
-    const tinted = new Map<THREE.Material, THREE.MeshStandardMaterial>();
-    scene.traverse((obj) => {
-      if (obj.name === CREST_NAME && obj instanceof THREE.Mesh) {
-        obj.visible = config.hair.part === "mohawk";
-        if (obj.material instanceof THREE.MeshStandardMaterial) {
-          obj.material.color.set(config.hair.color).multiplyScalar(CREST_SHADE);
-        }
-        return;
-      }
-      if (!(obj instanceof THREE.SkinnedMesh)) return;
-      if (HAIR_MESHES.includes(obj.name)) obj.visible = obj.name === hairName;
-      const mat = obj.material;
-      if (mat instanceof THREE.MeshStandardMaterial && mat.name.startsWith("MI_Hair")) {
-        const own = tinted.get(mat) ?? (mat.userData.tanda === true ? mat : mat.clone());
-        own.userData.tanda = true;
-        own.color.set(config.hair.color);
-        tinted.set(mat, own);
-        obj.material = own;
-      }
-    });
-  }, [scene, hairName, config.hair.part, config.hair.color]);
-
-  useMemo(() => setShoes(scene, config.shoes.part, config.shoes.color), [scene, config.shoes.part, config.shoes.color]);
+  const { hair, bottom, shoes } = config;
+  useLayoutEffect(() => {
+    setKit(uniforms, { sleeveX, hemY }, topColor, sash, bottom.color, shoes.color);
+    applyHair(inst.scene, hairName, hair.part === "mohawk", hair.color);
+    setShoes(inst.scene, shoes.part, shoes.color);
+    invalidate();
+  }, [inst, uniforms, invalidate, sleeveX, hemY, topColor, sash, bottom.color, shoes.part, shoes.color, hairName, hair.part, hair.color]);
 
   // Pivotes fantasma para `applyPose` (no están en la escena; solo guardan la pose).
   const proxies = useMemo<ProxyRig>(() => {
@@ -323,7 +351,10 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
       kneeR: g(),
     };
   }, []);
-  useEffect(() => {
+  // Layout effect (no pasivo): si el avatar vuelve a suspenderse (cambio de cuerpo sin GLB en caché),
+  // React lo des-registra al ocultarlo y lo vuelve a registrar al mostrarlo, después de que el
+  // fallback (`AvatarModel`) borre sus pivotes.
+  useLayoutEffect(() => {
     if (!rig) return;
     rig("root", proxies.root);
     for (const j of JOINTS) rig(j, proxies[j]);
@@ -334,17 +365,14 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   }, [rig, proxies]);
 
   const wrapper = useRef<THREE.Group>(null);
-  useFrame(() => {
-    // Colores y cortes cambian sin recompilar ni reclonar: se mutan los uniforms.
-    setKit(uniforms, outfitOf(config), topColor, sash, config.bottom.color, config.shoes.color);
-    driveGlbRig(glbRig, proxies, wrapper.current);
-  });
+  // Corre después del `applyPose` de la escena (que usa prioridad -1): la pose es la de este frame.
+  useFrame(() => driveGlbRig(inst.glbRig, proxies, wrapper.current));
 
   return (
     <group position={[0, grounded ? 0 : -HALF_HEIGHT, 0]}>
       <group position={[0, ROOT_PIVOT_Y, 0]} ref={wrapper}>
         <group position={[0, -ROOT_PIVOT_Y, 0]}>
-          <primitive object={scene} />
+          <primitive object={inst.scene} />
         </group>
       </group>
     </group>
