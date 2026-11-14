@@ -63,7 +63,9 @@ export function ProfileStatsRows({ stats }: { stats: ProfileStats }) {
             return (
               <li key={d.id} className="flex flex-col items-center gap-1 text-center">
                 <DivisionCrest id={d.id} locked={season === null} className="h-12" />
-                <span className="text-xs font-bold uppercase leading-tight tracking-[0.06em] text-fg">
+                {/* "LIBERTADORES" no entra en la columna de un teléfono de 360px con tracking: sin tracking
+                    hasta 400px y a 11px por debajo de 360px. */}
+                <span className="text-xs font-bold uppercase leading-tight tracking-normal text-fg max-[359px]:text-[11px] min-[400px]:tracking-[0.06em]">
                   {d.name}
                 </span>
                 <span className="text-xs leading-tight text-fg-muted">

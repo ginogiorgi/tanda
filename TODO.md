@@ -49,6 +49,9 @@ Independiente de `wip/avatar-glb` (se mergean por separado). Verde: `typecheck �
     mantiene su índice), así que el historial de prod no se ve afectado; si se quiere trazabilidad
     estricta, pasar a keys nuevas + migración de retiro.
   - ⚠ Pirámide: easy 182 < medium 225 (sin cambio; `take_tournament_question` cae a la dificultad vecina).
+  - Micro-rótulos: "LIBERTADORES" desbordaba su columna en /perfil a 360px (99px en 98,7) → sin tracking
+    hasta 400px y 11px por debajo de 360px (medido: entra en 320/360/375/430). Ranking: `truncate` en la
+    línea secundaria (antes podía partirse en 2 líneas).
   - `test:db`: 1 flake en `tournament_e2e` en la primera corrida post-reset; 76/76 en las dos siguientes.
 
 **Para deployar (con OK de Gino):** `git checkout main && git merge wip/post-6b && git push` (front) +
