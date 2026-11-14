@@ -296,6 +296,11 @@ mismo flujo; también tras login con password). No lo pude forzar con curl (0/40
   Test: `lib/supabase/iatRetry.test.ts` (reintenta, no loopea, no toca otros 401, body legible).
 - `GuestButton`: la navegación va en `useTransition` → si el home igual vuelve al landing, el botón se
   rehabilita (y el usuario puede reintentar) en vez de quedar colgado.
+- `app/page.tsx` (causa de fondo, del code review): logueado vs landing se decide por `user`, no por
+  `username`; si `profiles` falla, el nombre sale de `user_metadata.username`. Así ningún error
+  transitorio de `profiles` (ni un desfase de reloj > 1,1 s, que el reintento no cubre) manda a un
+  usuario logueado al landing. El reintento queda como red para el resto de las consultas del home.
+- `GuestButton` reusa la sesión si ya existe (`getSession`) → reintentar no crea un segundo invitado.
 - `e2e/flow/guest.spec.ts`: entrada aislada para loop (`pnpm test:e2e:flow guest --repeat-each=20`).
 **Verde:** typecheck · lint · knip · 150 unit · build; e2e `game` + `guest` ✓ y `guest` ×20 ✓.
 **Pendiente con Gino:** mergear junto con `wip/ideas-e2e` (o cherry-pick de este commit sobre main: no

@@ -40,7 +40,10 @@ export default async function Home({
       supabase.rpc("get_ranked_me"),
     ]);
     ranked = rankedMe ?? null;
-    username = profile?.username ?? null;
+    // Si `profiles` falla (p. ej. el 401 transitorio de un token recién emitido), el usuario sigue
+    // logueado: el nombre sale de la metadata del alta (wip/fix-guest).
+    const metaName: unknown = user.user_metadata?.username;
+    username = profile?.username ?? (typeof metaName === "string" ? metaName : null);
     hasActiveMatch = Boolean(active?.tournament_id);
     activeModes = (modes ?? []).map((m) => m.id).filter(isModeId);
   }
@@ -74,7 +77,7 @@ export default async function Home({
         </p>
       )}
 
-      {username ? (
+      {user ? (
         <div className="flex flex-col items-center gap-6">
           <p className="text-lg">
             {isGuest ? (
