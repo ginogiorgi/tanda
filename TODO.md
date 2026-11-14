@@ -1,5 +1,17 @@
 # TODO — TANDA ⚽
 
+## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
+Entra todo: avatar-glb, ideas-avatar, post-6b, ideas-questions, e2e-flow, ideas-e2e, fix-guest,
+fix-modes-flake (vía `wip/integration`) + **CSP enforced** (0 violaciones verificadas). DB de prod ya
+tenía `…18…`–`…21…` (ver abajo); los 5 avatares guardados en prod siguen siendo válidos con las piezas
+nuevas. Verde sobre main: typecheck · lint · knip · 150 unit · build · 78 db · flow game/guest/ranked ·
+smoke 14 (champion ✓ sobre el mismo árbol en csp-enforce).
+**NO entra:** deps mayores → rama `wip/deps-major` (solo el paso three/@types/three 0.187, verde salvo 1
+flake de ranked que pasó al repetir; falta cerrarlo). Pendientes ahí: @supabase/ssr 0.12, vitest 5,
+eslint 10, supabase CLI 3, TS 6.0 (TS 7 inviable hoy: typescript-eslint 8.72 pide `typescript <6.1.0` y
+TS 7 no trae la API programática; esperar TS 7.1), @types/node se queda en 24 (= runtime de Vercel).
+Smoke de prod post-deploy: ver abajo.
+
 ## 🔒 CSP enforced (14/11, OK de Gino) — rama `wip/csp-enforce` (sobre `wip/integration`), SIN deployar
 `wip/integration` = `wip/fix-modes-flake` (⊃ fix-guest ⊃ ideas-e2e ⊃ e2e-flow) + `wip/ideas-avatar`
 (⊃ avatar-glb) + `wip/ideas-questions` (⊃ post-6b): mergean limpio, verde completo (typecheck · lint ·
