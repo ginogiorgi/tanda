@@ -262,9 +262,8 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
    Mundial entero acertando al toque (la correcta la lee el TEST directo del Postgres local vía
    `E2E_DB_URL`; ni la secret key puede leer `questions`) → los bots tardan ≥4 s → gana todo → "¡Campeón!",
    CTA de cuenta y copa de oro en `/perfil`. ✓ en 11,2 min → fuera de CI: `E2E_SLOW=1 pnpm test:e2e:flow
-   champion`. **Ojo, posible bug real:** 2 de 4 corridas se colgaron en "Entrando…" tras el sign-in
-   anónimo OK (200) — `GuestButton` hace `router.push("/") + router.refresh()` y no vuelve a habilitarse si
-   la navegación no llega. `game` pasó en el medio. Investigar (¿carrera push/refresh?).
+   champion`. Las 2 corridas colgadas en "Entrando…" eran un bug real → ver
+   "Fix del invitado" abajo (rama `wip/fix-guest`).
 5. ✅ **Pirámide de dificultad del Mundial** (rama `wip/ideas-questions`): recalibrada a mano → easy 215 ·
    medium 212 · hard 188 · very_hard 85 (34 suben a easy, 16 hard bajan a medium). Recalibrar con aciertos
    reales cuando haya datos post-wipe.
@@ -281,4 +280,24 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
 9. **CSP**: pasar `Content-Security-Policy-Report-Only` a enforcing (en local loguea las conexiones a
    127.0.0.1; agregar `http://127.0.0.1:54321` solo en dev).
 10. **Supabase CLI 2.106 → 3.x** y deps mayores (three, @supabase/ssr): decisión de Gino (major).
+
+## 🐛 Fix del invitado colgado en "Entrando…" (rama `wip/fix-guest`, sobre `wip/ideas-e2e`)
+**Causa (traza de Playwright de la falla real):** tras el sign-in anónimo OK, `GuestButton` hace
+`router.push("/") + router.refresh()` → dos renders del home en paralelo con el MISMO token. En uno,
+`GET /rest/v1/profiles` volvió **401 `PGRST303` "JWT issued at future"** (PostgREST v14 compara el `iat`
+contra su reloj cacheado al segundo y el token tenía milisegundos) → `username` null → el server
+renderizó el landing; ese render llegó último y `GuestButton` tenía `busy=true` sin vuelta atrás →
+"Entrando…" para siempre. El otro render (200) sí traía el home. Puede pasar en prod (mismo PostgREST,
+mismo flujo; también tras login con password). No lo pude forzar con curl (0/40 seguidas, 0/15 con 3 s y
+0/6 con 45 s de ociosidad): es una carrera fina, la evidencia es la traza (cuerpo de 79 bytes = PGRST303).
+**Fix:**
+- `lib/supabase/iatRetry.ts`: `withIatRetry()` como `global.fetch` de los clientes server y browser →
+  ante 401 PGRST303 "issued at future" espera 1,1 s y reintenta UNA vez; todo lo demás pasa tal cual.
+  Test: `lib/supabase/iatRetry.test.ts` (reintenta, no loopea, no toca otros 401, body legible).
+- `GuestButton`: la navegación va en `useTransition` → si el home igual vuelve al landing, el botón se
+  rehabilita (y el usuario puede reintentar) en vez de quedar colgado.
+- `e2e/flow/guest.spec.ts`: entrada aislada para loop (`pnpm test:e2e:flow guest --repeat-each=20`).
+**Verde:** typecheck · lint · knip · 150 unit · build; e2e `game` + `guest` ✓ y `guest` ×20 ✓.
+**Pendiente con Gino:** mergear junto con `wip/ideas-e2e` (o cherry-pick de este commit sobre main: no
+depende de nada de esa rama salvo el spec e2e). Sin migraciones.
 

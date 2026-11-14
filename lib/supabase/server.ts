@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { publicSupabaseEnv } from "@/lib/env";
 import type { Database } from "@/lib/supabase/database.types";
+import { withIatRetry } from "@/lib/supabase/iatRetry";
 
 /**
  * Cliente de Supabase para el servidor (Server Components, Route Handlers,
@@ -13,6 +14,7 @@ export async function createClient() {
   const { url, publishableKey } = publicSupabaseEnv();
 
   return createServerClient<Database>(url, publishableKey, {
+    global: { fetch: withIatRetry() },
     cookies: {
       getAll() {
         return cookieStore.getAll();
