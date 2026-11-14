@@ -37,7 +37,23 @@ competencia terminada (tabla `awards`).
 - **CI de `e2e-flow` vuelve a verde** (en main fallaban `game` y `ranked` desde el deploy de CSP): la escena del
   penal corría a 60 fps a pantalla completa durante la pregunta y con WebGL por software los taps no se
   procesaban. Ahora se pinta a demanda mientras se responde y anima solo la jugada (`PenalScene` `frameloop`).
-- **Pendiente:** F4 (precarga 3D, `scripts/perf/budget.ts`, medición prod vs F0) · F5 (avatar).
+- **F4 ✅ en rama, SIN deployar** (`c64849e`, push a `feat/feedback-1411`, PR draft #2): cliente de Supabase
+  bajo demanda fuera del juego (`lib/supabase/lazy.ts`, lint lo exige) → landing/login/registro/perfil/jugar
+  ~220→~155 KB gz; precarga del 3D (chunk + GLB) mientras se espera en sala/cola/torneo (`usePreload3D`);
+  `pnpm perf:budget` en CI (`scripts/perf/budget.{ts,json}`, falla si three entra en una ruta). Verde local:
+  unit 156, smoke 24/24, flow 6/6. CI del commit estaba corriendo al cortar (usage-guard 91%).
+- **▶ Handoff (cortado por usage, 14/11):**
+  1. `gh run list --branch feat/feedback-1411 --limit 1` → si CI de `c64849e` (o del commit de este TODO) está
+     verde: `git fetch && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (F4 no
+     tiene migraciones). Esperar deploy, smoke prod `E2E_BASE_URL=https://tanda2026.com.ar pnpm exec playwright
+     test` + invitado → partida (consola/CSP), medir TTFB p50 vs F0 en `docs/PERF-BASELINE.md`, anotar acá.
+  2. **F5 (avatar)** sin arrancar código, solo relevado: pack gratis Standard trae además `Hair_Beard`,
+     `Eyebrows_Regular/Female` y texturas de piel Light (bajado en el scratchpad, se re-baja igual que en 6b).
+     Consumidores de la forma v1: `lib/avatar/*`, `components/avatar/*`, `lib/penal/scene.ts`,
+     `lib/realtime/penal.ts`, `lib/ranked/types.ts`, `lib/guest/anon.ts`, `database.types.ts`, SQL
+     `participant_brief` (`avatar #>> '{top,color}'`) y default `'{}'`. Plan en sección C del plan file;
+     migración SQL futura `20261123000003_avatar_v2` (verificar número libre vs otras ramas). Orden: front
+     que lee v1+v2 primero, después la migración con backup `profiles_avatar_backup`.
 
 ## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
 Entra todo: avatar-glb, ideas-avatar, post-6b, ideas-questions, e2e-flow, ideas-e2e, fix-guest,
