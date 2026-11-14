@@ -57,7 +57,8 @@
       "Huracán",
       "Platense"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-005"
   },
   {
     "key": "arg-006",
@@ -69,7 +70,8 @@
       "Newell's",
       "Boca"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-006"
   },
   {
     "key": "arg-007",
@@ -81,7 +83,8 @@
       "Lanús",
       "Racing"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-007"
   },
   {
     "key": "arg-008",
@@ -105,7 +108,8 @@
       "Talleres",
       "Vélez"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-009"
   },
   {
     "key": "arg-010",
@@ -129,7 +133,8 @@
       "Vélez",
       "Estudiantes"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-009"
   },
   {
     "key": "arg-012",
@@ -141,7 +146,8 @@
       "Vélez",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-013",
@@ -153,7 +159,8 @@
       "Rosario Central",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-013"
   },
   {
     "key": "arg-014",
@@ -165,7 +172,8 @@
       "Flamengo",
       "Palmeiras"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-014"
   },
   {
     "key": "arg-015",
@@ -177,7 +185,8 @@
       "Centenario",
       "Monumental"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-014"
   },
   {
     "key": "arg-016",
@@ -189,7 +198,8 @@
       "Rosario Central",
       "Platense"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-016"
   },
   {
     "key": "arg-017",
@@ -225,7 +235,8 @@
       "Boca",
       "Talleres"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-013"
   },
   {
     "key": "arg-020",
@@ -237,7 +248,8 @@
       "Lanús",
       "Defensa y Justicia"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-020"
   },
   {
     "key": "arg-021",
@@ -273,7 +285,8 @@
       "Grêmio",
       "Flamengo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-024",
@@ -285,7 +298,8 @@
       "Lima",
       "Santiago"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-025",
@@ -297,7 +311,8 @@
       "River",
       "Boca"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-026",
@@ -309,7 +324,8 @@
       "Ariel Holan",
       "Ramón Díaz"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-027",
@@ -321,7 +337,8 @@
       "Madrid",
       "Asunción"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-028",
@@ -357,7 +374,8 @@
       "Juan Fernando Quintero",
       "Ignacio Scocco"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-031",
@@ -381,7 +399,8 @@
       "Lanús",
       "Independiente"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-032"
   },
   {
     "key": "arg-033",
@@ -429,7 +448,8 @@
       "Tigres",
       "Atlético Nacional"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-037",
@@ -441,7 +461,8 @@
       "Lanús",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-037"
   },
   {
     "key": "arg-038",
@@ -453,7 +474,8 @@
       "Boca",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-038"
   },
   {
     "key": "arg-039",
@@ -465,7 +487,8 @@
       "Racing",
       "River"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-039"
   },
   {
     "key": "arg-040",
@@ -477,7 +500,8 @@
       "Ramón Díaz",
       "Edgardo Bauza"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-037"
   },
   {
     "key": "arg-041",
@@ -489,7 +513,8 @@
       "Olimpia",
       "Nacional de Paraguay"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-037"
   },
   {
     "key": "arg-042",
@@ -501,7 +526,8 @@
       "Vélez",
       "Lanús"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-020"
   },
   {
     "key": "arg-043",
@@ -513,7 +539,8 @@
       "Newell's",
       "Rosario Central"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-043"
   },
   {
     "key": "arg-044",
@@ -549,7 +576,8 @@
       "Estudiantes",
       "Boca"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-047",
@@ -561,7 +589,8 @@
       "Alejandro Sabella",
       "Diego Simeone"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-048",
@@ -573,7 +602,8 @@
       "Vélez",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-048"
   },
   {
     "key": "arg-049",
@@ -585,7 +615,8 @@
       "Alfio Basile",
       "Carlos Bianchi"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-048"
   },
   {
     "key": "arg-050",
@@ -609,7 +640,8 @@
       "Real Madrid",
       "Milan"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-052",
@@ -621,7 +653,8 @@
       "Milan",
       "Bayern Múnich"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-051"
   },
   {
     "key": "arg-053",
@@ -633,7 +666,8 @@
       "Boca",
       "Vélez"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-053"
   },
   {
     "key": "arg-054",
@@ -705,7 +739,8 @@
       "Argentinos Juniors",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-059"
   },
   {
     "key": "arg-060",
@@ -1005,7 +1040,8 @@
       "Quilmes",
       "Gimnasia y Esgrima La Plata"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-084"
   },
   {
     "key": "arg-085",
@@ -1017,7 +1053,8 @@
       "Estudiantes de Río Cuarto",
       "Racing de Córdoba"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-085"
   },
   {
     "key": "arg-086",
@@ -1089,7 +1126,8 @@
       "El Monumental",
       "La Bombonera"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-091"
   },
   {
     "key": "arg-092",
@@ -1101,7 +1139,8 @@
       "El Gasómetro",
       "El Monumental"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-091"
   },
   {
     "key": "arg-093",
@@ -1125,7 +1164,8 @@
       "Monumental de Alta Córdoba",
       "Gigante de Arroyito"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-094"
   },
   {
     "key": "arg-095",
@@ -1497,7 +1537,8 @@
       "El Santo",
       "El Tomba"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-125"
   },
   {
     "key": "arg-126",
@@ -1653,7 +1694,8 @@
       "Rojo y negro",
       "Celeste y blanco"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-138"
   },
   {
     "key": "arg-139",
@@ -1689,7 +1731,8 @@
       "Verde y blanco",
       "Rojo y blanco"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-138"
   },
   {
     "key": "arg-142",
@@ -1725,7 +1768,8 @@
       "Rojo y negro",
       "Azul y blanco"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-138"
   },
   {
     "key": "arg-145",
@@ -1821,7 +1865,8 @@
       "Tucumán",
       "Salta"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-125"
   },
   {
     "key": "arg-153",
@@ -1845,7 +1890,8 @@
       "Rosario",
       "Santa Fe"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-154"
   },
   {
     "key": "arg-155",
@@ -2025,7 +2071,8 @@
       "7",
       "6"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-170",
@@ -2037,7 +2084,8 @@
       "6",
       "7"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-171",
@@ -2073,7 +2121,8 @@
       "Federal A",
       "Primera Nacional"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-173"
   },
   {
     "key": "arg-174",
@@ -2097,7 +2146,8 @@
       "Rosario",
       "Córdoba"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-154"
   },
   {
     "key": "arg-176",
@@ -2145,7 +2195,8 @@
       "Newell's",
       "Rosario Central"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-006"
   },
   {
     "key": "arg-180",
@@ -2385,7 +2436,8 @@
       "Reducido",
       "Apertura"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-173"
   },
   {
     "key": "arg-200",
@@ -2397,7 +2449,8 @@
       "1913",
       "1905"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-200"
   },
   {
     "key": "arg-201",
@@ -2565,7 +2618,8 @@
       "Argentinos",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-084"
   },
   {
     "key": "arg-215",
@@ -2589,7 +2643,8 @@
       "Talleres",
       "Godoy Cruz"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-085"
   },
   {
     "key": "arg-217",
@@ -2733,7 +2788,8 @@
       "La Ciudadela",
       "Monumental José Fierro"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-125"
   },
   {
     "key": "arg-229",
@@ -2805,7 +2861,8 @@
       "Ciudad de Vicente López",
       "Claudio «Chiqui» Tapia"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-094"
   },
   {
     "key": "arg-235",
@@ -2913,7 +2970,8 @@
       "Celeste y blanco",
       "Verde"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-125"
   },
   {
     "key": "arg-244",
@@ -2937,7 +2995,8 @@
       "Rojo y blanco",
       "Celeste"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-245"
   },
   {
     "key": "arg-246",
@@ -2949,7 +3008,8 @@
       "Rojo y blanco",
       "Azul y oro"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-245"
   },
   {
     "key": "arg-247",
@@ -2961,7 +3021,8 @@
       "Verde y blanco",
       "Rojo y blanco"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-245"
   },
   {
     "key": "arg-248",
@@ -2973,7 +3034,8 @@
       "Granate",
       "Azul y rojo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-245"
   },
   {
     "key": "arg-249",
@@ -3009,7 +3071,8 @@
       "Ferro",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-251"
   },
   {
     "key": "arg-252",
@@ -3021,7 +3084,8 @@
       "Países Bajos",
       "Brasil"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-253",
@@ -3057,7 +3121,8 @@
       "Celtic",
       "Manchester United"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-255"
   },
   {
     "key": "arg-256",
@@ -3081,7 +3146,8 @@
       "Huracán",
       "Estudiantes"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-005"
   },
   {
     "key": "arg-258",
@@ -3117,7 +3183,8 @@
       "Corinthians",
       "Atlético Mineiro"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-007"
   },
   {
     "key": "arg-261",
@@ -3129,7 +3196,8 @@
       "Asunción",
       "Lima"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-007"
   },
   {
     "key": "arg-262",
@@ -3141,7 +3209,8 @@
       "Boca",
       "Talleres"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-009"
   },
   {
     "key": "arg-263",
@@ -3261,7 +3330,8 @@
       "Platense",
       "Boca"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-005"
   },
   {
     "key": "arg-273",
@@ -3273,7 +3343,8 @@
       "Defensa y Justicia",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-274",
@@ -3285,7 +3356,8 @@
       "Kily González",
       "Carlos Tevez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-016"
   },
   {
     "key": "arg-275",
@@ -3297,7 +3369,8 @@
       "Ramón Díaz",
       "Martín Demichelis"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-013"
   },
   {
     "key": "arg-276",
@@ -3321,7 +3394,8 @@
       "Godoy Cruz",
       "Gimnasia de Mendoza"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-277"
   },
   {
     "key": "arg-278",
@@ -3333,7 +3407,8 @@
       "Barracas Central",
       "Deportivo Riestra"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-277"
   },
   {
     "key": "arg-279",
@@ -3345,7 +3420,8 @@
       "Boca",
       "Tigre"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-279"
   },
   {
     "key": "arg-280",
@@ -3369,7 +3445,8 @@
       "Racing",
       "Talleres"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-279"
   },
   {
     "key": "arg-282",
@@ -3381,7 +3458,8 @@
       "Miguel Ángel Russo",
       "Sebastián Battaglia"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-279"
   },
   {
     "key": "arg-283",
@@ -3417,7 +3495,8 @@
       "Boca",
       "Patronato"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-286",
@@ -3429,7 +3508,8 @@
       "Talleres",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-287",
@@ -3453,7 +3533,8 @@
       "Racing",
       "Colón"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-013"
   },
   {
     "key": "arg-289",
@@ -3465,7 +3546,8 @@
       "Su tercer título",
       "Su primer título de Primera"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-013"
   },
   {
     "key": "arg-290",
@@ -3477,7 +3559,8 @@
       "Boca",
       "River"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-290"
   },
   {
     "key": "arg-291",
@@ -3489,7 +3572,8 @@
       "Coquimbo Unido",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-020"
   },
   {
     "key": "arg-292",
@@ -3525,7 +3609,8 @@
       "Racing",
       "Banfield"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-290"
   },
   {
     "key": "arg-295",
@@ -3549,7 +3634,8 @@
       "River",
       "Racing"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-296"
   },
   {
     "key": "arg-297",
@@ -3561,7 +3647,8 @@
       "River",
       "Estudiantes de Buenos Aires"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-298",
@@ -3573,7 +3660,8 @@
       "Chapecoense",
       "Independiente del Valle"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-299",
@@ -3609,7 +3697,8 @@
       "Palmeiras",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-302",
@@ -3621,7 +3710,8 @@
       "Franco Armani",
       "Marcelo Barovero"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-303",
@@ -3633,7 +3723,8 @@
       "River",
       "Rosario Central"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-304",
@@ -3645,7 +3736,8 @@
       "Atlético Tucumán",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-305",
@@ -3657,7 +3749,8 @@
       "Junior",
       "Libertad"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-032"
   },
   {
     "key": "arg-306",
@@ -3669,7 +3762,8 @@
       "Boca",
       "River"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-306"
   },
   {
     "key": "arg-307",
@@ -3681,7 +3775,8 @@
       "River",
       "Godoy Cruz"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-308",
@@ -3693,7 +3788,8 @@
       "San Lorenzo",
       "Boca"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-309",
@@ -3705,7 +3801,8 @@
       "Boca",
       "Rosario Central"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-310",
@@ -3717,7 +3814,8 @@
       "River",
       "Huracán"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-311",
@@ -3729,7 +3827,8 @@
       "Estudiantes",
       "Atlético Nacional"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-038"
   },
   {
     "key": "arg-312",
@@ -3741,7 +3840,8 @@
       "Diego Cocca",
       "Facundo Sava"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-039"
   },
   {
     "key": "arg-313",
@@ -3753,7 +3853,8 @@
       "Matías Almeyda",
       "Marcelo Gallardo"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-038"
   },
   {
     "key": "arg-314",
@@ -3765,7 +3866,8 @@
       "Boca",
       "Huracán"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-315",
@@ -3777,7 +3879,8 @@
       "San Lorenzo",
       "Huracán"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-316",
@@ -3813,7 +3916,8 @@
       "Ponte Preta",
       "Atlético Nacional"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-020"
   },
   {
     "key": "arg-319",
@@ -3825,7 +3929,8 @@
       "Ramón Cabrero",
       "Jorge Almirón"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-020"
   },
   {
     "key": "arg-320",
@@ -3837,7 +3942,8 @@
       "Gerardo Martino",
       "Marcelo Bielsa"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-043"
   },
   {
     "key": "arg-321",
@@ -3849,7 +3955,8 @@
       "Boca",
       "Arsenal de Sarandí"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-322",
@@ -3933,7 +4040,8 @@
       "Argentinos Juniors",
       "Banfield"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-328"
   },
   {
     "key": "arg-329",
@@ -3945,7 +4053,8 @@
       "Ricardo Caruso Lombardi",
       "Claudio Borghi"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-328"
   },
   {
     "key": "arg-330",
@@ -3957,7 +4066,8 @@
       "Nacional",
       "Cruzeiro"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-331",
@@ -3969,7 +4079,8 @@
       "Arsenal",
       "Banfield"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-331"
   },
   {
     "key": "arg-332",
@@ -3981,7 +4092,8 @@
       "Matías Almeyda",
       "Julio César Falcioni"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-331"
   },
   {
     "key": "arg-333",
@@ -4065,7 +4177,8 @@
       "River",
       "Boca"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-339"
   },
   {
     "key": "arg-340",
@@ -4101,7 +4214,8 @@
       "Grêmio",
       "Santos"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-342"
   },
   {
     "key": "arg-343",
@@ -4113,7 +4227,8 @@
       "Racing",
       "Huracán"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-343"
   },
   {
     "key": "arg-344",
@@ -4137,7 +4252,8 @@
       "Reinaldo Merlo",
       "Ángel Cappa"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-343"
   },
   {
     "key": "arg-346",
@@ -4161,7 +4277,8 @@
       "Cruz Azul",
       "Palmeiras"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-348",
@@ -4185,7 +4302,8 @@
       "River",
       "Boca"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-350",
@@ -4197,7 +4315,8 @@
       "América de Cali",
       "Cruzeiro"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-350"
   },
   {
     "key": "arg-351",
@@ -4209,7 +4328,8 @@
       "Ramón Díaz",
       "Américo Gallego"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-350"
   },
   {
     "key": "arg-352",
@@ -4233,7 +4353,8 @@
       "Palmeiras",
       "São Paulo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-009"
   },
   {
     "key": "arg-354",
@@ -4245,7 +4366,8 @@
       "Omar Asad",
       "Roberto Trotta"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-053"
   },
   {
     "key": "arg-355",
@@ -4437,7 +4559,8 @@
       "Bernabé Ferreyra",
       "Ángel Labruna"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-370"
   },
   {
     "key": "arg-371",
@@ -4449,7 +4572,8 @@
       "Francisco Varallo",
       "Martín Palermo"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-370"
   },
   {
     "key": "arg-372",
@@ -4461,7 +4585,8 @@
       "Diego Milito",
       "Lisandro López"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-370"
   },
   {
     "key": "arg-373",
@@ -4485,7 +4610,8 @@
       "Carlos Bianchi",
       "José Luis Chilavert"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-370"
   },
   {
     "key": "arg-375",
@@ -4497,7 +4623,8 @@
       "Herminio Masantonio",
       "René Houseman"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-370"
   },
   {
     "key": "arg-376",
@@ -4509,7 +4636,8 @@
       "Manuel Pelegrina",
       "Mauro Boselli"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-370"
   },
   {
     "key": "arg-377",
@@ -4545,7 +4673,8 @@
       "4",
       "3"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-380",
@@ -4557,7 +4686,8 @@
       "2",
       "4"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-381",
@@ -4569,7 +4699,8 @@
       "2",
       "0"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-046"
   },
   {
     "key": "arg-382",
@@ -4701,7 +4832,8 @@
       "José Sanfilippo",
       "Héctor Veira"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-392"
   },
   {
     "key": "arg-393",
@@ -4713,7 +4845,8 @@
       "Néstor Gorosito",
       "Leandro Romagnoli"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-392"
   },
   {
     "key": "arg-394",
@@ -4725,7 +4858,8 @@
       "Leandro Romagnoli",
       "Ezequiel Lavezzi"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-392"
   },
   {
     "key": "arg-395",
@@ -4737,7 +4871,8 @@
       "Rodolfo Fischer",
       "José Sanfilippo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-392"
   },
   {
     "key": "arg-396",
@@ -4953,7 +5088,8 @@
       "Independiente",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-007"
   },
   {
     "key": "arg-414",
@@ -4965,7 +5101,8 @@
       "Peñarol",
       "Olimpia"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-414"
   },
   {
     "key": "arg-415",
@@ -4977,7 +5114,8 @@
       "América de Cali",
       "Peñarol"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-350"
   },
   {
     "key": "arg-416",
@@ -5001,7 +5139,8 @@
       "Juventus",
       "Liverpool"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-418",
@@ -5037,7 +5176,8 @@
       "Quilmes",
       "Estudiantes"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-420"
   },
   {
     "key": "arg-421",
@@ -5049,7 +5189,8 @@
       "Carlos Bilardo",
       "Osvaldo Zubeldía"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-420"
   },
   {
     "key": "arg-422",
@@ -5109,7 +5250,8 @@
       "Ajax",
       "Liverpool"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-046"
   },
   {
     "key": "arg-427",
@@ -5121,7 +5263,8 @@
       "Huracán",
       "Vélez"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-427"
   },
   {
     "key": "arg-428",
@@ -5133,7 +5276,8 @@
       "Alfio Basile",
       "Carlos Bilardo"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-427"
   },
   {
     "key": "arg-429",
@@ -5145,7 +5289,8 @@
       "Ricardo Bochini",
       "Ricardo Pavoni"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-430",
@@ -5193,7 +5338,8 @@
       "Humberto Maschio",
       "Juan José Rodríguez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-255"
   },
   {
     "key": "arg-434",
@@ -5265,7 +5411,8 @@
       "Grêmio",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-048"
   },
   {
     "key": "arg-440",
@@ -5277,7 +5424,8 @@
       "Boca",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-441",
@@ -5301,7 +5449,8 @@
       "San Lorenzo",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-038"
   },
   {
     "key": "arg-443",
@@ -5349,7 +5498,8 @@
       "Barcelona",
       "Real Madrid"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-447",
@@ -5409,7 +5559,8 @@
       "Manchester United",
       "Inter"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-452",
@@ -5445,7 +5596,8 @@
       "Juan Román Riquelme (dos)",
       "Martín Palermo"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-048"
   },
   {
     "key": "arg-455",
@@ -5505,7 +5657,8 @@
       "San Lorenzo",
       "Racing"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-460",
@@ -5517,7 +5670,8 @@
       "1-0 para Boca",
       "1-1 y Boca ganó por penales"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-461",
@@ -5529,7 +5683,8 @@
       "Matías Donnet",
       "Guillermo Barros Schelotto"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-051"
   },
   {
     "key": "arg-462",
@@ -5541,7 +5696,8 @@
       "Pumas",
       "Cienciano"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-012"
   },
   {
     "key": "arg-463",
@@ -5565,7 +5721,8 @@
       "San Lorenzo",
       "Racing"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-464"
   },
   {
     "key": "arg-465",
@@ -5589,7 +5746,8 @@
       "Estadio Internacional de Yokohama",
       "Bernabéu"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-051"
   },
   {
     "key": "arg-467",
@@ -5601,7 +5759,8 @@
       "Marcelo Delgado",
       "Juan Román Riquelme"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-051"
   },
   {
     "key": "arg-468",
@@ -5613,7 +5772,8 @@
       "Boca",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-038"
   },
   {
     "key": "arg-469",
@@ -5625,7 +5785,8 @@
       "Independiente",
       "Vélez"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-469"
   },
   {
     "key": "arg-470",
@@ -5637,7 +5798,8 @@
       "Independiente",
       "Vélez"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-032"
   },
   {
     "key": "arg-471",
@@ -5661,7 +5823,8 @@
       "Independiente",
       "Racing"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-472"
   },
   {
     "key": "arg-473",
@@ -5673,7 +5836,8 @@
       "Roberto Trotta",
       "José Luis Chilavert"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-053"
   },
   {
     "key": "arg-474",
@@ -5685,7 +5849,8 @@
       "Wembley",
       "San Siro"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-053"
   },
   {
     "key": "arg-475",
@@ -5829,7 +5994,8 @@
       "Platense",
       "Argentinos Juniors"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-059"
   },
   {
     "key": "arg-487",
@@ -5877,7 +6043,8 @@
       "1910",
       "1903"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-200"
   },
   {
     "key": "arg-491",
@@ -5925,7 +6092,8 @@
       "1913",
       "1887"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-200"
   },
   {
     "key": "arg-495",
@@ -5961,7 +6129,8 @@
       "1913",
       "1905"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-200"
   },
   {
     "key": "arg-498",
@@ -5973,7 +6142,8 @@
       "1905",
       "1918"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-200"
   },
   {
     "key": "arg-499",
@@ -6009,7 +6179,8 @@
       "1922",
       "1904"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-200"
   },
   {
     "key": "arg-502",
@@ -6045,7 +6216,8 @@
       "1905",
       "1918"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-200"
   },
   {
     "key": "arg-505",
@@ -6261,7 +6433,8 @@
       "Raúl Gámez",
       "José Amalfitani"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-522"
   },
   {
     "key": "arg-523",
@@ -6285,7 +6458,8 @@
       "José Dellagiovanna",
       "Ezequiel Melaraña"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-522"
   },
   {
     "key": "arg-525",
@@ -6309,7 +6483,8 @@
       "Racing",
       "Boca"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-526"
   },
   {
     "key": "arg-527",
@@ -6393,7 +6568,8 @@
       "Amadeo Carrizo",
       "Ángel Labruna"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-533"
   },
   {
     "key": "arg-534",
@@ -6405,7 +6581,8 @@
       "Silvio Marzolini",
       "Roberto Mouzo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-533"
   },
   {
     "key": "arg-535",
@@ -6417,7 +6594,8 @@
       "Ricardo Bochini",
       "Ricardo Pavoni"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-533"
   },
   {
     "key": "arg-536",
@@ -6813,7 +6991,8 @@
       "Peñarol",
       "América de Cali"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-251"
   },
   {
     "key": "arg-569",
@@ -6849,7 +7028,8 @@
       "José Percudani",
       "Jorge Burruchaga"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-572",
@@ -6873,7 +7053,8 @@
       "Olimpia",
       "América de Cali"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-046"
   },
   {
     "key": "arg-574",
@@ -6885,7 +7066,8 @@
       "Independiente",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-574"
   },
   {
     "key": "arg-575",
@@ -6897,7 +7079,8 @@
       "Deportivo Cali",
       "Olimpia"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-574"
   },
   {
     "key": "arg-576",
@@ -6909,7 +7092,8 @@
       "Juan Carlos Lorenzo",
       "Alfio Basile"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-574"
   },
   {
     "key": "arg-577",
@@ -6921,7 +7105,8 @@
       "Peñarol",
       "Deportivo Cali"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-574"
   },
   {
     "key": "arg-578",
@@ -6945,7 +7130,8 @@
       "Independiente",
       "Estudiantes"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-580",
@@ -7065,7 +7251,8 @@
       "Independiente",
       "Racing"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-590",
@@ -7161,7 +7348,8 @@
       "Pablo Lavallén",
       "Gustavo Costas"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-013"
   },
   {
     "key": "arg-598",
@@ -7173,7 +7361,8 @@
       "Guillermo Barros Schelotto",
       "Gustavo Alfaro"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-296"
   },
   {
     "key": "arg-599",
@@ -7197,7 +7386,8 @@
       "Gustavo Alfaro",
       "Guillermo Barros Schelotto"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-306"
   },
   {
     "key": "arg-601",
@@ -7221,7 +7411,8 @@
       "Rodolfo Arruabarrena",
       "Carlos Bianchi"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-603",
@@ -7233,7 +7424,8 @@
       "Gimnasia",
       "Boca"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-038"
   },
   {
     "key": "arg-604",
@@ -7245,7 +7437,8 @@
       "River",
       "San Lorenzo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-604"
   },
   {
     "key": "arg-605",
@@ -7269,7 +7462,8 @@
       "Juan Antonio Pizzi",
       "Néstor Gorosito"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-604"
   },
   {
     "key": "arg-607",
@@ -7293,7 +7487,8 @@
       "Vélez",
       "Boca"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-609",
@@ -7305,7 +7500,8 @@
       "Racing",
       "Lanús"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-469"
   },
   {
     "key": "arg-610",
@@ -7317,7 +7513,8 @@
       "Rodolfo Arruabarrena",
       "Julio César Falcioni"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-051"
   },
   {
     "key": "arg-611",
@@ -7329,7 +7526,8 @@
       "Estudiantes",
       "Vélez"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-612",
@@ -7341,7 +7539,8 @@
       "Diego Simeone",
       "Leonardo Astrada"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-046"
   },
   {
     "key": "arg-613",
@@ -7353,7 +7552,8 @@
       "Huracán",
       "Lanús"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-469"
   },
   {
     "key": "arg-614",
@@ -7377,7 +7577,8 @@
       "Hugo Tocalli",
       "Miguel Russo"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-469"
   },
   {
     "key": "arg-616",
@@ -7389,7 +7590,8 @@
       "Boca",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-350"
   },
   {
     "key": "arg-617",
@@ -7413,7 +7615,8 @@
       "Leonardo Astrada",
       "Diego Simeone"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-350"
   },
   {
     "key": "arg-619",
@@ -7425,7 +7628,8 @@
       "Estudiantes",
       "San Lorenzo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-464"
   },
   {
     "key": "arg-620",
@@ -7437,7 +7641,8 @@
       "Gustavo Alfaro",
       "Ramón Díaz"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-464"
   },
   {
     "key": "arg-621",
@@ -7449,7 +7654,8 @@
       "River",
       "Boca"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-339"
   },
   {
     "key": "arg-622",
@@ -7461,7 +7667,8 @@
       "Alfio Basile",
       "Miguel Brindisi"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-339"
   },
   {
     "key": "arg-623",
@@ -7473,7 +7680,8 @@
       "River",
       "Vélez"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-469"
   },
   {
     "key": "arg-624",
@@ -7485,7 +7693,8 @@
       "Ricardo Gareca",
       "Carlos Bianchi"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-469"
   },
   {
     "key": "arg-625",
@@ -7497,7 +7706,8 @@
       "Newell's",
       "River"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-625"
   },
   {
     "key": "arg-626",
@@ -7509,7 +7719,8 @@
       "Gerardo Martino",
       "Marcelo Bielsa"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-625"
   },
   {
     "key": "arg-627",
@@ -7521,7 +7732,8 @@
       "Ramón Díaz",
       "Leonardo Astrada"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-350"
   },
   {
     "key": "arg-628",
@@ -7533,7 +7745,8 @@
       "River",
       "Boca"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-350"
   },
   {
     "key": "arg-629",
@@ -7545,7 +7758,8 @@
       "Boca",
       "Banfield"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-051"
   },
   {
     "key": "arg-630",
@@ -7557,7 +7771,8 @@
       "Ramón Díaz",
       "Manuel Pellegrini"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-350"
   },
   {
     "key": "arg-631",
@@ -7569,7 +7784,8 @@
       "Boca",
       "Gimnasia"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-350"
   },
   {
     "key": "arg-632",
@@ -7581,7 +7797,8 @@
       "Américo Gallego",
       "Manuel Pellegrini"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-350"
   },
   {
     "key": "arg-633",
@@ -7593,7 +7810,8 @@
       "San Lorenzo",
       "Boca"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-464"
   },
   {
     "key": "arg-634",
@@ -7605,7 +7823,8 @@
       "Manuel Pellegrini",
       "Rubén Darío Insúa"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-464"
   },
   {
     "key": "arg-635",
@@ -7617,7 +7836,8 @@
       "Vélez",
       "Boca"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-350"
   },
   {
     "key": "arg-636",
@@ -7629,7 +7849,8 @@
       "River",
       "Gimnasia"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-051"
   },
   {
     "key": "arg-637",
@@ -7653,7 +7874,8 @@
       "River",
       "Rosario Central"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-638"
   },
   {
     "key": "arg-639",
@@ -7665,7 +7887,8 @@
       "Boca",
       "River"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-469"
   },
   {
     "key": "arg-640",
@@ -7689,7 +7912,8 @@
       "River",
       "Colo-Colo"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-642",
@@ -7701,7 +7925,8 @@
       "Vélez",
       "River"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-469"
   },
   {
     "key": "arg-643",
@@ -7713,7 +7938,8 @@
       "Boca",
       "San Lorenzo"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-464"
   },
   {
     "key": "arg-644",
@@ -7737,7 +7963,8 @@
       "Alfio Basile",
       "Héctor Veira"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-464"
   },
   {
     "key": "arg-646",
@@ -7749,7 +7976,8 @@
       "River",
       "Independiente"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-472"
   },
   {
     "key": "arg-647",
@@ -7761,7 +7989,8 @@
       "Independiente",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-638"
   },
   {
     "key": "arg-648",
@@ -7773,7 +8002,8 @@
       "River",
       "Vélez"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-638"
   },
   {
     "key": "arg-649",
@@ -7857,7 +8087,8 @@
       "7",
       "12"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-526"
   },
   {
     "key": "arg-656",
@@ -7941,7 +8172,8 @@
       "Newell's",
       "Rosario Central"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-662"
   },
   {
     "key": "arg-663",
@@ -7953,7 +8185,8 @@
       "José Yudica",
       "Jorge Solari"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-662"
   },
   {
     "key": "arg-664",
@@ -7965,7 +8198,8 @@
       "Rosario Central",
       "Newell's"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-664"
   },
   {
     "key": "arg-665",
@@ -7977,7 +8211,8 @@
       "Carlos Griguol",
       "Ángel Tulio Zof"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-664"
   },
   {
     "key": "arg-666",
@@ -8037,7 +8272,8 @@
       "Jorge Solari",
       "José Omar Pastoriza"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-046"
   },
   {
     "key": "arg-671",
@@ -8073,7 +8309,8 @@
       "Boca",
       "Argentinos"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-673"
   },
   {
     "key": "arg-674",
@@ -8085,7 +8322,8 @@
       "Newell's",
       "River"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-674"
   },
   {
     "key": "arg-675",
@@ -8097,7 +8335,8 @@
       "Carlos Bilardo",
       "Silvio Marzolini"
     ],
-    "answer": 2
+    "answer": 2,
+    "topic": "arg-673"
   },
   {
     "key": "arg-676",
@@ -8121,7 +8360,8 @@
       "Boca",
       "Vélez"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-674"
   },
   {
     "key": "arg-678",
@@ -8169,7 +8409,8 @@
       "Peñarol",
       "Olimpia"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-012"
   },
   {
     "key": "arg-682",
@@ -8181,7 +8422,8 @@
       "Unión Española",
       "Olimpia"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-683",
@@ -8193,7 +8435,8 @@
       "Ángel Labruna",
       "Carlos Timoteo Griguol"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-674"
   },
   {
     "key": "arg-684",
@@ -8229,7 +8472,8 @@
       "Cruzeiro",
       "Peñarol"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-046"
   },
   {
     "key": "arg-687",
@@ -8241,7 +8485,8 @@
       "Colo-Colo",
       "Universitario"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-688",
@@ -8253,7 +8498,8 @@
       "Universitario de Lima",
       "Peñarol"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-046"
   },
   {
     "key": "arg-689",
@@ -8277,7 +8523,8 @@
       "Peñarol",
       "Palmeiras"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-414"
   },
   {
     "key": "arg-691",
@@ -8337,7 +8584,8 @@
       "Peñarol",
       "Nacional"
     ],
-    "answer": 1
+    "answer": 1,
+    "topic": "arg-012"
   },
   {
     "key": "arg-696",
@@ -8361,7 +8609,8 @@
       "Nacional",
       "Peñarol"
     ],
-    "answer": 0
+    "answer": 0,
+    "topic": "arg-342"
   },
   {
     "key": "arg-698",

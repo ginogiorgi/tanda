@@ -19,6 +19,8 @@ export const questionSchema = z
     prompt: z.string().min(10).max(160),
     options: z.tuple([z.string().min(1).max(60), z.string().min(1).max(60), z.string().min(1).max(60)]),
     answer: z.number().int().min(0).max(2),
+    /** Grupo de "mismo hecho" (lo calcula `pnpm questions:topics`): el server evita repetir tema en un torneo. */
+    topic: z.string().regex(/^[a-z]{2,3}-\d{3,4}$/).optional(),
   })
   .strict()
   .refine((q) => new Set(q.options.map((o) => o.trim().toLowerCase())).size === 3, {

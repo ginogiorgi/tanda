@@ -59,10 +59,22 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   - Tests: `lib/engine/ranked.test.ts`, `supabase/tests/ranked.test.ts`.
   - **Falta probar con 2 personas reales en prod** (Gino + JM10): cola → partido → puntos.
 
+- **Fase 5** — **variedad de preguntas en prod**:
+  - `pnpm questions:check` (en CI): casi-duplicados (Jaccard + misma respuesta), "filtraciones" (una
+    pregunta nombra la respuesta de otra), balance de categorías/posición/pirámide. Pares revisados a
+    mano (misma plantilla, otro dato) en `data/questions/reviewed-pairs.json`.
+  - Mundial: 21 duplicados reales reemplazados por preguntas nuevas (batacazos, sedes, trivia); la
+    correcta estaba sesgada de posición → rebalanceada a ~33/33/33 (`md5(key)%3`).
+  - `topic` = grupo de mismo hecho/plantilla (`pnpm questions:topics`, 54 grupos WC + 61 AR). DB
+    `20261115000001_question_topics`: `take_tournament_question` prefiere tema no usado en el torneo y
+    categoría distinta de la última (`tournament_questions.taken_at`). Test `question_variety.test.ts`.
+  - Seed `20261115000002_questions_dedupe` (en prod se aplicó como diff compacto; hash del catálogo
+    verificado igual a local).
+  - Pendiente (va con 5b): recalibrar dificultad con `stats-2026-11` y bajar `players_records` (38% WC).
+
 ### Próximo (en orden)
-1. **Fase 5** — preguntas Mundial: dedupe + recalibrar + diversidad de categoría.
-2. **Fase 5b** — verificar datos de las 1400 preguntas.
-3. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
+1. **Fase 5b** — verificar datos de las 1400 preguntas (+ recalibrar dificultad).
+2. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
 
 ---
 

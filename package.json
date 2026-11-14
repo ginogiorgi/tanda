@@ -18,7 +18,9 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "catalog:check": "tsx scripts/catalog/build-seed.ts",
-    "catalog:build": "tsx scripts/catalog/build-seed.ts"
+    "catalog:build": "tsx scripts/catalog/build-seed.ts",
+    "questions:check": "tsx scripts/questions/check.ts",
+    "questions:topics": "tsx scripts/questions/check.ts --report --write-topics"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

@@ -35,6 +35,9 @@ jobs:
       - name: Catálogo (preguntas + equipos)
         run: pnpm catalog:check
 
+      - name: Preguntas (duplicados, temas, balance)
+        run: pnpm questions:check
+
       - name: Test
         run: pnpm test
 

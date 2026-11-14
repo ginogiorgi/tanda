@@ -17,11 +17,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué país fue campeón del Mundial 2018 en Rusia?",
   "options": [
-   "Croacia",
    "Francia",
+   "Croacia",
    "Bélgica"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-002"
  },
  {
   "key": "wc-003",
@@ -29,11 +30,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección ganó más Mundiales en la historia?",
   "options": [
+   "Brasil",
    "Alemania",
-   "Italia",
-   "Brasil"
+   "Italia"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-003"
  },
  {
   "key": "wc-004",
@@ -45,7 +47,8 @@
    "Argentina",
    "Sudáfrica"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-004"
  },
  {
   "key": "wc-005",
@@ -54,10 +57,10 @@
   "prompt": "¿Qué país organizó el Mundial 2010, el primero en África?",
   "options": [
    "Nigeria",
-   "Sudáfrica",
-   "Egipto"
+   "Egipto",
+   "Sudáfrica"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-006",
@@ -65,11 +68,11 @@
   "difficulty": "easy",
   "prompt": "¿Quién levantó la Copa como capitán de Argentina en 2022?",
   "options": [
+   "Lionel Messi",
    "Ángel Di María",
-   "Emiliano Martínez",
-   "Lionel Messi"
+   "Emiliano Martínez"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-007",
@@ -81,7 +84,8 @@
    "Croacia",
    "Marruecos"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-007"
  },
  {
   "key": "wc-008",
@@ -89,11 +93,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué país ganó el Mundial 2010 en Sudáfrica?",
   "options": [
-   "Países Bajos",
    "España",
+   "Países Bajos",
    "Alemania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-009",
@@ -101,11 +105,12 @@
   "difficulty": "easy",
   "prompt": "¿Dónde se jugó el Mundial 2002, el primero en Asia?",
   "options": [
+   "Corea del Sur y Japón",
    "China",
-   "Qatar",
-   "Corea del Sur y Japón"
+   "Qatar"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-009"
  },
  {
   "key": "wc-010",
@@ -113,11 +118,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección europea ganó su primer Mundial en 1998 como local?",
   "options": [
-   "Francia",
    "Italia",
-   "España"
+   "España",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-011",
@@ -126,10 +131,11 @@
   "prompt": "¿Quién fue la gran figura de Argentina en el Mundial 1986?",
   "options": [
    "Mario Kempes",
-   "Diego Maradona",
-   "Daniel Passarella"
+   "Daniel Passarella",
+   "Diego Maradona"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-011"
  },
  {
   "key": "wc-012",
@@ -138,10 +144,11 @@
   "prompt": "¿Quién ganó la Bota de Oro del Mundial 2022?",
   "options": [
    "Lionel Messi",
-   "Julián Álvarez",
-   "Kylian Mbappé"
+   "Kylian Mbappé",
+   "Julián Álvarez"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-012"
  },
  {
   "key": "wc-013",
@@ -149,11 +156,11 @@
   "difficulty": "easy",
   "prompt": "¿Cuántas estrellas tiene la camiseta de Argentina tras el título de 2022?",
   "options": [
-   "Tres",
    "Dos",
+   "Tres",
    "Cuatro"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-014",
@@ -162,10 +169,11 @@
   "prompt": "¿Qué país ganó el Mundial 2014 en Brasil?",
   "options": [
    "Argentina",
-   "Alemania",
-   "Países Bajos"
+   "Países Bajos",
+   "Alemania"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-004"
  },
  {
   "key": "wc-015",
@@ -173,11 +181,12 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 1978, que ganó Argentina?",
   "options": [
+   "Argentina",
    "Uruguay",
-   "Chile",
-   "Argentina"
+   "Chile"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-003"
  },
  {
   "key": "wc-016",
@@ -197,11 +206,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué jugador portugués disputó cinco Mundiales entre 2006 y 2022?",
   "options": [
-   "Luís Figo",
    "Cristiano Ronaldo",
+   "Luís Figo",
    "Bruno Fernandes"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-017"
  },
  {
   "key": "wc-018",
@@ -221,11 +231,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué país fue sede del primer Mundial de la historia, en 1930?",
   "options": [
-   "Uruguay",
    "Brasil",
+   "Uruguay",
    "Argentina"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-019"
  },
  {
   "key": "wc-020",
@@ -234,10 +245,11 @@
   "prompt": "¿Qué selección ganó el primer Mundial, en 1930?",
   "options": [
    "Argentina",
-   "Uruguay",
-   "Brasil"
+   "Brasil",
+   "Uruguay"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-019"
  },
  {
   "key": "wc-021",
@@ -245,11 +257,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué arquero argentino ganó el Guante de Oro en 2022?",
   "options": [
+   "Emiliano Martínez",
    "Franco Armani",
-   "Gerónimo Rulli",
-   "Emiliano Martínez"
+   "Gerónimo Rulli"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-022",
@@ -257,11 +269,11 @@
   "difficulty": "easy",
   "prompt": "Antes de 2022, ¿en qué año había ganado Argentina su Mundial anterior?",
   "options": [
-   "1986",
    "1990",
-   "1978"
+   "1978",
+   "1986"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-023",
@@ -269,11 +281,12 @@
   "difficulty": "easy",
   "prompt": "¿Quién es el máximo goleador histórico de los Mundiales?",
   "options": [
-   "Ronaldo",
    "Miroslav Klose",
+   "Ronaldo",
    "Pelé"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-023"
  },
  {
   "key": "wc-024",
@@ -281,11 +294,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué país organizó el Mundial 1986, donde brilló Maradona?",
   "options": [
+   "México",
    "Argentina",
-   "España",
-   "México"
+   "España"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-025",
@@ -297,7 +310,8 @@
    "Dos",
    "Uno"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-003"
  },
  {
   "key": "wc-026",
@@ -309,7 +323,8 @@
    "Inglaterra",
    "Brasil"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-026"
  },
  {
   "key": "wc-027",
@@ -321,7 +336,8 @@
    "Polonia",
    "Arabia Saudita"
   ],
-  "answer": 2
+  "answer": 2,
+  "topic": "wc-007"
  },
  {
   "key": "wc-028",
@@ -329,11 +345,12 @@
   "difficulty": "easy",
   "prompt": "¿Cuántos países organizan el Mundial 2026?",
   "options": [
-   "Tres",
    "Uno",
-   "Dos"
+   "Dos",
+   "Tres"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-028"
  },
  {
   "key": "wc-029",
@@ -341,11 +358,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección perdió la final del Mundial 2018 ante Francia?",
   "options": [
-   "Bélgica",
    "Croacia",
+   "Bélgica",
    "Inglaterra"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-029"
  },
  {
   "key": "wc-030",
@@ -354,10 +372,10 @@
   "prompt": "¿Qué selección sudamericana jugó todos los Mundiales de la historia?",
   "options": [
    "Argentina",
-   "Uruguay",
-   "Brasil"
+   "Brasil",
+   "Uruguay"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-031",
@@ -378,10 +396,11 @@
   "prompt": "¿Qué jugador francés hizo tres goles en la final de 2022?",
   "options": [
    "Antoine Griezmann",
-   "Kylian Mbappé",
-   "Olivier Giroud"
+   "Olivier Giroud",
+   "Kylian Mbappé"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-032"
  },
  {
   "key": "wc-033",
@@ -390,10 +409,10 @@
   "prompt": "¿En qué país se jugó el Mundial 1990?",
   "options": [
    "España",
-   "Alemania",
-   "Italia"
+   "Italia",
+   "Alemania"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-034",
@@ -401,11 +420,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección ganó el Mundial 1994 por penales ante Italia?",
   "options": [
-   "Brasil",
    "Alemania",
-   "Argentina"
+   "Argentina",
+   "Brasil"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-035",
@@ -414,10 +433,11 @@
   "prompt": "¿Qué país ganó el Mundial 2002?",
   "options": [
    "Alemania",
-   "Brasil",
-   "Francia"
+   "Francia",
+   "Brasil"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-004"
  },
  {
   "key": "wc-036",
@@ -426,10 +446,10 @@
   "prompt": "En la final de 1998, ¿quién marcó dos goles de cabeza para Francia?",
   "options": [
    "Thierry Henry",
-   "Lilian Thuram",
-   "Zinedine Zidane"
+   "Zinedine Zidane",
+   "Lilian Thuram"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-037",
@@ -450,10 +470,10 @@
   "prompt": "El Mundial 2022 fue el primero disputado en...",
   "options": [
    "Asia oriental",
-   "Medio Oriente (mundo árabe)",
-   "Oceanía"
+   "Oceanía",
+   "Medio Oriente (mundo árabe)"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-039",
@@ -462,10 +482,10 @@
   "prompt": "¿Quién fue el goleador del Mundial 2018 con seis goles?",
   "options": [
    "Romelu Lukaku",
-   "Antoine Griezmann",
-   "Harry Kane"
+   "Harry Kane",
+   "Antoine Griezmann"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-040",
@@ -477,7 +497,8 @@
    "Suecia",
    "Hungría"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-003"
  },
  {
   "key": "wc-041",
@@ -485,11 +506,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección europea ganó cuatro Mundiales, igualando a Italia?",
   "options": [
-   "España",
    "Alemania",
+   "España",
    "Países Bajos"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-041"
  },
  {
   "key": "wc-042",
@@ -498,10 +520,10 @@
   "prompt": "¿De qué país es Lionel Messi?",
   "options": [
    "Uruguay",
-   "España",
-   "Argentina"
+   "Argentina",
+   "España"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-043",
@@ -533,11 +555,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué año ganó España su único Mundial?",
   "options": [
-   "2010",
    "2008",
+   "2010",
    "2014"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-046",
@@ -545,11 +567,12 @@
   "difficulty": "easy",
   "prompt": "¿Quién marcó el gol del título para España en la final 2010?",
   "options": [
-   "Andrés Iniesta",
    "David Villa",
+   "Andrés Iniesta",
    "Xavi"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-046"
  },
  {
   "key": "wc-047",
@@ -558,10 +581,10 @@
   "prompt": "¿Qué apodo recibió el gol de Maradona con la mano ante Inglaterra en 1986?",
   "options": [
    "El Gol del Siglo",
-   "La Mano de Dios",
-   "La Pulga"
+   "La Pulga",
+   "La Mano de Dios"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-048",
@@ -570,10 +593,11 @@
   "prompt": "¿Qué selección disputó más finales de Mundial en la historia?",
   "options": [
    "Brasil",
-   "Italia",
-   "Alemania"
+   "Alemania",
+   "Italia"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-048"
  },
  {
   "key": "wc-049",
@@ -605,11 +629,12 @@
   "difficulty": "easy",
   "prompt": "¿Quién marcó el gol del título para Alemania en la final 2014 ante Argentina?",
   "options": [
+   "Mario Götze",
    "Thomas Müller",
-   "Miroslav Klose",
-   "Mario Götze"
+   "Miroslav Klose"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-051"
  },
  {
   "key": "wc-052",
@@ -617,11 +642,11 @@
   "difficulty": "easy",
   "prompt": "En 2002 Senegal sorprendió al vencer en el debut a...",
   "options": [
-   "Francia",
    "Italia",
+   "Francia",
    "Brasil"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-053",
@@ -630,10 +655,10 @@
   "prompt": "¿Quién fue el goleador del Mundial 2002 con ocho goles?",
   "options": [
    "Rivaldo",
-   "Ronaldo",
-   "Miroslav Klose"
+   "Miroslav Klose",
+   "Ronaldo"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-054",
@@ -645,7 +670,8 @@
    "Polonia",
    "Rusia"
   ],
-  "answer": 2
+  "answer": 2,
+  "topic": "wc-002"
  },
  {
   "key": "wc-055",
@@ -653,11 +679,11 @@
   "difficulty": "easy",
   "prompt": "¿Cada cuántos años se disputa la Copa del Mundo?",
   "options": [
-   "Cada cuatro años",
    "Cada dos años",
-   "Cada tres años"
+   "Cada tres años",
+   "Cada cuatro años"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-056",
@@ -666,10 +692,11 @@
   "prompt": "¿Qué selección fue subcampeona en 2014, perdiendo ante Alemania?",
   "options": [
    "Países Bajos",
-   "Argentina",
-   "Brasil"
+   "Brasil",
+   "Argentina"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-051"
  },
  {
   "key": "wc-057",
@@ -678,10 +705,10 @@
   "prompt": "¿Qué jugador brasileño es apodado \"O Rei\" (El Rey)?",
   "options": [
    "Ronaldinho",
-   "Garrincha",
-   "Pelé"
+   "Pelé",
+   "Garrincha"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-058",
@@ -689,11 +716,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué país sudamericano organizó el Mundial 1962?",
   "options": [
-   "Chile",
    "Perú",
-   "Colombia"
+   "Colombia",
+   "Chile"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-059",
@@ -702,10 +729,10 @@
   "prompt": "¿Qué selección se quedó para siempre con la Copa Jules Rimet al ganar su tercer título en 1970?",
   "options": [
    "Italia",
-   "Brasil",
-   "Alemania"
+   "Alemania",
+   "Brasil"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-060",
@@ -714,10 +741,10 @@
   "prompt": "Además de Messi, ¿qué argentino marcó cuatro goles en el Mundial 2022?",
   "options": [
    "Lautaro Martínez",
-   "Ángel Di María",
-   "Julián Álvarez"
+   "Julián Álvarez",
+   "Ángel Di María"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-061",
@@ -729,7 +756,8 @@
    "Alemania Federal",
    "Brasil"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-061"
  },
  {
   "key": "wc-062",
@@ -738,10 +766,10 @@
   "prompt": "¿Quién fue la figura goleadora de Italia en el Mundial 1982?",
   "options": [
    "Bruno Conti",
-   "Paolo Rossi",
-   "Marco Tardelli"
+   "Marco Tardelli",
+   "Paolo Rossi"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-063",
@@ -761,11 +789,11 @@
   "difficulty": "medium",
   "prompt": "El Mundial 1986 se jugó en México tras la renuncia de otro país. ¿Cuál?",
   "options": [
-   "Colombia",
    "Brasil",
+   "Colombia",
    "Perú"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-065",
@@ -786,10 +814,10 @@
   "prompt": "¿Quién hizo tres goles en la final de 1966 para Inglaterra?",
   "options": [
    "Bobby Charlton",
-   "Roger Hunt",
-   "Geoff Hurst"
+   "Geoff Hurst",
+   "Roger Hunt"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-067",
@@ -822,10 +850,11 @@
   "prompt": "¿Quién marcó los dos goles de Argentina en el tiempo regular y el alargue de la final del Mundial 2022?",
   "options": [
    "Ángel Di María",
-   "Lionel Messi",
-   "Julián Álvarez"
+   "Julián Álvarez",
+   "Lionel Messi"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-069"
  },
  {
   "key": "wc-070",
@@ -833,11 +862,12 @@
   "difficulty": "medium",
   "prompt": "¿Quién es el máximo goleador histórico de Brasil en Mundiales?",
   "options": [
-   "Ronaldo",
    "Pelé",
+   "Ronaldo",
    "Romário"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-023"
  },
  {
   "key": "wc-071",
@@ -846,10 +876,11 @@
   "prompt": "¿Qué alemán tuvo el récord de más partidos en Mundiales antes de Messi?",
   "options": [
    "Philipp Lahm",
-   "Lothar Matthäus",
-   "Miroslav Klose"
+   "Miroslav Klose",
+   "Lothar Matthäus"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-071"
  },
  {
   "key": "wc-072",
@@ -858,10 +889,10 @@
   "prompt": "¿Qué selección ganó el \"Milagro de Berna\" en 1954?",
   "options": [
    "Hungría",
-   "Austria",
-   "Alemania Federal"
+   "Alemania Federal",
+   "Austria"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-073",
@@ -881,11 +912,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué dos países asiáticos coorganizaron el Mundial 2002?",
   "options": [
-   "China y Japón",
    "Corea del Sur y Japón",
+   "China y Japón",
    "Corea del Sur y China"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-075",
@@ -893,11 +924,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién convirtió el penal decisivo para Alemania en la final 1990?",
   "options": [
+   "Andreas Brehme",
    "Lothar Matthäus",
-   "Jürgen Klinsmann",
-   "Andreas Brehme"
+   "Jürgen Klinsmann"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-076",
@@ -905,21 +936,21 @@
   "difficulty": "medium",
   "prompt": "¿Quién fue el goleador sorpresa de Italia en 1990, con seis goles?",
   "options": [
-   "Salvatore Schillaci",
    "Roberto Baggio",
+   "Salvatore Schillaci",
    "Gianluca Vialli"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-077",
-  "category": "champions",
+  "category": "trivia",
   "difficulty": "medium",
-  "prompt": "¿Qué selección perdió las finales de 1974 y 1978?",
+  "prompt": "¿Cuál fue el primer Mundial con 32 selecciones?",
   "options": [
-   "Italia",
-   "Países Bajos",
-   "Brasil"
+   "Estados Unidos 1994",
+   "Francia 1998",
+   "Corea-Japón 2002"
   ],
   "answer": 1
  },
@@ -929,11 +960,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién falló el penal decisivo para Italia en la final 1994?",
   "options": [
+   "Roberto Baggio",
    "Franco Baresi",
-   "Paolo Maldini",
-   "Roberto Baggio"
+   "Paolo Maldini"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-079",
@@ -941,11 +972,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuál fue la primera final de Mundial definida por penales?",
   "options": [
-   "1994",
    "1990",
+   "1994",
    "1998"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-080",
@@ -954,10 +985,10 @@
   "prompt": "En 1990 Camerún fue la primera selección africana en cuartos. ¿Quién era su veterano goleador?",
   "options": [
    "Samuel Eto'o",
-   "Roger Milla",
-   "Patrick Mboma"
+   "Patrick Mboma",
+   "Roger Milla"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-081",
@@ -1002,10 +1033,10 @@
   "prompt": "¿Quién fue el goleador del Mundial 1970 con diez goles?",
   "options": [
    "Pelé",
-   "Jairzinho",
-   "Gerd Müller"
+   "Gerd Müller",
+   "Jairzinho"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-085",
@@ -1013,11 +1044,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué colombiano marcó en contra y fue asesinado tras el Mundial 1994?",
   "options": [
-   "Andrés Escobar",
    "Carlos Valderrama",
-   "Faustino Asprilla"
+   "Faustino Asprilla",
+   "Andrés Escobar"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-086",
@@ -1026,10 +1057,10 @@
   "prompt": "¿Qué estadio mexicano fue sede de las finales de 1970 y 1986?",
   "options": [
    "Estadio Jalisco",
-   "Estadio Azteca",
-   "Estadio Olímpico"
+   "Estadio Olímpico",
+   "Estadio Azteca"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-087",
@@ -1037,11 +1068,12 @@
   "difficulty": "medium",
   "prompt": "En 1966 una selección asiática eliminó a Italia y llegó a cuartos. ¿Cuál?",
   "options": [
+   "Corea del Norte",
    "Corea del Sur",
-   "Japón",
-   "Corea del Norte"
+   "Japón"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-087"
  },
  {
   "key": "wc-088",
@@ -1074,10 +1106,10 @@
   "prompt": "La final de 2006 se definió por penales. ¿Quién fue campeón?",
   "options": [
    "Francia",
-   "Alemania",
-   "Italia"
+   "Italia",
+   "Alemania"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-091",
@@ -1085,11 +1117,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué francés fue expulsado en la final 2006 por un cabezazo a Materazzi?",
   "options": [
-   "Zinedine Zidane",
    "Thierry Henry",
-   "Patrick Vieira"
+   "Patrick Vieira",
+   "Zinedine Zidane"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-092",
@@ -1098,10 +1130,10 @@
   "prompt": "¿Qué país nórdico organizó el Mundial 1958?",
   "options": [
    "Noruega",
-   "Suecia",
-   "Dinamarca"
+   "Dinamarca",
+   "Suecia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-093",
@@ -1110,10 +1142,11 @@
   "prompt": "¿Qué selección fue subcampeona en 2002, perdiendo ante Brasil?",
   "options": [
    "Turquía",
-   "Corea del Sur",
-   "Alemania"
+   "Alemania",
+   "Corea del Sur"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-051"
  },
  {
   "key": "wc-094",
@@ -1145,11 +1178,12 @@
   "difficulty": "medium",
   "prompt": "¿En qué país ganó Italia el Mundial de 1982?",
   "options": [
-   "España",
    "México",
-   "Argentina"
+   "Argentina",
+   "España"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-061"
  },
  {
   "key": "wc-097",
@@ -1193,11 +1227,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién marcó el gol del título para Argentina en la final 1986?",
   "options": [
-   "Jorge Burruchaga",
    "Diego Maradona",
+   "Jorge Burruchaga",
    "Jorge Valdano"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-101",
@@ -1225,13 +1259,13 @@
  },
  {
   "key": "wc-103",
-  "category": "players_records",
+  "category": "trivia",
   "difficulty": "medium",
-  "prompt": "¿Quién fue el capitán de Francia campeona en 1998?",
+  "prompt": "¿Cómo se llamó la mascota del Mundial Argentina 1978?",
   "options": [
-   "Didier Deschamps",
-   "Zinedine Zidane",
-   "Marcel Desailly"
+   "Gauchito",
+   "Pique",
+   "Naranjito"
   ],
   "answer": 0
  },
@@ -1289,11 +1323,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué país organizó el Mundial 1938?",
   "options": [
+   "Francia",
    "Italia",
-   "Suiza",
-   "Francia"
+   "Suiza"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-109",
@@ -1305,7 +1339,8 @@
    "Ángel Di María",
    "Neymar"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-109"
  },
  {
   "key": "wc-110",
@@ -1325,11 +1360,12 @@
   "difficulty": "medium",
   "prompt": "Oleg Salenko hizo cinco goles en un partido en 1994. ¿Por qué selección jugaba?",
   "options": [
+   "Rusia",
    "Ucrania",
-   "Bulgaria",
-   "Rusia"
+   "Bulgaria"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-111"
  },
  {
   "key": "wc-112",
@@ -1337,11 +1373,11 @@
   "difficulty": "medium",
   "prompt": "En la final 1950 a Brasil le alcanzaba con cierto resultado y perdió 2-1. ¿Cuál era?",
   "options": [
-   "Empate",
    "Victoria por dos goles",
+   "Empate",
    "Victoria por uno"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-113",
@@ -1349,11 +1385,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección ganó el Mundial 1970, considerada de las mejores de la historia?",
   "options": [
-   "Italia",
    "Brasil",
+   "Italia",
    "Alemania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-114",
@@ -1361,11 +1397,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué país europeo organizó el Mundial 1954?",
   "options": [
+   "Suiza",
    "Suecia",
-   "Austria",
-   "Suiza"
+   "Austria"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-115",
@@ -1373,11 +1409,12 @@
   "difficulty": "medium",
   "prompt": "¿A qué selección venció Brasil en la final de 1958?",
   "options": [
-   "Suecia",
    "Hungría",
-   "Francia"
+   "Francia",
+   "Suecia"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-115"
  },
  {
   "key": "wc-116",
@@ -1409,11 +1446,11 @@
   "difficulty": "medium",
   "prompt": "¿En qué Mundial se disputó la primera definición por penales del torneo?",
   "options": [
-   "1982",
    "1978",
+   "1982",
    "1986"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-119",
@@ -1421,11 +1458,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección ganó el Mundial 1990 en Italia?",
   "options": [
-   "Argentina",
    "Alemania Federal",
+   "Argentina",
    "Italia"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-120",
@@ -1433,11 +1470,11 @@
   "difficulty": "medium",
   "prompt": "En 1974 una pequeña selección africana recibió un 9-0 de Yugoslavia. ¿Cuál?",
   "options": [
+   "Zaire",
    "Marruecos",
-   "Túnez",
-   "Zaire"
+   "Túnez"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-121",
@@ -1445,11 +1482,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién marcó el primer gol de la historia de los Mundiales, en 1930?",
   "options": [
-   "Lucien Laurent",
    "Guillermo Stábile",
+   "Lucien Laurent",
    "Bert Patenaude"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-122",
@@ -1458,10 +1495,10 @@
   "prompt": "¿Quién fue el máximo goleador del primer Mundial (1930) con ocho goles?",
   "options": [
    "Héctor Castro",
-   "Guillermo Stábile",
-   "Pedro Cea"
+   "Pedro Cea",
+   "Guillermo Stábile"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-123",
@@ -1481,11 +1518,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el jugador de mayor edad en jugar un Mundial, con 45 años en 2018?",
   "options": [
-   "Essam El-Hadary",
    "Faryd Mondragón",
-   "Roger Milla"
+   "Roger Milla",
+   "Essam El-Hadary"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-125",
@@ -1494,10 +1531,10 @@
   "prompt": "¿Cuál fue la mayor goleada de la historia mundialista, de Hungría sobre El Salvador en 1982?",
   "options": [
    "9-0",
-   "10-1",
-   "8-0"
+   "8-0",
+   "10-1"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-126",
@@ -1517,11 +1554,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles hizo Just Fontaine en 1958, récord para una sola edición?",
   "options": [
-   "13",
    "11",
+   "13",
    "10"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-128",
@@ -1530,10 +1567,10 @@
   "prompt": "¿Qué mexicano fue el primero en jugar cinco Mundiales (1950-1966)?",
   "options": [
    "Rafael Márquez",
-   "Antonio Carbajal",
-   "Hugo Sánchez"
+   "Hugo Sánchez",
+   "Antonio Carbajal"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-129",
@@ -1541,11 +1578,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue el marcador de la final del primer Mundial 1930 (Uruguay-Argentina)?",
   "options": [
-   "4-2",
    "2-1",
-   "3-1"
+   "3-1",
+   "4-2"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-129"
  },
  {
   "key": "wc-130",
@@ -1566,10 +1604,10 @@
   "prompt": "¿Quién hizo el \"Gol del Siglo\" ante Inglaterra en 1986?",
   "options": [
    "Jorge Valdano",
-   "Diego Maradona",
-   "Jorge Burruchaga"
+   "Jorge Burruchaga",
+   "Diego Maradona"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-132",
@@ -1581,7 +1619,8 @@
    "Helmut Haller",
    "Eusébio"
   ],
-  "answer": 2
+  "answer": 2,
+  "topic": "wc-132"
  },
  {
   "key": "wc-133",
@@ -1605,7 +1644,8 @@
    "Johannesburgo",
    "Durban"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-134"
  },
  {
   "key": "wc-135",
@@ -1629,7 +1669,8 @@
    "Italia",
    "Uruguay"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-136"
  },
  {
   "key": "wc-137",
@@ -1637,11 +1678,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué brasileño brilló en 1962 supliendo a Pelé lesionado?",
   "options": [
-   "Vavá",
    "Garrincha",
+   "Vavá",
    "Didí"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-138",
@@ -1650,10 +1691,10 @@
   "prompt": "¿Quién compartió la Bota de Oro de 1994 con Salenko, con seis goles?",
   "options": [
    "Roberto Baggio",
-   "Romário",
-   "Hristo Stoichkov"
+   "Hristo Stoichkov",
+   "Romário"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-139",
@@ -1673,11 +1714,11 @@
   "difficulty": "hard",
   "prompt": "¿En cuántos Mundiales jugó Rafael Márquez con México?",
   "options": [
-   "Cuatro",
    "Cinco",
+   "Cuatro",
    "Tres"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-141",
@@ -1685,11 +1726,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue el marcador de la final del Mundial 1970 (Brasil-Italia)?",
   "options": [
+   "4-1",
    "3-1",
-   "2-0",
-   "4-1"
+   "2-0"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-142",
@@ -1697,11 +1738,12 @@
   "difficulty": "hard",
   "prompt": "¿Qué país renunció a organizar el Mundial 1986, que pasó a México?",
   "options": [
-   "Colombia",
    "Brasil",
-   "Estados Unidos"
+   "Estados Unidos",
+   "Colombia"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-142"
  },
  {
   "key": "wc-143",
@@ -1713,7 +1755,8 @@
    "Cristiano Ronaldo",
    "Pauleta"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-023"
  },
  {
   "key": "wc-144",
@@ -1733,11 +1776,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuál es el único país anfitrión del Mundial 2026 que ya había sido sede dos veces antes?",
   "options": [
-   "México",
    "Estados Unidos",
-   "Canadá"
+   "Canadá",
+   "México"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-146",
@@ -1758,10 +1801,10 @@
   "prompt": "¿Qué selección fue subcampeona en 1974 ante Alemania Federal?",
   "options": [
    "Polonia",
-   "Suecia",
-   "Países Bajos"
+   "Países Bajos",
+   "Suecia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-148",
@@ -1769,11 +1812,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién dirigió a Argentina hasta la final del Mundial 2014?",
   "options": [
-   "Alejandro Sabella",
    "Gerardo Martino",
+   "Alejandro Sabella",
    "Lionel Scaloni"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-149",
@@ -1781,11 +1824,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el goleador del Mundial 1974?",
   "options": [
-   "Gerd Müller",
    "Grzegorz Lato",
+   "Gerd Müller",
    "Johan Cruyff"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-150",
@@ -1793,11 +1836,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué estadio de Berlín albergó la final del Mundial 2006?",
   "options": [
+   "Olympiastadion",
    "Allianz Arena",
-   "Signal Iduna Park",
-   "Olympiastadion"
+   "Signal Iduna Park"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-151",
@@ -1805,11 +1848,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el arquero capitán de España campeona en 2010?",
   "options": [
-   "Iker Casillas",
    "Pepe Reina",
-   "Víctor Valdés"
+   "Víctor Valdés",
+   "Iker Casillas"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-152",
@@ -1830,10 +1873,10 @@
   "prompt": "¿Cuál es la única selección que jugó todas las ediciones del Mundial?",
   "options": [
    "Alemania",
-   "Argentina",
-   "Brasil"
+   "Brasil",
+   "Argentina"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-154",
@@ -1841,11 +1884,11 @@
   "difficulty": "hard",
   "prompt": "En 2014 Costa Rica ganó un grupo durísimo. ¿Hasta qué instancia llegó?",
   "options": [
-   "Cuartos de final",
    "Semifinales",
-   "Octavos"
+   "Octavos",
+   "Cuartos de final"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-155",
@@ -1853,11 +1896,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué arquero colombiano jugó un Mundial con 43 años en 2014?",
   "options": [
-   "Óscar Córdoba",
    "Faryd Mondragón",
+   "Óscar Córdoba",
    "René Higuita"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-156",
@@ -1877,11 +1920,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue la sede de la final del Mundial 1994 en Estados Unidos?",
   "options": [
-   "Rose Bowl (Pasadena)",
    "Giants Stadium",
-   "Soldier Field"
+   "Soldier Field",
+   "Rose Bowl (Pasadena)"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-158",
@@ -1889,11 +1932,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección ganó el Mundial 1934 venciendo a Checoslovaquia?",
   "options": [
-   "Austria",
    "Italia",
+   "Austria",
    "Hungría"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-159",
@@ -1902,10 +1945,10 @@
   "prompt": "¿Quién fue el capitán de Alemania que levantó la Copa en 2014?",
   "options": [
    "Bastian Schweinsteiger",
-   "Manuel Neuer",
-   "Philipp Lahm"
+   "Philipp Lahm",
+   "Manuel Neuer"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-160",
@@ -1913,11 +1956,11 @@
   "difficulty": "hard",
   "prompt": "¿Ante qué selección perdió Países Bajos la final del Mundial 2010?",
   "options": [
-   "Alemania",
    "España",
+   "Alemania",
    "Italia"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-161",
@@ -1949,11 +1992,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el goleador del Mundial 1986 con seis goles?",
   "options": [
-   "Gary Lineker",
    "Diego Maradona",
-   "Emilio Butragueño"
+   "Emilio Butragueño",
+   "Gary Lineker"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-164",
@@ -1962,10 +2005,10 @@
   "prompt": "¿Qué país sudamericano estaba previsto como sede en 1986 y renunció?",
   "options": [
    "Perú",
-   "Colombia",
-   "Venezuela"
+   "Venezuela",
+   "Colombia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-165",
@@ -1974,10 +2017,10 @@
   "prompt": "¿Cuál fue el marcador de la final 1998 (Francia-Brasil)?",
   "options": [
    "2-1",
-   "3-1",
-   "3-0"
+   "3-0",
+   "3-1"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-166",
@@ -1985,11 +2028,12 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el capitán de Italia campeona en 2006?",
   "options": [
-   "Fabio Cannavaro",
    "Francesco Totti",
-   "Gianluigi Buffon"
+   "Gianluigi Buffon",
+   "Fabio Cannavaro"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-166"
  },
  {
   "key": "wc-167",
@@ -1997,11 +2041,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué jugador ganó el Balón de Oro del Mundial 2010?",
   "options": [
-   "Wesley Sneijder",
    "Diego Forlán",
+   "Wesley Sneijder",
    "Andrés Iniesta"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-168",
@@ -2010,10 +2054,10 @@
   "prompt": "¿Qué selección eliminó a Argentina en octavos del Mundial 2018?",
   "options": [
    "Croacia",
-   "Uruguay",
-   "Francia"
+   "Francia",
+   "Uruguay"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-169",
@@ -2021,11 +2065,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué puesto obtuvo Turquía en el Mundial 2002, su mejor resultado histórico?",
   "options": [
-   "Tercer puesto",
    "Cuarto puesto",
+   "Tercer puesto",
    "Subcampeón"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-170",
@@ -2033,11 +2077,12 @@
   "difficulty": "hard",
   "prompt": "¿Qué argentino disputó cinco Mundiales entre 2006 y 2022?",
   "options": [
-   "Javier Mascherano",
    "Lionel Messi",
+   "Javier Mascherano",
    "Ángel Di María"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-017"
  },
  {
   "key": "wc-171",
@@ -2046,10 +2091,10 @@
   "prompt": "¿Qué selección ganó la final del Mundial 1978 ante Países Bajos?",
   "options": [
    "Brasil",
-   "Italia",
-   "Argentina"
+   "Argentina",
+   "Italia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-172",
@@ -2070,10 +2115,10 @@
   "prompt": "¿En qué Mundial se amplió el torneo a 24 equipos por primera vez?",
   "options": [
    "1978",
-   "1982",
-   "1986"
+   "1986",
+   "1982"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-174",
@@ -2082,10 +2127,10 @@
   "prompt": "¿Qué húngaro de los años 50 es recordado como un grande que nunca ganó un Mundial?",
   "options": [
    "Sándor Kocsis",
-   "Florian Albert",
-   "Ferenc Puskás"
+   "Ferenc Puskás",
+   "Florian Albert"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-175",
@@ -2093,11 +2138,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué edición el Mundial pasó a 32 equipos por primera vez?",
   "options": [
-   "1998",
    "1994",
-   "2002"
+   "2002",
+   "1998"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-176",
@@ -2118,10 +2163,10 @@
   "prompt": "¿Quién es el jugador más joven en marcar un gol en un Mundial?",
   "options": [
    "Kylian Mbappé",
-   "Pelé",
-   "Michael Owen"
+   "Michael Owen",
+   "Pelé"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-178",
@@ -2166,10 +2211,10 @@
   "prompt": "¿Quién fue el máximo goleador del Mundial 1938?",
   "options": [
    "Silvio Piola",
-   "Gyula Zsengellér",
-   "Leônidas"
+   "Leônidas",
+   "Gyula Zsengellér"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-182",
@@ -2177,11 +2222,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué brasileño apodado \"O Diamante Negro\" brilló en 1938?",
   "options": [
-   "Leônidas",
    "Domingos da Guia",
+   "Leônidas",
    "Zizinho"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-183",
@@ -2201,11 +2246,11 @@
   "difficulty": "very_hard",
   "prompt": "La Copa Jules Rimet fue robada en Inglaterra antes del Mundial 1966. ¿Quién la encontró?",
   "options": [
+   "Un perro llamado Pickles",
    "La policía de Londres",
-   "Un niño en la calle",
-   "Un perro llamado Pickles"
+   "Un niño en la calle"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-185",
@@ -2213,11 +2258,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué alemán jugó cinco Mundiales entre 1982 y 1998?",
   "options": [
-   "Lothar Matthäus",
    "Franz Beckenbauer",
-   "Karl-Heinz Rummenigge"
+   "Karl-Heinz Rummenigge",
+   "Lothar Matthäus"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-186",
@@ -2226,10 +2271,10 @@
   "prompt": "¿En qué ciudad se jugó la final del Mundial 1990?",
   "options": [
    "Milán",
-   "Roma",
-   "Nápoles"
+   "Nápoles",
+   "Roma"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-187",
@@ -2238,10 +2283,10 @@
   "prompt": "¿Cuántos goles hizo Sándor Kocsis para Hungría en el Mundial 1954?",
   "options": [
    "9",
-   "13",
-   "11"
+   "11",
+   "13"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-188",
@@ -2273,11 +2318,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién dirigió a Argentina campeona en 1986?",
   "options": [
+   "Carlos Bilardo",
    "César Luis Menotti",
-   "Alfio Basile",
-   "Carlos Bilardo"
+   "Alfio Basile"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-191",
@@ -2285,11 +2330,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue capitán de Francia campeona en 1998 y DT campeón en 2018?",
   "options": [
-   "Didier Deschamps",
    "Aimé Jacquet",
+   "Didier Deschamps",
    "Zinedine Zidane"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-192",
@@ -2321,11 +2366,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué selección organizó y ganó el Mundial 1934 bajo un régimen autoritario?",
   "options": [
-   "Italia",
    "Alemania",
-   "España"
+   "España",
+   "Italia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-195",
@@ -2333,11 +2378,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue el primer jugador expulsado en una final de Mundial (1990)?",
   "options": [
-   "Zinedine Zidane",
    "Pedro Monzón",
+   "Zinedine Zidane",
    "Marcel Desailly"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-196",
@@ -2346,10 +2391,11 @@
   "prompt": "¿Qué selección eliminó a Brasil en cuartos del Mundial 2006?",
   "options": [
    "Italia",
-   "Alemania",
-   "Francia"
+   "Francia",
+   "Alemania"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-196"
  },
  {
   "key": "wc-197",
@@ -2361,7 +2407,8 @@
    "Zinedine Zidane",
    "Patrick Vieira"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-196"
  },
  {
   "key": "wc-198",
@@ -2381,11 +2428,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué selección perdió la final de 1938 ante Italia?",
   "options": [
+   "Hungría",
    "Checoslovaquia",
-   "Brasil",
-   "Hungría"
+   "Brasil"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-200",
@@ -2393,11 +2440,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuál fue la primera edición con fase de clasificación (eliminatorias)?",
   "options": [
-   "1934",
    "1930",
-   "1938"
+   "1938",
+   "1934"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-201",
@@ -2406,10 +2453,11 @@
   "prompt": "¿Qué tres países organizan el Mundial 2026?",
   "options": [
    "México, Guatemala y EE. UU.",
-   "Estados Unidos, Canadá y México",
-   "EE. UU., Canadá y Brasil"
+   "EE. UU., Canadá y Brasil",
+   "Estados Unidos, Canadá y México"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-028"
  },
  {
   "key": "wc-202",
@@ -2418,10 +2466,11 @@
   "prompt": "¿Qué país es el primero en organizar tres Mundiales, incluido el de 2026?",
   "options": [
    "Estados Unidos",
-   "Italia",
-   "México"
+   "México",
+   "Italia"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-142"
  },
  {
   "key": "wc-203",
@@ -2429,11 +2478,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién marcó el primer gol de un Mundial en suelo africano (2010)?",
   "options": [
-   "Siphiwe Tshabalala",
    "Steven Pienaar",
+   "Siphiwe Tshabalala",
    "Samuel Eto'o"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-204",
@@ -2445,7 +2494,8 @@
    "5-2",
    "3-0"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-115"
  },
  {
   "key": "wc-205",
@@ -2454,10 +2504,10 @@
   "prompt": "¿Qué arquero italiano tuvo un récord de minutos sin recibir goles en 1990?",
   "options": [
    "Dino Zoff",
-   "Gianluca Pagliuca",
-   "Walter Zenga"
+   "Walter Zenga",
+   "Gianluca Pagliuca"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-206",
@@ -2477,11 +2527,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuántos equipos participaron del primer Mundial de 1930?",
   "options": [
-   "16",
    "13",
+   "16",
    "8"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-208",
@@ -2489,11 +2539,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue el primer futbolista en ganar tres Copas del Mundo?",
   "options": [
+   "Pelé",
    "Garrincha",
-   "Mário Zagallo",
-   "Pelé"
+   "Mário Zagallo"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-209",
@@ -2505,17 +2555,18 @@
    "Pelé",
    "Carlos Alberto Parreira"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-136"
  },
  {
   "key": "wc-210",
-  "category": "scorers",
-  "difficulty": "very_hard",
-  "prompt": "¿Quién fue el goleador del Mundial 1978?",
+  "category": "upsets",
+  "difficulty": "medium",
+  "prompt": "¿Qué selección le ganó 1-0 a Alemania, campeona vigente, en su debut de Rusia 2018?",
   "options": [
-   "Rob Rensenbrink",
-   "Mario Kempes",
-   "Teófilo Cubillas"
+   "Suecia",
+   "México",
+   "Corea del Sur"
   ],
   "answer": 1
  },
@@ -2526,10 +2577,10 @@
   "prompt": "¿Qué selección venció 2-0 a Alemania en el partido que la eliminó en 2018?",
   "options": [
    "México",
-   "Suecia",
-   "Corea del Sur"
+   "Corea del Sur",
+   "Suecia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-212",
@@ -2541,7 +2592,8 @@
    "Thierry Henry",
    "Kylian Mbappé"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-023"
  },
  {
   "key": "wc-213",
@@ -2550,10 +2602,11 @@
   "prompt": "¿Cuál fue el primer Mundial transmitido por televisión?",
   "options": [
    "1950",
-   "1954",
-   "1958"
+   "1958",
+   "1954"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-213"
  },
  {
   "key": "wc-214",
@@ -2562,10 +2615,10 @@
   "prompt": "¿Qué selección llegó a semifinales en 2002 dirigida por Guus Hiddink?",
   "options": [
    "Japón",
-   "Turquía",
-   "Corea del Sur"
+   "Corea del Sur",
+   "Turquía"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-215",
@@ -2573,11 +2626,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué jugador disputó tres finales de Mundial, un récord?",
   "options": [
-   "Cafú",
    "Pelé",
+   "Cafú",
    "Franz Beckenbauer"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-216",
@@ -2585,11 +2638,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién marcó el primer \"gol de oro\" de la historia de los Mundiales, en 1998?",
   "options": [
-   "David Trezeguet",
    "Laurent Blanc",
+   "David Trezeguet",
    "Oliver Bierhoff"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-217",
@@ -2609,11 +2662,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué estadio de Moscú se jugó la final del Mundial 2018?",
   "options": [
-   "Luzhniki",
    "Spartak",
+   "Luzhniki",
    "Otkrytie Arena"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-219",
@@ -2633,11 +2686,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué selección igualó a Italia con cuatro títulos al ganar en 2014?",
   "options": [
+   "Alemania",
    "Brasil",
-   "Argentina",
-   "Alemania"
+   "Argentina"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-221",
@@ -2649,7 +2702,8 @@
    "Estados Unidos",
    "Canadá"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-221"
  },
  {
   "key": "wc-222",
@@ -2658,10 +2712,11 @@
   "prompt": "¿Cuántas mascotas tiene el Mundial 2026?",
   "options": [
    "Una",
-   "Tres",
-   "Dos"
+   "Dos",
+   "Tres"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-222"
  },
  {
   "key": "wc-223",
@@ -2670,10 +2725,10 @@
   "prompt": "¿Cómo se llama el balón oficial del Mundial 2026?",
   "options": [
    "Brazuca",
-   "Al Rihla",
-   "Trionda"
+   "Trionda",
+   "Al Rihla"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-224",
@@ -2681,11 +2736,12 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se juega la final del Mundial 2026?",
   "options": [
-   "Estados Unidos",
    "México",
-   "Canadá"
+   "Canadá",
+   "Estados Unidos"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-221"
  },
  {
   "key": "wc-225",
@@ -2693,11 +2749,12 @@
   "difficulty": "easy",
   "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 2022?",
   "options": [
-   "Kylian Mbappé",
    "Lionel Messi",
+   "Kylian Mbappé",
    "Luka Modrić"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-109"
  },
  {
   "key": "wc-226",
@@ -2705,11 +2762,11 @@
   "difficulty": "easy",
   "prompt": "¿Quién dirigió a Argentina campeona del Mundial 2022?",
   "options": [
-   "Lionel Scaloni",
    "Diego Simeone",
-   "Mauricio Pochettino"
+   "Mauricio Pochettino",
+   "Lionel Scaloni"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-227",
@@ -2721,7 +2778,8 @@
    "Tres",
    "Cuatro"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-003"
  },
  {
   "key": "wc-228",
@@ -2733,7 +2791,8 @@
    "Tres",
    "Dos"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-041"
  },
  {
   "key": "wc-229",
@@ -2757,7 +2816,8 @@
    "Un jaguar (Zayu)",
    "Un águila (Clutch)"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-222"
  },
  {
   "key": "wc-231",
@@ -2789,11 +2849,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección terminó en tercer puesto en el Mundial 2022?",
   "options": [
-   "Marruecos",
    "Croacia",
+   "Marruecos",
    "Países Bajos"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-234",
@@ -2801,11 +2861,11 @@
   "difficulty": "easy",
   "prompt": "¿Cuántos goles convirtió Lionel Messi en el Mundial 2022?",
   "options": [
-   "Siete",
    "Cinco",
-   "Diez"
+   "Diez",
+   "Siete"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-235",
@@ -2825,11 +2885,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 2022?",
   "options": [
-   "Catar",
    "Emiratos Árabes",
+   "Catar",
    "Arabia Saudita"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-237",
@@ -2837,11 +2897,11 @@
   "difficulty": "easy",
   "prompt": "¿Quién atajó penales en la tanda de la final del Mundial 2022 para Argentina?",
   "options": [
-   "Emiliano Martínez",
    "Franco Armani",
+   "Emiliano Martínez",
    "Gerónimo Rulli"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-238",
@@ -2853,7 +2913,8 @@
    "Dos",
    "Tres"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-238"
  },
  {
   "key": "wc-239",
@@ -2861,11 +2922,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué número de camiseta usa Lionel Messi en la Selección Argentina?",
   "options": [
-   "10",
    "9",
-   "11"
+   "11",
+   "10"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-240",
@@ -2877,7 +2938,8 @@
    "Asia",
    "América"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-009"
  },
  {
   "key": "wc-241",
@@ -2885,11 +2947,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué animal es Clutch, la mascota estadounidense del Mundial 2026?",
   "options": [
-   "Un águila calva",
    "Un oso",
-   "Un bisonte"
+   "Un bisonte",
+   "Un águila calva"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-242",
@@ -2901,7 +2963,8 @@
    "Tercero",
    "Subcampeón"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-242"
  },
  {
   "key": "wc-243",
@@ -2909,11 +2972,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Vinícius Júnior?",
   "options": [
-   "Portugal",
    "Brasil",
+   "Portugal",
    "Uruguay"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-244",
@@ -2925,7 +2988,8 @@
    "Dos",
    "Tres"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-238"
  },
  {
   "key": "wc-245",
@@ -2933,11 +2997,11 @@
   "difficulty": "easy",
   "prompt": "¿Quién marcó el penal del título para Argentina en la tanda de la final 2022?",
   "options": [
-   "Gonzalo Montiel",
    "Lautaro Martínez",
-   "Nicolás Otamendi"
+   "Nicolás Otamendi",
+   "Gonzalo Montiel"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-246",
@@ -2958,10 +3022,10 @@
   "prompt": "¿En qué mes arranca el Mundial 2026?",
   "options": [
    "Mayo",
-   "Junio",
-   "Julio"
+   "Julio",
+   "Junio"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-248",
@@ -2993,11 +3057,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 2006?",
   "options": [
-   "Fabio Cannavaro",
    "Zinedine Zidane",
+   "Fabio Cannavaro",
    "Andrea Pirlo"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-251",
@@ -3006,10 +3070,10 @@
   "prompt": "¿Qué arquero ganó el Balón de Oro del Mundial 2002, único en lograrlo?",
   "options": [
    "Gianluigi Buffon",
-   "Iker Casillas",
-   "Oliver Kahn"
+   "Oliver Kahn",
+   "Iker Casillas"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-252",
@@ -3017,11 +3081,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién fue el goleador del Mundial 2006 con cinco goles?",
   "options": [
-   "Miroslav Klose",
    "Hernán Crespo",
+   "Miroslav Klose",
    "Thierry Henry"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-253",
@@ -3029,11 +3093,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién ganó el Balón de Oro del Mundial 1982?",
   "options": [
-   "Paolo Rossi",
    "Falcão",
+   "Paolo Rossi",
    "Karl-Heinz Rummenigge"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-254",
@@ -3041,11 +3105,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién ganó el Balón de Oro del Mundial 1994?",
   "options": [
-   "Roberto Baggio",
    "Romário",
+   "Roberto Baggio",
    "Hristo Stoichkov"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-255",
@@ -3053,11 +3117,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección eliminó a Brasil en los cuartos de final del Mundial 2022?",
   "options": [
-   "Croacia",
    "Países Bajos",
-   "Marruecos"
+   "Marruecos",
+   "Croacia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-256",
@@ -3065,11 +3129,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección eliminó a España en octavos del Mundial 2022?",
   "options": [
-   "Japón",
    "Marruecos",
+   "Japón",
    "Suiza"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-257",
@@ -3077,11 +3141,12 @@
   "difficulty": "medium",
   "prompt": "¿Quién es el máximo goleador histórico de Argentina en los Mundiales?",
   "options": [
-   "Gabriel Batistuta",
    "Lionel Messi",
+   "Gabriel Batistuta",
    "Diego Maradona"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-023"
  },
  {
   "key": "wc-258",
@@ -3089,11 +3154,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales disputó Lionel Messi?",
   "options": [
-   "Cuatro",
    "Cinco",
+   "Cuatro",
    "Seis"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-259",
@@ -3101,11 +3166,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales disputó Diego Maradona?",
   "options": [
-   "Cuatro",
    "Tres",
+   "Cuatro",
    "Cinco"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-260",
@@ -3114,10 +3179,10 @@
   "prompt": "¿Quién marcó el penal decisivo de Italia en la tanda de la final del Mundial 2006?",
   "options": [
    "Marco Materazzi",
-   "Fabio Grosso",
-   "Alessandro Del Piero"
+   "Alessandro Del Piero",
+   "Fabio Grosso"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-261",
@@ -3141,7 +3206,8 @@
    "MetLife Stadium",
    "SoFi Stadium"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-221"
  },
  {
   "key": "wc-263",
@@ -3153,7 +3219,8 @@
    "Estadio BBVA",
    "MetLife Stadium"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-221"
  },
  {
   "key": "wc-264",
@@ -3161,11 +3228,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a España campeona del Mundial 2010?",
   "options": [
-   "Vicente del Bosque",
    "Luis Aragonés",
-   "Luis Enrique"
+   "Luis Enrique",
+   "Vicente del Bosque"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-265",
@@ -3174,10 +3241,10 @@
   "prompt": "¿Quién fue el capitán de Francia campeona del Mundial 2018?",
   "options": [
    "Antoine Griezmann",
-   "Hugo Lloris",
-   "Raphaël Varane"
+   "Raphaël Varane",
+   "Hugo Lloris"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-266",
@@ -3185,11 +3252,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección fue la primera africana en disputar un Mundial, en 1934?",
   "options": [
-   "Egipto",
    "Marruecos",
-   "Túnez"
+   "Túnez",
+   "Egipto"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-267",
@@ -3197,11 +3264,11 @@
   "difficulty": "medium",
   "prompt": "¿En qué Mundial se introdujeron las tarjetas amarilla y roja?",
   "options": [
-   "1966",
    "1970",
+   "1966",
    "1974"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-268",
@@ -3209,11 +3276,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales disputó Cristiano Ronaldo?",
   "options": [
-   "Cuatro",
    "Cinco",
+   "Cuatro",
    "Seis"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-269",
@@ -3221,11 +3288,11 @@
   "difficulty": "medium",
   "prompt": "En el Mundial 2026, ¿cuántas selecciones de cada grupo avanzan de forma directa (sin contar mejores terceros)?",
   "options": [
-   "Las dos primeras",
    "Solo la primera",
-   "Las tres primeras"
+   "Las tres primeras",
+   "Las dos primeras"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-270",
@@ -3233,11 +3300,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales ganó España?",
   "options": [
-   "Uno",
    "Dos",
+   "Uno",
    "Tres"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-271",
@@ -3257,11 +3324,11 @@
   "difficulty": "medium",
   "prompt": "El Mundial 2026 estrena una ronda nueva por la ampliación a 48 equipos. ¿Cuál?",
   "options": [
-   "Los treintaidosavos de final",
    "Un repechaje final",
-   "Una fase de consuelo"
+   "Una fase de consuelo",
+   "Los treintaidosavos de final"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-273",
@@ -3269,11 +3336,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién fue el segundo máximo goleador del Mundial 2022, detrás de Mbappé?",
   "options": [
-   "Julián Álvarez",
    "Lionel Messi",
+   "Julián Álvarez",
    "Olivier Giroud"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-274",
@@ -3281,11 +3348,11 @@
   "difficulty": "medium",
   "prompt": "En el Mundial 2026, además de los dos primeros de cada grupo, ¿cuántos \"mejores terceros\" avanzan a la siguiente ronda?",
   "options": [
-   "Ocho",
    "Cuatro",
+   "Ocho",
    "Seis"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-275",
@@ -3293,11 +3360,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue la primera mascota de la historia de los Mundiales, en 1966?",
   "options": [
-   "World Cup Willie",
    "Juanito",
+   "World Cup Willie",
    "Naranjito"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-276",
@@ -3305,11 +3372,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué arquero fue capitán y campeón del mundo a los 40 años, en 1982?",
   "options": [
-   "Dino Zoff",
    "Gianluigi Buffon",
+   "Dino Zoff",
    "Sepp Maier"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-277",
@@ -3317,11 +3384,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección ganó el primer Mundial disputado con el actual trofeo de la FIFA (desde 1974)?",
   "options": [
-   "Alemania Federal",
    "Brasil",
+   "Alemania Federal",
    "Argentina"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-278",
@@ -3329,11 +3396,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién diseñó el actual trofeo de la Copa del Mundo de la FIFA?",
   "options": [
-   "Silvio Gazzaniga",
    "Abel Lafleur",
-   "Jules Rimet"
+   "Jules Rimet",
+   "Silvio Gazzaniga"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-279",
@@ -3353,11 +3420,12 @@
   "difficulty": "hard",
   "prompt": "¿En qué zona de Estados Unidos se juega la final del Mundial 2026?",
   "options": [
-   "Nueva York / Nueva Jersey",
    "Los Ángeles",
-   "Dallas"
+   "Dallas",
+   "Nueva York / Nueva Jersey"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-221"
  },
  {
   "key": "wc-281",
@@ -3365,11 +3433,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles convirtió Lionel Messi en toda su carrera mundialista, récord para Argentina?",
   "options": [
-   "13",
    "10",
+   "13",
    "16"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-282",
@@ -3381,7 +3449,8 @@
    "Roberto Mancini",
    "Carlos Queiroz"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-007"
  },
  {
   "key": "wc-283",
@@ -3401,11 +3470,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué dos años no se disputó el Mundial por la Segunda Guerra Mundial?",
   "options": [
-   "1942 y 1946",
    "1940 y 1944",
+   "1942 y 1946",
    "1939 y 1943"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-285",
@@ -3425,11 +3494,11 @@
   "difficulty": "hard",
   "prompt": "¿Cómo se llamó la mascota del Mundial 1998 en Francia?",
   "options": [
-   "Footix",
    "Striker",
-   "Ciao"
+   "Ciao",
+   "Footix"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-287",
@@ -3473,11 +3542,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue el marcador de la final del Mundial 1990 (Alemania Federal-Argentina)?",
   "options": [
-   "2-0",
    "1-0",
+   "2-0",
    "1-1"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-290"
  },
  {
   "key": "wc-291",
@@ -3485,11 +3555,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas selecciones distintas ganaron al menos un Mundial hasta 2022?",
   "options": [
-   "Ocho",
    "Diez",
-   "Seis"
+   "Seis",
+   "Ocho"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-292",
@@ -3509,11 +3579,11 @@
   "difficulty": "hard",
   "prompt": "¿Cómo se llamó la mascota del Mundial 2018 en Rusia?",
   "options": [
-   "Zabivaka",
    "La'eeb",
+   "Zabivaka",
    "Fuleco"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-294",
@@ -3521,11 +3591,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección eliminó a Portugal de Cristiano Ronaldo en los cuartos del Mundial 2022?",
   "options": [
-   "Marruecos",
    "Suiza",
-   "Croacia"
+   "Croacia",
+   "Marruecos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-295",
@@ -3533,11 +3603,11 @@
   "difficulty": "hard",
   "prompt": "La final del Mundial 2022 terminó 3-3 y se definió por penales. ¿Cuál fue el resultado de la tanda?",
   "options": [
-   "4-2",
    "3-1",
+   "4-2",
    "5-3"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-296",
@@ -3549,7 +3619,8 @@
    "Kylian Mbappé",
    "Ángel Di María"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-032"
  },
  {
   "key": "wc-297",
@@ -3557,11 +3628,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué mascota representó al Mundial 2014 en Brasil?",
   "options": [
-   "Zakumi",
    "Fuleco",
+   "Zakumi",
    "Gauchito"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-298",
@@ -3569,21 +3640,21 @@
   "difficulty": "hard",
   "prompt": "¿En qué año ganó Argentina su primer título mundial?",
   "options": [
-   "1978",
    "1986",
-   "1974"
+   "1974",
+   "1978"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-299",
-  "category": "players_records",
-  "difficulty": "very_hard",
-  "prompt": "¿Quién es el jugador con más partidos disputados en la historia de los Mundiales?",
+  "category": "trivia",
+  "difficulty": "medium",
+  "prompt": "¿Cómo se llamó la pelota oficial del Mundial 2010?",
   "options": [
-   "Lothar Matthäus",
-   "Lionel Messi",
-   "Paolo Maldini"
+   "Brazuca",
+   "Jabulani",
+   "Telstar"
   ],
   "answer": 1
  },
@@ -3593,11 +3664,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuál fue el primer Mundial sin partido final, definido por una liguilla?",
   "options": [
-   "1950",
    "1930",
+   "1950",
    "1954"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-301",
@@ -3638,12 +3709,12 @@
  {
   "key": "wc-304",
   "category": "hosts",
-  "difficulty": "very_hard",
-  "prompt": "¿Qué estadio mexicano del Mundial 2026 ya fue sede de las finales de 1970 y 1986?",
+  "difficulty": "medium",
+  "prompt": "¿En qué ciudad, junto a París, se jugó la final del Mundial 1998?",
   "options": [
-   "Estadio Azteca",
-   "Estadio BBVA",
-   "Estadio Akron"
+   "Saint-Denis",
+   "Marsella",
+   "Lyon"
   ],
   "answer": 0
  },
@@ -3653,11 +3724,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuál fue la final de Mundial con más goles?",
   "options": [
-   "Brasil 5-2 Suecia (1958)",
    "Argentina 3-2 Alemania (1986)",
-   "Inglaterra 4-2 Alemania (1966)"
+   "Inglaterra 4-2 Alemania (1966)",
+   "Brasil 5-2 Suecia (1958)"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-306",
@@ -3665,11 +3736,12 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién dirigió a Italia campeona del Mundial 2006?",
   "options": [
-   "Marcello Lippi",
    "Cesare Maldini",
-   "Roberto Mancini"
+   "Roberto Mancini",
+   "Marcello Lippi"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-166"
  },
  {
   "key": "wc-307",
@@ -3677,11 +3749,11 @@
   "difficulty": "hard",
   "prompt": "¿Cómo se llamó la mascota del Mundial 2022 en Catar?",
   "options": [
-   "La'eeb",
    "Zabivaka",
-   "Kaayu"
+   "Kaayu",
+   "La'eeb"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-308",
@@ -3701,11 +3773,11 @@
   "difficulty": "very_hard",
   "prompt": "El Mundial 2018 batió el récord de autogoles. ¿Cuántos hubo?",
   "options": [
-   "12",
    "6",
+   "12",
    "9"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-310",
@@ -3737,11 +3809,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué selección goleó 5-1 a España, campeona defensora, en el Mundial 2014?",
   "options": [
-   "Países Bajos",
    "Chile",
-   "Australia"
+   "Australia",
+   "Países Bajos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-313",
@@ -3761,11 +3833,11 @@
   "difficulty": "hard",
   "prompt": "En el balón Trionda del Mundial 2026, ¿qué símbolo representa a Estados Unidos?",
   "options": [
-   "Una estrella",
    "Un águila",
+   "Una estrella",
    "Una hoja de arce"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-315",
@@ -3773,11 +3845,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuál es el primer Mundial de la historia disputado en tres países?",
   "options": [
-   "2026",
    "2002",
-   "1930"
+   "1930",
+   "2026"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-316",
@@ -3785,11 +3857,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos partidos jugará el campeón del Mundial 2026 si avanza desde la fase de grupos?",
   "options": [
-   "Ocho",
    "Siete",
+   "Ocho",
    "Seis"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-317",
@@ -3797,11 +3869,12 @@
   "difficulty": "hard",
   "prompt": "¿Quién dirigió a Marruecos en su histórico cuarto puesto del Mundial 2022?",
   "options": [
-   "Walid Regragui",
    "Hervé Renard",
+   "Walid Regragui",
    "Vahid Halilhodžić"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-242"
  },
  {
   "key": "wc-318",
@@ -3813,7 +3886,8 @@
    "Julián Álvarez",
    "Lautaro Martínez"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-069"
  },
  {
   "key": "wc-319",
@@ -3821,11 +3895,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién ganó el premio al mejor jugador joven del Mundial 2022?",
   "options": [
-   "Enzo Fernández",
    "Jude Bellingham",
-   "Pedri"
+   "Pedri",
+   "Enzo Fernández"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-320",
@@ -3833,11 +3907,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué número de edición de la Copa del Mundo es la de 2026?",
   "options": [
-   "La 23ª",
    "La 22ª",
+   "La 23ª",
    "La 24ª"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-321",
@@ -3846,10 +3920,10 @@
   "prompt": "¿De qué país es Neymar?",
   "options": [
    "Argentina",
-   "Brasil",
-   "Portugal"
+   "Portugal",
+   "Brasil"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-322",
@@ -3869,11 +3943,12 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Harry Kane?",
   "options": [
-   "Inglaterra",
    "Irlanda",
-   "Gales"
+   "Gales",
+   "Inglaterra"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-323"
  },
  {
   "key": "wc-324",
@@ -3882,10 +3957,10 @@
   "prompt": "¿De qué país es Erling Haaland?",
   "options": [
    "Suecia",
-   "Dinamarca",
-   "Noruega"
+   "Noruega",
+   "Dinamarca"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-325",
@@ -3894,10 +3969,10 @@
   "prompt": "¿De qué país es Mohamed Salah?",
   "options": [
    "Marruecos",
-   "Egipto",
-   "Túnez"
+   "Túnez",
+   "Egipto"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-326",
@@ -3929,11 +4004,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Kevin De Bruyne?",
   "options": [
-   "Países Bajos",
    "Bélgica",
+   "Países Bajos",
    "Alemania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-329",
@@ -3941,11 +4016,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Jude Bellingham?",
   "options": [
-   "Inglaterra",
    "Francia",
-   "Alemania"
+   "Alemania",
+   "Inglaterra"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-330",
@@ -3966,10 +4041,10 @@
   "prompt": "¿De qué país es Christian Pulisic?",
   "options": [
    "Canadá",
-   "México",
-   "Estados Unidos"
+   "Estados Unidos",
+   "México"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-332",
@@ -3978,10 +4053,10 @@
   "prompt": "¿De qué país es Alphonso Davies?",
   "options": [
    "Estados Unidos",
-   "Canadá",
-   "México"
+   "México",
+   "Canadá"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-333",
@@ -4001,11 +4076,12 @@
   "difficulty": "easy",
   "prompt": "¿Cuántos Mundiales ganó Alemania?",
   "options": [
-   "Tres",
    "Cuatro",
+   "Tres",
    "Cinco"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-041"
  },
  {
   "key": "wc-335",
@@ -4013,11 +4089,12 @@
   "difficulty": "easy",
   "prompt": "¿Cuántos Mundiales ganó Brasil?",
   "options": [
-   "Cuatro",
    "Cinco",
+   "Cuatro",
    "Seis"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-003"
  },
  {
   "key": "wc-336",
@@ -4025,11 +4102,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Brasil?",
   "options": [
-   "La Canarinha",
    "La Roja",
+   "La Canarinha",
    "La Azzurra"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-337",
@@ -4037,11 +4114,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Italia?",
   "options": [
-   "Les Bleus",
    "La Azzurra",
+   "Les Bleus",
    "La Oranje"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-338",
@@ -4050,10 +4127,10 @@
   "prompt": "¿Cómo se apoda a la selección de Países Bajos por su color?",
   "options": [
    "La Roja",
-   "La Oranje (Naranja)",
-   "La Albiceleste"
+   "La Albiceleste",
+   "La Oranje (Naranja)"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-339",
@@ -4061,11 +4138,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Francia?",
   "options": [
-   "Les Bleus",
    "Three Lions",
-   "La Furia"
+   "La Furia",
+   "Les Bleus"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-340",
@@ -4073,11 +4150,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Inglaterra?",
   "options": [
-   "Three Lions",
    "Les Bleus",
+   "Three Lions",
    "Die Mannschaft"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-341",
@@ -4097,11 +4174,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de España?",
   "options": [
-   "La Roja",
    "La Azzurra",
-   "La Celeste"
+   "La Celeste",
+   "La Roja"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-343",
@@ -4109,11 +4186,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Uruguay?",
   "options": [
-   "La Celeste",
    "La Canarinha",
-   "Les Bleus"
+   "Les Bleus",
+   "La Celeste"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-344",
@@ -4121,11 +4198,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 1994?",
   "options": [
-   "México",
    "Estados Unidos",
+   "México",
    "Canadá"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-345",
@@ -4145,11 +4222,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 2006?",
   "options": [
-   "Alemania",
    "Suiza",
+   "Alemania",
    "Austria"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-347",
@@ -4169,11 +4246,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué premio recibe el máximo goleador de un Mundial?",
   "options": [
-   "Bota de Oro",
    "Guante de Oro",
-   "Balón de Oro"
+   "Balón de Oro",
+   "Bota de Oro"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-349",
@@ -4181,11 +4258,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué premio recibe el mejor arquero de un Mundial?",
   "options": [
-   "Bota de Oro",
    "Guante de Oro",
+   "Bota de Oro",
    "Balón de Plata"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-349"
  },
  {
   "key": "wc-350",
@@ -4193,11 +4271,12 @@
   "difficulty": "easy",
   "prompt": "¿Qué premio recibe el mejor jugador de un Mundial?",
   "options": [
-   "Balón de Oro",
    "Bota de Oro",
+   "Balón de Oro",
    "Guante de Oro"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-349"
  },
  {
   "key": "wc-351",
@@ -4209,7 +4288,8 @@
    "España",
    "Italia"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-351"
  },
  {
   "key": "wc-352",
@@ -4217,11 +4297,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el defensor Rúben Dias?",
   "options": [
-   "Brasil",
    "Portugal",
+   "Brasil",
    "España"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-353",
@@ -4229,11 +4309,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Virgil van Dijk?",
   "options": [
-   "Bélgica",
    "Países Bajos",
+   "Bélgica",
    "Alemania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-354",
@@ -4241,11 +4321,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el arquero Thibaut Courtois?",
   "options": [
-   "Países Bajos",
    "Bélgica",
+   "Países Bajos",
    "Francia"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-355",
@@ -4253,11 +4333,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué continente está Catar, sede del Mundial 2022?",
   "options": [
-   "África",
    "Asia",
+   "África",
    "Europa"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-356",
@@ -4266,10 +4346,10 @@
   "prompt": "¿En qué continente se jugó el Mundial 2014?",
   "options": [
    "África",
-   "Asia",
-   "Sudamérica"
+   "Sudamérica",
+   "Asia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-357",
@@ -4277,11 +4357,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se llama la máxima competición de selecciones de fútbol del mundo?",
   "options": [
-   "La Copa del Mundo de la FIFA",
    "La Champions League",
-   "La Copa Libertadores"
+   "La Copa Libertadores",
+   "La Copa del Mundo de la FIFA"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-358",
@@ -4290,10 +4370,10 @@
   "prompt": "¿De qué país es Lionel Scaloni, DT campeón del mundo en 2022?",
   "options": [
    "Italia",
-   "Argentina",
-   "Uruguay"
+   "Uruguay",
+   "Argentina"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-359",
@@ -4301,11 +4381,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección tiene el apodo \"Die Mannschaft\"?",
   "options": [
-   "Austria",
    "Alemania",
+   "Austria",
    "Suiza"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-360",
@@ -4313,11 +4393,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el delantero Romelu Lukaku?",
   "options": [
-   "Bélgica",
    "Congo",
+   "Bélgica",
    "Francia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-361",
@@ -4325,11 +4405,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Achraf Hakimi?",
   "options": [
-   "Argelia",
    "Marruecos",
+   "Argelia",
    "Túnez"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-362",
@@ -4337,11 +4417,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el delantero Darwin Núñez?",
   "options": [
-   "Uruguay",
    "Argentina",
+   "Uruguay",
    "Colombia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-363",
@@ -4350,10 +4430,10 @@
   "prompt": "¿De qué país es el mediocampista Federico Valverde?",
   "options": [
    "Chile",
-   "Uruguay",
-   "Paraguay"
+   "Paraguay",
+   "Uruguay"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-364",
@@ -4362,10 +4442,10 @@
   "prompt": "¿De qué país es el delantero Olivier Giroud?",
   "options": [
    "Bélgica",
-   "Francia",
-   "Suiza"
+   "Suiza",
+   "Francia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-365",
@@ -4373,11 +4453,12 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el arquero Gianluigi Donnarumma?",
   "options": [
-   "España",
    "Italia",
+   "España",
    "Portugal"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-365"
  },
  {
   "key": "wc-366",
@@ -4385,11 +4466,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué color de tarjeta significa la expulsión de un jugador?",
   "options": [
-   "Amarilla",
    "Roja",
+   "Amarilla",
    "Verde"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-367",
@@ -4397,11 +4478,11 @@
   "difficulty": "easy",
   "prompt": "¿Cuántas tarjetas amarillas provocan la expulsión de un jugador?",
   "options": [
-   "Una",
    "Dos",
+   "Una",
    "Tres"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-368",
@@ -4410,10 +4491,10 @@
   "prompt": "¿De qué país es el delantero Memphis Depay?",
   "options": [
    "Bélgica",
-   "Países Bajos",
-   "Surinam"
+   "Surinam",
+   "Países Bajos"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-369",
@@ -4421,11 +4502,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el arquero Emiliano \"Dibu\" Martínez?",
   "options": [
-   "Argentina",
    "Chile",
+   "Argentina",
    "México"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-370",
@@ -4433,11 +4514,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país juega su club Vinícius Júnior, el brasileño del Real Madrid?",
   "options": [
-   "España",
    "Italia",
+   "España",
    "Inglaterra"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-371",
@@ -4445,11 +4526,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas ciudades de Estados Unidos son sede del Mundial 2026?",
   "options": [
-   "Once",
    "Diez",
-   "Doce"
+   "Doce",
+   "Once"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-372",
@@ -4458,10 +4539,11 @@
   "prompt": "¿Cuántas ciudades de México son sede del Mundial 2026?",
   "options": [
    "Dos",
-   "Tres",
-   "Cuatro"
+   "Cuatro",
+   "Tres"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-372"
  },
  {
   "key": "wc-373",
@@ -4469,11 +4551,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas ciudades de Canadá son sede del Mundial 2026?",
   "options": [
-   "Dos",
    "Tres",
+   "Dos",
    "Una"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-372"
  },
  {
   "key": "wc-374",
@@ -4481,11 +4564,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué dos ciudades canadienses son sede del Mundial 2026?",
   "options": [
-   "Toronto y Vancouver",
    "Montreal y Ottawa",
+   "Toronto y Vancouver",
    "Calgary y Edmonton"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-375",
@@ -4493,11 +4576,11 @@
   "difficulty": "medium",
   "prompt": "Además de la capital y Monterrey, ¿qué ciudad mexicana es sede del Mundial 2026?",
   "options": [
-   "Guadalajara",
    "Puebla",
-   "Cancún"
+   "Cancún",
+   "Guadalajara"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-376",
@@ -4506,10 +4589,10 @@
   "prompt": "¿Cuál de estas ciudades de EE. UU. es sede del Mundial 2026?",
   "options": [
    "Chicago",
-   "Miami",
-   "Washington"
+   "Washington",
+   "Miami"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-377",
@@ -4517,11 +4600,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección fue subcampeona del Mundial 2022?",
   "options": [
-   "Francia",
    "Croacia",
-   "Marruecos"
+   "Marruecos",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-378",
@@ -4530,10 +4613,10 @@
   "prompt": "¿A qué confederación pertenece Brasil?",
   "options": [
    "CONCACAF",
-   "CONMEBOL",
-   "UEFA"
+   "UEFA",
+   "CONMEBOL"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-379",
@@ -4541,11 +4624,12 @@
   "difficulty": "medium",
   "prompt": "¿A qué confederación pertenecen las selecciones europeas?",
   "options": [
-   "UEFA",
    "CAF",
+   "UEFA",
    "AFC"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-379"
  },
  {
   "key": "wc-380",
@@ -4557,7 +4641,8 @@
    "CONCACAF",
    "UEFA"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-380"
  },
  {
   "key": "wc-381",
@@ -4565,11 +4650,12 @@
   "difficulty": "medium",
   "prompt": "¿A qué confederación pertenecen las selecciones africanas?",
   "options": [
-   "CAF",
    "AFC",
+   "CAF",
    "OFC"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-379"
  },
  {
   "key": "wc-382",
@@ -4581,7 +4667,8 @@
    "Napoli",
    "Boca Juniors"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-382"
  },
  {
   "key": "wc-383",
@@ -4613,11 +4700,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué arquero colombiano protagonizó un blooper ante Camerún en 1990 por salir jugando?",
   "options": [
-   "Óscar Córdoba",
    "René Higuita",
+   "Óscar Córdoba",
    "Faryd Mondragón"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-386",
@@ -4645,15 +4732,16 @@
  },
  {
   "key": "wc-388",
-  "category": "hosts",
-  "difficulty": "medium",
-  "prompt": "¿Qué estadio de Nueva Jersey alberga la final del Mundial 2026?",
+  "category": "trivia",
+  "difficulty": "hard",
+  "prompt": "¿Cuántas selecciones jugaron el primer Mundial, Uruguay 1930?",
   "options": [
-   "MetLife Stadium",
-   "Rose Bowl",
-   "SoFi Stadium"
+   "13",
+   "16",
+   "12"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-019"
  },
  {
   "key": "wc-389",
@@ -4661,35 +4749,35 @@
   "difficulty": "medium",
   "prompt": "¿En qué estadio del área de Los Ángeles se juegan partidos del Mundial 2026?",
   "options": [
-   "SoFi Stadium",
    "Rose Bowl",
-   "Coliseum"
+   "Coliseum",
+   "SoFi Stadium"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-390",
-  "category": "champions",
+  "category": "trivia",
   "difficulty": "medium",
-  "prompt": "¿Qué selección perdió la final del Mundial 2014 ante Alemania?",
+  "prompt": "¿Cómo se llamó la pelota oficial del Mundial 2014?",
   "options": [
-   "Argentina",
-   "Países Bajos",
-   "Brasil"
+   "Jabulani",
+   "Brazuca",
+   "Al Rihla"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-391",
-  "category": "scorers",
-  "difficulty": "medium",
-  "prompt": "¿Quién ganó la Bota de Oro del Mundial 2010 con cinco goles?",
+  "category": "hosts",
+  "difficulty": "easy",
+  "prompt": "¿En qué ciudad se jugó la final del Mundial 1966?",
   "options": [
-   "David Villa",
-   "Thomas Müller",
-   "Wesley Sneijder"
+   "Mánchester",
+   "Liverpool",
+   "Londres"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-392",
@@ -4697,11 +4785,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué delantero es la mayor figura histórica de Suecia, activo entre 2000 y 2010?",
   "options": [
-   "Henrik Larsson",
    "Zlatan Ibrahimović",
+   "Henrik Larsson",
    "Freddie Ljungberg"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-393",
@@ -4710,10 +4798,10 @@
   "prompt": "¿En qué club jugaba Ronaldinho cuando fue campeón del mundo en 2002?",
   "options": [
    "Barcelona",
-   "Paris Saint-Germain",
-   "Milan"
+   "Milan",
+   "Paris Saint-Germain"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-394",
@@ -4733,11 +4821,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas plazas tiene la UEFA en el Mundial 2026?",
   "options": [
-   "Doce",
    "Dieciséis",
+   "Doce",
    "Veinte"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-396",
@@ -4745,11 +4833,11 @@
   "difficulty": "medium",
   "prompt": "En 1950 Estados Unidos dio un golpe histórico al vencer 1-0 a una potencia. ¿A cuál?",
   "options": [
-   "Inglaterra",
    "Italia",
+   "Inglaterra",
    "España"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-397",
@@ -4757,11 +4845,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué puesto obtuvo Portugal en el Mundial 1966, su mejor histórico hasta entonces?",
   "options": [
-   "Tercero",
    "Cuarto",
-   "Subcampeón"
+   "Subcampeón",
+   "Tercero"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-398",
@@ -4769,21 +4857,21 @@
   "difficulty": "medium",
   "prompt": "¿Qué búlgaro ganó el Balón de Oro de Europa en 1994, año de su gran Mundial?",
   "options": [
-   "Hristo Stoichkov",
    "Krasimir Balakov",
-   "Yordan Letchkov"
+   "Yordan Letchkov",
+   "Hristo Stoichkov"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-399",
-  "category": "champions",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Qué selección ganó su primer y único Mundial en 1998?",
+  "prompt": "¿Qué selección eliminó a Brasil en los cuartos de final de Rusia 2018?",
   "options": [
+   "Bélgica",
    "Francia",
-   "Croacia",
-   "Países Bajos"
+   "Croacia"
   ],
   "answer": 0
  },
@@ -4805,11 +4893,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué brasileño apodado \"El Fenómeno\" fue goleador del Mundial 2002?",
   "options": [
-   "Ronaldinho",
    "Ronaldo Nazário",
+   "Ronaldinho",
    "Rivaldo"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-402",
@@ -4817,11 +4905,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué arquero soviético es apodado \"La Araña Negra\"?",
   "options": [
-   "Lev Yashin",
    "Rinat Dasáyev",
-   "Igor Akinféyev"
+   "Igor Akinféyev",
+   "Lev Yashin"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-403",
@@ -4829,11 +4917,12 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección perdió la final del primer Mundial, en 1930, ante Uruguay?",
   "options": [
-   "Argentina",
    "Brasil",
+   "Argentina",
    "Chile"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-129"
  },
  {
   "key": "wc-404",
@@ -4849,15 +4938,15 @@
  },
  {
   "key": "wc-405",
-  "category": "records",
+  "category": "hosts",
   "difficulty": "medium",
-  "prompt": "¿Ante qué selección perdió Países Bajos la final del Mundial 1978?",
+  "prompt": "¿Cuál fue el primer Mundial organizado por dos países?",
   "options": [
-   "Argentina",
-   "Alemania Federal",
-   "Brasil"
+   "Alemania 2006",
+   "Corea-Japón 2002",
+   "Francia 1998"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-406",
@@ -4865,11 +4954,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué croata fue el cerebro del subcampeonato de 2018 y jugó otra vez en 2022?",
   "options": [
-   "Luka Modrić",
    "Ivan Rakitić",
-   "Mateo Kovačić"
+   "Mateo Kovačić",
+   "Luka Modrić"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-407",
@@ -4877,11 +4966,11 @@
   "difficulty": "medium",
   "prompt": "En 1994 Bulgaria sorprendió al mundo. ¿Hasta qué instancia llegó?",
   "options": [
-   "Cuartos de final",
    "Semifinales",
+   "Cuartos de final",
    "Final"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-408",
@@ -4889,11 +4978,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué colombiano fue la revelación goleadora del Mundial 2014?",
   "options": [
-   "James Rodríguez",
    "Radamel Falcao",
-   "Juan Cuadrado"
+   "Juan Cuadrado",
+   "James Rodríguez"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-409",
@@ -4913,11 +5002,12 @@
   "difficulty": "medium",
   "prompt": "¿A qué confederación pertenece México?",
   "options": [
-   "CONMEBOL",
    "CONCACAF",
+   "CONMEBOL",
    "UEFA"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-380"
  },
  {
   "key": "wc-411",
@@ -4926,10 +5016,10 @@
   "prompt": "¿En qué década se jugó el primer Mundial de la historia?",
   "options": [
    "Década de 1920",
-   "Década de 1930",
-   "Década de 1940"
+   "Década de 1940",
+   "Década de 1930"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-412",
@@ -4961,11 +5051,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección tiene el apodo \"La Furia Roja\"?",
   "options": [
-   "España",
    "Chile",
-   "Bélgica"
+   "Bélgica",
+   "España"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-415",
@@ -4973,11 +5063,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué francés apodado \"Le Roi\" fue figura y dos veces semifinalista en los años 80?",
   "options": [
-   "Michel Platini",
    "Zinedine Zidane",
+   "Michel Platini",
    "Jean Tigana"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-416",
@@ -4997,11 +5087,11 @@
   "difficulty": "medium",
   "prompt": "¿En qué club jugaba Lionel Messi cuando ganó el Mundial 2022?",
   "options": [
-   "FC Barcelona",
    "Paris Saint-Germain",
+   "FC Barcelona",
    "Inter Miami"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-418",
@@ -5009,11 +5099,11 @@
   "difficulty": "medium",
   "prompt": "En 2002, ¿qué coanfitrión asiático llegó hasta las semifinales?",
   "options": [
-   "Japón",
    "República de Corea",
+   "Japón",
    "China"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-419",
@@ -5021,11 +5111,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién encabezó la tabla de goleadores del Mundial 1962 en Chile?",
   "options": [
+   "Varios empatados con cuatro goles",
    "Garrincha",
-   "Flórián Albert",
-   "Varios empatados con cuatro goles"
+   "Flórián Albert"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-420",
@@ -5041,15 +5131,15 @@
  },
  {
   "key": "wc-421",
-  "category": "players_records",
+  "category": "trivia",
   "difficulty": "hard",
-  "prompt": "¿Qué arquero y capitán italiano levantó la Copa en 1982 a los 40 años?",
+  "prompt": "¿Cuál fue el primer Mundial con 24 selecciones?",
   "options": [
-   "Gaetano Scirea",
-   "Dino Zoff",
-   "Claudio Gentile"
+   "Argentina 1978",
+   "México 1986",
+   "España 1982"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-422",
@@ -5057,11 +5147,12 @@
   "difficulty": "hard",
   "prompt": "¿Quién marcó el gol con que Corea del Norte eliminó a Italia en 1966?",
   "options": [
+   "Pak Doo-ik",
    "Li Dong-woon",
-   "Yang Sung-kook",
-   "Pak Doo-ik"
+   "Yang Sung-kook"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-087"
  },
  {
   "key": "wc-423",
@@ -5093,11 +5184,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el primer futbolista expulsado con tarjeta roja en un Mundial, en 1974?",
   "options": [
+   "Carlos Caszely",
    "Giorgio Chinaglia",
-   "Johan Neeskens",
-   "Carlos Caszely"
+   "Johan Neeskens"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-426",
@@ -5105,11 +5196,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó tercera en el Mundial 2014?",
   "options": [
-   "Países Bajos",
    "Brasil",
-   "Argentina"
+   "Argentina",
+   "Países Bajos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-427",
@@ -5121,7 +5212,8 @@
    "Alemania",
    "Países Bajos"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-427"
  },
  {
   "key": "wc-428",
@@ -5130,10 +5222,11 @@
   "prompt": "¿Qué selección terminó tercera en el Mundial 2006?",
   "options": [
    "Portugal",
-   "Francia",
-   "Alemania"
+   "Alemania",
+   "Francia"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-427"
  },
  {
   "key": "wc-429",
@@ -5141,11 +5234,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó tercera en el Mundial 1998?",
   "options": [
-   "Croacia",
    "Países Bajos",
+   "Croacia",
    "Italia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-430",
@@ -5154,10 +5247,10 @@
   "prompt": "¿Qué arquero mexicano disputó cinco Mundiales como referente de su portería?",
   "options": [
    "Jorge Campos",
-   "Guillermo Ochoa",
-   "Oswaldo Sánchez"
+   "Oswaldo Sánchez",
+   "Guillermo Ochoa"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-431",
@@ -5177,11 +5270,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué neerlandés fue el goleador del subcampeón de 1978?",
   "options": [
-   "Rob Rensenbrink",
    "Ruud Krol",
-   "Arie Haan"
+   "Arie Haan",
+   "Rob Rensenbrink"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-433",
@@ -5190,10 +5283,10 @@
   "prompt": "¿Qué país fue el primero de Norteamérica en organizar un Mundial?",
   "options": [
    "Estados Unidos",
-   "México",
-   "Canadá"
+   "Canadá",
+   "México"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-434",
@@ -5201,11 +5294,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué figura neerlandesa NO disputó el Mundial 1978 pese a ser su estrella?",
   "options": [
+   "Johan Cruyff",
    "Rob Rensenbrink",
-   "Johan Neeskens",
-   "Johan Cruyff"
+   "Johan Neeskens"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-435",
@@ -5213,11 +5306,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó tercera en el Mundial 2018?",
   "options": [
-   "Bélgica",
    "Inglaterra",
+   "Bélgica",
    "Croacia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-436",
@@ -5225,11 +5318,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué arquero argentino atajó penales claves en las tandas del Mundial 1990?",
   "options": [
-   "Ubaldo Fillol",
    "Sergio Goycochea",
+   "Ubaldo Fillol",
    "Nery Pumpido"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-437",
@@ -5238,10 +5331,10 @@
   "prompt": "¿Qué selección terminó cuarta en el Mundial 2018?",
   "options": [
    "Bélgica",
-   "Rusia",
-   "Inglaterra"
+   "Inglaterra",
+   "Rusia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-438",
@@ -5249,11 +5342,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué brasileño fue el capitán campeón en 1994?",
   "options": [
-   "Dunga",
    "Cafú",
-   "Aldair"
+   "Aldair",
+   "Dunga"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-439",
@@ -5261,11 +5354,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué arquero italiano mantuvo su valla invicta gran parte del Mundial 1990?",
   "options": [
-   "Walter Zenga",
    "Dino Zoff",
-   "Gianluca Pagliuca"
+   "Gianluca Pagliuca",
+   "Walter Zenga"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-440",
@@ -5273,11 +5366,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién es el máximo goleador de Inglaterra en Mundiales, con diez goles entre 1986 y 1990?",
   "options": [
-   "Geoff Hurst",
    "Gary Lineker",
+   "Geoff Hurst",
    "Harry Kane"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-441",
@@ -5285,11 +5378,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién marcó el gol del título para Alemania Federal en la final 1974?",
   "options": [
+   "Gerd Müller",
    "Paul Breitner",
-   "Berti Vogts",
-   "Gerd Müller"
+   "Berti Vogts"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-442",
@@ -5298,10 +5391,10 @@
   "prompt": "¿Cuántas selecciones disputaron cada Mundial entre 1954 y 1978?",
   "options": [
    "Trece",
-   "Dieciséis",
-   "Veinticuatro"
+   "Veinticuatro",
+   "Dieciséis"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-443",
@@ -5334,10 +5427,10 @@
   "prompt": "¿Qué selección africana venció a Francia, campeona defensora, en el debut de 2002?",
   "options": [
    "Camerún",
-   "Nigeria",
-   "Senegal"
+   "Senegal",
+   "Nigeria"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-446",
@@ -5361,7 +5454,8 @@
    "Francia",
    "Alemania Federal"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-447"
  },
  {
   "key": "wc-448",
@@ -5370,10 +5464,11 @@
   "prompt": "¿Qué selección terminó tercera en el Mundial 1974?",
   "options": [
    "Alemania Federal",
-   "Países Bajos",
-   "Polonia"
+   "Polonia",
+   "Países Bajos"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-448"
  },
  {
   "key": "wc-449",
@@ -5393,11 +5488,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue el primer Mundial transmitido masivamente por televisión en color?",
   "options": [
-   "1966",
    "1970",
+   "1966",
    "1974"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-213"
  },
  {
   "key": "wc-451",
@@ -5405,11 +5501,12 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó tercera en el Mundial 1982?",
   "options": [
+   "Polonia",
    "Francia",
-   "Italia",
-   "Polonia"
+   "Italia"
   ],
-  "answer": 2
+  "answer": 0,
+  "topic": "wc-448"
  },
  {
   "key": "wc-452",
@@ -5421,7 +5518,8 @@
    "Bélgica",
    "Alemania Federal"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-447"
  },
  {
   "key": "wc-453",
@@ -5429,11 +5527,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué debutante africano venció a Argentina campeona en el inaugural de 1990?",
   "options": [
+   "Camerún",
    "Egipto",
-   "Nigeria",
-   "Camerún"
+   "Nigeria"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-454",
@@ -5441,11 +5539,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección europea fue semifinalista en el Mundial de 1930?",
   "options": [
-   "Yugoslavia",
    "Rumania",
+   "Yugoslavia",
    "Bélgica"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-455",
@@ -5454,10 +5552,10 @@
   "prompt": "¿Qué arquero francés ganó el premio al mejor portero del Mundial 1998?",
   "options": [
    "José Luis Chilavert",
-   "Fabien Barthez",
-   "Carlos Roa"
+   "Carlos Roa",
+   "Fabien Barthez"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-456",
@@ -5466,10 +5564,11 @@
   "prompt": "¿Qué selección terminó tercera en el Mundial 1938?",
   "options": [
    "Suecia",
-   "Hungría",
-   "Brasil"
+   "Brasil",
+   "Hungría"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-456"
  },
  {
   "key": "wc-457",
@@ -5493,7 +5592,8 @@
    "Uruguay",
    "Brasil"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-458"
  },
  {
   "key": "wc-459",
@@ -5502,10 +5602,10 @@
   "prompt": "¿Qué selección obtuvo el cuarto puesto en el Mundial 2006?",
   "options": [
    "Alemania",
-   "Francia",
-   "Portugal"
+   "Portugal",
+   "Francia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-460",
@@ -5513,11 +5613,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó cuarta en el Mundial 2014?",
   "options": [
-   "Brasil",
    "Países Bajos",
+   "Brasil",
    "Argentina"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-461",
@@ -5525,11 +5625,12 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó cuarta en el Mundial 2010?",
   "options": [
-   "Alemania",
    "Uruguay",
+   "Alemania",
    "Países Bajos"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-458"
  },
  {
   "key": "wc-462",
@@ -5541,7 +5642,8 @@
    "Italia",
    "Austria"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-427"
  },
  {
   "key": "wc-463",
@@ -5549,23 +5651,23 @@
   "difficulty": "hard",
   "prompt": "¿Cuál fue la primera selección en ganar un Mundial fuera de su continente?",
   "options": [
-   "Brasil (Suecia 1958)",
    "Argentina (México 1986)",
+   "Brasil (Suecia 1958)",
    "Alemania (Brasil 2014)"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-464",
-  "category": "scorers",
-  "difficulty": "very_hard",
-  "prompt": "¿Quién marcó el primer gol de la historia de los Mundiales, para Francia en 1930?",
+  "category": "upsets",
+  "difficulty": "medium",
+  "prompt": "¿Qué selección le ganó 1-0 a Italia y la eliminó en la fase de grupos de Brasil 2014?",
   "options": [
-   "Lucien Laurent",
-   "Guillermo Stábile",
-   "Bert Patenaude"
+   "Costa Rica",
+   "Inglaterra",
+   "Uruguay"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-465",
@@ -5573,11 +5675,12 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección terminó tercera en el Mundial 1978?",
   "options": [
-   "Italia",
    "Brasil",
+   "Italia",
    "Austria"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-456"
  },
  {
   "key": "wc-466",
@@ -5585,11 +5688,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección perdió la final del Mundial 1962 ante Brasil?",
   "options": [
+   "Checoslovaquia",
    "Chile",
-   "Yugoslavia",
-   "Checoslovaquia"
+   "Yugoslavia"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-467",
@@ -5597,11 +5700,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos partidos disputó Lothar Matthäus en Mundiales, récord histórico hasta Messi?",
   "options": [
-   "Veinticinco",
    "Veintitrés",
-   "Veintiuno"
+   "Veintiuno",
+   "Veinticinco"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-071"
  },
  {
   "key": "wc-468",
@@ -5645,11 +5749,12 @@
   "difficulty": "very_hard",
   "prompt": "En 1950 Estados Unidos venció 1-0 a Inglaterra. ¿Quién marcó el gol?",
   "options": [
-   "Walter Bahr",
    "Joe Gaetjens",
+   "Walter Bahr",
    "Frank Borghi"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-471"
  },
  {
   "key": "wc-472",
@@ -5682,10 +5787,10 @@
   "prompt": "¿En qué club jugaba Ronaldo Nazário cuando fue goleador del Mundial 2002?",
   "options": [
    "Real Madrid",
-   "Inter de Milán",
-   "Barcelona"
+   "Barcelona",
+   "Inter de Milán"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-475",
@@ -5693,11 +5798,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué entrenador italiano dirigió a Italia campeona en 1934 y 1938?",
   "options": [
-   "Vittorio Pozzo",
    "Enzo Bearzot",
+   "Vittorio Pozzo",
    "Ferruccio Valcareggi"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-476",
@@ -5717,11 +5822,11 @@
   "difficulty": "very_hard",
   "prompt": "Corea del Norte llegó a cuartos en 1966 y ganaba 3-0 a Portugal. ¿Quién lideró la remontada?",
   "options": [
-   "Eusébio",
    "José Torres",
-   "Mário Coluna"
+   "Mário Coluna",
+   "Eusébio"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-478",
@@ -5729,11 +5834,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue el jugador más joven en disputar un Mundial, con 17 años en 1982?",
   "options": [
-   "Norman Whiteside",
    "Pelé",
-   "Salif Diao"
+   "Salif Diao",
+   "Norman Whiteside"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-479",
@@ -5742,10 +5847,10 @@
   "prompt": "¿En qué club jugaba Kylian Mbappé cuando ganó el Mundial 2018?",
   "options": [
    "Real Madrid",
-   "Mónaco",
-   "Paris Saint-Germain"
+   "Paris Saint-Germain",
+   "Mónaco"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-480",
@@ -5765,11 +5870,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Qué alemán ganó el Mundial como jugador (1974) y como director técnico (1990)?",
   "options": [
+   "Franz Beckenbauer",
    "Helmut Schön",
-   "Berti Vogts",
-   "Franz Beckenbauer"
+   "Berti Vogts"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-482",
@@ -5793,7 +5898,8 @@
    "Suecia",
    "Brasil"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-111"
  },
  {
   "key": "wc-484",
@@ -5814,10 +5920,10 @@
   "prompt": "En 1974 Alemania Federal cayó ante un rival inesperado en la fase de grupos. ¿Cuál?",
   "options": [
    "Australia",
-   "Chile",
-   "Alemania Democrática"
+   "Alemania Democrática",
+   "Chile"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-486",
@@ -5826,10 +5932,11 @@
   "prompt": "¿Qué país fue el primero en organizar dos Mundiales, con 1970 y 1986?",
   "options": [
    "Italia",
-   "México",
-   "Francia"
+   "Francia",
+   "México"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-142"
  },
  {
   "key": "wc-487",
@@ -5841,7 +5948,8 @@
    "FC Barcelona",
    "Villarreal"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-046"
  },
  {
   "key": "wc-488",
@@ -5862,10 +5970,10 @@
   "prompt": "¿Qué arquero brasileño atajó en la tanda de penales de la final 1994?",
   "options": [
    "Dida",
-   "Marcos",
-   "Cláudio Taffarel"
+   "Cláudio Taffarel",
+   "Marcos"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-490",
@@ -5873,11 +5981,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue el arquero campeón con Argentina en el Mundial 1978?",
   "options": [
-   "Amadeo Carrizo",
    "Ubaldo Fillol",
+   "Amadeo Carrizo",
    "Sergio Goycochea"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-491",
@@ -5898,10 +6006,10 @@
   "prompt": "¿Qué selección goleó 6-1 a Estados Unidos en la semifinal del Mundial 1930?",
   "options": [
    "Uruguay",
-   "Argentina",
-   "Yugoslavia"
+   "Yugoslavia",
+   "Argentina"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-493",
@@ -5921,11 +6029,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Contra qué selección marcó Geoff Hurst su triplete en la final de 1966?",
   "options": [
-   "Alemania Federal",
    "Portugal",
-   "Argentina"
+   "Argentina",
+   "Alemania Federal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-495",
@@ -5933,11 +6041,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Quién fue el capitán de Inglaterra campeona del Mundial 1966?",
   "options": [
-   "Bobby Charlton",
    "Bobby Moore",
+   "Bobby Charlton",
    "Gordon Banks"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-496",
@@ -5970,10 +6078,11 @@
   "prompt": "¿En qué club jugaba Mario Götze cuando marcó el gol del título en 2014?",
   "options": [
    "Borussia Dortmund",
-   "Bayern Múnich",
-   "Schalke"
+   "Schalke",
+   "Bayern Múnich"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-051"
  },
  {
   "key": "wc-499",
@@ -5981,11 +6090,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué club jugaba Zinedine Zidane cuando ganó el Mundial 1998?",
   "options": [
+   "Juventus",
    "Bordeaux",
-   "Real Madrid",
-   "Juventus"
+   "Real Madrid"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-500",
@@ -5994,10 +6103,10 @@
   "prompt": "¿Qué uruguayo, capitán y líder en 1950, es recordado como \"El Negro Jefe\"?",
   "options": [
    "Juan Alberto Schiaffino",
-   "Obdulio Varela",
-   "Alcides Ghiggia"
+   "Alcides Ghiggia",
+   "Obdulio Varela"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-501",
@@ -6029,11 +6138,12 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el mediocampista Rodri?",
   "options": [
-   "Portugal",
    "España",
+   "Portugal",
    "Italia"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-351"
  },
  {
   "key": "wc-504",
@@ -6041,11 +6151,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Gavi?",
   "options": [
+   "España",
    "Argentina",
-   "México",
-   "España"
+   "México"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-505",
@@ -6053,11 +6163,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Bukayo Saka?",
   "options": [
-   "Inglaterra",
    "Nigeria",
+   "Inglaterra",
    "Francia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-506",
@@ -6065,11 +6175,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Phil Foden?",
   "options": [
-   "Inglaterra",
    "Irlanda",
+   "Inglaterra",
    "Gales"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-507",
@@ -6090,10 +6200,10 @@
   "prompt": "¿De qué país es Marcus Rashford?",
   "options": [
    "Francia",
-   "Inglaterra",
-   "Jamaica"
+   "Jamaica",
+   "Inglaterra"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-509",
@@ -6102,10 +6212,10 @@
   "prompt": "¿De qué país es Jamal Musiala?",
   "options": [
    "Inglaterra",
-   "Alemania",
-   "Nigeria"
+   "Nigeria",
+   "Alemania"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-510",
@@ -6113,11 +6223,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Florian Wirtz?",
   "options": [
+   "Alemania",
    "Países Bajos",
-   "Austria",
-   "Alemania"
+   "Austria"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-511",
@@ -6149,11 +6259,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Rafael Leão?",
   "options": [
-   "Brasil",
    "Portugal",
+   "Brasil",
    "Angola"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-514",
@@ -6161,11 +6271,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Bruno Fernandes?",
   "options": [
-   "Portugal",
    "Brasil",
-   "España"
+   "España",
+   "Portugal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-515",
@@ -6185,11 +6295,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es João Félix?",
   "options": [
-   "Portugal",
    "Brasil",
-   "Francia"
+   "Francia",
+   "Portugal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-517",
@@ -6198,10 +6308,10 @@
   "prompt": "¿De qué país es Nicolò Barella?",
   "options": [
    "España",
-   "Italia",
-   "Argentina"
+   "Argentina",
+   "Italia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-518",
@@ -6209,11 +6319,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Federico Chiesa?",
   "options": [
-   "Italia",
    "Argentina",
-   "Suiza"
+   "Suiza",
+   "Italia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-519",
@@ -6221,11 +6331,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Khvicha Kvaratskhelia?",
   "options": [
-   "Armenia",
    "Georgia",
+   "Armenia",
    "Ucrania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-520",
@@ -6233,11 +6343,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Victor Osimhen?",
   "options": [
+   "Nigeria",
    "Ghana",
-   "Camerún",
-   "Nigeria"
+   "Camerún"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-521",
@@ -6245,11 +6355,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Sadio Mané?",
   "options": [
-   "Senegal",
    "Malí",
+   "Senegal",
    "Costa de Marfil"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-522",
@@ -6317,11 +6427,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Frenkie de Jong?",
   "options": [
-   "Países Bajos",
    "Bélgica",
-   "Alemania"
+   "Alemania",
+   "Países Bajos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-528",
@@ -6341,11 +6451,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Ousmane Dembélé?",
   "options": [
-   "Francia",
    "Malí",
-   "Senegal"
+   "Senegal",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-530",
@@ -6354,10 +6464,10 @@
   "prompt": "¿De qué país es el defensor Theo Hernández?",
   "options": [
    "España",
-   "Francia",
-   "México"
+   "México",
+   "Francia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-531",
@@ -6390,10 +6500,10 @@
   "prompt": "¿De qué país es Mohammed Kudus?",
   "options": [
    "Nigeria",
-   "Ghana",
-   "Senegal"
+   "Senegal",
+   "Ghana"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-534",
@@ -6401,11 +6511,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Robert Lewandowski?",
   "options": [
-   "Polonia",
    "Chequia",
-   "Ucrania"
+   "Ucrania",
+   "Polonia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-535",
@@ -6413,11 +6523,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Zlatan Ibrahimović?",
   "options": [
+   "Suecia",
    "Croacia",
-   "Bosnia",
-   "Suecia"
+   "Bosnia"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-536",
@@ -6425,11 +6535,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Alexis Mac Allister?",
   "options": [
-   "Argentina",
    "Uruguay",
+   "Argentina",
    "Chile"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-537",
@@ -6437,11 +6547,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Rodrigo De Paul?",
   "options": [
-   "Uruguay",
    "Argentina",
+   "Uruguay",
    "Italia"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-538",
@@ -6450,10 +6560,10 @@
   "prompt": "¿De qué país es el defensor Cristian Romero?",
   "options": [
    "Italia",
-   "Argentina",
-   "España"
+   "España",
+   "Argentina"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-539",
@@ -6473,11 +6583,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Tyler Adams?",
   "options": [
-   "Estados Unidos",
    "Canadá",
-   "Inglaterra"
+   "Inglaterra",
+   "Estados Unidos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-541",
@@ -6497,11 +6607,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Arturo Vidal?",
   "options": [
-   "Chile",
    "Perú",
-   "Colombia"
+   "Colombia",
+   "Chile"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-543",
@@ -6545,11 +6655,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Edinson Cavani?",
   "options": [
-   "Argentina",
    "Uruguay",
+   "Argentina",
    "Paraguay"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-547",
@@ -6557,11 +6667,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el arquero Guillermo Ochoa?",
   "options": [
-   "México",
    "Estados Unidos",
-   "Colombia"
+   "Colombia",
+   "México"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-548",
@@ -6593,11 +6703,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es la leyenda Andriy Shevchenko?",
   "options": [
-   "Rusia",
    "Ucrania",
+   "Rusia",
    "Polonia"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-551",
@@ -6617,11 +6727,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país era Diego Maradona?",
   "options": [
-   "Argentina",
    "Italia",
+   "Argentina",
    "Uruguay"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-553",
@@ -6630,10 +6740,10 @@
   "prompt": "¿De qué país es la leyenda Johan Cruyff?",
   "options": [
    "Alemania",
-   "Países Bajos",
-   "Bélgica"
+   "Bélgica",
+   "Países Bajos"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-554",
@@ -6642,10 +6752,10 @@
   "prompt": "¿De qué país es Franz Beckenbauer?",
   "options": [
    "Austria",
-   "Suiza",
-   "Alemania"
+   "Alemania",
+   "Suiza"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-555",
@@ -6689,11 +6799,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Roberto Baggio?",
   "options": [
-   "España",
    "Italia",
+   "España",
    "Argentina"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-559",
@@ -6701,11 +6811,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Paolo Maldini?",
   "options": [
-   "Italia",
    "Francia",
-   "Brasil"
+   "Brasil",
+   "Italia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-560",
@@ -6714,10 +6824,11 @@
   "prompt": "¿De qué país es el arquero Gianluigi Buffon?",
   "options": [
    "España",
-   "Italia",
-   "Portugal"
+   "Portugal",
+   "Italia"
   ],
-  "answer": 1
+  "answer": 2,
+  "topic": "wc-365"
  },
  {
   "key": "wc-561",
@@ -6726,10 +6837,10 @@
   "prompt": "¿De qué país es el arquero Iker Casillas?",
   "options": [
    "Portugal",
-   "Italia",
-   "España"
+   "España",
+   "Italia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-562",
@@ -6737,11 +6848,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Xavi Hernández?",
   "options": [
-   "España",
    "Argentina",
-   "Italia"
+   "Italia",
+   "España"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-563",
@@ -6750,10 +6861,10 @@
   "prompt": "¿De qué país es David Beckham?",
   "options": [
    "Estados Unidos",
-   "Inglaterra",
-   "Irlanda"
+   "Irlanda",
+   "Inglaterra"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-564",
@@ -6762,10 +6873,10 @@
   "prompt": "¿De qué país es Wayne Rooney?",
   "options": [
    "Irlanda",
-   "Escocia",
-   "Inglaterra"
+   "Inglaterra",
+   "Escocia"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-565",
@@ -6773,11 +6884,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Thierry Henry?",
   "options": [
-   "Francia",
    "Bélgica",
-   "Senegal"
+   "Senegal",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-566",
@@ -6797,11 +6908,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Samuel Eto'o?",
   "options": [
-   "Camerún",
    "Nigeria",
-   "Senegal"
+   "Senegal",
+   "Camerún"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-568",
@@ -6810,10 +6921,10 @@
   "prompt": "¿De qué país es Hristo Stoichkov?",
   "options": [
    "Rumania",
-   "Bulgaria",
-   "Serbia"
+   "Serbia",
+   "Bulgaria"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-569",
@@ -6821,11 +6932,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Gabriel Batistuta?",
   "options": [
-   "Argentina",
    "Uruguay",
+   "Argentina",
    "Italia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-570",
@@ -6833,11 +6944,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Carlos Valderrama \"El Pibe\"?",
   "options": [
+   "Colombia",
    "Venezuela",
-   "Ecuador",
-   "Colombia"
+   "Ecuador"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-571",
@@ -6846,10 +6957,10 @@
   "prompt": "¿De qué país es Diego Forlán?",
   "options": [
    "Argentina",
-   "Uruguay",
-   "Chile"
+   "Chile",
+   "Uruguay"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-572",
@@ -6857,11 +6968,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Hugo Sánchez?",
   "options": [
-   "México",
    "España",
-   "Estados Unidos"
+   "Estados Unidos",
+   "México"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-573",
@@ -6869,11 +6980,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es la leyenda George Weah?",
   "options": [
+   "Liberia",
    "Senegal",
-   "Nigeria",
-   "Liberia"
+   "Nigeria"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-574",
@@ -6882,10 +6993,10 @@
   "prompt": "¿De qué país es Gheorghe Hagi?",
   "options": [
    "Bulgaria",
-   "Rumania",
-   "Hungría"
+   "Hungría",
+   "Rumania"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-575",
@@ -6905,11 +7016,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de México?",
   "options": [
-   "El Tri",
    "La Roja",
-   "La Albirroja"
+   "La Albirroja",
+   "El Tri"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-577",
@@ -6917,11 +7028,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Bélgica?",
   "options": [
-   "Los Diablos Rojos",
    "Los Leones",
+   "Los Diablos Rojos",
    "La Furia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-578",
@@ -6929,11 +7040,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Camerún?",
   "options": [
-   "Las Águilas",
    "Los Leones Indomables",
+   "Las Águilas",
    "Los Elefantes"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-579",
@@ -6942,10 +7053,10 @@
   "prompt": "¿Cómo se apoda a la selección de Australia?",
   "options": [
    "Kangaroos",
-   "Wallabies",
-   "Socceroos"
+   "Socceroos",
+   "Wallabies"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-580",
@@ -6953,11 +7064,11 @@
   "difficulty": "easy",
   "prompt": "¿Cómo se apoda a la selección de Japón?",
   "options": [
-   "Los Samuráis Azules",
    "Los Dragones",
+   "Los Samuráis Azules",
    "Los Tigres"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-581",
@@ -6978,10 +7089,10 @@
   "prompt": "¿Cómo se apoda a la selección de Senegal?",
   "options": [
    "Los Faraones",
-   "Las Estrellas",
-   "Los Leones de Teranga"
+   "Los Leones de Teranga",
+   "Las Estrellas"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-583",
@@ -7001,11 +7112,12 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 1950?",
   "options": [
-   "Argentina",
    "Brasil",
+   "Argentina",
    "Chile"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-004"
  },
  {
   "key": "wc-585",
@@ -7013,11 +7125,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se jugó el Mundial 1966?",
   "options": [
-   "Inglaterra",
    "Suecia",
+   "Inglaterra",
    "Suiza"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-586",
@@ -7033,13 +7145,13 @@
  },
  {
   "key": "wc-587",
-  "category": "hosts",
-  "difficulty": "easy",
-  "prompt": "¿En qué país se jugó el Mundial 1982?",
+  "category": "trivia",
+  "difficulty": "medium",
+  "prompt": "¿Qué Mundial estrenó la tecnología de línea de gol?",
   "options": [
-   "España",
-   "Italia",
-   "Francia"
+   "Brasil 2014",
+   "Sudáfrica 2010",
+   "Rusia 2018"
   ],
   "answer": 0
  },
@@ -7061,11 +7173,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué continente se juega principalmente el Mundial 2026?",
   "options": [
-   "América del Norte",
    "Europa",
+   "América del Norte",
    "Asia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-590",
@@ -7081,25 +7193,26 @@
  },
  {
   "key": "wc-591",
-  "category": "champions",
-  "difficulty": "easy",
-  "prompt": "¿Qué selección ganó el \"Milagro de Berna\", el Mundial 1954?",
+  "category": "upsets",
+  "difficulty": "hard",
+  "prompt": "¿A qué selección le ganó 1-0 Estados Unidos en el Mundial 1950?",
   "options": [
-   "Hungría",
-   "Alemania Federal",
-   "Austria"
+   "Inglaterra",
+   "Brasil",
+   "España"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-471"
  },
  {
   "key": "wc-592",
-  "category": "champions",
-  "difficulty": "easy",
-  "prompt": "¿Qué selección ganó el Mundial 1970 en México?",
+  "category": "trivia",
+  "difficulty": "hard",
+  "prompt": "¿En qué Mundial se usaron por primera vez las tarjetas amarilla y roja?",
   "options": [
-   "Brasil",
-   "Italia",
-   "Alemania"
+   "México 1970",
+   "Inglaterra 1966",
+   "Alemania 1974"
   ],
   "answer": 0
  },
@@ -7109,47 +7222,49 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección ganó el Mundial 1986 con Maradona como figura?",
   "options": [
-   "Brasil",
    "Argentina",
+   "Brasil",
    "Alemania Federal"
   ],
-  "answer": 1
+  "answer": 0,
+  "topic": "wc-011"
  },
  {
   "key": "wc-594",
-  "category": "champions",
+  "category": "upsets",
   "difficulty": "easy",
-  "prompt": "¿Qué selección ganó el Mundial 1990 en Italia?",
+  "prompt": "¿Qué selección africana le ganó 1-0 a Argentina en el partido inaugural de Italia 1990?",
   "options": [
-   "Argentina",
-   "Alemania Federal",
-   "Italia"
+   "Nigeria",
+   "Camerún",
+   "Senegal"
   ],
   "answer": 1
  },
  {
   "key": "wc-595",
-  "category": "champions",
-  "difficulty": "easy",
-  "prompt": "¿Qué selección ganó el Mundial 1962 en Chile?",
+  "category": "upsets",
+  "difficulty": "medium",
+  "prompt": "¿Qué selección eliminó a Italia en octavos de Corea-Japón 2002 con un gol de oro?",
   "options": [
-   "Brasil",
-   "Chile",
-   "Checoslovaquia"
+   "Japón",
+   "Estados Unidos",
+   "Corea del Sur"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-596",
-  "category": "champions",
-  "difficulty": "easy",
-  "prompt": "¿Qué selección ganó el Mundial 1938?",
+  "category": "hosts",
+  "difficulty": "hard",
+  "prompt": "¿En qué estadio de Johannesburgo se jugó la final del Mundial 2010?",
   "options": [
-   "Hungría",
-   "Brasil",
-   "Italia"
+   "Ellis Park",
+   "Soccer City",
+   "Loftus Versfeld"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-134"
  },
  {
   "key": "wc-597",
@@ -7157,11 +7272,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección fue subcampeona del Mundial 2006, perdiendo por penales?",
   "options": [
-   "Francia",
    "Portugal",
-   "Alemania"
+   "Alemania",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-598",
@@ -7170,10 +7285,10 @@
   "prompt": "¿Qué selección fue subcampeona del Mundial 2010?",
   "options": [
    "España",
-   "Países Bajos",
-   "Alemania"
+   "Alemania",
+   "Países Bajos"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-599",
@@ -7181,11 +7296,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección fue subcampeona del Mundial 1994, perdiendo por penales?",
   "options": [
-   "Italia",
    "Brasil",
+   "Italia",
    "Suecia"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-600",
@@ -7193,11 +7308,11 @@
   "difficulty": "easy",
   "prompt": "¿En qué país se consagró campeona Argentina en 2022?",
   "options": [
-   "Brasil",
    "Catar",
+   "Brasil",
    "Emiratos Árabes Unidos"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-601",
@@ -7205,11 +7320,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Sergio \"Kun\" Agüero?",
   "options": [
-   "Argentina",
    "México",
+   "Argentina",
    "Chile"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-602",
@@ -7217,11 +7332,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Javier Mascherano?",
   "options": [
-   "Uruguay",
    "Argentina",
+   "Uruguay",
    "Paraguay"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-603",
@@ -7229,11 +7344,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Ángel Di María?",
   "options": [
-   "Argentina",
    "Italia",
-   "Chile"
+   "Chile",
+   "Argentina"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-604",
@@ -7253,11 +7368,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Ivan Rakitić?",
   "options": [
+   "Croacia",
    "Serbia",
-   "Bosnia",
-   "Croacia"
+   "Bosnia"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-606",
@@ -7301,11 +7416,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Kalidou Koulibaly?",
   "options": [
-   "Senegal",
    "Malí",
-   "Francia"
+   "Francia",
+   "Senegal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-610",
@@ -7313,11 +7428,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Youssef En-Nesyri?",
   "options": [
-   "Argelia",
    "Marruecos",
+   "Argelia",
    "Egipto"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-611",
@@ -7362,10 +7477,10 @@
   "prompt": "¿De qué país es Wilfried Zaha?",
   "options": [
    "Ghana",
-   "Nigeria",
-   "Costa de Marfil"
+   "Costa de Marfil",
+   "Nigeria"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-615",
@@ -7373,11 +7488,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Serge Gnabry?",
   "options": [
-   "Alemania",
    "Francia",
+   "Alemania",
    "Camerún"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-616",
@@ -7386,10 +7501,10 @@
   "prompt": "¿De qué país es el defensor Antonio Rüdiger?",
   "options": [
    "Suiza",
-   "Alemania",
-   "Austria"
+   "Austria",
+   "Alemania"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-617",
@@ -7413,7 +7528,8 @@
    "Escocia",
    "Gales"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-323"
  },
  {
   "key": "wc-619",
@@ -7445,11 +7561,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el delantero Álvaro Morata?",
   "options": [
-   "España",
    "Italia",
+   "España",
    "Portugal"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-622",
@@ -7457,11 +7573,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es Dani Olmo?",
   "options": [
-   "Croacia",
    "España",
+   "Croacia",
    "Alemania"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-623",
@@ -7470,10 +7586,10 @@
   "prompt": "¿De qué país es el arquero Unai Simón?",
   "options": [
    "Italia",
-   "Portugal",
-   "España"
+   "España",
+   "Portugal"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-624",
@@ -7481,11 +7597,11 @@
   "difficulty": "easy",
   "prompt": "¿De qué país es el arquero Mike Maignan?",
   "options": [
-   "Francia",
    "Bélgica",
-   "Senegal"
+   "Senegal",
+   "Francia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-625",
@@ -7494,10 +7610,10 @@
   "prompt": "¿De qué país es Kingsley Coman?",
   "options": [
    "Camerún",
-   "Francia",
-   "Guadalupe"
+   "Guadalupe",
+   "Francia"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-626",
@@ -7506,10 +7622,10 @@
   "prompt": "¿De qué país es Adrien Rabiot?",
   "options": [
    "Bélgica",
-   "Suiza",
-   "Francia"
+   "Francia",
+   "Suiza"
   ],
-  "answer": 2
+  "answer": 1
  },
  {
   "key": "wc-627",
@@ -7529,11 +7645,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección es conocida como \"La Albiceleste\"?",
   "options": [
-   "Argentina",
    "Uruguay",
-   "Chile"
+   "Chile",
+   "Argentina"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-629",
@@ -7541,11 +7657,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección es conocida como \"La Canarinha\"?",
   "options": [
-   "Colombia",
    "Brasil",
+   "Colombia",
    "Ecuador"
   ],
-  "answer": 1
+  "answer": 0
  },
  {
   "key": "wc-630",
@@ -7553,11 +7669,11 @@
   "difficulty": "easy",
   "prompt": "¿Qué selección es conocida como \"Les Bleus\"?",
   "options": [
+   "Francia",
    "Bélgica",
-   "Italia",
-   "Francia"
+   "Italia"
   ],
-  "answer": 2
+  "answer": 0
  },
  {
   "key": "wc-631",
@@ -7565,11 +7681,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién fue el capitán de Brasil campeón en 1970, autor de un golazo en la final?",
   "options": [
-   "Carlos Alberto Torres",
    "Pelé",
-   "Gérson"
+   "Gérson",
+   "Carlos Alberto Torres"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-632",
@@ -7577,11 +7693,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuál fue el marcador de la final del Mundial 2014 (Alemania-Argentina)?",
   "options": [
-   "1-0",
    "2-0",
+   "1-0",
    "2-1"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-290"
  },
  {
   "key": "wc-633",
@@ -7589,11 +7706,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuál fue el marcador de la final del Mundial 2018 (Francia-Croacia)?",
   "options": [
-   "4-2",
    "3-1",
+   "4-2",
    "2-1"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-029"
  },
  {
   "key": "wc-634",
@@ -7601,11 +7719,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 1998?",
   "options": [
-   "Ronaldo",
    "Zinedine Zidane",
-   "Davor Šuker"
+   "Davor Šuker",
+   "Ronaldo"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-635",
@@ -7613,11 +7731,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Brasil campeón del Mundial 2002?",
   "options": [
-   "Luiz Felipe Scolari",
    "Carlos Alberto Parreira",
+   "Luiz Felipe Scolari",
    "Mário Zagallo"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-636",
@@ -7626,10 +7744,10 @@
   "prompt": "¿Quién dirigió a Alemania campeona del Mundial 2014?",
   "options": [
    "Jürgen Klinsmann",
-   "Joachim Löw",
-   "Hansi Flick"
+   "Hansi Flick",
+   "Joachim Löw"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-637",
@@ -7637,11 +7755,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Francia campeona del Mundial 1998?",
   "options": [
-   "Aimé Jacquet",
    "Didier Deschamps",
-   "Roger Lemerre"
+   "Roger Lemerre",
+   "Aimé Jacquet"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-638",
@@ -7661,11 +7779,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas plazas directas tiene Asia (AFC) en el Mundial 2026?",
   "options": [
-   "Ocho",
    "Cuatro",
+   "Ocho",
    "Seis"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-640",
@@ -7673,11 +7791,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas plazas directas tiene Oceanía (OFC) en el Mundial 2026, por primera vez?",
   "options": [
-   "Una",
    "Dos",
+   "Una",
    "Cero"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-641",
@@ -7685,11 +7803,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas selecciones avanzan de la fase de grupos a la siguiente ronda en el Mundial 2026?",
   "options": [
-   "32",
    "16",
-   "24"
+   "24",
+   "32"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-642",
@@ -7701,7 +7819,8 @@
    "Sevilla",
    "Boca Juniors"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-382"
  },
  {
   "key": "wc-643",
@@ -7722,34 +7841,34 @@
   "prompt": "¿En qué club jugaba Zinedine Zidane en el Mundial 2006?",
   "options": [
    "Juventus",
-   "Real Madrid",
-   "Bordeaux"
+   "Bordeaux",
+   "Real Madrid"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-645",
-  "category": "players_records",
-  "difficulty": "medium",
-  "prompt": "¿Quién fue el capitán de España campeona del Mundial 2010?",
+  "category": "upsets",
+  "difficulty": "easy",
+  "prompt": "¿Qué selección asiática le ganó 2-1 a Alemania en el debut de Qatar 2022?",
   "options": [
-   "Iker Casillas",
-   "Carles Puyol",
-   "Xavi Hernández"
+   "Corea del Sur",
+   "Japón",
+   "Arabia Saudita"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-646",
-  "category": "players_records",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 2010?",
+  "prompt": "¿Qué selección africana le ganó 1-0 a Brasil en la fase de grupos de Qatar 2022?",
   "options": [
-   "Wesley Sneijder",
-   "Diego Forlán",
-   "Andrés Iniesta"
+   "Marruecos",
+   "Ghana",
+   "Camerún"
   ],
-  "answer": 1
+  "answer": 2
  },
  {
   "key": "wc-647",
@@ -7757,11 +7876,12 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección eliminó a Argentina en los cuartos de final del Mundial 2010 con un 4-0?",
   "options": [
-   "Alemania",
    "Brasil",
+   "Alemania",
    "España"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-647"
  },
  {
   "key": "wc-648",
@@ -7769,11 +7889,12 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección eliminó a Brasil en los cuartos de final del Mundial 2010?",
   "options": [
-   "Países Bajos",
    "Uruguay",
+   "Países Bajos",
    "Ghana"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-647"
  },
  {
   "key": "wc-649",
@@ -7781,11 +7902,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección eliminó a Inglaterra por penales en los cuartos del Mundial 2006?",
   "options": [
-   "Portugal",
    "Francia",
-   "Alemania"
+   "Alemania",
+   "Portugal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-650",
@@ -7793,11 +7914,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién marcó el primer gol de Italia en la final del Mundial 1982?",
   "options": [
-   "Paolo Rossi",
    "Marco Tardelli",
-   "Alessandro Altobelli"
+   "Alessandro Altobelli",
+   "Paolo Rossi"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-651",
@@ -7817,11 +7938,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección fue subcampeona del Mundial 1986?",
   "options": [
-   "Alemania Federal",
    "Bélgica",
-   "Francia"
+   "Francia",
+   "Alemania Federal"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-653",
@@ -7829,11 +7950,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién ganó el Balón de Oro al mejor jugador del Mundial 1986?",
   "options": [
-   "Diego Maradona",
    "Gary Lineker",
-   "Karl-Heinz Rummenigge"
+   "Karl-Heinz Rummenigge",
+   "Diego Maradona"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-654",
@@ -7849,15 +7970,15 @@
  },
  {
   "key": "wc-655",
-  "category": "scorers",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Quién compartió la Bota de Oro del Mundial 1994 con seis goles?",
+  "prompt": "¿Qué debutante le ganó 1-0 a Francia, campeona vigente, en el partido inaugural de 2002?",
   "options": [
-   "Hristo Stoichkov",
-   "Roberto Baggio",
-   "Gabriel Batistuta"
+   "Camerún",
+   "Senegal",
+   "Dinamarca"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-656",
@@ -7877,11 +7998,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas selecciones disputaron el Mundial 2022 en Catar?",
   "options": [
-   "32",
    "48",
-   "24"
+   "24",
+   "32"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-658",
@@ -7889,11 +8010,11 @@
   "difficulty": "medium",
   "prompt": "¿En qué año se jugará el Mundial siguiente al de 2026?",
   "options": [
-   "2030",
    "2028",
+   "2030",
    "2031"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-659",
@@ -7913,11 +8034,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué país será la sede del Mundial 2034?",
   "options": [
-   "Arabia Saudita",
    "Catar",
-   "China"
+   "China",
+   "Arabia Saudita"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-661",
@@ -7925,11 +8046,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué jugador ghanés falló un penal en el último minuto de los cuartos de final de 2010?",
   "options": [
-   "Asamoah Gyan",
    "Sulley Muntari",
+   "Asamoah Gyan",
    "Kevin-Prince Boateng"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-662",
@@ -7937,11 +8058,11 @@
   "difficulty": "medium",
   "prompt": "¿Contra qué selección jugó Argentina la semifinal del Mundial 2022?",
   "options": [
-   "Croacia",
    "Países Bajos",
-   "Marruecos"
+   "Marruecos",
+   "Croacia"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-663",
@@ -7949,11 +8070,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos goles hizo Kylian Mbappé en el Mundial 2022, ganando la Bota de Oro?",
   "options": [
-   "Ocho",
    "Siete",
-   "Seis"
+   "Seis",
+   "Ocho"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-012"
  },
  {
   "key": "wc-664",
@@ -7961,11 +8083,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos goles marcó Lionel Messi en la final del Mundial 2022?",
   "options": [
-   "Dos",
    "Uno",
-   "Tres"
+   "Tres",
+   "Dos"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-069"
  },
  {
   "key": "wc-665",
@@ -7977,7 +8100,8 @@
    "Dos",
    "Uno"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-032"
  },
  {
   "key": "wc-666",
@@ -7985,11 +8109,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Croacia al subcampeonato del Mundial 2018?",
   "options": [
-   "Zlatko Dalić",
    "Ante Čačić",
-   "Slaven Bilić"
+   "Slaven Bilić",
+   "Zlatko Dalić"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-667",
@@ -7997,11 +8121,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Inglaterra, semifinalista del Mundial 2018?",
   "options": [
-   "Gareth Southgate",
    "Roy Hodgson",
+   "Gareth Southgate",
    "Sam Allardyce"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-668",
@@ -8009,11 +8133,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Países Bajos al subcampeonato del Mundial 2010?",
   "options": [
-   "Bert van Marwijk",
    "Louis van Gaal",
-   "Guus Hiddink"
+   "Guus Hiddink",
+   "Bert van Marwijk"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-669",
@@ -8021,11 +8145,11 @@
   "difficulty": "medium",
   "prompt": "¿Quién dirigió a Alemania Federal campeona del Mundial 1990?",
   "options": [
-   "Franz Beckenbauer",
    "Berti Vogts",
-   "Helmut Schön"
+   "Helmut Schön",
+   "Franz Beckenbauer"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-670",
@@ -8045,11 +8169,11 @@
   "difficulty": "medium",
   "prompt": "¿En qué club jugaba Cafú cuando ganó su primer Mundial en 1994?",
   "options": [
-   "São Paulo",
    "Roma",
+   "São Paulo",
    "Real Madrid"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-672",
@@ -8058,10 +8182,11 @@
   "prompt": "¿Qué selección fue la primera en ganar cuatro Mundiales?",
   "options": [
    "Italia (2006)",
-   "Alemania (2014)",
-   "Brasil (1994)"
+   "Brasil (1994)",
+   "Alemania (2014)"
   ],
-  "answer": 2
+  "answer": 1,
+  "topic": "wc-672"
  },
  {
   "key": "wc-673",
@@ -8069,11 +8194,12 @@
   "difficulty": "medium",
   "prompt": "¿Qué selección fue la primera en ganar cinco Mundiales?",
   "options": [
-   "Brasil",
    "Alemania",
+   "Brasil",
    "Italia"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-672"
  },
  {
   "key": "wc-674",
@@ -8081,11 +8207,11 @@
   "difficulty": "medium",
   "prompt": "¿Qué confederación suma más títulos mundiales en la historia?",
   "options": [
-   "UEFA (Europa)",
    "CONMEBOL (Sudamérica)",
+   "UEFA (Europa)",
    "CONCACAF"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-675",
@@ -8105,11 +8231,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántas selecciones europeas distintas ganaron el Mundial al menos una vez?",
   "options": [
-   "Cinco",
    "Cuatro",
+   "Cinco",
    "Seis"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-677",
@@ -8117,11 +8243,12 @@
   "difficulty": "medium",
   "prompt": "¿En qué año ganó Inglaterra su único Mundial, jugando de local?",
   "options": [
-   "1966",
    "1970",
+   "1966",
    "1962"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-026"
  },
  {
   "key": "wc-678",
@@ -8153,11 +8280,11 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos jugadores tuvo cada plantel en el Mundial 2022?",
   "options": [
-   "26",
    "23",
-   "30"
+   "30",
+   "26"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-681",
@@ -8165,11 +8292,11 @@
   "difficulty": "hard",
   "prompt": "¿Quién fue el goleador del Mundial 1982 en España?",
   "options": [
-   "Paolo Rossi",
    "Karl-Heinz Rummenigge",
+   "Paolo Rossi",
    "Zbigniew Boniek"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-682",
@@ -8177,11 +8304,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles hizo Miroslav Klose en total en los Mundiales, récord histórico?",
   "options": [
-   "16",
    "14",
+   "16",
    "15"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-683",
@@ -8189,11 +8316,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles hizo Gerd Müller en total en los Mundiales?",
   "options": [
-   "14",
    "12",
+   "14",
    "16"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-684",
@@ -8213,11 +8340,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas selecciones jugaron el Mundial 1982, el primero con 24 equipos?",
   "options": [
-   "24",
    "16",
-   "20"
+   "20",
+   "24"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-686",
@@ -8225,11 +8352,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué estadio se jugó la final del Mundial 2014?",
   "options": [
-   "Maracaná",
    "Arena Corinthians",
-   "Mineirão"
+   "Mineirão",
+   "Maracaná"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-687",
@@ -8237,11 +8364,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué ciudad se jugó la final del Mundial 1986?",
   "options": [
-   "Ciudad de México",
    "Guadalajara",
-   "Monterrey"
+   "Monterrey",
+   "Ciudad de México"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-688",
@@ -8249,11 +8376,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección eliminó a España en los cuartos del Mundial 2002, por penales?",
   "options": [
-   "Corea del Sur",
    "Estados Unidos",
+   "Corea del Sur",
    "Turquía"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-689",
@@ -8261,11 +8388,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección eliminó a Estados Unidos en los cuartos del Mundial 2002?",
   "options": [
-   "Alemania",
    "Brasil",
-   "España"
+   "España",
+   "Alemania"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-690",
@@ -8273,11 +8400,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas finales de Mundial disputó Alemania (incluida Alemania Federal)?",
   "options": [
-   "Ocho",
    "Seis",
+   "Ocho",
    "Siete"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-048"
  },
  {
   "key": "wc-691",
@@ -8285,11 +8413,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas finales de Mundial disputó Argentina?",
   "options": [
-   "Seis",
    "Cinco",
+   "Seis",
    "Cuatro"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-692",
@@ -8297,11 +8425,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas finales de Mundial disputó Brasil?",
   "options": [
-   "Siete",
    "Seis",
+   "Siete",
    "Ocho"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-693",
@@ -8309,11 +8437,12 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles hizo Eusébio en el Mundial 1966, siendo el goleador?",
   "options": [
-   "Nueve",
    "Seis",
+   "Nueve",
    "Siete"
   ],
-  "answer": 0
+  "answer": 1,
+  "topic": "wc-132"
  },
  {
   "key": "wc-694",
@@ -8321,11 +8450,11 @@
   "difficulty": "hard",
   "prompt": "¿En qué puesto terminó Francia, campeona defensora, en su grupo del Mundial 2002?",
   "options": [
-   "Última, sin marcar goles",
    "Segunda",
+   "Última, sin marcar goles",
    "Tercera"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-695",
@@ -8333,11 +8462,11 @@
   "difficulty": "hard",
   "prompt": "¿Cuántos goles se marcaron en total en el Mundial 2022, récord del torneo?",
   "options": [
-   "172",
    "146",
+   "172",
    "160"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-696",
@@ -8357,11 +8486,12 @@
   "difficulty": "hard",
   "prompt": "¿Quién marcó el primer gol de Argentina (de penal) en la final del Mundial 2022?",
   "options": [
-   "Lionel Messi",
    "Ángel Di María",
-   "Julián Álvarez"
+   "Julián Álvarez",
+   "Lionel Messi"
   ],
-  "answer": 0
+  "answer": 2,
+  "topic": "wc-069"
  },
  {
   "key": "wc-698",
@@ -8369,11 +8499,11 @@
   "difficulty": "hard",
   "prompt": "¿Qué selección africana llegó por primera vez a semifinales de un Mundial, en 2022?",
   "options": [
-   "Marruecos",
    "Senegal",
-   "Ghana"
+   "Ghana",
+   "Marruecos"
   ],
-  "answer": 0
+  "answer": 2
  },
  {
   "key": "wc-699",
@@ -8381,11 +8511,11 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuántas ediciones del Mundial se disputaron en el siglo XX (1930-1998)?",
   "options": [
-   "Dieciséis",
    "Quince",
+   "Dieciséis",
    "Diecisiete"
   ],
-  "answer": 0
+  "answer": 1
  },
  {
   "key": "wc-700",
@@ -8393,10 +8523,10 @@
   "difficulty": "very_hard",
   "prompt": "¿Cuál fue la última selección en ganar el Mundial siendo anfitriona?",
   "options": [
-   "Francia (1998)",
    "Argentina (1978)",
-   "Alemania (1974)"
+   "Alemania (1974)",
+   "Francia (1998)"
   ],
-  "answer": 0
+  "answer": 2
  }
 ]

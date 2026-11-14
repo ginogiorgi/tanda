@@ -96,18 +96,19 @@ on conflict (mode_id, code) do update set
   const qRows = questions
     .map(
       (q) =>
-        `  (${lit(mode)}, ${lit(q.key)}, ${lit(q.category)}, ${lit(q.difficulty)}, ${lit(q.prompt)}, ${lit(JSON.stringify(q.options))}::jsonb, ${q.answer})`,
+        `  (${lit(mode)}, ${lit(q.key)}, ${lit(q.category)}, ${lit(q.difficulty)}, ${lit(q.prompt)}, ${lit(JSON.stringify(q.options))}::jsonb, ${q.answer}, ${lit(q.topic ?? null)})`,
     )
     .join(",\n");
   return `-- ── ${mode} ──
 ${teamSql}
 
-insert into public.questions (mode_id, source_key, category, difficulty, prompt, options, correct_index)
+insert into public.questions (mode_id, source_key, category, difficulty, prompt, options, correct_index, topic)
 values
 ${qRows}
 on conflict (source_key) do update set
   mode_id = excluded.mode_id, category = excluded.category, difficulty = excluded.difficulty,
-  prompt = excluded.prompt, options = excluded.options, correct_index = excluded.correct_index;
+  prompt = excluded.prompt, options = excluded.options, correct_index = excluded.correct_index,
+  topic = excluded.topic;
 `;
 });
 
