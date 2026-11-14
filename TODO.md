@@ -70,8 +70,9 @@ Los zips fuente ya no están; para rebajarlos sin cuenta: `curl` a `https://quat
 sacar `csrf_token`, `POST <slug>/file/<upload_id>?source=view_game&as_props=1` → JSON con `url` firmada
 (universal-base-characters 15861669).
 
-**Después de 6b (no requieren testeo humano):** subir micro-rótulos de 10px a 12px donde entren,
-reemplazar ~100 preguntas "¿De qué país es X?" (bajar `players_records`).
+**Después de 6b:** ✅ hecho en la rama aparte **`wip/post-6b`** (desde main, se mergea por separado):
+micro-rótulos 10px→12px y 100 "¿De qué país es X?" → partidos/finales (+ migración
+`20261118000000_questions_matches`). Detalle y pasos de deploy en el `TODO.md` de esa rama.
 
 ---
 
