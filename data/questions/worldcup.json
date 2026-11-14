@@ -277,16 +277,15 @@
  },
  {
   "key": "wc-023",
-  "category": "scorers",
+  "category": "records",
   "difficulty": "easy",
-  "prompt": "¿Quién es el máximo goleador histórico de los Mundiales?",
+  "prompt": "¿Quién es el máximo goleador histórico de los Mundiales tras 2026?",
   "options": [
-   "Miroslav Klose",
-   "Ronaldo",
-   "Pelé"
+   "Kylian Mbappé",
+   "Lionel Messi",
+   "Miroslav Klose"
   ],
-  "answer": 0,
-  "topic": "wc-023"
+  "answer": 0
  },
  {
   "key": "wc-024",
@@ -553,7 +552,7 @@
   "key": "wc-045",
   "category": "champions",
   "difficulty": "easy",
-  "prompt": "¿En qué año ganó España su único Mundial?",
+  "prompt": "¿En qué año ganó España su primer Mundial?",
   "options": [
    "2008",
    "2010",
@@ -774,7 +773,7 @@
  {
   "key": "wc-063",
   "category": "players_records",
-  "difficulty": "medium",
+  "difficulty": "hard",
   "prompt": "¿Qué arquero alemán cometió la dura falta sobre Battiston en 1982?",
   "options": [
    "Sepp Maier",
@@ -867,7 +866,7 @@
    "Romário"
   ],
   "answer": 1,
-  "topic": "wc-023"
+  "topic": "wc-070"
  },
  {
   "key": "wc-071",
@@ -944,13 +943,13 @@
  },
  {
   "key": "wc-077",
-  "category": "trivia",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Cuál fue el primer Mundial con 32 selecciones?",
+  "prompt": "¿Qué selección eliminó a Inglaterra en los cuartos de final de Qatar 2022?",
   "options": [
-   "Estados Unidos 1994",
-   "Francia 1998",
-   "Corea-Japón 2002"
+   "Marruecos",
+   "Francia",
+   "Portugal"
   ],
   "answer": 1
  },
@@ -1418,13 +1417,13 @@
  },
  {
   "key": "wc-116",
-  "category": "scorers",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Quién es el segundo máximo goleador histórico, detrás de Klose?",
+  "prompt": "¿Qué selección africana eliminó por penales a Países Bajos en los dieciseisavos del Mundial 2026?",
   "options": [
-   "Gerd Müller",
-   "Ronaldo",
-   "Pelé"
+   "Senegal",
+   "Marruecos",
+   "Egipto"
   ],
   "answer": 1
  },
@@ -1755,8 +1754,7 @@
    "Cristiano Ronaldo",
    "Pauleta"
   ],
-  "answer": 1,
-  "topic": "wc-023"
+  "answer": 1
  },
  {
   "key": "wc-144",
@@ -2340,11 +2338,11 @@
   "key": "wc-192",
   "category": "records",
   "difficulty": "very_hard",
-  "prompt": "¿Quién es el entrenador con más partidos dirigidos en Mundiales?",
+  "prompt": "¿Qué entrenador superó en 2026 a Helmut Schön como el DT con más partidos dirigidos en Mundiales?",
   "options": [
-   "Carlos Bilardo",
-   "Helmut Schön",
-   "Sepp Herberger"
+   "Lionel Scaloni",
+   "Didier Deschamps",
+   "Luis de la Fuente"
   ],
   "answer": 1
  },
@@ -2586,14 +2584,13 @@
   "key": "wc-212",
   "category": "scorers",
   "difficulty": "very_hard",
-  "prompt": "¿Quién es el máximo goleador histórico de Francia en Mundiales?",
+  "prompt": "¿A qué francés superó Mbappé como máximo goleador de Francia en Mundiales?",
   "options": [
    "Just Fontaine",
    "Thierry Henry",
-   "Kylian Mbappé"
+   "Michel Platini"
   ],
-  "answer": 0,
-  "topic": "wc-023"
+  "answer": 0
  },
  {
   "key": "wc-213",
@@ -2622,13 +2619,13 @@
  },
  {
   "key": "wc-215",
-  "category": "records",
+  "category": "players_records",
   "difficulty": "very_hard",
-  "prompt": "¿Qué jugador disputó tres finales de Mundial, un récord?",
+  "prompt": "¿Qué arquero croata atajó tres penales en la tanda ante Dinamarca en el Mundial 2018?",
   "options": [
-   "Pelé",
-   "Cafú",
-   "Franz Beckenbauer"
+   "Dominik Livaković",
+   "Danijel Subašić",
+   "Stipe Pletikosa"
   ],
   "answer": 1
  },
@@ -3146,7 +3143,7 @@
    "Diego Maradona"
   ],
   "answer": 0,
-  "topic": "wc-023"
+  "topic": "wc-070"
  },
  {
   "key": "wc-258",
@@ -3154,9 +3151,9 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales disputó Lionel Messi?",
   "options": [
+   "Seis",
    "Cinco",
-   "Cuatro",
-   "Seis"
+   "Cuatro"
   ],
   "answer": 0
  },
@@ -3256,7 +3253,8 @@
    "Túnez",
    "Egipto"
   ],
-  "answer": 2
+  "answer": 2,
+  "topic": "wc-266"
  },
  {
   "key": "wc-267",
@@ -3276,9 +3274,9 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales disputó Cristiano Ronaldo?",
   "options": [
+   "Seis",
    "Cinco",
-   "Cuatro",
-   "Seis"
+   "Cuatro"
   ],
   "answer": 0
  },
@@ -3300,11 +3298,12 @@
   "difficulty": "medium",
   "prompt": "¿Cuántos Mundiales ganó España?",
   "options": [
-   "Dos",
    "Uno",
+   "Dos",
    "Tres"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-238"
  },
  {
   "key": "wc-271",
@@ -3431,11 +3430,11 @@
   "key": "wc-281",
   "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Cuántos goles convirtió Lionel Messi en toda su carrera mundialista, récord para Argentina?",
+  "prompt": "¿Cuántos goles suma Lionel Messi en Mundiales tras 2026?",
   "options": [
-   "10",
    "13",
-   "16"
+   "21",
+   "18"
   ],
   "answer": 1
  },
@@ -3771,7 +3770,7 @@
   "key": "wc-309",
   "category": "records",
   "difficulty": "very_hard",
-  "prompt": "El Mundial 2018 batió el récord de autogoles. ¿Cuántos hubo?",
+  "prompt": "¿Cuántos autogoles hubo en el Mundial 2018, récord hasta ese momento?",
   "options": [
    "6",
    "12",
@@ -4232,7 +4231,7 @@
   "key": "wc-347",
   "category": "trivia",
   "difficulty": "easy",
-  "prompt": "¿Qué selección defiende el título en el Mundial 2026 como última campeona?",
+  "prompt": "¿Qué selección llegó al Mundial 2026 como campeona vigente?",
   "options": [
    "Francia",
    "Argentina",
@@ -4390,7 +4389,7 @@
  {
   "key": "wc-360",
   "category": "players_records",
-  "difficulty": "easy",
+  "difficulty": "medium",
   "prompt": "¿De qué país es el delantero Romelu Lukaku?",
   "options": [
    "Congo",
@@ -4512,7 +4511,7 @@
   "key": "wc-370",
   "category": "players_records",
   "difficulty": "easy",
-  "prompt": "¿En qué país juega su club Vinícius Júnior, el brasileño del Real Madrid?",
+  "prompt": "¿En qué país jugaba en su club Vinícius Júnior durante el Mundial 2022?",
   "options": [
    "Italia",
    "España",
@@ -4686,7 +4685,7 @@
   "key": "wc-384",
   "category": "records",
   "difficulty": "medium",
-  "prompt": "¿Qué selección nunca perdió una tanda de penales en la historia de los Mundiales?",
+  "prompt": "¿Qué selección ganó sus primeras cuatro tandas de penales en Mundiales (1982, 1986, 1990 y 2006)?",
   "options": [
    "Alemania",
    "Inglaterra",
@@ -4732,16 +4731,15 @@
  },
  {
   "key": "wc-388",
-  "category": "trivia",
+  "category": "hosts",
   "difficulty": "hard",
-  "prompt": "¿Cuántas selecciones jugaron el primer Mundial, Uruguay 1930?",
+  "prompt": "¿Cuál fue el primer país anfitrión eliminado en la fase de grupos de un Mundial?",
   "options": [
-   "13",
-   "16",
-   "12"
+   "Sudáfrica (2010)",
+   "Qatar (2022)",
+   "Estados Unidos (1994)"
   ],
-  "answer": 0,
-  "topic": "wc-019"
+  "answer": 0
  },
  {
   "key": "wc-389",
@@ -4794,7 +4792,7 @@
  {
   "key": "wc-393",
   "category": "players_records",
-  "difficulty": "medium",
+  "difficulty": "hard",
   "prompt": "¿En qué club jugaba Ronaldinho cuando fue campeón del mundo en 2002?",
   "options": [
    "Barcelona",
@@ -4807,13 +4805,14 @@
   "key": "wc-394",
   "category": "champions",
   "difficulty": "medium",
-  "prompt": "¿Qué selección africana volvió a un Mundial en 1970, abriendo la era moderna del continente?",
+  "prompt": "¿Qué selección fue en 1970 la primera africana en jugar un Mundial desde Egipto en 1934?",
   "options": [
    "Marruecos",
    "Egipto",
    "Argelia"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-266"
  },
  {
   "key": "wc-395",
@@ -5112,8 +5111,8 @@
   "prompt": "¿Quién encabezó la tabla de goleadores del Mundial 1962 en Chile?",
   "options": [
    "Varios empatados con cuatro goles",
-   "Garrincha",
-   "Flórián Albert"
+   "Pelé",
+   "Amarildo"
   ],
   "answer": 0
  },
@@ -5131,13 +5130,13 @@
  },
  {
   "key": "wc-421",
-  "category": "trivia",
+  "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Cuál fue el primer Mundial con 24 selecciones?",
+  "prompt": "¿Cuántos goles hizo Pelé en los Mundiales?",
   "options": [
-   "Argentina 1978",
-   "México 1986",
-   "España 1982"
+   "15",
+   "10",
+   "12"
   ],
   "answer": 2
  },
@@ -5244,7 +5243,7 @@
   "key": "wc-430",
   "category": "players_records",
   "difficulty": "hard",
-  "prompt": "¿Qué arquero mexicano disputó cinco Mundiales como referente de su portería?",
+  "prompt": "¿Qué arquero mexicano fue figura en los Mundiales 2014, 2018 y 2022?",
   "options": [
    "Jorge Campos",
    "Oswaldo Sánchez",
@@ -5352,23 +5351,23 @@
   "key": "wc-439",
   "category": "players_records",
   "difficulty": "hard",
-  "prompt": "¿Qué arquero italiano mantuvo su valla invicta gran parte del Mundial 1990?",
+  "prompt": "¿Quién marcó el golazo del 2-1 de Arabia Saudita ante Argentina en Qatar 2022?",
   "options": [
-   "Dino Zoff",
-   "Gianluca Pagliuca",
-   "Walter Zenga"
+   "Saleh Al-Shehri",
+   "Mohammed Al-Owais",
+   "Salem Al-Dawsari"
   ],
   "answer": 2
  },
  {
   "key": "wc-440",
-  "category": "players_records",
+  "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Quién es el máximo goleador de Inglaterra en Mundiales, con diez goles entre 1986 y 1990?",
+  "prompt": "¿Quién superó a Gary Lineker como máximo goleador de Inglaterra en Mundiales?",
   "options": [
-   "Gary Lineker",
-   "Geoff Hurst",
-   "Harry Kane"
+   "Harry Kane",
+   "Wayne Rooney",
+   "Jude Bellingham"
   ],
   "answer": 0
  },
@@ -5424,13 +5423,14 @@
   "key": "wc-445",
   "category": "upsets",
   "difficulty": "hard",
-  "prompt": "¿Qué selección africana venció a Francia, campeona defensora, en el debut de 2002?",
+  "prompt": "¿Qué selección eliminó a Argentina por penales en los cuartos de final del Mundial 2006?",
   "options": [
-   "Camerún",
-   "Senegal",
-   "Nigeria"
+   "Italia",
+   "Alemania",
+   "Portugal"
   ],
-  "answer": 1
+  "answer": 1,
+  "topic": "wc-445"
  },
  {
   "key": "wc-446",
@@ -5753,8 +5753,7 @@
    "Walter Bahr",
    "Frank Borghi"
   ],
-  "answer": 0,
-  "topic": "wc-471"
+  "answer": 0
  },
  {
   "key": "wc-472",
@@ -6122,15 +6121,16 @@
  },
  {
   "key": "wc-502",
-  "category": "players_records",
+  "category": "champions",
   "difficulty": "easy",
-  "prompt": "¿De qué país es Nico Williams?",
+  "prompt": "¿A qué selección le ganó España la final del Mundial 2026?",
   "options": [
-   "España",
-   "Ghana",
-   "Portugal"
+   "Argentina",
+   "Francia",
+   "Inglaterra"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-502"
  },
  {
   "key": "wc-503",
@@ -6147,15 +6147,16 @@
  },
  {
   "key": "wc-504",
-  "category": "players_records",
+  "category": "champions",
   "difficulty": "easy",
-  "prompt": "¿De qué país es Gavi?",
+  "prompt": "¿Qué selección ganó el Mundial 2026?",
   "options": [
    "España",
    "Argentina",
-   "México"
+   "Francia"
   ],
-  "answer": 0
+  "answer": 0,
+  "topic": "wc-502"
  },
  {
   "key": "wc-505",
@@ -6267,15 +6268,16 @@
  },
  {
   "key": "wc-514",
-  "category": "players_records",
+  "category": "scorers",
   "difficulty": "easy",
-  "prompt": "¿De qué país es Bruno Fernandes?",
+  "prompt": "¿Quién ganó la Bota de Oro del Mundial 2026?",
   "options": [
-   "Brasil",
-   "España",
-   "Portugal"
+   "Lionel Messi",
+   "Erling Haaland",
+   "Kylian Mbappé"
   ],
-  "answer": 2
+  "answer": 2,
+  "topic": "wc-012"
  },
  {
   "key": "wc-515",
@@ -6303,13 +6305,13 @@
  },
  {
   "key": "wc-517",
-  "category": "players_records",
-  "difficulty": "easy",
-  "prompt": "¿De qué país es Nicolò Barella?",
+  "category": "champions",
+  "difficulty": "medium",
+  "prompt": "¿Cómo se definió la final del Mundial 2026?",
   "options": [
-   "España",
-   "Argentina",
-   "Italia"
+   "2-1 en el tiempo regular",
+   "Por penales",
+   "1-0 en el alargue"
   ],
   "answer": 2
  },
@@ -6459,13 +6461,13 @@
  },
  {
   "key": "wc-530",
-  "category": "players_records",
-  "difficulty": "easy",
-  "prompt": "¿De qué país es el defensor Theo Hernández?",
+  "category": "scorers",
+  "difficulty": "medium",
+  "prompt": "¿Quién marcó el gol del título en la final del Mundial 2026?",
   "options": [
-   "España",
-   "México",
-   "Francia"
+   "Lautaro Martínez",
+   "Julián Álvarez",
+   "Ferran Torres"
   ],
   "answer": 2
  },
@@ -7145,13 +7147,13 @@
  },
  {
   "key": "wc-587",
-  "category": "trivia",
+  "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Qué Mundial estrenó la tecnología de línea de gol?",
+  "prompt": "¿En qué Mundial quedó Argentina eliminada en la fase de grupos, dirigida por Marcelo Bielsa?",
   "options": [
-   "Brasil 2014",
-   "Sudáfrica 2010",
-   "Rusia 2018"
+   "Corea-Japón 2002",
+   "Francia 1998",
+   "Alemania 2006"
   ],
   "answer": 0
  },
@@ -7195,24 +7197,23 @@
   "key": "wc-591",
   "category": "upsets",
   "difficulty": "hard",
-  "prompt": "¿A qué selección le ganó 1-0 Estados Unidos en el Mundial 1950?",
+  "prompt": "¿Qué selección eliminó a Brasil por penales en los cuartos de final de México 1986?",
   "options": [
-   "Inglaterra",
-   "Brasil",
-   "España"
+   "Francia",
+   "Alemania Federal",
+   "Argentina"
   ],
-  "answer": 0,
-  "topic": "wc-471"
+  "answer": 0
  },
  {
   "key": "wc-592",
   "category": "trivia",
   "difficulty": "hard",
-  "prompt": "¿En qué Mundial se usaron por primera vez las tarjetas amarilla y roja?",
+  "prompt": "¿Qué arquero argentino atajó dos penales en la tanda ante Inglaterra en el Mundial 1998?",
   "options": [
-   "México 1970",
-   "Inglaterra 1966",
-   "Alemania 1974"
+   "Carlos Roa",
+   "Germán Burgos",
+   "Pablo Cavallero"
   ],
   "answer": 0
  },
@@ -7231,13 +7232,13 @@
  },
  {
   "key": "wc-594",
-  "category": "upsets",
-  "difficulty": "easy",
-  "prompt": "¿Qué selección africana le ganó 1-0 a Argentina en el partido inaugural de Italia 1990?",
+  "category": "trivia",
+  "difficulty": "medium",
+  "prompt": "¿A quién le tapó el \"Dibu\" Martínez el mano a mano del último minuto en la final de 2022?",
   "options": [
-   "Nigeria",
-   "Camerún",
-   "Senegal"
+   "Kylian Mbappé",
+   "Randal Kolo Muani",
+   "Olivier Giroud"
   ],
   "answer": 1
  },
@@ -7557,25 +7558,25 @@
  },
  {
   "key": "wc-621",
-  "category": "players_records",
-  "difficulty": "easy",
-  "prompt": "¿De qué país es el delantero Álvaro Morata?",
+  "category": "champions",
+  "difficulty": "hard",
+  "prompt": "¿Qué selección terminó tercera en el Mundial 2026?",
   "options": [
-   "Italia",
-   "España",
-   "Portugal"
+   "Francia",
+   "Inglaterra",
+   "Brasil"
   ],
   "answer": 1
  },
  {
   "key": "wc-622",
-  "category": "players_records",
-  "difficulty": "easy",
-  "prompt": "¿De qué país es Dani Olmo?",
+  "category": "upsets",
+  "difficulty": "hard",
+  "prompt": "¿Qué selección eliminó por penales a Alemania en los dieciseisavos del Mundial 2026?",
   "options": [
-   "España",
-   "Croacia",
-   "Alemania"
+   "Paraguay",
+   "Japón",
+   "Ecuador"
   ],
   "answer": 0
  },
@@ -7881,7 +7882,7 @@
    "España"
   ],
   "answer": 1,
-  "topic": "wc-647"
+  "topic": "wc-445"
  },
  {
   "key": "wc-648",
@@ -7894,7 +7895,7 @@
    "Ghana"
   ],
   "answer": 1,
-  "topic": "wc-647"
+  "topic": "wc-445"
  },
  {
   "key": "wc-649",
@@ -7972,11 +7973,11 @@
   "key": "wc-655",
   "category": "upsets",
   "difficulty": "medium",
-  "prompt": "¿Qué debutante le ganó 1-0 a Francia, campeona vigente, en el partido inaugural de 2002?",
+  "prompt": "¿Qué selección le ganó a Inglaterra la semifinal del Mundial 2018 en el alargue?",
   "options": [
-   "Camerún",
-   "Senegal",
-   "Dinamarca"
+   "Bélgica",
+   "Croacia",
+   "Francia"
   ],
   "answer": 1
  },
@@ -8302,7 +8303,7 @@
   "key": "wc-682",
   "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Cuántos goles hizo Miroslav Klose en total en los Mundiales, récord histórico?",
+  "prompt": "¿Cuántos goles hizo Miroslav Klose en total en los Mundiales?",
   "options": [
    "14",
    "16",
@@ -8336,13 +8337,13 @@
  },
  {
   "key": "wc-685",
-  "category": "records",
+  "category": "upsets",
   "difficulty": "hard",
-  "prompt": "¿Cuántas selecciones jugaron el Mundial 1982, el primero con 24 equipos?",
+  "prompt": "¿Qué selección eliminó a Argentina en los octavos de final del Mundial 1994?",
   "options": [
-   "16",
-   "20",
-   "24"
+   "Suecia",
+   "Bulgaria",
+   "Rumania"
   ],
   "answer": 2
  },
@@ -8413,9 +8414,9 @@
   "difficulty": "hard",
   "prompt": "¿Cuántas finales de Mundial disputó Argentina?",
   "options": [
-   "Cinco",
    "Seis",
-   "Cuatro"
+   "Siete",
+   "Cinco"
   ],
   "answer": 1
  },
@@ -8423,11 +8424,11 @@
   "key": "wc-692",
   "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Cuántas finales de Mundial disputó Brasil?",
+  "prompt": "¿Cuántas finales de Mundial disputó Italia?",
   "options": [
+   "Cinco",
    "Seis",
-   "Siete",
-   "Ocho"
+   "Siete"
   ],
   "answer": 1
  },
@@ -8460,11 +8461,11 @@
   "key": "wc-695",
   "category": "records",
   "difficulty": "hard",
-  "prompt": "¿Cuántos goles se marcaron en total en el Mundial 2022, récord del torneo?",
+  "prompt": "¿Cuántos goles se marcaron en el Mundial 2026, récord histórico?",
   "options": [
-   "146",
    "172",
-   "160"
+   "308",
+   "256"
   ],
   "answer": 1
  },

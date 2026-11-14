@@ -31,9 +31,14 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   (aplicada por MCP en 4 tandas de datos + activación; ledger reconciliado).
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
-- **Verificar los datos de TODAS las preguntas (1400: Mundial + AR)** contra fuente: la app se armó
-  durante el Mundial 2026 con datos sin cerrar (priorizar resultados/récords/actualidad 2025–26).
-- Preguntas AR (sesgo a `idolos`/`historia`, datos dudosos) y Mundial.
+- Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
+  gusto/tono, y decidir si se baja `players_records` (37% del Mundial, mayoría "¿De qué país es X?").
+  Recomendación: cambiar ~100 de esas por preguntas de partidos/finales en una tanda futura.
+- Datos del Mundial 2026 tomados de Wikipedia/ESPN (jul 2026): España campeón 1-0 a Argentina en el
+  alargue (Ferran Torres), Mbappé Bota de Oro (10) y máximo goleador histórico (22), Messi 21,
+  Kane 14, Deschamps 27 partidos como DT, 308 goles, Paraguay eliminó a Alemania por penales,
+  Inglaterra 3ª. Recomendación: que Gino confirme wc-622 (Paraguay–Alemania) y wc-621 (3º puesto),
+  que tuvieron una sola fuente.
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
   → migración chica de `teams` + regenerar escudos cuando se definan.
@@ -72,9 +77,17 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
     verificado igual a local).
   - Pendiente (va con 5b): recalibrar dificultad con `stats-2026-11` y bajar `players_records` (38% WC).
 
+- **Fase 5b** — **datos de las 1400 preguntas verificados** (en prod, `20261116000000_questions_verify`):
+  - Mundial: 15 preguntas que el Mundial 2026 dejó viejas (España "único título", Klose/Fontaine/
+    Lineker/Schön como récords, Messi y CR7 "cinco Mundiales", Alemania "nunca perdió por penales",
+    récords de goles/autogoles, finales de Argentina) corregidas; 7 "¿De qué país es X?" → resultados
+    del Mundial 2026; 11 duplicados semánticos que `questions:check` no detectaba (mismo hecho con
+    otra redacción, varios de la Fase 5) reemplazados por hechos nuevos.
+  - AR: las 700 revisadas, sin errores (ascensos 2024/25 confirmados con fuente).
+  - Dificultad: 3 ajustes con `stats-2026-11` (muestra chica, n≤6; el resto sin señal).
+
 ### Próximo (en orden)
-1. **Fase 5b** — verificar datos de las 1400 preguntas (+ recalibrar dificultad).
-2. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
+1. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
 
 ---
 
