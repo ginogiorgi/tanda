@@ -129,6 +129,9 @@ function setKitColors(u: KitUniforms, top: HexColor, sash: HexColor | null, bott
 
 function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
   const m = base.clone();
+  // El pack es un "superhéroe" con músculos marcados en el normal map: se suaviza para que la
+  // ropa no parezca pintada sobre el cuerpo.
+  if (m instanceof THREE.MeshStandardMaterial) m.normalScale.set(0.3, 0.3);
   m.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, u);
     shader.vertexShader = shader.vertexShader
