@@ -217,14 +217,11 @@ export default function KitPage() {
         <Card>
           <ProfileStatsRows
             stats={{
-              divisions: [
-                { id: "potrero", season_id: "clausura-2026" },
-                { id: "barrio", season_id: "clausura-2026" },
-                { id: "ascenso", season_id: "clausura-2026" },
-                { id: "primera", season_id: "apertura-2027" },
-                { id: "libertadores", season_id: null },
-                { id: "leyenda", season_id: null },
+              seasons: [
+                { season_id: "apertura-2027", division: "primera" },
+                { season_id: "clausura-2026", division: "ascenso" },
               ],
+              current: { season_id: "clausura-2027", division: "libertadores", games: 9 },
               cups: { worldcup: { gold: 2, silver: 1, bronze: 0 }, arg: { gold: 0, silver: 3, bronze: 4 } },
               ranked: { games: 12, wins: 8, rating: 1606 },
             }}

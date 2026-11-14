@@ -319,13 +319,13 @@ describe("ranked: temporadas y perfil", () => {
       ).rows[0]!;
       expect(res.peak_rating).toBe(1820);
 
-      const stats = await as<{ divisions: { id: string; season_id: string | null }[] }>(
+      // Premio de la temporada cerrada = la división FINAL (1800 → Libertadores), una sola ficha.
+      const stats = await as<{ seasons: { season_id: string; division: string }[] }>(
         c,
         a,
         "select public.get_profile_stats() as r",
       );
-      expect(stats.divisions.find((d) => d.id === "libertadores")?.season_id).toBe("apertura-2020");
-      expect(stats.divisions.find((d) => d.id === "leyenda")?.season_id).toBeNull();
+      expect(stats.seasons).toEqual([{ season_id: "apertura-2020", division: "libertadores" }]);
     });
   });
 });

@@ -91,7 +91,10 @@ export interface CupCount {
 
 /** `get_profile_stats()`. */
 export interface ProfileStats {
-  divisions: { id: DivisionId; season_id: string | null }[];
+  /** Una ficha por temporada CERRADA: la división final (premio, tabla `awards`). Recientes primero. */
+  seasons: { season_id: string; division: DivisionId }[];
+  /** Temporada en curso (no es premio): división actual, si jugó alguna ranked en ella. */
+  current: { season_id: string; division: DivisionId; games: number } | null;
   cups: Partial<Record<"worldcup" | "arg", CupCount>>;
   ranked: { games: number; wins: number; rating: number } | null;
 }

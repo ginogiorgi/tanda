@@ -1,12 +1,15 @@
-import { DIVISIONS, seasonName } from "@/lib/engine/ranked";
+import { seasonName } from "@/lib/engine/ranked";
+import { divisionById } from "@/lib/ranked/types";
 import type { CupCount, ProfileStats } from "@/lib/ranked/types";
 import { DivisionCrest } from "@/components/ranked/DivisionCrest";
 
 /**
- * Perfil → Estadísticas (pedido de Gino), 3 filas:
- *  1. Divisiones ranked: los 6 escudos; los alcanzados a color con la 1ª temporada en que se logró.
- *  2. Mundial y 3. Fútbol argentino: copas de oro (campeón), plata (final) y bronce (semis) con su conteo.
- * Datos: `get_profile_stats()`. Presentacional.
+ * Perfil → Estadísticas, 3 filas:
+ *  1. Temporadas ranked: UN escudo por temporada CERRADA (la división en la que terminaste). La temporada
+ *     en curso va aparte, marcada "en juego": no es un premio (feedback 14/11).
+ *  2. Mundial y 3. Fútbol argentino: copas de oro (campeón), plata (final) y bronce (semis) de torneos
+ *     TERMINADOS, una por torneo.
+ * Datos: `get_profile_stats()`, que lee solo la tabla `awards`. Presentacional.
  */
 
 const CUPS = [
@@ -52,29 +55,44 @@ function CupsRow({ title, counts }: { title: string; counts: CupCount | undefine
 }
 
 export function ProfileStatsRows({ stats }: { stats: ProfileStats }) {
-  const seasonOf = new Map(stats.divisions.map((d) => [d.id, d.season_id]));
+  const current = stats.current;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <RowTitle>Divisiones ranked</RowTitle>
-        <ul className="grid grid-cols-3 gap-x-2 gap-y-3">
-          {DIVISIONS.map((d) => {
-            const season = seasonOf.get(d.id) ?? null;
-            return (
-              <li key={d.id} className="flex flex-col items-center gap-1 text-center">
-                <DivisionCrest id={d.id} locked={season === null} className="h-12" />
+        <RowTitle>Temporadas ranked</RowTitle>
+        {current && (
+          <div
+            className="flex items-center gap-3 rounded-[4px] border border-dashed border-ink px-3 py-2"
+            data-testid="season-current"
+          >
+            <DivisionCrest id={current.division} className="h-10" />
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="text-sm font-bold text-fg">{seasonName(current.season_id)} · en juego</span>
+              <span className="text-xs text-fg-muted">
+                Hoy en {divisionById(current.division).name}. El escudo es el de la división en la que terminés.
+              </span>
+            </span>
+          </div>
+        )}
+        {stats.seasons.length === 0 ? (
+          <p className="text-sm text-fg-muted" data-testid="seasons-empty">
+            Todavía no cerraste ninguna temporada.
+          </p>
+        ) : (
+          <ul className="grid grid-cols-3 gap-x-2 gap-y-3" data-testid="seasons">
+            {stats.seasons.map((s) => (
+              <li key={s.season_id} className="flex flex-col items-center gap-1 text-center">
+                <DivisionCrest id={s.division} className="h-12" />
                 {/* "LIBERTADORES" no entra en la columna de un teléfono de 360px con tracking: sin tracking
                     hasta 400px y a 11px por debajo de 360px. */}
                 <span className="text-xs font-bold uppercase leading-tight tracking-normal text-fg max-[359px]:text-[11px] min-[400px]:tracking-[0.06em]">
-                  {d.name}
+                  {divisionById(s.division).name}
                 </span>
-                <span className="text-xs leading-tight text-fg-muted">
-                  {season ? seasonName(season) : "—"}
-                </span>
+                <span className="text-xs leading-tight text-fg-muted">{seasonName(s.season_id)}</span>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        )}
       </div>
       <CupsRow title="Mundial" counts={stats.cups.worldcup} />
       <CupsRow title="Fútbol argentino" counts={stats.cups.arg} />
