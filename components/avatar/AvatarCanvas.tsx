@@ -15,7 +15,7 @@ import { IDLE, REST, samplePose } from "@/lib/avatar/rig";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
 import { useBlobTexture } from "@/lib/three/blobTexture";
-import { AvatarModel } from "./AvatarModel";
+import { Avatar3D } from "./Avatar3D";
 import { applyPose, useRig } from "./rigPose";
 
 suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3F internamente
@@ -25,7 +25,7 @@ function AnimatedAvatar({ config, animate }: { config: AvatarConfig; animate: bo
   useFrame((state) => {
     applyPose(handles.current, animate ? samplePose(IDLE, state.clock.elapsedTime) : REST);
   });
-  return <AvatarModel config={config} rig={register} />;
+  return <Avatar3D config={config} rig={register} />;
 }
 
 interface AvatarCanvasProps {
