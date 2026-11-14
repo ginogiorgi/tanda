@@ -15,7 +15,8 @@ describe("withIatRetry (bug 'Entrando…' del invitado)", () => {
     const res = await withIatRetry(base, wait)("http://x/rest/v1/profiles", { method: "GET" });
     expect(res.status).toBe(200);
     expect(base).toHaveBeenCalledTimes(2);
-    expect(base.mock.calls[1]).toEqual(["http://x/rest/v1/profiles", { method: "GET" }]);
+    expect(base.mock.calls[1]?.[0]).toBe("http://x/rest/v1/profiles");
+    expect(base.mock.calls[1]?.[1]).toMatchObject({ method: "GET" });
     expect(wait).toHaveBeenCalledWith(IAT_RETRY_DELAY_MS);
   });
 
@@ -48,5 +49,23 @@ describe("withIatRetry (bug 'Entrando…' del invitado)", () => {
     );
     const res = await withIatRetry(base, async () => {})("http://x");
     await expect(res.json()).resolves.toMatchObject({ message: "JWT expired" });
+  });
+
+  it("el reintento de un GET sale a la red aunque Next memoice los GET del render (flake 'Próximamente')", async () => {
+    // Imita `dedupeFetch` de Next: memoiza GET por URL salvo que venga un `signal` propio.
+    const network = vi.fn<typeof fetch>().mockResolvedValueOnce(iatFuture()).mockResolvedValueOnce(ok());
+    const memo = new Map<string, Promise<Response>>();
+    const dedupe: typeof fetch = (input, init) => {
+      if (init?.signal) return network(input, init);
+      const key = String(input);
+      const hit = memo.get(key);
+      if (hit) return hit.then((r) => r.clone());
+      const p = network(input, init);
+      memo.set(key, p);
+      return p.then((r) => r.clone());
+    };
+    const res = await withIatRetry(dedupe, async () => {})("http://x/rest/v1/game_modes", { method: "GET" });
+    expect(res.status).toBe(200);
+    expect(network).toHaveBeenCalledTimes(2);
   });
 });
