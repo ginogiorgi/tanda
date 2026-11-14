@@ -216,6 +216,20 @@ describe("buildRoundOf32 + advanceBracket", () => {
     for (const [a, b] of r32) expect(a.group).not.toBe(b.group);
   });
 
+  it("ningún cruce del mismo grupo para 5000 seeds y distintos grupos de terceros (el greedy solo fallaba)", () => {
+    for (let seed = 0; seed < 5000; seed++) {
+      // Los 8 terceros salen de 8 grupos que rotan con el seed.
+      const thirds = groups.filter((_, i) => (i + seed) % 12 < 8);
+      const q: Qualified[] = [
+        ...qualified.filter((x) => x.slot !== 3),
+        ...thirds.map((g) => ({ team: `3${g}`, group: g, slot: 3 as QualifiedSlot })),
+      ];
+      const r32 = buildRoundOf32(q, seed);
+      expect(new Set(r32.flat().map((x) => x.team)).size).toBe(32);
+      for (const [a, b] of r32) expect(a.group, `seed ${seed}`).not.toBe(b.group);
+    }
+  });
+
   it("es determinista por seed", () => {
     expect(buildRoundOf32(qualified, 5)).toEqual(buildRoundOf32(qualified, 5));
   });

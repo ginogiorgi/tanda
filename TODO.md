@@ -263,8 +263,11 @@ Orden de merge sugerido: `wip/avatar-glb` → `wip/post-6b` (migración `…18�
    puede haber más casos fuertes en las 600 viejas.
 7. **Avatar**: `useLoader.preload` de los dos GLB en el creador (evita el fallback procedural al cambiar
    de cuerpo) y medir en un Android de gama media el costo del template (`templateOf`) y del primer frame.
-8. **Flake de `tournament_e2e`** (1 de 3 corridas, primera post-reset): reproducir con `--repeat` y ver
-   si es un deadline de `now()` en el arranque.
+8. ✅ **"Flake" de `tournament_e2e` = bug real** (rama `wip/ideas-e2e`): el greedy de `build_knockout`
+   (y `buildRoundOf32` en TS) a veces cruzaba en 16avos a dos del MISMO grupo según el seed (~2%: 7 de 300
+   seeds; también en prod). Arreglo: pasada de reparación determinista en TS + migración
+   `20261120000000_knockout_same_group_fix` (port 1:1). Tests: propiedad de 5000 seeds en el motor y 300
+   seeds reales en la DB (sin el fix fallan 24, 33, 145…; con el fix 0). **Aplicar en prod con OK de Gino.**
 9. **CSP**: pasar `Content-Security-Policy-Report-Only` a enforcing (en local loguea las conexiones a
    127.0.0.1; agregar `http://127.0.0.1:54321` solo en dev).
 10. **Supabase CLI 2.106 → 3.x** y deps mayores (three, @supabase/ssr): decisión de Gino (major).

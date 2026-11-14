@@ -86,6 +86,38 @@ describe("torneo completo 2 humanos + 46 bots → campeón", () => {
     120_000,
   );
 
+  it(
+    "build_knockout nunca cruza a dos del mismo grupo en 16avos (300 seeds sobre el mismo torneo)",
+    async () => {
+      await withRollback(async (c) => {
+        // Antes era un greedy que según el seed dejaba un cruce del mismo grupo (el "flake" de arriba).
+        const { tournamentId } = await startRealTournament(c, 2);
+        expect(await driveTournament(c, tournamentId)).toBeGreaterThanOrEqual(0);
+        await c.query(`delete from public.matches where tournament_id = $1 and phase <> 'group'`, [tournamentId]);
+        const bad: number[] = [];
+        for (let seed = 1; seed <= 300; seed++) {
+          await c.query(`delete from public.matches where tournament_id = $1 and phase = 'round_of_32'`, [tournamentId]);
+          await c.query(`update public.tournaments set seed = $2 where id = $1`, [tournamentId, seed * 7919]);
+          await c.query(`select public.build_knockout($1)`, [tournamentId]);
+          const r = (
+            await c.query<{ n: string; same: string }>(
+              `select count(*) n, count(*) filter (where h.group_letter = a.group_letter) same
+                 from public.matches m
+                 join public.participants h on h.id = m.home_participant_id
+                 join public.participants a on a.id = m.away_participant_id
+                where m.tournament_id = $1 and m.phase = 'round_of_32'`,
+              [tournamentId],
+            )
+          ).rows[0]!;
+          expect(Number(r.n)).toBe(16);
+          if (Number(r.same) > 0) bad.push(seed);
+        }
+        expect(bad).toEqual([]);
+      });
+    },
+    120_000,
+  );
+
   it("correct_index nunca viaja en penal:start ni score:live; sí en penal:result", async () => {
     await withRollback(async (c) => {
       const { tournamentId } = await startRealTournament(c, 2);

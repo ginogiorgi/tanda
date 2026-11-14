@@ -204,7 +204,7 @@ export interface Qualified {
  * evitando el mismo grupo. El orden del array es el orden del bracket (el ganador del cruce `i`
  * enfrenta al del `i+1` en la ronda siguiente; lo encadena `advanceBracket`).
  *
- * Nota: garantiza no-cruce de mismo grupo en `round_of_32`; la evitación en rondas más
+ * Nota: garantiza no-cruce de mismo grupo en `round_of_32` (greedy + reparación); la evitación en rondas más
  * profundas (estilo tabla oficial 2026) queda como refinamiento futuro.
  */
 export function buildRoundOf32(qualified: Qualified[], seed: number): Array<[Qualified, Qualified]> {
@@ -226,6 +226,18 @@ export function buildRoundOf32(qualified: Qualified[], seed: number): Array<[Qua
     const a = pool.shift()!;
     const b = takeDifferentGroup(a.group);
     matches.push([a, b]);
+  }
+  // Reparación: el greedy puede terminar sin opción (los últimos del pozo son del mismo grupo). Se
+  // cambia el segundo de ese cruce por el de un cruce anterior donde ninguno es de ese grupo → los
+  // dos quedan válidos. Determinista (primer cruce que sirve). Port 1:1 en `build_knockout`.
+  for (let i = 0; i < matches.length; i++) {
+    const [a, b] = matches[i]!;
+    if (a.group !== b.group) continue;
+    const j = matches.findIndex(([c, d]) => c.group !== a.group && d.group !== a.group);
+    if (j < 0) continue;
+    const [c, d] = matches[j]!;
+    matches[j] = [c, b];
+    matches[i] = [a, d];
   }
   return matches;
 }
