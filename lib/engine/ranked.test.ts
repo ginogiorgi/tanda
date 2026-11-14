@@ -13,8 +13,10 @@ import {
   seasonReset,
   stakes,
   DIVISIONS,
+  K,
   MIN_DELTA,
 } from "./ranked";
+import { makeRng } from "./rng";
 
 describe("ranked: Elo", () => {
   it("parejos → 50% y ±K/2", () => {
@@ -38,17 +40,40 @@ describe("ranked: Elo", () => {
   });
 });
 
-describe("ranked: ubicación y escudo", () => {
-  it("las 5 primeras mueven el doble", () => {
+describe("ranked: K fijo (sin ubicación) y escudo", () => {
+  it("la 1ª partida vale lo mismo que cualquier otra: parejos → ±16", () => {
     const p = newPlayer();
-    expect(applyResult(p, 1500, true).delta).toBe(32);
-    const after = { ...p, placementLeft: 0 };
-    expect(applyResult(after, 1500, true).delta).toBe(16);
-    expect(applyResult(p, 1500, true).state.placementLeft).toBe(4);
+    expect(applyResult(p, 1500, true).delta).toBe(16);
+    expect(applyResult(p, 1500, false).delta).toBe(-16);
+    expect(applyResult(applyResult(p, 1500, true).state, 1516, true).delta).toBe(16); // 2ª partida: igual
+  });
+
+  it("propiedades (2000 casos): el Δ depende solo de ratings, resultado y escudo", () => {
+    const rnd = makeRng(20261114); // mulberry32 del motor
+    const int = (lo: number, hi: number) => lo + Math.floor(rnd() * (hi - lo + 1));
+    for (let i = 0; i < 2000; i++) {
+      const s = { rating: int(0, 2600), shield: int(0, 3) };
+      const opp = int(0, 2600);
+      const won = rnd() < 0.5;
+      const o = applyResult(s, opp, won);
+      // Determinista y sin estado oculto (no hay reloj, cola ni número de partida en la firma).
+      expect(applyResult({ ...s }, opp, won)).toEqual(o);
+      // Signo correcto y |Δ| acotado por K (el escudo solo puede achicar la pérdida).
+      if (won) expect(o.delta).toBeGreaterThanOrEqual(MIN_DELTA);
+      else expect(o.delta).toBeLessThanOrEqual(0);
+      expect(Math.abs(o.delta)).toBeLessThanOrEqual(K);
+      // Sin escudo y lejos de 0: suma cero entre los dos lados del mismo partido.
+      if (s.shield === 0 && s.rating > 100 && opp > 100) {
+        const other = applyResult({ rating: opp, shield: 0 }, s.rating, !won);
+        if (Math.abs(o.delta) > MIN_DELTA && Math.abs(other.delta) > MIN_DELTA) {
+          expect(o.delta + other.delta).toBe(0);
+        }
+      }
+    }
   });
 
   it("ascender da escudo de 3 derrotas que no te bajan de división", () => {
-    const s = { rating: 1590, placementLeft: 0, shield: 0 };
+    const s = { rating: 1590, shield: 0 };
     const up = applyResult(s, 1590, true);
     expect(up.promoted).toBe(true);
     expect(divisionFor(up.state.rating).id).toBe("primera");
@@ -68,13 +93,13 @@ describe("ranked: ubicación y escudo", () => {
   });
 
   it("sin escudo se desciende normal; nunca baja de 0", () => {
-    const r = applyResult({ rating: 1452, placementLeft: 0, shield: 0 }, 1452, false);
+    const r = applyResult({ rating: 1452, shield: 0 }, 1452, false);
     expect(r.demoted).toBe(true);
-    expect(applyResult({ rating: 2, placementLeft: 0, shield: 0 }, 2, false).state.rating).toBe(0);
+    expect(applyResult({ rating: 2, shield: 0 }, 2, false).state.rating).toBe(0);
   });
 
   it("stakes = lo que muestra el pre-partido", () => {
-    expect(stakes({ rating: 1500, placementLeft: 0, shield: 0 }, 1500)).toEqual({ win: 16, loss: -16 });
+    expect(stakes({ rating: 1500, shield: 0 }, 1500)).toEqual({ win: 16, loss: -16 });
   });
 });
 
@@ -100,13 +125,9 @@ describe("ranked: divisiones y progreso", () => {
 });
 
 describe("ranked: temporadas, cola y preguntas", () => {
-  it("reset suave a mitad de camino de 1500 con 3 de ubicación", () => {
-    expect(seasonReset({ rating: 1800, placementLeft: 0, shield: 2 })).toEqual({
-      rating: 1650,
-      placementLeft: 3,
-      shield: 0,
-    });
-    expect(seasonReset({ rating: 1201, placementLeft: 0, shield: 0 }).rating).toBe(1351);
+  it("reset suave a mitad de camino de 1500, sin escudo", () => {
+    expect(seasonReset({ rating: 1800, shield: 2 })).toEqual({ rating: 1650, shield: 0 });
+    expect(seasonReset({ rating: 1201, shield: 0 }).rating).toBe(1351);
   });
 
   it("temporada por fecha", () => {
@@ -115,9 +136,11 @@ describe("ranked: temporadas, cola y preguntas", () => {
     expect(seasonName("apertura-2027")).toBe("Apertura 2027");
   });
 
-  it("la ventana se abre con la espera", () => {
-    expect(queueWindow(0)).toBe(100);
-    expect(queueWindow(12)).toBe(250);
+  it("la ventana se abre con la espera: ±300 → ±600 (10 s) → cualquiera (20 s)", () => {
+    expect(queueWindow(0)).toBe(300);
+    expect(queueWindow(9.9)).toBe(300);
+    expect(queueWindow(10)).toBe(600);
+    expect(queueWindow(19.9)).toBe(600);
     expect(queueWindow(20)).toBeNull();
   });
 

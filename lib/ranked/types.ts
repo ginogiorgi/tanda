@@ -10,7 +10,6 @@ export type { DivisionId };
 /** `get_ranked_me()`: la ficha de liga del jugador. */
 export interface RankedMe {
   rating: number;
-  placement_left: number;
   shield: number;
   games: number;
   wins: number;
@@ -29,8 +28,6 @@ export type RankedPoll =
   | {
       status: "queued";
       waited_ms: number;
-      /** Ventana de rating aceptada hoy (null = cualquiera). */
-      window: number | null;
       rating: number;
       in_queue: number;
       server_now: string;
@@ -43,7 +40,6 @@ export interface RankedSideResult {
   demoted: boolean;
   shield_saved: boolean;
   shield: number;
-  placement_left: number;
 }
 
 export interface RankedSide {
@@ -77,8 +73,6 @@ export interface RankingRow {
   division: DivisionId;
   games: number;
   wins: number;
-  /** Todavía en partidas de ubicación. */
-  placement: boolean;
   is_me: boolean;
 }
 

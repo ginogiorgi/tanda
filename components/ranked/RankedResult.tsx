@@ -47,7 +47,7 @@ export function RankedResult({ view, result }: { view: RankedMatchView; result: 
           </span>
         </div>
 
-        <DivisionProgress rating={result.rating} placementLeft={result.placement_left} shield={result.shield} />
+        <DivisionProgress rating={result.rating} shield={result.shield} />
 
         {result.promoted && (
           <div className="reveal-pop flex w-full items-center gap-3 border-2 border-ink bg-ink p-3 text-bg">

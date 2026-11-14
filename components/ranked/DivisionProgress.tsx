@@ -7,12 +7,10 @@ import { DivisionCrest } from "./DivisionCrest";
  */
 export function DivisionProgress({
   rating,
-  placementLeft = 0,
   shield = 0,
   compact = false,
 }: {
   rating: number;
-  placementLeft?: number;
   shield?: number;
   compact?: boolean;
 }) {
@@ -38,11 +36,7 @@ export function DivisionProgress({
           <div className="h-full bg-brand" style={{ width: `${p.fraction * 100}%` }} />
         </div>
         <span className="text-xs font-semibold text-fg-muted">
-          {placementLeft > 0
-            ? `Ubicación: ${placementLeft} ${placementLeft === 1 ? "partida" : "partidas"} con puntos dobles`
-            : p.next
-              ? `→ ${p.next.name} en ${p.toNext}`
-              : "División máxima"}
+          {p.next ? `→ ${p.next.name} en ${p.toNext}` : "División máxima"}
           {shield > 0 && ` · Escudo ${shield}/3`}
         </span>
       </div>

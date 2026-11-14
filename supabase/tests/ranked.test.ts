@@ -15,7 +15,7 @@ import {
 
 afterAll(closePool);
 
-type Poll = { status: "idle" | "queued" | "matched" | "busy"; tournament_id?: string; window?: number | null };
+type Poll = { status: "idle" | "queued" | "matched" | "busy"; tournament_id?: string };
 
 async function as<T>(c: PoolClient, uid: string, sql: string, params: unknown[] = []): Promise<T> {
   await asRole(c, "authenticated", uid);
@@ -38,13 +38,9 @@ async function user(c: PoolClient, tag: string): Promise<string> {
   return createUser(c, `${tag}_${randomUUID().slice(0, 8)}`);
 }
 
-async function setRating(c: PoolClient, uid: string, rating: number, placementLeft = 0): Promise<void> {
+async function setRating(c: PoolClient, uid: string, rating: number): Promise<void> {
   await c.query("select public.ranked_ensure_player($1)", [uid]);
-  await c.query("update public.ranked_players set rating = $2, placement_left = $3 where user_id = $1", [
-    uid,
-    rating,
-    placementLeft,
-  ]);
+  await c.query("update public.ranked_players set rating = $2 where user_id = $1", [uid, rating]);
 }
 
 async function player(c: PoolClient, uid: string) {
@@ -80,29 +76,31 @@ describe("ranked: cola", () => {
       const q = await c.query("select 1 from public.ranked_queue");
       expect(q.rowCount).toBe(0);
 
-      // Lo que está en juego quedó guardado (parejos en ubicación: ±32).
+      // Lo que está en juego quedó guardado (parejos, K=32 fijo — sin ubicación: ±16 desde la 1ª).
       const rm = (
         await c.query<{ home_stakes: { win: number; loss: number } }>(
           "select home_stakes from public.ranked_matches where tournament_id = $1",
           [pb.tournament_id],
         )
       ).rows[0]!;
-      expect(rm.home_stakes).toEqual({ win: 32, loss: -32 });
+      expect(rm.home_stakes).toEqual({ win: 16, loss: -16 });
     });
   });
 
-  it("la ventana se abre con la espera: ±100 → ±250 (10s) → cualquiera (20s)", async () => {
+  it("la ventana se abre con la espera: ±300 → ±600 (10s) → cualquiera (20s), y NO viaja al cliente", async () => {
     await withRollback(async (c) => {
       const a = await user(c, "rk_w1");
       const b = await user(c, "rk_w2");
       await setRating(c, a, 1500);
-      await setRating(c, b, 1700);
+      await setRating(c, b, 1900);
       await enqueue(c, a);
-      expect((await enqueue(c, b)).status).toBe("queued"); // 200 > 100
+      const qb = await enqueue(c, b);
+      expect(qb.status).toBe("queued"); // 400 > 300
+      expect(qb).not.toHaveProperty("window"); // oculta (feedback 14/11)
 
       await c.query("update public.ranked_queue set enqueued_at = now() - interval '12 seconds' where user_id = $1", [a]);
       const p = await poll(c, b);
-      expect(p.status).toBe("matched"); // A ya abrió a ±250
+      expect(p.status).toBe("matched"); // A ya abrió a ±600
 
       const d = await user(c, "rk_w3");
       const e = await user(c, "rk_w4");
@@ -111,9 +109,41 @@ describe("ranked: cola", () => {
       await enqueue(c, d);
       expect((await enqueue(c, e)).status).toBe("queued");
       await c.query("update public.ranked_queue set enqueued_at = now() - interval '12 seconds' where user_id = $1", [d]);
-      expect((await poll(c, e)).status).toBe("queued"); // 700 > 250
+      expect((await poll(c, e)).status).toBe("queued"); // 700 > 600
       await c.query("update public.ranked_queue set enqueued_at = now() - interval '21 seconds' where user_id = $1", [d]);
       expect((await poll(c, e)).status).toBe("matched"); // ≥20s: cualquier humano
+    });
+  });
+
+  it("lo que está en juego NO depende del tiempo en la cola (feedback 14/11)", async () => {
+    await withRollback(async (c) => {
+      const stakesAfterWait = async (tag: string, waitSec: number) => {
+        const a = await user(c, `${tag}a`);
+        const b = await user(c, `${tag}b`);
+        await setRating(c, a, 1500);
+        await setRating(c, b, 1560);
+        await enqueue(c, a);
+        await c.query(
+          `update public.ranked_queue set enqueued_at = now() - make_interval(secs => $2) where user_id = $1`,
+          [a, waitSec],
+        );
+        const pb = await enqueue(c, b);
+        expect(pb.status).toBe("matched");
+        const { rows } = await c.query<{ home_stakes: unknown; away_stakes: unknown }>(
+          "select home_stakes, away_stakes from public.ranked_matches where tournament_id = $1",
+          [pb.tournament_id],
+        );
+        return rows[0]!;
+      };
+      const quick = await stakesAfterWait("rk_q0", 0);
+      const slow = await stakesAfterWait("rk_q1", 120);
+      expect(slow).toEqual(quick);
+      // = el motor puro con los dos ratings (A 1500 vs B 1560; A esperó más → local).
+      const s = { rating: 1500, shield: 0 };
+      expect(quick.home_stakes).toEqual({
+        win: applyResult(s, 1560, true).delta,
+        loss: applyResult(s, 1560, false).delta,
+      });
     });
   });
 
@@ -215,7 +245,7 @@ describe("ranked: partido", () => {
       expect(st.status).toBe("finished");
       expect((await player(c, a)).wins).toBe(0);
       expect((await player(c, b)).wins).toBe(1);
-      expect((await player(c, a)).rating).toBe(1468); // ubicación: −32
+      expect((await player(c, a)).rating).toBe(1484); // K=32 fijo: −16 (sin ubicación)
       const open = await c.query(
         "select 1 from public.penalties pe join public.matches m on m.id = pe.match_id where m.tournament_id = $1 and pe.status <> 'resolved'",
         [t],
@@ -262,7 +292,7 @@ describe("ranked: partido", () => {
 });
 
 describe("ranked: temporadas y perfil", () => {
-  it("cambio de temporada: guarda el resultado y reset suave con 3 de ubicación", async () => {
+  it("cambio de temporada: guarda el resultado y reset suave (sin ubicación)", async () => {
     await withRollback(async (c) => {
       const a = await user(c, "rk_s");
       await c.query(
@@ -280,7 +310,7 @@ describe("ranked: temporadas y perfil", () => {
           [a],
         )
       ).rows[0]!;
-      expect(p).toEqual({ rating: 1650, placement_left: 3, season_id: seasonIdFor(new Date()) });
+      expect(p).toEqual({ rating: 1650, placement_left: 0, season_id: seasonIdFor(new Date()) });
       const res = (
         await c.query<{ peak_rating: number }>(
           "select peak_rating from public.ranked_season_results where user_id = $1 and season_id = 'apertura-2020'",
@@ -319,11 +349,12 @@ describe("ranked: grants", () => {
 
 describe("ranked: paridad TS↔SQL", () => {
   it("ranked_apply_result / division / difficulty = lib/engine/ranked", async () => {
-    const cases: { s: RankedState; opp: number; won: boolean }[] = [];
+    const cases: { s: RankedState; placement: number; opp: number; won: boolean }[] = [];
     for (let i = 0; i < 400; i++) {
       const r = (i * 7919) % 2600;
       cases.push({
-        s: { rating: r, placementLeft: i % 7, shield: i % 4 },
+        s: { rating: r, shield: i % 4 },
+        placement: i % 7, // la SQL conserva el parámetro pero lo ignora (K=32 fijo)
         opp: (i * 104729) % 2600,
         won: i % 2 === 0,
       });
@@ -348,7 +379,7 @@ describe("ranked: paridad TS↔SQL", () => {
         order by x.i`,
       [
         cases.map((c) => c.s.rating),
-        cases.map((c) => c.s.placementLeft),
+        cases.map((c) => c.placement),
         cases.map((c) => c.s.shield),
         cases.map((c) => c.opp),
         cases.map((c) => c.won),
@@ -359,13 +390,13 @@ describe("ranked: paridad TS↔SQL", () => {
       const o = applyResult(c.s, c.opp, c.won);
       expect({
         rating: row.rating,
-        placementLeft: row.placement_left,
         shield: row.shield,
         delta: row.delta,
         promoted: row.promoted,
         demoted: row.demoted,
         shieldSaved: row.shield_saved,
       }).toEqual({ ...o.state, delta: o.delta, promoted: o.promoted, demoted: o.demoted, shieldSaved: o.shieldSaved });
+      expect(row.placement_left).toBe(0);
       expect(row.div).toBe(divisionIndex(c.s.rating));
       expect(row.diff).toBe(rankedDifficulty(c.s.rating, (Number(row.i) % 14) + 1));
     });

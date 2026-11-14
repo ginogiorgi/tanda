@@ -40,7 +40,7 @@ const RANKED_VIEW: RankedMatchView = {
     avatar: {},
     rating: 1588,
     stakes: { win: 18, loss: -14 },
-    result: { delta: 18, rating: 1606, promoted: true, demoted: false, shield_saved: false, shield: 3, placement_left: 0 },
+    result: { delta: 18, rating: 1606, promoted: true, demoted: false, shield_saved: false, shield: 3 },
   },
   opp: { participant_id: "p2", username: "jm10", avatar: {}, rating: 1640 },
 };
@@ -210,7 +210,7 @@ export default function KitPage() {
       <section className="flex w-full max-w-md flex-col gap-4">
         <SectionTitle>Ranked</SectionTitle>
         <Card className="flex flex-col gap-4">
-          <DivisionProgress rating={1525} placementLeft={2} />
+          <DivisionProgress rating={1525} shield={2} />
           <DivisionProgress rating={1712} shield={2} compact />
         </Card>
         <RankedResult view={RANKED_VIEW} result={RANKED_VIEW.me.result!} />

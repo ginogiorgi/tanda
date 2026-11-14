@@ -3,12 +3,15 @@
  * camino autoritativo es su port fiel a plpgsql (`ranked_apply_result`, `ranked_division`,
  * `ranked_difficulty`, `ranked_season_reset`), verificado por paridad en `supabase/tests/parity`.
  *
- *  · Elo con K variable: K=64 en partidas de ubicación (5 al empezar, 3 al arrancar cada temporada),
- *    K=32 después. Δ = round(K·(S−E)) con piso de ±4 para que toda partida se sienta. La asimetría
- *    que pidió Gino sale sola: el que gana "de punto" suma mucho; el favorito que pierde, resta mucho.
+ *  · Elo con K=32 FIJO: toda partida vale lo mismo (sin partidas de ubicación — Gino, 14/11). El cambio
+ *    de puntos depende SOLO de los dos ratings, el resultado y el escudo: nunca de la cola ni del tiempo.
+ *    Δ = round(K·(S−E)) con piso de ±4 para que toda partida se sienta. La asimetría sale sola: el que
+ *    gana "de punto" suma mucho; el favorito que pierde, resta mucho.
  *  · Divisiones con nombres futboleros (Potrero → Leyenda).
  *  · Escudo: al ascender de división, las 3 derrotas siguientes no te bajan (piso en el umbral).
  *  · Temporadas Apertura (ene–jun) / Clausura (jul–dic) con reset suave a mitad de camino de 1500.
+ *  · Ventana de emparejamiento (oculta al jugador): ±300 los primeros 10 s, ±600 hasta los 20 s, después
+ *    cualquiera.
  *
  * Redondeo: `Math.floor(x + 0.5)` (no `Math.round`) para que coincida bit a bit con
  * `floor(x + 0.5)` de Postgres también en los negativos.
@@ -17,10 +20,7 @@
 import type { Difficulty } from "./difficulty";
 
 export const BASE_RATING = 1500;
-export const PLACEMENT_GAMES = 5;
-export const SEASON_PLACEMENT_GAMES = 3;
-export const K_PLACEMENT = 64;
-export const K_STANDARD = 32;
+export const K = 32;
 export const MIN_DELTA = 4;
 export const SHIELD_LOSSES = 3;
 
@@ -45,8 +45,6 @@ export const DIVISIONS: readonly Division[] = [
 /** Estado de liga de un jugador (lo que persiste `ranked_players`). */
 export interface RankedState {
   rating: number;
-  /** Partidas de ubicación que le quedan (K alto mientras > 0). */
-  placementLeft: number;
   /** Derrotas protegidas que le quedan tras el último ascenso. */
   shield: number;
 }
@@ -62,7 +60,7 @@ export interface RankedOutcome {
 }
 
 export function newPlayer(): RankedState {
-  return { rating: BASE_RATING, placementLeft: PLACEMENT_GAMES, shield: 0 };
+  return { rating: BASE_RATING, shield: 0 };
 }
 
 /** Probabilidad esperada de ganar de `rating` contra `opp` (Elo, escala 400). */
@@ -71,7 +69,7 @@ export function expectedScore(rating: number, opp: number): number {
 }
 
 /** Δ crudo de Elo (con el piso de ±MIN_DELTA), antes de escudo. */
-export function ratingDelta(rating: number, opp: number, won: boolean, k: number): number {
+export function ratingDelta(rating: number, opp: number, won: boolean, k: number = K): number {
   const raw = Math.floor(k * ((won ? 1 : 0) - expectedScore(rating, opp)) + 0.5);
   return won ? Math.max(raw, MIN_DELTA) : Math.min(raw, -MIN_DELTA);
 }
@@ -88,9 +86,8 @@ export function divisionFor(rating: number): Division {
 
 /** Aplica el resultado de una partida. Puro: devuelve el estado nuevo y qué pasó. */
 export function applyResult(s: RankedState, opp: number, won: boolean): RankedOutcome {
-  const k = s.placementLeft > 0 ? K_PLACEMENT : K_STANDARD;
   const fromDiv = divisionIndex(s.rating);
-  let rating = Math.max(0, s.rating + ratingDelta(s.rating, opp, won, k));
+  let rating = Math.max(0, s.rating + ratingDelta(s.rating, opp, won));
   let shield = s.shield;
   let shieldSaved = false;
 
@@ -108,7 +105,7 @@ export function applyResult(s: RankedState, opp: number, won: boolean): RankedOu
   if (promoted) shield = SHIELD_LOSSES;
 
   return {
-    state: { rating, placementLeft: Math.max(0, s.placementLeft - 1), shield },
+    state: { rating, shield },
     delta: rating - s.rating,
     promoted,
     demoted: toDiv < fromDiv,
@@ -141,13 +138,9 @@ export function progressToNext(rating: number): DivisionProgress {
   return { division, next, toNext: next.min - rating, fraction };
 }
 
-/** Reset suave de fin de temporada: a mitad de camino de 1500, con ubicación de nuevo. */
+/** Reset suave de fin de temporada: a mitad de camino de 1500, sin escudo. */
 export function seasonReset(s: RankedState): RankedState {
-  return {
-    rating: BASE_RATING + Math.trunc((s.rating - BASE_RATING) / 2),
-    placementLeft: SEASON_PLACEMENT_GAMES,
-    shield: 0,
-  };
+  return { rating: BASE_RATING + Math.trunc((s.rating - BASE_RATING) / 2), shield: 0 };
 }
 
 /**
@@ -162,8 +155,8 @@ export function rankedDifficulty(avgRating: number, idx: number): Difficulty {
 
 /** Ventana de rating aceptada según cuánto esperó el jugador en la cola (null = cualquiera). */
 export function queueWindow(waitedSeconds: number): number | null {
-  if (waitedSeconds < 10) return 100;
-  if (waitedSeconds < 20) return 250;
+  if (waitedSeconds < 10) return 300;
+  if (waitedSeconds < 20) return 600;
   return null;
 }
 

@@ -33,12 +33,8 @@ describe("segunda chance: se quita la opción de cada jugador (tarea 10)", () =>
       await c.query("select public.select_option($1, $2)", [penalty, wrongKeeper]);
       await resetRole(c);
 
-      // Vence el deadline y resolvemos (como postgres → sin uid, saltea el chequeo de pertenencia).
-      await c.query(
-        `update public.penalties set deadline = now() - interval '1 second' where id = $1`,
-        [penalty],
-      );
-      await c.query("select public.resolve_penalty($1)", [penalty]);
+      // Regla de fase (phase_close): con las dos respuestas, la 1ª fase ya se resolvió sola — sin
+      // vencer el deadline — y abrió la 2ª chance.
 
       const { rows } = await c.query<{
         status: string;
