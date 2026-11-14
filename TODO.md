@@ -26,9 +26,17 @@ competencia terminada (tabla `awards`).
   constraint trigger diferido al pasar el torneo a `finished`; división final al cerrar temporada
   (`ranked_season_results`); backfill; `get_profile_stats` lee solo `awards` (+ `current` = temporada en juego;
   `divisions: []` queda por el front viejo → dropear en la próxima). Tests `awards.test.ts` (a–e + torneo real).
-- **Flake de `ranked.spec` en local = CPU**: la otra sesión corre Chrome headless con WebGL por software (GPU
-  process al ~660% CPU, load ~19) y los dos contextos 3D del ranked no llegan a completar los clicks. En el CI
-  (runner limpio) es la referencia; PR draft #1 para correrlo.
+- **🚀 Deploy F1–F3b a prod (14/11 ~18:45, `a0288e8`, fast-forward de main):**
+  - DB por MCP: `phase_close`, `ranked_k32_window`, `awards` → ledger reconciliado a `20261123000000/01/02`
+    (renumeradas: `20261122000000` es de `wip/deps-major`). Replay ranked: Rosario 1532→**1516**, chese890
+    1468→**1484** (backup `ranked_players_backup_1411`, 2 filas). Backfill awards = 0 (ningún humano pasó de
+    grupos; los "3 logros" eran las divisiones derivadas). `get_advisors`: solo lo esperado por diseño.
+  - Vercel: funciones en **gru1** (`x-vercel-id: gru1::gru1`). Smoke prod 26/26 (axe + CSP) + invitado →
+    /jugar → Mundial → partido → penal: 0 errores de consola, 0 violaciones CSP; el penal cerró 6,7 s después
+    de responder (cuando actuó el bot), no a los 10 s.
+- **CI de `e2e-flow` vuelve a verde** (en main fallaban `game` y `ranked` desde el deploy de CSP): la escena del
+  penal corría a 60 fps a pantalla completa durante la pregunta y con WebGL por software los taps no se
+  procesaban. Ahora se pinta a demanda mientras se responde y anima solo la jugada (`PenalScene` `frameloop`).
 - **Pendiente:** F4 (precarga 3D, `scripts/perf/budget.ts`, medición prod vs F0) · F5 (avatar).
 
 ## 🚀 Deploy a prod (14/11, pedido por Gino) — main = `wip/csp-enforce` (fast-forward)
