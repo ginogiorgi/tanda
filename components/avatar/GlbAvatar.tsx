@@ -5,8 +5,9 @@
  *
  * - **Rig:** registra pivotes "fantasma" (Groups fuera de la escena) con los nombres del rig, así
  *   `applyPose` funciona igual; por frame se traducen a huesos con `lib/avatar/glbRig`.
- * - **Ropa:** sin mallas de ropa. Cada vértice del cuerpo recibe una región (piel/remera/short/
- *   botines) según su hueso dominante y altura en bind; el shader pinta la región con su color.
+ * - **Ropa:** sin mallas de ropa. El shader decide la región (piel/remera/short/botines) por
+ *   fragmento con planos sobre la posición en bind (T-pose) → cortes rectos; el corte de ropa
+ *   (largo de manga, short o pantalón) va por uniforms.
  * - **Pelo:** se muestra el peinado de `hair.part` y se tiñe (textura gris del pack).
  *
  * Requiere `<Suspense>` arriba (useLoader).
@@ -46,57 +47,57 @@ function hairMesh(part: string, body: BodyType): string | null {
 /** Mitad de la altura (~1.85 m) para centrar en el creador; en la escena va `grounded`. */
 const HALF_HEIGHT = 0.92;
 
-const enum Region {
-  Skin = 0,
-  Top = 1,
-  Bottom = 2,
-  Shoes = 3,
-}
-
 interface Outfit {
-  upperArm: boolean;
-  foreArm: boolean;
-  shorts: boolean;
+  /** Fin de la manga: |x| en bind (T-pose → el plano es perpendicular al brazo). */
+  sleeveX: number;
+  /** Dobladillo del pantalón: y en bind (0 = hasta el botín). */
+  hemY: number;
 }
 
-function outfitOf(config: AvatarConfig): Outfit {
-  const t = config.top.part;
-  return {
-    upperArm: t !== "tank",
-    foreArm: t === "longsleeve",
-    shorts: config.bottom.part === "shorts",
-  };
-}
-
+/**
+ * Cortes medidos sobre el bind normalizado (T-pose, pies en 0, 1.85 m). Brazos: solo por encima
+ * de y≈1.39; torso hasta |x| 0.21 (H) / 0.16 (M); codo ≈0.45/0.40; muñeca ≈0.71/0.665.
+ */
+const SLEEVE_X: Record<BodyType, Record<"tank" | "tee" | "longsleeve", number>> = {
+  male: { tank: 0.215, tee: 0.32, longsleeve: 0.705 },
+  female: { tank: 0.165, tee: 0.28, longsleeve: 0.66 },
+};
 /**
  * Corte del short (rodilla ≈0.54, cadera ≈0.97 en el modelo). Más largo que medio muslo: tapa la
  * ropa interior que trae pintada la textura del pack.
  */
 const SHORT_HEM_Y = 0.66;
-/** Cintura: remera arriba, short/pantalón abajo (por altura, no por hueso → corte parejo). */
-const WAIST_Y = 1.02;
-/** Altura del cuerpo en bind (m), para normalizar. */
-const BODY_HEIGHT = 1.85;
 
-function regionOf(bone: string, y: number, o: Outfit): Region {
-  if (/^(foot|ball)_/.test(bone)) return Region.Shoes;
-  if (/^calf_/.test(bone)) return o.shorts ? Region.Skin : Region.Bottom;
-  if (/^thigh_/.test(bone)) return o.shorts && y < SHORT_HEM_Y ? Region.Skin : Region.Bottom;
-  if (bone === "pelvis" || /^spine_0[12]$/.test(bone)) return y < WAIST_Y ? Region.Bottom : Region.Top;
-  if (/^(spine_03|clavicle_)/.test(bone)) return Region.Top;
-  if (/^upperarm_/.test(bone)) return o.upperArm ? Region.Top : Region.Skin;
-  if (/^lowerarm_/.test(bone)) return o.foreArm ? Region.Top : Region.Skin;
-  return Region.Skin;
+function outfitOf(config: AvatarConfig): Outfit {
+  const t = config.top.part;
+  const sleeve = t === "tank" || t === "longsleeve" ? t : "tee";
+  return {
+    sleeveX: SLEEVE_X[config.bodyType][sleeve],
+    hemY: config.bottom.part === "shorts" ? SHORT_HEM_Y : 0,
+  };
 }
 
-/** Atributos `aRegion` (región por vértice) y `aBind` (posición en bind, espacio del modelo). */
-function paintRegions(mesh: THREE.SkinnedMesh, o: Outfit): void {
+/** Altura del cuerpo en bind (m), para normalizar. */
+const BODY_HEIGHT = 1.85;
+/** Cintura: remera arriba, short/pantalón abajo. */
+const WAIST_Y = 1.02;
+/** Tobillo: botín abajo (pie hasta ≈0.11, pantorrilla desde ≈0.06). */
+const ANKLE_Y = 0.1;
+/** Por encima de esto y con |x| > manga es brazo (el torso no pasa |x| 0.21 ahí). */
+const ARM_Y = 1.36;
+
+/**
+ * Atributos `aBind` (posición en bind normalizada) y `aHead` (1 = cabeza/cuello → siempre piel).
+ * Las regiones de ropa se deciden por fragmento con planos sobre `aBind` → cortes rectos (un
+ * atributo por vértice deja el borde en zigzag siguiendo los triángulos).
+ */
+function prepareBody(mesh: THREE.SkinnedMesh): void {
   const g = mesh.geometry.clone();
   const pos = g.getAttribute("position");
   const si = g.getAttribute("skinIndex");
   const sw = g.getAttribute("skinWeight");
   const bones = mesh.skeleton.bones;
-  const region = new Float32Array(pos.count * 3); // one-hot (remera, short, botines); 0 = piel
+  const head = new Float32Array(pos.count);
   const bind = new Float32Array(pos.count * 3);
   const v = new THREE.Vector3();
   for (let i = 0; i < pos.count; i++) {
@@ -104,7 +105,7 @@ function paintRegions(mesh: THREE.SkinnedMesh, o: Outfit): void {
     bind.set([v.x, v.y, v.z], i * 3);
   }
   // La geometría viene cuantizada: se re-escala a metros con los límites del propio cuerpo (pies en
-  // 0, coronilla en BODY_HEIGHT) para que los cortes por altura no dependan de la cuantización.
+  // 0, coronilla en BODY_HEIGHT) para que los cortes no dependan de la cuantización.
   let minY = Infinity;
   let maxY = -Infinity;
   let minX = Infinity;
@@ -121,20 +122,18 @@ function paintRegions(mesh: THREE.SkinnedMesh, o: Outfit): void {
     bind[i * 3] = (bind[i * 3]! - cx) * k;
     bind[i * 3 + 1] = (bind[i * 3 + 1]! - minY) * k;
     bind[i * 3 + 2] = bind[i * 3 + 2]! * k;
-    v.set(bind[i * 3]!, bind[i * 3 + 1]!, bind[i * 3 + 2]!);
     let best = 0;
     let w = -1;
-    for (let k = 0; k < 4; k++) {
-      const wk = sw.getComponent(i, k);
-      if (wk > w) {
-        w = wk;
-        best = si.getComponent(i, k);
+    for (let j = 0; j < 4; j++) {
+      const wj = sw.getComponent(i, j);
+      if (wj > w) {
+        w = wj;
+        best = si.getComponent(i, j);
       }
     }
-    const r = regionOf(bones[best]?.name ?? "", v.y, o);
-    if (r !== Region.Skin) region[i * 3 + r - 1] = 1;
+    if (/^(neck|head)/i.test(bones[best]?.name ?? "")) head[i] = 1;
   }
-  g.setAttribute("aRegion", new THREE.BufferAttribute(region, 3));
+  g.setAttribute("aHead", new THREE.BufferAttribute(head, 1));
   g.setAttribute("aBind", new THREE.BufferAttribute(bind, 3));
   mesh.geometry = g;
 }
@@ -145,9 +144,13 @@ interface KitUniforms {
   uSashOn: { value: number };
   uBottom: { value: THREE.Color };
   uShoes: { value: THREE.Color };
+  uSleeveX: { value: number };
+  uHemY: { value: number };
 }
 
-function setKitColors(u: KitUniforms, top: HexColor, sash: HexColor | null, bottom: HexColor, shoes: HexColor): void {
+function setKit(u: KitUniforms, o: Outfit, top: HexColor, sash: HexColor | null, bottom: HexColor, shoes: HexColor): void {
+  u.uSleeveX.value = o.sleeveX;
+  u.uHemY.value = o.hemY;
   u.uTop.value.set(top);
   u.uSash.value.set(sash ?? top);
   u.uSashOn.value = sash ? 1 : 0;
@@ -165,26 +168,32 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
     shader.vertexShader = shader.vertexShader
       .replace(
         "#include <common>",
-        "#include <common>\nattribute vec3 aRegion;\nattribute vec3 aBind;\nvarying vec3 vRegion;\nvarying vec3 vBind;",
+        "#include <common>\nattribute float aHead;\nattribute vec3 aBind;\nvarying float vHead;\nvarying vec3 vBind;",
       )
-      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvRegion = aRegion;\nvBind = aBind;");
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvHead = aHead;\nvBind = aBind;");
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nvarying vec3 vRegion;\nvarying vec3 vBind;",
+        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nuniform float uSleeveX;\nuniform float uHemY;\nvarying float vHead;\nvarying vec3 vBind;",
       )
       .replace(
         "#include <map_fragment>",
         [
           "#include <map_fragment>",
-          // one-hot interpolado: gana el canal mayor; si ninguno pasa 0.5, piel (textura)
-          "float rm = max(vRegion.x, max(vRegion.y, vRegion.z));",
-          "if (rm > 0.5) {",
-          "  bool isTop = vRegion.x >= rm;",
-          "  vec3 c = isTop ? uTop : (vRegion.y >= rm ? uBottom : uShoes);",
-          // banda diagonal: hombro izquierdo (+X) → cadera derecha, solo en la remera y adelante
+          // Región por planos en el bind (T-pose): 0 piel (textura), 1 remera, 2 pantalón, 3 botín.
+          "float ax = abs(vBind.x);",
+          "int region = 0;",
+          `if (vBind.y < ${ANKLE_Y.toFixed(3)}) region = 3;`,
+          `else if (vBind.y < ${WAIST_Y.toFixed(3)}) region = vBind.y < uHemY ? 0 : 2;`,
+          // brazos (solo existen arriba de y≈1.39): manga hasta uSleeveX, después piel
+          `else if (vBind.y > ${ARM_Y.toFixed(3)} && ax > uSleeveX) region = 0;`,
+          "else region = 1;",
+          "if (vHead > 0.5) region = 0;",
+          "if (region > 0) {",
+          "  vec3 c = region == 1 ? uTop : (region == 2 ? uBottom : uShoes);",
+          // banda diagonal: hombro izquierdo (+X) → cadera derecha, solo en la remera
           "  float d = abs((vBind.y - 1.22) - 1.15 * vBind.x);",
-          "  if (isTop && uSashOn > 0.5 && d < 0.075) c = uSash;",
+          "  if (region == 1 && uSashOn > 0.5 && d < 0.075) c = uSash;",
           "  diffuseColor.rgb = c;",
           "}",
         ].join("\n"),
@@ -220,28 +229,27 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
       uSashOn: { value: 0 },
       uBottom: { value: new THREE.Color() },
       uShoes: { value: new THREE.Color() },
+      uSleeveX: { value: 0 },
+      uHemY: { value: 0 },
     }),
     [],
   );
 
-  const outfitKey = `${config.top.part}|${config.bottom.part}`;
   const { scene, glbRig } = useMemo(() => {
     const scene = cloneSkinned(gltf.scene);
     scene.updateMatrixWorld(true);
-    const o = outfitOf(config);
     scene.traverse((obj) => {
       if (!(obj instanceof THREE.SkinnedMesh)) return;
       obj.frustumCulled = false; // el bounding box de bind no sigue la pose (patada, estirada)
       const mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
       if (!mat) return;
       if (mat.name.startsWith("MI_Superhero")) {
-        paintRegions(obj, o);
+        prepareBody(obj);
         obj.material = kitMaterial(mat, uniforms);
       }
     });
     return { scene, glbRig: createGlbRig(scene) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cambia con el cuerpo y el corte de ropa
-  }, [gltf, outfitKey, uniforms]);
+  }, [gltf, uniforms]);
 
   // Peinado visible + tinte (material propio del clon, compartido por pelo y cejas).
   const hairName = hairMesh(config.hair.part, config.bodyType);
@@ -293,8 +301,8 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
 
   const wrapper = useRef<THREE.Group>(null);
   useFrame(() => {
-    // Los colores cambian sin recompilar: se mutan los uniforms.
-    setKitColors(uniforms, topColor, sash, config.bottom.color, config.shoes.color);
+    // Colores y cortes cambian sin recompilar ni reclonar: se mutan los uniforms.
+    setKit(uniforms, outfitOf(config), topColor, sash, config.bottom.color, config.shoes.color);
     driveGlbRig(glbRig, proxies, wrapper.current);
   });
 
