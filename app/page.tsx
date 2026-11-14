@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { isModeId, type ModeId } from "@/lib/modes";
+import { MODE_LIST, isModeId, type ModeId } from "@/lib/modes";
 import type { RankedMe } from "@/lib/ranked/types";
 
 export default async function Home({
@@ -33,19 +33,30 @@ export default async function Home({
   let activeModes: ModeId[] = [];
   let ranked: RankedMe | null = null;
   if (user) {
-    const [{ data: profile }, { data: active }, { data: modes }, { data: rankedMe }] = await Promise.all([
+    const [profileRes, activeRes, modesRes, rankedRes] = await Promise.all([
       supabase.from("profiles").select("username").eq("id", user.id).single(),
       supabase.rpc("get_active_tournament"),
       supabase.from("game_modes").select("id").eq("active", true).order("sort"),
       supabase.rpc("get_ranked_me"),
     ]);
-    ranked = rankedMe ?? null;
+    // Un error acá no debe pasar inadvertido (logs de Vercel) ni tumbar la home: se degrada.
+    for (const [name, res] of [["profiles", profileRes], ["get_active_tournament", activeRes],
+      ["game_modes", modesRes], ["get_ranked_me", rankedRes]] as const) {
+      if (res.error) console.error(`[home] ${name}`, res.error.code, res.error.message);
+    }
+    const profile = profileRes.data;
+    const active = activeRes.data;
+    ranked = rankedRes.data ?? null;
     // Si `profiles` falla (p. ej. el 401 transitorio de un token recién emitido), el usuario sigue
     // logueado: el nombre sale de la metadata del alta (wip/fix-guest).
     const metaName: unknown = user.user_metadata?.username;
     username = profile?.username ?? (typeof metaName === "string" ? metaName : null);
     hasActiveMatch = Boolean(active?.tournament_id);
-    activeModes = (modes ?? []).map((m) => m.id).filter(isModeId);
+    // Si `game_modes` falla, se ofrecen los del registro en vez de dejar todo en "Próximamente" (flake
+    // del e2e): create_room/quick_play igual rechazan un modo inactivo en el server.
+    activeModes = modesRes.error
+      ? MODE_LIST.map((m) => m.id)
+      : (modesRes.data ?? []).map((m) => m.id).filter(isModeId);
   }
 
   return (

@@ -25,9 +25,13 @@
   en el torneo como desconectado (respuestas aleatorias hasta el final, como cualquier visita).
 - **Ojo:** el catálogo de prod va adelantado a `data/` de main hasta mergear `wip/post-6b` +
   `wip/ideas-questions`; no regenerar ni aplicar seeds desde main antes de eso.
-- **Flake suelto:** en local, 1 de 4 corridas de `game` el home renderizó los modos como "Próximamente"
-  (la query de `game_modes` volvió vacía/error en ese render; grants OK, 3/3 al repetir). Sospecha: el
-  mismo PGRST303 que vence el único reintento. A mirar: que `app/page.tsx` no trague el error de esa query.
+- **Flake "Próximamente"** (rama `wip/fix-modes-flake`, sobre `wip/fix-guest`): 1 de 4 corridas de `game`
+  renderizó los modos deshabilitados. No se reprodujo en 49 corridas más (guest ×30 en caliente, ×15 con
+  server en frío, game ×4 en frío). En la falla `get_ranked_me` sí respondió → no era el PGRST303 (pega a
+  las 4 queries juntas). Endurecido sin adivinar: la home loguea el error de cada una de sus 4 queries
+  (`[home] <query> <code> <msg>` → logs de Vercel/e2e) y, si `game_modes` falla, ofrece los modos del
+  registro (el server igual rechaza un modo inactivo en create_room/quick_play). `guest.spec` ahora exige
+  Mundial y Fútbol argentino habilitados. Si vuelve a pasar, el log dice qué fue.
 
 ## 🧾 Resumen final de la tanda autónoma (14/11) — todo en ramas `wip/`, NADA en main/prod
 Ramas (todas sobre main, sin push). Orden de merge sugerido y qué trae cada una:
