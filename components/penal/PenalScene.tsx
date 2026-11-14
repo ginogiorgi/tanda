@@ -296,11 +296,14 @@ interface PenalSceneProps {
 
 export function PenalScene({ kicker, keeper, result = null, freezeAt }: PenalSceneProps) {
   const reducedMotion = useReducedMotion();
-  // Con movimiento: loop continuo (respiración/balanceo en idle + la jugada). Reduced motion:
-  // on-demand, escena estática.
+  // El 3D anima SOLO cuando hay algo que mirar: la jugada. Mientras se responde, la escena es un fondo
+  // atenuado detrás de la tarjeta → se pinta a demanda (estática), como con reduced motion. Un loop a
+  // 60 fps a pantalla completa le compite al hilo principal los taps de la respuesta (en un celu flojo
+  // y con WebGL por software en el CI, los clicks no llegaban a procesarse).
+  const live = result != null && !reducedMotion;
   return (
     <Canvas
-      frameloop={reducedMotion ? "demand" : "always"}
+      frameloop={live ? "always" : "demand"}
       dpr={[1, 1.75]}
       gl={{ antialias: true }}
       camera={{ fov: 42, position: [CAM_IDLE.pos.x, CAM_IDLE.pos.y, CAM_IDLE.pos.z] }}
