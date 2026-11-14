@@ -28,12 +28,14 @@ interface PenalSceneViewerProps {
   /** Animación del resultado (8.4/4.9); null/ausente = escena idle. */
   result?: PenalAnimation | null;
   className?: string;
+  /** Solo dev: congela la jugada (ver `PenalScene`). */
+  freezeAt?: number;
 }
 
-export function PenalSceneViewer({ kicker, keeper, result, className }: PenalSceneViewerProps) {
+export function PenalSceneViewer({ kicker, keeper, result, className, freezeAt }: PenalSceneViewerProps) {
   return (
     <div className={className}>
-      <PenalScene kicker={kicker} keeper={keeper} result={result} />
+      <PenalScene kicker={kicker} keeper={keeper} result={result} freezeAt={freezeAt} />
     </div>
   );
 }

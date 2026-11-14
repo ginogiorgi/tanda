@@ -6,9 +6,10 @@
  * vía radios distintos, no solo escala. Ver SPEC §8.2.
  */
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import * as THREE from "three";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
+import { ROOT_PIVOT_Y, type RigNode, type RigRegister } from "./rigPose";
 
 const SKIN = "#d9a06b";
 const EYE = "#2a211b";
@@ -125,9 +126,32 @@ interface AvatarModelProps {
    * no en el creador.
    */
   kitSash?: HexColor;
+  /**
+   * Fase 6: si viene, se llenan los pivotes del esqueleto (`root`, `hips`, `spine`, `head`, hombros,
+   * codos, caderas, rodillas) vía `useRig().register` para animarlos con `applyPose` en `useFrame`. Sin esto el avatar queda
+   * en pose de descanso (idéntica a la del modelo rígido de antes).
+   */
+  rig?: RigRegister;
+  /** Pies en y=0 (escena de penal). Por defecto el modelo va centrado en el origen (creador). */
+  grounded?: boolean;
 }
 
-export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
+type V3 = [number, number, number];
+
+/**
+ * Articulación: el grupo externo se ubica en el punto de giro y el interno deshace ese offset → los
+ * hijos se escriben en coordenadas ABSOLUTAS del modelo (las de siempre) y la rotación ocurre
+ * alrededor de `at`. Anidable: cada pivote restaura el marco absoluto para el siguiente.
+ */
+function Pivot({ at, node, rig, children }: { at: V3; node: RigNode; rig?: RigRegister; children: ReactNode }) {
+  return (
+    <group position={at} ref={rig ? (g) => rig(node, g) : undefined}>
+      <group position={[-at[0], -at[1], -at[2]]}>{children}</group>
+    </group>
+  );
+}
+
+export function AvatarModel({ config, kitTop, kitSash, rig, grounded = false }: AvatarModelProps) {
   const { bodyType, hair, bottom, shoes } = config;
   const top = kitTop ? { ...config.top, color: kitTop } : config.top;
   const sashColor = kitTop && kitSash && kitSash !== top.color ? kitSash : null;
@@ -145,90 +169,109 @@ export function AvatarModel({ config, kitTop, kitSash }: AvatarModelProps) {
   const isShorts = bs.shortHem > 0;
 
   return (
-    <group position={[0, -HALF_HEIGHT * b.scale, 0]} scale={b.scale}>
-      {/* ── Piernas ── */}
-      {[-legX, legX].map((x) => (
-        <group key={`leg-${x}`}>
-          {/* muslo: short corta al `shortHem` (deja la parte baja a piel); pantalón cubre todo */}
-          {isShorts ? (
-            <>
-              <Bone x={x} yBottom={KNEE} yTop={bs.shortHem} rBottom={b.limbR} rTop={b.limbR * 1.08} color={SKIN} />
-              <Bone x={x} yBottom={bs.shortHem} yTop={HIP} rBottom={b.limbR * 1.08} rTop={b.limbR * 1.25} color={bottom.color} />
-            </>
-          ) : (
-            <Bone x={x} yBottom={KNEE} yTop={HIP} rBottom={b.limbR} rTop={b.limbR * 1.25} color={bottom.color} />
-          )}
-          {/* pantorrilla (rodilla sin esfera: los cilindros empalman al mismo radio) */}
-          <Bone x={x} yBottom={ANKLE} yTop={KNEE} rBottom={shinBotR} rTop={b.limbR} color={shinColor} />
-          {bs.tapered && <Joint x={x} y={ANKLE + 0.02} r={shinBotR * 1.25} color={bottom.color} scale={[1, 0.5, 1]} />}
-          <Shoe x={x} part={shoes.part} color={shoes.color} limbR={b.limbR} />
-        </group>
-      ))}
+    <group position={[0, grounded ? 0 : -HALF_HEIGHT * b.scale, 0]} scale={b.scale}>
+      <Pivot at={[0, ROOT_PIVOT_Y, 0]} node="root" rig={rig}>
+        <Pivot at={[0, ROOT_PIVOT_Y, 0]} node="hips" rig={rig}>
+          {/* ── Piernas: cadera → (muslo) rodilla → (pantorrilla + botín) ── */}
+          {([
+            [-legX, "hipR", "kneeR"],
+            [legX, "hipL", "kneeL"],
+          ] as const).map(([x, hipNode, kneeNode]) => (
+            <Pivot key={hipNode} at={[x, HIP - 0.04, 0]} node={hipNode} rig={rig}>
+              {/* muslo: short corta al `shortHem` (deja la parte baja a piel); pantalón cubre todo */}
+              {isShorts ? (
+                <>
+                  <Bone x={x} yBottom={KNEE} yTop={bs.shortHem} rBottom={b.limbR} rTop={b.limbR * 1.08} color={SKIN} />
+                  <Bone x={x} yBottom={bs.shortHem} yTop={HIP} rBottom={b.limbR * 1.08} rTop={b.limbR * 1.25} color={bottom.color} />
+                </>
+              ) : (
+                <Bone x={x} yBottom={KNEE} yTop={HIP} rBottom={b.limbR} rTop={b.limbR * 1.25} color={bottom.color} />
+              )}
+              <Pivot at={[x, KNEE, 0]} node={kneeNode} rig={rig}>
+                {/* rodilla: esfera chica del color del muslo para que el quiebre no deje hueco */}
+                <Joint x={x} y={KNEE} r={b.limbR * 0.98} color={isShorts ? SKIN : bottom.color} />
+                <Bone x={x} yBottom={ANKLE} yTop={KNEE} rBottom={shinBotR} rTop={b.limbR} color={shinColor} />
+                {bs.tapered && <Joint x={x} y={ANKLE + 0.02} r={shinBotR * 1.25} color={bottom.color} scale={[1, 0.5, 1]} />}
+                <Shoe x={x} part={shoes.part} color={shoes.color} limbR={b.limbR} />
+              </Pivot>
+            </Pivot>
+          ))}
 
-      {/* ── Cadera + torso (achatado en Z) ── */}
-      <group scale={[1, 1, torsoFlatten]}>
-        {/* pelvis (prenda inferior) */}
-        <Bone yBottom={HIP - 0.04} yTop={WAIST} rBottom={b.hipR} rTop={b.waistR * 1.1} color={bottom.color} />
-        {/* torso ahusado cintura→hombros (prenda superior). T12: si la nación tiene segundo color, el
-            propio torso se parte en dos paneles por un corte diagonal limpio (integrado, no una
-            cáscara aparte); si no, va liso. */}
-        {sashColor ? (
-          <TorsoTwoTone
-            yBottom={WAIST}
-            yTop={SHOULDER}
-            rBottom={b.waistR}
-            rTop={b.shoulderR}
-            primary={top.color}
-            secondary={sashColor}
-          />
-        ) : (
-          <Bone yBottom={WAIST} yTop={SHOULDER} rBottom={b.waistR} rTop={b.shoulderR} color={top.color} />
-        )}
-      </group>
-
-      {/* pecho femenino: un polígono del torso levantado a la altura del busto (no un óvalo) */}
-      {b.bust && (
-        <mesh position={[0, 1.36, b.shoulderR * 0.42]} rotation={[-0.5, 0, 0]}>
-          <boxGeometry args={[b.shoulderR * 1.5, 0.16, 0.12]} />
-          <meshStandardMaterial color={top.color} flatShading />
-        </mesh>
-      )}
-
-      {/* ── Brazos + hombro sobre el brazo (deltoides) ── */}
-      {[-1, 1].map((s) => {
-        const x = s * shoulderX;
-        const sleeveTop = ts.upperArm ? top.color : SKIN;
-        const sleeveFore = ts.foreArm ? top.color : SKIN;
-        return (
-          <group key={`arm-${s}`}>
-            {/* hombro: esfera arriba del brazo, como en la vida real */}
-            <Joint x={x} y={SHOULDER - 0.01} r={b.limbR * 1.25} color={sleeveTop} />
-            {/* brazo (codo sin esfera: empalme de radios) */}
-            <Bone x={x} yBottom={elbow} yTop={SHOULDER} rBottom={b.limbR * 0.85} rTop={b.limbR} color={sleeveTop} />
-            <Bone x={x} yBottom={wrist} yTop={elbow} rBottom={b.limbR * 0.7} rTop={b.limbR * 0.85} color={sleeveFore} />
-            <Joint x={x} y={wrist - 0.03} r={b.limbR * 0.8} color={SKIN} />
+          {/* ── Pelvis (prenda inferior, achatada en Z) ── */}
+          <group scale={[1, 1, torsoFlatten]}>
+            <Bone yBottom={HIP - 0.04} yTop={WAIST} rBottom={b.hipR} rTop={b.waistR * 1.1} color={bottom.color} />
           </group>
-        );
-      })}
 
-      {/* ── Cuello + cabeza ── */}
-      <Bone yBottom={SHOULDER - 0.04} yTop={NECK_TOP} rBottom={0.078} rTop={0.066} color={SKIN} />
-      <Joint y={HEAD_CY} r={HEAD_R} color={SKIN} scale={[0.92, 1.12, 1]} />
-      {/* nariz */}
-      <mesh position={[0, HEAD_CY - 0.045, HEAD_R * 0.92]}>
-        <coneGeometry args={[0.035, 0.07, 4]} />
-        <meshStandardMaterial color={SKIN} flatShading />
-      </mesh>
-      {/* ojos */}
-      {[-0.06, 0.06].map((x) => (
-        <mesh key={`eye-${x}`} position={[x, EYE_Y, HEAD_R * 0.86]}>
-          <boxGeometry args={[0.04, 0.04, 0.02]} />
-          <meshStandardMaterial color={EYE} />
-        </mesh>
-      ))}
+          <Pivot at={[0, WAIST, 0]} node="spine" rig={rig}>
+            {/* torso ahusado cintura→hombros (prenda superior). T12: si la nación tiene segundo color,
+                el propio torso se parte en dos paneles por un corte diagonal limpio; si no, va liso. */}
+            <group scale={[1, 1, torsoFlatten]}>
+              {sashColor ? (
+                <TorsoTwoTone
+                  yBottom={WAIST}
+                  yTop={SHOULDER}
+                  rBottom={b.waistR}
+                  rTop={b.shoulderR}
+                  primary={top.color}
+                  secondary={sashColor}
+                />
+              ) : (
+                <Bone yBottom={WAIST} yTop={SHOULDER} rBottom={b.waistR} rTop={b.shoulderR} color={top.color} />
+              )}
+            </group>
 
-      {/* ── Pelo (siempre por encima de los ojos) ── */}
-      <HairMesh part={hair.part} color={hair.color} />
+            {/* pecho femenino: un polígono del torso levantado a la altura del busto (no un óvalo) */}
+            {b.bust && (
+              <mesh position={[0, 1.36, b.shoulderR * 0.42]} rotation={[-0.5, 0, 0]}>
+                <boxGeometry args={[b.shoulderR * 1.5, 0.16, 0.12]} />
+                <meshStandardMaterial color={top.color} flatShading />
+              </mesh>
+            )}
+
+            {/* ── Brazos: hombro → (brazo) codo → (antebrazo + mano) ── */}
+            {([
+              [-1, "shoulderR", "elbowR"],
+              [1, "shoulderL", "elbowL"],
+            ] as const).map(([s, shoulderNode, elbowNode]) => {
+              const x = s * shoulderX;
+              const sleeveTop = ts.upperArm ? top.color : SKIN;
+              const sleeveFore = ts.foreArm ? top.color : SKIN;
+              return (
+                <Pivot key={shoulderNode} at={[x, SHOULDER - 0.01, 0]} node={shoulderNode} rig={rig}>
+                  {/* hombro: esfera arriba del brazo, como en la vida real */}
+                  <Joint x={x} y={SHOULDER - 0.01} r={b.limbR * 1.25} color={sleeveTop} />
+                  <Bone x={x} yBottom={elbow} yTop={SHOULDER} rBottom={b.limbR * 0.85} rTop={b.limbR} color={sleeveTop} />
+                  <Pivot at={[x, elbow, 0]} node={elbowNode} rig={rig}>
+                    <Joint x={x} y={elbow} r={b.limbR * 0.85} color={sleeveTop} />
+                    <Bone x={x} yBottom={wrist} yTop={elbow} rBottom={b.limbR * 0.7} rTop={b.limbR * 0.85} color={sleeveFore} />
+                    <Joint x={x} y={wrist - 0.03} r={b.limbR * 0.8} color={SKIN} />
+                  </Pivot>
+                </Pivot>
+              );
+            })}
+
+            {/* ── Cuello + cabeza ── */}
+            <Bone yBottom={SHOULDER - 0.04} yTop={NECK_TOP} rBottom={0.078} rTop={0.066} color={SKIN} />
+            <Pivot at={[0, NECK_TOP - 0.04, 0]} node="head" rig={rig}>
+              <Joint y={HEAD_CY} r={HEAD_R} color={SKIN} scale={HEAD_SCALE} />
+              {/* nariz */}
+              <mesh position={[0, HEAD_CY - 0.045, HEAD_R * 0.92]}>
+                <coneGeometry args={[0.035, 0.07, 4]} />
+                <meshStandardMaterial color={SKIN} flatShading />
+              </mesh>
+              {/* ojos */}
+              {[-0.06, 0.06].map((x) => (
+                <mesh key={`eye-${x}`} position={[x, EYE_Y, HEAD_R * 0.86]}>
+                  <boxGeometry args={[0.04, 0.04, 0.02]} />
+                  <meshStandardMaterial color={EYE} />
+                </mesh>
+              ))}
+              {/* ── Pelo (siempre por encima de los ojos) ── */}
+              <HairMesh part={hair.part} color={hair.color} />
+            </Pivot>
+          </Pivot>
+        </Pivot>
+      </Pivot>
     </group>
   );
 }

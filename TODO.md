@@ -40,6 +40,14 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   Inglaterra 3ª. Recomendación: que Gino confirme wc-622 (Paraguay–Alemania) y wc-621 (3º puesto),
   que tuvieron una sola fuente.
 - `kit_pattern` aproximados de `data/teams/arg.json` y look de escudos.
+- **3D con GLB (Fase 6 del plan)**: no bajé assets ni instalé Blender (descargar requiere tu OK
+  explícito). Se hizo la Fase 6 **solo con código** (rig propio articulado, ver abajo). Recomendación:
+  si querés más calidad de personaje, aprobar bajar Quaternius *Universal Base Characters* +
+  *Universal Animation Library* (CC0, mismo rig) e instalar `blender` para el pipeline headless; el
+  sistema de clips/escena de `lib/avatar/rig.ts` + `lib/penal/shot.ts` se mantiene y solo cambia el
+  modelo. Con el rig actual el resultado ya es presentable (ver `/dev/penal`).
+- La escena 3D ahora corre en loop continuo (idle animado) salvo `prefers-reduced-motion`; antes era
+  on-demand. Si en mobile gama baja se nota la batería/calor, volver a "demand" en idle.
 - ⚠️ **GOD y TSU son provisorios** (ascensos 2027: final Primera Nacional 14–15/11 + Reducido)
   → migración chica de `teams` + regenerar escudos cuando se definan.
 
@@ -86,8 +94,21 @@ a main por fase. Decisiones de Gino en la memoria `tanda-2-0-decisiones`.
   - AR: las 700 revisadas, sin errores (ascensos 2024/25 confirmados con fuente).
   - Dificultad: 3 ajustes con `stats-2026-11` (muestra chica, n≤6; el resto sin señal).
 
+- **Fase 6** — **3D nuevo, sin GLBs (código propio)**:
+  - Rig `lib/avatar/rig.ts` (TS puro, testeado): 11 articulaciones, poses, clips por keyframes
+    (IDLE, KICK, CELEBRATE, DEJECTED, KEEPER_READY/DIVE/CELEBRATE), espejo L↔R y `sequencePose`
+    (acción → reacción con crossfade).
+  - `AvatarModel` articulado con pivotes (`components/avatar/rigPose.ts`: `useRig`/`applyPose`);
+    pose de descanso idéntica a la anterior. Creador: luz de estudio, sombra de contacto, respiración.
+  - Escena (`PenalScene` + `Stadium`): estadio de día (césped a franjas, líneas del área, red, carteles
+    con colores de marca, tribuna con ~600 hinchas en 3 mallas fusionadas con los colores de los dos
+    equipos), carrera + patada, estirada direccional, pelota con trayectoria determinista
+    (`lib/penal/shot.ts`, testeado), red que se comba, público que salta, cámara que acompaña y
+    termina en el protagonista. Reduced motion → pose final estática.
+  - Banco de pruebas `/dev/penal?shot=goal-1&t=0.3` (404 en prod).
+
 ### Próximo (en orden)
-1. **Fase 6** — 3D con GLB riggeado. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT.
+1. **Fase 7** — Lighthouse/axe/Playwright/docs/AUDIT/advisors/SEO.
 
 ---
 
