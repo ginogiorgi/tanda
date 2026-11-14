@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { usernameToEmail } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
@@ -20,7 +20,7 @@ export function LoginForm() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
+    const supabase = await browserClient();
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: usernameToEmail(username),
       password,

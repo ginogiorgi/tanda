@@ -15,6 +15,7 @@ import {
   type RosterEntry,
 } from "@/lib/lobby/presence";
 import { getMode, type ModeId } from "@/lib/modes";
+import { usePreload3D } from "@/components/penal/usePreload3D";
 
 type LobbyProps = {
   code: string;
@@ -26,6 +27,7 @@ type LobbyProps = {
 };
 
 export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: LobbyProps) {
+  usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const mode = getMode(modeId);
   const { push: navPush, leave: navLeave } = useNav();
   const [supabase] = useState(() => createClient());

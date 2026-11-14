@@ -44,6 +44,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Presupuesto de JS por ruta (sin three en las entradas)
+        run: pnpm perf:budget
+
   # Camino autoritativo SQL/RPC contra el Postgres local de Supabase (9.0): paridad TS↔SQL,
   # anti-trampa, e2e de torneo, reloj de ronda y abandon. Atrapa migraciones rotas antes del merge.
   db:

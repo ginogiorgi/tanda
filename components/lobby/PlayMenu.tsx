@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -36,16 +36,19 @@ export function PlayMenu({
   ranked?: RankedMe | null;
 }) {
   const router = useNav();
-  const [supabase] = useState(() => createClient());
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
 
-  async function go(key: string, rpc: () => PromiseLike<{ data: unknown; error: { message: string } | null }>) {
+  type Supabase = Awaited<ReturnType<typeof browserClient>>;
+  async function go(
+    key: string,
+    rpc: (supabase: Supabase) => PromiseLike<{ data: unknown; error: { message: string } | null }>,
+  ) {
     setError(null);
     setBusy(key);
-    const { data, error: rpcError } = await rpc();
+    const { data, error: rpcError } = await rpc(await browserClient());
     if (rpcError) {
       setBusy(null);
       setError(roomErrorMessage(rpcError.message));
@@ -61,7 +64,7 @@ export function PlayMenu({
   }
 
   function start(action: Action, mode: ModeId) {
-    void go(`${action}:${mode}`, () =>
+    void go(`${action}:${mode}`, (supabase) =>
       supabase.rpc(action === "play" ? "quick_play" : "create_room", { p_mode: mode }),
     );
   }
@@ -139,7 +142,7 @@ export function PlayMenu({
               setError("El código tiene 6 caracteres.");
               return;
             }
-            void go("join", () => supabase.rpc("join_room", { p_code: value }));
+            void go("join", (supabase) => supabase.rpc("join_room", { p_code: value }));
           }}
           className="flex w-full gap-2"
         >

@@ -301,6 +301,14 @@ const withMeshopt = (loader: GLTFLoader) => {
 const BODIES: BodyType[] = ["male", "female"];
 
 /**
+ * Arranca la descarga + parseo de los dos GLB sin montar nada (precarga mientras esperás en la sala o
+ * la cola, F4): cuando abre el primer penal ya están en la caché de `useLoader`.
+ */
+export function preloadGlbBodies(): void {
+  for (const b of BODIES) useLoader.preload(GLTFLoader, URL[b], withMeshopt);
+}
+
+/**
  * Para el creador (donde se cambia de cuerpo): baja los dos GLB y arma sus templates por adelantado,
  * así el cambio de cuerpo no cae al fallback procedural ni paga `templateOf` en el momento. No dibuja
  * nada; va en su propio `<Suspense fallback={null}>` para no frenar al avatar visible.
@@ -308,7 +316,7 @@ const BODIES: BodyType[] = ["male", "female"];
 export function WarmGlbBodies() {
   // Un `useLoader` por URL (misma clave de caché que `GlbAvatar`; con un array sería otra entrada y
   // se parsearía dos veces). El preload arranca las dos descargas en paralelo.
-  for (const b of BODIES) useLoader.preload(GLTFLoader, URL[b], withMeshopt);
+  preloadGlbBodies();
   const male = useLoader(GLTFLoader, URL.male, withMeshopt);
   const female = useLoader(GLTFLoader, URL.female, withMeshopt);
   useMemo(() => {

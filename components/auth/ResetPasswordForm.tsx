@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 
@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
     }
 
     setLoading(true);
-    const supabase = createClient();
+    const supabase = await browserClient();
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setLoading(false);
 

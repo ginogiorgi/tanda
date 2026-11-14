@@ -52,13 +52,15 @@ test("juego: sala y cola ranked son pantalla fija, sin footer, y salir vuelve a 
   await enterAsGuest(page);
   await openPlay(page);
 
-  // Sala (crear sala Mundial).
+  // Sala (crear sala Mundial). Mientras se espera, se precargan los GLB del penal (F4).
+  const glb = page.waitForRequest(/\/models\/avatar\/avatar-(male|female)\.glb/, { timeout: 15_000 });
   await page.getByRole("button", { name: "Crear sala" }).click();
   await page.getByRole("group", { name: /crear sala/i }).getByRole("button", { name: /mundial/i }).click();
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]{6}$/, { timeout: 20_000 });
   await expect(page.locator("footer")).toHaveCount(0);
   expect(await pageIsFixed(page)).toBe(true);
   expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+  await glb; // precarga 3D arrancó en la sala, antes de cualquier penal
   const salir = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
     await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
   });

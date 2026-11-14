@@ -1,7 +1,7 @@
 "use client";
 
 import { useNav } from "@/lib/nav/useNav";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { Button, type ButtonProps } from "@/components/ui/Button";
 
 // `size`/`className` quedan parametrizables: en el home la fila de CTAs lo quiere grande y del
@@ -16,7 +16,7 @@ export function LogoutButton({
   const router = useNav();
 
   async function onClick() {
-    const supabase = createClient();
+    const supabase = await browserClient();
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useNav } from "@/lib/nav/useNav";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { signInAsGuest } from "@/lib/guest/anon";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -24,7 +24,7 @@ export function GuestButton({ className }: { className?: string }) {
     setBusy(true);
     // Si ya hay sesión (p. ej. reintento tras un render fallido del home), se reusa: otro
     // signInAnonymously crearía un segundo invitado y dejaría huérfano al primero.
-    const supabase = createClient();
+    const supabase = await browserClient();
     const { data } = await supabase.auth.getSession();
     const { error: guestError } = data.session ? { error: null } : await signInAsGuest(supabase);
     if (guestError) {

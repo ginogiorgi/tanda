@@ -32,6 +32,7 @@ import {
   type ActiveMatch,
   type RoundNextPayload,
 } from "@/lib/realtime/penal";
+import { usePreload3D } from "@/components/penal/usePreload3D";
 
 /**
  * Cuánto se mantiene la pantalla del penal tras terminar el PARTIDO (GOL/ATAJADO del último penal)
@@ -57,6 +58,7 @@ export function TournamentLive({
   tournamentId: string;
   isGuest: boolean;
 }) {
+  usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const [supabase] = useState(() => createClient());
   const [snapshot, setSnapshot] = useState<BracketSnapshot | null>(null);
   const [loadError, setLoadError] = useState(false);

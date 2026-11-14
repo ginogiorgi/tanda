@@ -20,6 +20,7 @@ import { signed, type RankedMatchView } from "@/lib/ranked/types";
 import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionCrest } from "./DivisionCrest";
 import { RankedResult } from "./RankedResult";
+import { usePreload3D } from "@/components/penal/usePreload3D";
 
 /** Lo que se deja ver el último GOL/ATAJADO antes del resultado. */
 const RESULT_LINGER_MS = 2500;
@@ -68,6 +69,7 @@ function Versus({ view, remaining }: { view: RankedMatchView; remaining: number 
 }
 
 export function RankedLive({ tournamentId }: { tournamentId: string }) {
+  usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const [supabase] = useState(() => createClient());
   const [view, setView] = useState<RankedMatchView | null>(null);
   const [loadError, setLoadError] = useState(false);

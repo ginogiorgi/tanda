@@ -1,0 +1,17 @@
+{
+  "/": 162,
+  "/_global-error": 140,
+  "/_not-found": 157,
+  "/auth/reset": 163,
+  "/avatar": 166,
+  "/forgot": 163,
+  "/jugar": 167,
+  "/login": 164,
+  "/partido": 248,
+  "/perfil": 163,
+  "/perfil/historial": 165,
+  "/ranked": 234,
+  "/ranking": 161,
+  "/register": 164,
+  "/sala/[code]": 234
+}

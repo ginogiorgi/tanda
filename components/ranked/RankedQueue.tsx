@@ -17,6 +17,7 @@ import { useNav } from "@/lib/nav/useNav";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionProgress } from "./DivisionProgress";
+import { usePreload3D } from "@/components/penal/usePreload3D";
 
 const POLL_MS = 2000;
 
@@ -28,6 +29,7 @@ function clock(ms: number): string {
 }
 
 export function RankedQueue({ me }: { me: RankedMe }) {
+  usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const { push: navPush, leave: navLeave } = useNav();
   const [supabase] = useState(() => createClient());
   const [view, setView] = useState<View>("searching");

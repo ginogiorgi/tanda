@@ -21,24 +21,35 @@ const eslintConfig = defineConfig([
   },
   // Navegación (feedback 14/11): todo pasa por `useNav()` (transición + pending + salir sin esperar).
   // `useRouter` directo es lo que dejaba botones "colgados" esperando un RPC antes de navegar.
-  {
-    files: ["**/*.{ts,tsx}"],
-    ignores: ["lib/nav/**"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          paths: [
-            {
-              name: "next/navigation",
-              importNames: ["useRouter"],
-              message: "Usá useNav() de @/lib/nav/useNav (transición, pending y salidas sin esperar).",
-            },
-          ],
-        },
-      ],
-    },
-  },
+  //
+  // Cliente de Supabase del browser (F4, presupuesto de JS): ~66 KB gz. Solo lo importan directo las
+  // pantallas de JUEGO (realtime al montar); el resto lo baja al tocar con `browserClient()`
+  // (@/lib/supabase/lazy). Va en el mismo bloque porque dos bloques con `no-restricted-imports` se pisan.
+  ...(() => {
+    const useRouterPath = {
+      name: "next/navigation",
+      importNames: ["useRouter"],
+      message: "Usá useNav() de @/lib/nav/useNav (transición, pending y salidas sin esperar).",
+    };
+    const eagerClientPath = {
+      name: "@/lib/supabase/client",
+      message:
+        "Fuera de las pantallas de juego usá browserClient() de @/lib/supabase/lazy (se baja al tocar, no en la carga).",
+    };
+    const gameClient = ["components/penal/**", "components/ranked/**", "components/lobby/Lobby.tsx", "lib/supabase/**"];
+    return [
+      {
+        files: ["**/*.{ts,tsx}"],
+        ignores: ["lib/nav/**", ...gameClient],
+        rules: { "no-restricted-imports": ["error", { paths: [useRouterPath, eagerClientPath] }] },
+      },
+      {
+        files: gameClient,
+        ignores: ["lib/nav/**"],
+        rules: { "no-restricted-imports": ["error", { paths: [useRouterPath] }] },
+      },
+    ];
+  })(),
   // Sesión en el server: solo vía getSession() (getClaims local). `auth.getUser()` es una ida de red a
   // Auth por página: era la mitad del delay de cada toque (docs/PERF-BASELINE.md).
   {

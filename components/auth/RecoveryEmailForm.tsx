@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -34,7 +34,7 @@ export function RecoveryEmailForm({ initialEmail }: RecoveryEmailFormProps) {
     }
 
     setSaving(true);
-    const supabase = createClient();
+    const supabase = await browserClient();
     const { error: updateError } = await supabase.auth.updateUser({
       data: { recovery_email: value },
     });

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { browserClient } from "@/lib/supabase/lazy";
 import { isValidUsername, usernameToEmail } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
@@ -37,7 +37,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
     }
     setAvailability("checking");
     debounceRef.current = setTimeout(async () => {
-      const supabase = createClient();
+      const supabase = await browserClient();
       const { data, error: rpcError } = await supabase.rpc("username_available", {
         check_name: name,
       });
@@ -68,7 +68,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
     }
 
     setLoading(true);
-    const supabase = createClient();
+    const supabase = await browserClient();
     const trimmed = username.trim();
 
     // Upgrade del invitado (sesión anónima → permanente): mantiene id/profile/avatar, le suma
