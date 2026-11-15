@@ -33,6 +33,10 @@ export function withIatRetry(
     const res = await base(input, init);
     if (!(await isIatInFuture(res))) return res;
     await wait(IAT_RETRY_DELAY_MS);
-    return base(input, init);
+    // En un Server Component, Next memoiza los fetch GET por URL+headers durante el render
+    // (`dedupeFetch`): reintentar con los mismos argumentos devolvía el MISMO 401 cacheado sin salir a
+    // la red → `game_modes`/`profiles` nunca se reintentaban (flake "Próximamente"; los POST/RPC sí).
+    // Un `signal` propio es la salida documentada de esa memoización.
+    return base(input, { ...init, signal: init?.signal ?? new AbortController().signal });
   };
 }

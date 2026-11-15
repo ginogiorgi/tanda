@@ -1,4 +1,6 @@
 // 9.1 — Auditoría RLS + anti-trampa, codificada como guardrail durable (no un review de una vez).
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 // Afirma a nivel rol Postgres (lo que aplica PostgREST/Realtime en prod) tres invariantes:
 //   (a) RLS habilitada en TODA tabla de `public` (respaldo del event trigger ensure_rls).
 //   (b) la superficie de funciones ejecutables por `authenticated`/`anon` == allowlist intencional
@@ -130,6 +132,19 @@ describe("superficie ejecutable == allowlist intencional", () => {
 
   it("anon solo ejecuta username_available", async () => {
     expect(await execNames("anon")).toEqual(ANON_ALLOWLIST);
+  });
+
+  // El cliente solo puede llamar RPC tipadas (`lib/supabase/database.types.ts`, TS estricto). Si se suma
+  // una RPC al tipo y no a la allowlist (ni a `…_explicit_function_grants`, que revoca todo lo demás),
+  // en prod respondería "permission denied": esto lo rompe en CI antes.
+  it("toda RPC tipada para el cliente está en la allowlist y es ejecutable por authenticated", async () => {
+    const src = readFileSync(join(process.cwd(), "lib/supabase/database.types.ts"), "utf8");
+    const block = /Functions: \{([\s\S]*?)\n {4}\};/.exec(src)?.[1] ?? "";
+    const typed = [...block.matchAll(/^ {6}([a-z_]+):/gm)].map((m) => m[1]!).sort();
+    expect(typed.length).toBeGreaterThan(10);
+    expect(typed.filter((f) => !AUTH_ALLOWLIST.includes(f))).toEqual([]);
+    const exec = await execNames("authenticated");
+    expect(typed.filter((f) => !exec.includes(f))).toEqual([]);
   });
 });
 

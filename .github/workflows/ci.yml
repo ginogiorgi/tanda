@@ -34,6 +34,8 @@ jobs:
 
       - name: Catálogo (preguntas + equipos)
         run: pnpm catalog:check
+      - name: Migraciones (nombres, versiones únicas, nuevas > main)
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main && pnpm db:check-migrations
 
       - name: Preguntas (duplicados, temas, balance)
         run: pnpm questions:check
