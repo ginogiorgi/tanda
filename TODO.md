@@ -24,6 +24,13 @@
   a leer `game_timing()` (en prod verifiqué antes que eran las mismas definiciones: solo difería el texto de comentarios).
   `db:check-migrations` rechaza `interval 'N seconds'` nuevos. Fuera el "2 minutos" de errors.ts y de BRIEF/SPEC.
   Verde: unit 167, db 98, flow 6/6, smoke 24/24; prod 25/25 + penal de invitado con contador 0:30 (53 s vs 1,4 min).
+- **🚀 P4 ✅ (15/11)** en prod (`f380fb6`, sin migración). **Causa:** el shell `body h-dvh overflow-hidden` (footer
+  clavado + paneles con scroll propio); F1 solo había sacado el footer del juego. Ahora la página scrollea el
+  documento, footer en todas las pantallas (bajo el pliegue), `Page`/`GameStage`, penal con capas `absolute` en el
+  stage, bracket KO de dos lados en `lg+` (436 px de alto en 1440 vs ~800 de un lado; llaves vacías para rondas
+  futuras) y grupos en grilla. Lint de layout + `e2e/_layout.ts` en 360/430/820/1440 (público, app, sala, cola, penal).
+  Extra: `pyrux-ink` (el link del footer no llegaba a AA). **Desvío del plan:** tabla e historial quedaron en
+  `content` (2xl), no `wide`: son listas de una columna y a 6xl se estiraban. Prod 43/43 (smoke + layout + penal).
 Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
