@@ -32,6 +32,8 @@ test("prod: invitado juega un penal sin errores ni violaciones CSP", async ({ pa
   await page.getByRole("group", { name: "Elegí el modo para jugar" }).getByRole("button", { name: /Mundial/ }).click();
   await expect(page).toHaveURL(/\/sala\//, { timeout: 20_000 });
   const inSala = Date.now();
+  // P3: espera de sala de 30 s (puede ser menos si entró a una sala ya abierta).
+  await expect(page.getByTestId("lobby-countdown")).toHaveText(/^0:(30|[0-2]\d)$/, { timeout: 10_000 });
   await expect.poll(() => glb.length, { timeout: 20_000 }).toBeGreaterThan(0);
   console.log(`[prod] GLB pedido a los ${glb[0]! - inSala} ms de entrar a la sala`);
 

@@ -218,7 +218,7 @@ begin
   insert into public.rooms (code, host_id, status, starts_at, mode_id)
     values (public.gen_room_code(), p_home, 'in_progress', now(), 'ranked')
     returning id into v_room;
-  -- Cara a cara (rankedVersusS) (cara a cara + lo que está en juego) antes del primer penal.
+  -- Cara a cara + lo que está en juego (rankedVersusS) antes del primer penal.
   insert into public.tournaments (room_id, status, current_phase, seed, mode_id, round_deadline)
     values (v_room, 'in_progress', 'final', (random() * 9.2e18)::bigint, 'ranked', now() + make_interval(secs => (public.game_timing()->>'rankedVersusS')::int))
     returning id into v_t;

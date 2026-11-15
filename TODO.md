@@ -18,6 +18,12 @@
   `20261124000001_compat_cleanup` (front primero): fuera `placement_left` (columna + RPC) y `divisions` del perfil;
   ledger ok, advisors = baseline. `pnpm assets:check` en CI (91 assets, 0 huérfanos). Verde: unit 162, db 93,
   flow 6/6, smoke 24/24; prod 25/25 + penal de invitado.
+- **🚀 P3 ✅ (15/11)** en prod (`3c08b23` + migración `20261124000002_game_timing`): `TIMING` (`lib/engine/timing.ts`) ↔
+  `public.game_timing()` con paridad (`supabase/tests/timing.test.ts`, también chequea create_room = 30 s y penal = 10 s
+  en un torneo real); `game_modes.lobby_seconds` = 30 (amigos y partida rápida); las 11 RPC con sus 14 literales pasan
+  a leer `game_timing()` (en prod verifiqué antes que eran las mismas definiciones: solo difería el texto de comentarios).
+  `db:check-migrations` rechaza `interval 'N seconds'` nuevos. Fuera el "2 minutos" de errors.ts y de BRIEF/SPEC.
+  Verde: unit 167, db 98, flow 6/6, smoke 24/24; prod 25/25 + penal de invitado con contador 0:30 (53 s vs 1,4 min).
 Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
