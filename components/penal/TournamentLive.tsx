@@ -20,6 +20,7 @@ import { RunSummary } from "@/components/penal/RunSummary";
 import { Button } from "@/components/ui/Button";
 import { TeamReveal } from "@/components/penal/TeamReveal";
 import { Bracket } from "@/components/bracket/Bracket";
+import { MATCH_RESULT_LINGER_MS } from "@/lib/engine/timing";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
   applyScoreUpdate,
@@ -34,13 +35,6 @@ import {
 } from "@/lib/realtime/penal";
 import { usePreload3D } from "@/components/penal/usePreload3D";
 
-/**
- * Cuánto se mantiene la pantalla del penal tras terminar el PARTIDO (GOL/ATAJADO del último penal)
- * antes de ceder a la tabla del grupo en el tiempo muerto (10.3). Corto a propósito: el gap entre
- * partidos del server es 6s y el cliente detecta el fin del partido ~1s tarde (poll), así que con
- * 2s de linger quedan ~3s para ver el grupo (lo que pidió Gino).
- */
-const RESULT_LINGER_MS = 2000;
 
 /** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
 const REVEAL_MS = 2000;
@@ -198,7 +192,7 @@ export function TournamentLive({
             setShowPenal(false);
             showPenalRef.current = false;
             lingerRef.current = null;
-          }, RESULT_LINGER_MS);
+          }, MATCH_RESULT_LINGER_MS);
         }
       }
     };

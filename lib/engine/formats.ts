@@ -24,6 +24,8 @@ export interface FormatConfig {
   knockoutStart: Exclude<Phase, "group" | "third_place">;
   thirdPlace: boolean;
   tiebreak: Tiebreak;
+  /** Espera de sala antes de llenar con bots (s). Espejo de `game_modes.lobby_seconds`. */
+  lobbyS: number;
 }
 
 /** Espejo de `public.game_modes` (la DB es la autoridad; esto alimenta tests y UI). */
@@ -38,6 +40,7 @@ export const FORMATS: Record<ModeId, FormatConfig> = {
     knockoutStart: "round_of_32",
     thirdPlace: true,
     tiebreak: "gd_h2h",
+    lobbyS: 30,
   },
   arg: {
     roomSize: 30,
@@ -49,6 +52,7 @@ export const FORMATS: Record<ModeId, FormatConfig> = {
     knockoutStart: "round_of_16",
     thirdPlace: false,
     tiebreak: "goals",
+    lobbyS: 30,
   },
 };
 

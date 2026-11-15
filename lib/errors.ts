@@ -4,12 +4,13 @@
  * page de sala → riesgo de que se desincronizaran. Las RPC devuelven códigos en inglés
  * (`room_not_found`, …); la UI los traduce al rioplatense acá.
  */
+import { FORMATS } from "@/lib/engine/formats";
 
 /** Códigos que devuelven `join_room` / `quick_play` / la page de sala. */
 export const ROOM_ERROR_MESSAGES: Record<string, string> = {
   room_not_found: "No existe una sala con ese código.",
   room_cancelled: "Esa sala se canceló.",
-  room_closed: "Esa sala ya cerró: pasaron los 2 minutos.",
+  room_closed: `Esa sala ya cerró: pasaron los ${FORMATS.worldcup.lobbyS} segundos.`,
   already_started: "Esa partida ya arrancó.",
   room_full: "Esa sala está llena.",
   no_match: "No tenés un partido en curso.",

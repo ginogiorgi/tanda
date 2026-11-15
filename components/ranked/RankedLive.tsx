@@ -21,9 +21,8 @@ import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionCrest } from "./DivisionCrest";
 import { RankedResult } from "./RankedResult";
 import { usePreload3D } from "@/components/penal/usePreload3D";
+import { RANKED_RESULT_LINGER_MS } from "@/lib/engine/timing";
 
-/** Lo que se deja ver el último GOL/ATAJADO antes del resultado. */
-const RESULT_LINGER_MS = 2500;
 
 function Fighter({ username, rating, align }: { username: string; rating: number; align: "left" | "right" }) {
   const div = divisionFor(rating);
@@ -127,7 +126,7 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
           setShowPenal(false);
           showPenalRef.current = false;
           lingerRef.current = null;
-        }, RESULT_LINGER_MS);
+        }, RANKED_RESULT_LINGER_MS);
       }
     };
     void poll();

@@ -180,7 +180,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
           <p className="text-lg font-semibold text-fg">Armando torneo…</p>
         ) : (
           <>
-            <span className="font-display text-5xl font-extrabold tabular-nums text-fg">
+            <span data-testid="lobby-countdown" className="font-display text-5xl font-extrabold tabular-nums text-fg">
               {formatRemaining(remaining)}
             </span>
             <span className="text-xs text-fg-subtle">

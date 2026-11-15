@@ -2,7 +2,7 @@ import { expect, test } from "../_csp";
 import { assertLocalSupabase, enterAsGuest, openPlay } from "./_helpers";
 
 /**
- * Flujo de juego completo como invitado: sesión anónima → Jugar (Mundial) → sala → lobby (1 min
+ * Flujo de juego completo como invitado: sesión anónima → Jugar (Mundial) → sala → lobby (30 s
  * real) → partido → responder un penal → resolución (GOL/ATAJADO). Además verifica la regla de oro:
  * `correct_index` no viaja al cliente (REST ni Realtime) mientras el penal está abierto. Y que el 3D
  * nunca muestra otro muñeco: placeholder → error con reintento → escena.
@@ -47,6 +47,8 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     await openPlay(page);
     await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /mundial/i }).click();
     await expect(page).toHaveURL(/\/sala\/[A-Z0-9]+$/, { timeout: 20_000 });
+    // P3: la sala espera 30 s (TIMING/lobby_seconds), no el minuto de antes.
+    await expect(page.getByTestId("lobby-countdown")).toHaveText(/^0:(30|[12]\d)$/, { timeout: 10_000 });
   });
 
   await test.step("lobby → partido (el server arma el torneo con bots)", async () => {

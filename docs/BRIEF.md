@@ -191,7 +191,7 @@ de 32 a partido único hacia la final. Aclarar nombres de fases en SPEC.
 
 - Un jugador crea la sala y recibe un enlace para compartir.
 - Otros entran por el enlace o desde un botón "Unirse a una sala" en el home.
-- La sala espera **máximo 2 minutos** (o hasta llenar los 48 cupos).
+- La sala espera **máximo 30 segundos** (o hasta llenar los 48 cupos).
 - Al cumplirse el tiempo, arranca y los cupos vacíos se llenan con **bots**.
 - Cada participante (humano o bot) representa una selección nacional, **asignada
   aleatoriamente** al iniciar. Las selecciones son de la lista de clasificados al
@@ -215,7 +215,7 @@ agenda según su nivel, para que el resultado sea impredecible y realista.
 
 1. **Home:** crear sala / unirse a sala / login.
 2. **Sala de espera:** código para compartir, lista en tiempo real de conectados
-   (la selección se asigna al empezar), countdown de 2 minutos.
+   (la selección se asigna al empezar), countdown de 30 segundos.
 3. **Bracket (≈4 s):** vista estilo mundial, se actualiza en tiempo real; muestra
    puntos/fase de cada equipo.
 4. **Pre-partido (≈3 s):** `[TU PAÍS + bandera] vs [PAÍS RIVAL + bandera]`.
@@ -278,7 +278,7 @@ El producto está terminado cuando, en un entorno deployado:
 
 1. Un usuario puede registrarse (username+pass), armar avatar y entrar al home.
 2. Puede crear una sala, compartir el enlace y que otro humano se una; al vencer los
-   2 minutos los cupos se llenan con bots y arranca un torneo de 48.
+   30 segundos los cupos se llenan con bots y arranca un torneo de 48.
 3. Se juega una tanda completa con timing del servidor, animaciones de GOL/ATAJADO y
    resolución correcta de todos los casos de la tabla §5.2 (incluido el de "los dos
    mal").

@@ -151,7 +151,7 @@ con `SECURITY DEFINER` que validan.
 | `profiles` | `id uuid PK = auth.uid`, `username citext UNIQUE`, `avatar jsonb`, `created_at` | username es el nombre en juego |
 | `nations` | `id`, `name`, `code`, `fifa_rank int`, `accent_color`, `flag_asset`, `difficulty_tier` (`elite\|high\|medium\|low`) | seed estático (clasificados 2026) |
 | `questions` | `id`, `category`, `difficulty` (`easy\|medium\|hard\|very_hard`), `prompt`, `options jsonb` (3), `correct_index int` (0-2), `explanation` | `correct_index` **server-only** |
-| `rooms` | `id`, `code text UNIQUE`, `host_id`, `status` (`lobby\|starting\|in_progress\|finished\|cancelled`), `starts_at`, `created_at` | `starts_at` = arranque (lobby +2 min); `cancelled` si quedó sin humanos |
+| `rooms` | `id`, `code text UNIQUE`, `host_id`, `status` (`lobby\|starting\|in_progress\|finished\|cancelled`), `starts_at`, `created_at` | `starts_at` = arranque (lobby + `game_modes.lobby_seconds`, 30 s); `cancelled` si quedó sin humanos |
 | `tournaments` | `id`, `room_id`, `status` (ver §4), `current_phase`, `seed`, `champion_participant_id`, `third_place_participant_id`, `round_deadline`, `groups_closed_at` (T11: marca la ventana de "grupos finales" antes del KO) | 1:1 con room; `seed` gobierna sorteos/bracket/bot_intents → reproducible y testeable |
 | `participants` | `id`, `tournament_id`, `user_id?` (null = bot), `nation_id`, `is_bot`, `group_letter`, `seed`, `eliminated_phase?`, `placement?` | 48 por torneo; `placement`/`eliminated_phase` para historial |
 | `matches` | `id`, `tournament_id`, `phase`, `bracket_slot`, `home_participant_id`, `away_participant_id`, `home_score`, `away_score`, `winner_participant_id`, `status` (ver §3), `is_bot_only` | |
@@ -354,7 +354,7 @@ Todas autoritativas, validan pertenencia y usan `now()` del servidor. Errores co
 | Función | Input | Efecto / Output | Errores |
 |---|---|---|---|
 | `create_room()` | — | crea room `lobby`, `starts_at=now()+2min`, devuelve `code` | `unauthenticated` |
-| `join_room(code)` | code | agrega al caller como participante humano si hay cupo y `lobby`; si con él se llega a **48 → arranca ya** (`start_tournament`, sin esperar los 2 min) | `room_not_found`, `room_full`, `already_started`, `room_cancelled` |
+| `join_room(code)` | code | agrega al caller como participante humano si hay cupo y `lobby`; si con él se llega a **48 → arranca ya** (`start_tournament`, sin esperar los 30 s) | `room_not_found`, `room_full`, `already_started`, `room_cancelled` |
 | `quick_play()` | — | si el caller ya tiene torneo activo → lo **reanuda** (`get_active_match`). Si no, matchmaking: une a la sala en `lobby` que **más humanos** tenga con cupo (`FOR UPDATE SKIP LOCKED`, sin lock global — C3); si no hay, crea una (creación serializada con lock acotado). Sin overfill de 48 | `unauthenticated` |
 | `get_active_match()` | — | devuelve el torneo/partido/penal en curso del caller (para rehidratar tras refresh) o `null` | |
 | `begin_presentation(tournament_id)` | id | timing de presentación (B2.1): la **1ª llamada de un humano** comprime el backstop a la ventana real (~4s: 2s país + 2s grupos, F) para ver grupos/revelación antes del 1er penal; idempotente (llegadas tardías no la extienden). Solo timing, no evalúa nada | `unauthenticated`, `not_participant` |
@@ -589,7 +589,7 @@ no implementar.
 ## 10. Criterio de verificación end-to-end (§12 BRIEF)
 
 1. Registro (username+pass), armado de avatar, entrada al home. → F2
-2. Crear sala, compartir link, otro humano se une; a los 2 min se llena con bots y arranca
+2. Crear sala, compartir link, otro humano se une; a los 30 s se llena con bots y arranca
    torneo de 48. → F4/F5
 3. Tanda completa con timing del server, animaciones GOL/ATAJADO y los 6 casos §5.2
    (incl. "los dos mal"). → F3/F4/F8

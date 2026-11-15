@@ -5,12 +5,15 @@
  *  - un archivo no respeta `<14 dígitos>_<nombre>.sql`;
  *  - hay dos versiones iguales;
  *  - una migración que no está en `origin/main` tiene versión ≤ a la máxima de `origin/main`
- *    (usar el próximo número libre al mergear).
+ *    (usar el próximo número libre al mergear);
+ *  - desde `…24000002_game_timing` (P3), una migración tiene un tiempo de juego literal
+ *    (`interval 'N second(s)'`): los tiempos salen de `public.game_timing()` (espejo de `TIMING`).
  *
  *   pnpm db:check-migrations      (CI: necesita `origin/main` fetcheado; sin él, solo los dos primeros)
  */
 import { execFileSync } from "node:child_process";
-import { readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
 const DIR = "supabase/migrations";
 const RE = /^(\d{14})_[a-z0-9_]+\.sql$/;
@@ -27,6 +30,19 @@ for (const f of files) {
   const prev = seen.get(m[1]!);
   if (prev) errors.push(`${f}: versión repetida con ${prev}`);
   seen.set(m[1]!, f);
+}
+
+/** Primera migración con los tiempos centralizados: de acá en adelante, ningún literal de segundos. */
+const TIMING_FROM = "20261124000002";
+const LITERAL_SECONDS = /interval\s+'\s*\d+(\.\d+)?\s*sec(ond)?s?\s*'/i;
+for (const f of files) {
+  if (!RE.test(f) || f.slice(0, 14) < TIMING_FROM) continue;
+  const lines = readFileSync(join(DIR, f), "utf8").split("\n");
+  lines.forEach((l, i) => {
+    if (LITERAL_SECONDS.test(l.replace(/--.*$/, ""))) {
+      errors.push(`${f}:${i + 1}: tiempo de juego literal → usá make_interval(secs => (public.game_timing()->>'<key>')::int)`);
+    }
+  });
 }
 
 let onMain: string[] | null = null;

@@ -71,6 +71,9 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
   **NO en Edge Functions** (decisión por escalabilidad, SPEC §1.2/§1.3): las versiones SQL son
   **ports fieles** del motor, verificados por **paridad** contra TS (RNG mulberry32 bit-perfect).
   v1 no tiene Edge Functions.
+- **Tiempos de juego en una sola fuente:** `TIMING` (`lib/engine/timing.ts`) ↔ `public.game_timing()` (paridad en
+  `supabase/tests/timing.test.ts`); espera de sala por modo (`game_modes.lobby_seconds` ↔ `FORMATS[m].lobbyS`, 30 s).
+  Nada de `interval 'N seconds'` en migraciones nuevas (`pnpm db:check-migrations` lo rechaza).
 - El penal **se resuelve recién a los 10s** (no antes). La respuesta **NO es cambiable**: el
   **primer tap queda fijo** (F10/10.11; `select_option` rechaza el cambio con `already_answered`)
   y la rapidez se mide por el `selected_at` de esa única selección (server). El cliente congela el
