@@ -1,5 +1,24 @@
 # TODO — TANDA ⚽
 
+## 🗺 Plan Feedback 2 (14/11 noche) — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · esperando OK de Gino
+Corrida SOLO de planificación (sin código, sin merge, sin deploy). Orden (tamaño):
+- **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
+- **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
+  (es un barrido dinámico: tiene que correr después de todo) + check de migraciones en CI.
+- **P2 (M)** fuera `AvatarModel` (skeleton neutro + error con reintento), **T-pose** (bind = T-pose y la pose solo
+  se aplica por frame → pose al instanciar + pose explícita por estado con test), compat SQL (`divisions`,
+  `placement_left`), assets huérfanos.
+- **P3 (S)** J: todos los tiempos en `TIMING` + `game_timing()` con paridad; salas a 30 s (`errors.ts` decía "2 min").
+- **P4 (M)** G: causa = body `h-dvh overflow-hidden` + scroll en paneles (el footer quedaba clavado); la página
+  scrollea el documento, footer al final en TODAS las pantallas (revierte F1), `GameStage`/`Page`, bracket de dos
+  lados en desktop, lint + e2e en 4 viewports.
+- **P5 (M)** H: máquina de estados de fin de partida/torneo, `eliminated_phase` al terminar el partido (hoy al
+  terminar la ronda), tablero de penales con slots, `ResultActions` (1 primaria + secundarias iguales).
+- **P6 (S–M)** K: ayuda obligatoria en el registro de modos + `HelpSheet` (`<dialog>`) + "Cómo jugar" en la home.
+- **P7a–d (L/M/S/L)** I + F5: QA visual automático (galería + chequeos de pelo/cráneo, normales, malla cerrada,
+  T-pose), paletas curadas, schema v2, migración de avatares y creador nuevo.
+- **Preguntas para Gino** (7, con recomendación) al final del plan.
+
 ## 🛠 Feedback de Gino 14/11 — rama `feat/feedback-1411` (worktree `/mnt/hera/Proyectos/tanda-feedback`)
 Plan: `~/.claude/plans/gino-prob-tanda-en-greedy-snail.md` (causas de fondo, no parches). Deploy **por fase**
 (Gino revisa solo en prod): verde completo → rebase sobre main → merge → push → migraciones por MCP + ledger
