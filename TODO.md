@@ -3,6 +3,13 @@
 ## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
 - **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
   errores ni violaciones CSP; GLB pedido a los ~450 ms de entrar a la sala; TTFB p50 ~180 ms (F0 ~300) → `docs/PERF-BASELINE.md`.
+- **🚀 P1 ✅ (15/11)** deps mayores en prod (`2b89040`, merge de `wip/deps-major` ⊃ `wip/fix-iat-dedupe`; las ramas
+  de la otra sesión quedan intactas, ya mergeadas): three 0.187, ssr 0.12.7, vitest 5.1, eslint 10.15, CLI 3.1, TS ~6.0.
+  Migración de grants renumerada a `20261124000000` (barrido dinámico → después de las …23…); prod verificado antes
+  (superficie == allowlist → no-op) y después (30 auth / 1 anon); ledger ok; advisors = lo de siempre. Nuevo:
+  `pnpm db:check-migrations` en CI + rls_audit exige que toda RPC tipada esté en la allowlist. Verde: unit 157,
+  db 92, flow 6/6, smoke 24/24; prod 25/25 + penal de invitado (`e2e/prod-guest.spec.ts`, a pedido con
+  `E2E_PROD_GUEST=1`). Stack aislado: `$SP/sbfb` (copia de config.toml con project_id tanda-fb y puertos +100).
 Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
