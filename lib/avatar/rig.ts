@@ -1,7 +1,7 @@
 /**
  * Rig del avatar (Fase 6): esqueleto propio de 11 articulaciones + poses + clips por keyframes. TS
- * puro (sin three) → testeable y determinista. `AvatarModel` arma la jerarquía de pivotes con estos
- * nombres y la escena aplica `samplePose(clip, t)` por frame.
+ * puro (sin three) → testeable y determinista. `GlbAvatar` registra pivotes con estos nombres (y los
+ * traduce a huesos del GLB) y la escena aplica `samplePose(clip, t)` por frame.
  *
  * Convenciones (el avatar mira hacia +Z, pies en y=0):
  *  - Lado `L` = izquierda del personaje = +X. `R` = -X.
@@ -166,6 +166,37 @@ export const IDLE: Clip = {
       },
     },
     { t: 3.2, pose: { joints: { ...ARMS_RELAXED, spine: [0, 0, 0] } } },
+  ],
+};
+
+/**
+ * Pateador esperando el remate (feedback 2, P2.2): perfilado detrás de la pelota, rodillas flexionadas,
+ * torso adelante, brazos sueltos y un rebote corto. Reemplaza al `IDLE` de parado tranquilo — antes de
+ * patear se espera en pose de preparación, no "posando".
+ */
+const KICKER_SET: PoseSpec = {
+  root: { y: -0.03, ry: 0.18 },
+  joints: {
+    spine: [0.2, 0, 0],
+    head: [-0.12, 0, 0],
+    hipL: [-0.22, 0, 0.04],
+    kneeL: [0.32, 0, 0],
+    hipR: [0.12, 0, -0.04],
+    kneeR: [0.38, 0, 0],
+    shoulderL: [0.12, 0, 0.32],
+    shoulderR: [-0.12, 0, -0.32],
+    elbowL: [-0.55, 0, 0],
+    elbowR: [-0.55, 0, 0],
+  },
+};
+
+export const KICKER_READY: Clip = {
+  duration: 1.4,
+  loop: true,
+  keys: [
+    { t: 0, pose: KICKER_SET },
+    { t: 0.7, pose: { ...KICKER_SET, root: { ...KICKER_SET.root, y: -0.05 } } },
+    { t: 1.4, pose: KICKER_SET },
   ],
 };
 

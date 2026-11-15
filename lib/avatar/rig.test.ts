@@ -8,6 +8,7 @@ import {
   KEEPER_DIVE,
   KEEPER_READY,
   KICK,
+  KICKER_READY,
   REACTION_AT,
   REST,
   blendPose,
@@ -18,7 +19,7 @@ import {
   type Clip,
 } from "./rig";
 
-const CLIPS: Record<string, Clip> = { IDLE, KICK, CELEBRATE, DEJECTED, KEEPER_READY, KEEPER_DIVE, KEEPER_CELEBRATE };
+const CLIPS: Record<string, Clip> = { IDLE, KICKER_READY, KICK, CELEBRATE, DEJECTED, KEEPER_READY, KEEPER_DIVE, KEEPER_CELEBRATE };
 
 describe("rig", () => {
   it("resolvePose completa todas las articulaciones en 0", () => {
@@ -89,4 +90,17 @@ describe("rig", () => {
     const after = sequencePose(action, CELEBRATE, REACTION_AT + 0.001);
     for (const j of JOINTS) expect(Math.abs(before.joints[j][2] - after.joints[j][2])).toBeLessThan(0.05);
   });
+
+  // Feedback 2 (P2.2): ningún estado de la escena espera "parado posando". Antes del remate, pateador y
+  // arquero están en pose de preparación: rodillas flexionadas y torso inclinado durante todo el loop.
+  it("pateador y arquero esperan en pose de preparación (nunca la de reposo)", () => {
+    for (const [name, clip] of Object.entries({ KICKER_READY, KEEPER_READY })) {
+      for (let t = 0; t <= clip.duration; t += 0.1) {
+        const p = samplePose(clip, t);
+        expect(p, `${name} t=${t}`).not.toEqual(REST);
+        expect(Math.min(p.joints.kneeL[0], p.joints.kneeR[0]), `${name} rodillas t=${t}`).toBeGreaterThan(0.2);
+      }
+    }
+  });
 });
+

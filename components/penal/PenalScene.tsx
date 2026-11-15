@@ -20,12 +20,12 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { Avatar3D } from "@/components/avatar/Avatar3D";
+import { GlbAvatar } from "@/components/avatar/GlbAvatar";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
 import {
   CELEBRATE,
   DEJECTED,
-  IDLE,
+  KICKER_READY,
   KEEPER_CELEBRATE,
   KEEPER_DIVE,
   KEEPER_READY,
@@ -150,9 +150,9 @@ function Actors({
     // ── Pateador ──
     let kz = KICKER_Z0;
     if (!plan) {
-      applyPose(kickerRig.handles.current, samplePose(IDLE, idleT));
+      applyPose(kickerRig.handles.current, samplePose(KICKER_READY, idleT));
     } else {
-      const idle = samplePose(IDLE, 0);
+      const idle = samplePose(KICKER_READY, 0);
       const action = (tt: number) => blendPose(idle, samplePose(KICK, tt), smoothstep(tt / 0.1));
       applyPose(kickerRig.handles.current, sequencePose(action, plan.reason === "goal" ? CELEBRATE : DEJECTED, t));
       kz =
@@ -247,7 +247,7 @@ function Actors({
       <Crowd colors={crowdColors} groupRefs={setCrowd} />
 
       <group ref={kickerGroup} position={[KICKER_X, 0, KICKER_Z0]} rotation={[0, Math.PI, 0]}>
-        <Avatar3D
+        <GlbAvatar
           config={kicker.avatar}
           kitTop={kicker.kitTop ?? undefined}
           kitSash={kicker.kitSash ?? undefined}
@@ -256,7 +256,7 @@ function Actors({
         />
       </group>
       <group position={[0, 0, KEEPER_Z]}>
-        <Avatar3D
+        <GlbAvatar
           config={keeper.avatar}
           kitTop={keeper.kitTop ?? undefined}
           kitSash={keeper.kitSash ?? undefined}

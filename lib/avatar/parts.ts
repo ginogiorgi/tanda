@@ -1,6 +1,6 @@
 /**
  * Catálogo propio de partes del avatar. Cada categoría es una lista de variantes de malla
- * (primitivas low-poly del fallback `AvatarModel`; `GlbAvatar` mapea los mismos ids a su GLB). Los `id` se persisten en `profiles.avatar`,
+ * (`GlbAvatar` mapea cada id a su malla del GLB). Los `id` se persisten en `profiles.avatar`,
  * así que **no renombrar** ids existentes sin migrar datos (agregar nuevos sí es seguro).
  * Ver SPEC §8.2.
  */

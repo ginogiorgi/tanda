@@ -494,7 +494,7 @@ lobby ni en resultados, solo donde hay 3D.
   selectores y las primitivas propias son lo más liviano y 100% bajo nuestro control,
   coherente con el estilo minimal. (Quaternius queda como upgrade opcional futuro detrás de
   la misma interfaz `AvatarConfig`.)
-- **2.0 — rig y animación propios:** `AvatarModel` arma una jerarquía de pivotes (root, hips,
+- **2.0 — rig y animación propios:** el rig es una jerarquía de pivotes (root, hips,
   spine, head, hombros, codos, caderas, rodillas). Los clips son keyframes en TS puro
   (`lib/avatar/rig.ts`: idle, patada, festejo, lamento, arquero en guardia/estirada/festejo) que la
   escena aplica por frame (`components/avatar/rigPose.ts`). La jugada (pelota, red, cámara) sale de
@@ -504,8 +504,8 @@ lobby ni en resultados, solo donde hay 3D.
   Quaternius (`components/avatar/GlbAvatar.tsx`; GLBs en `public/models/avatar/` generados por
   `scripts/avatar/build-glb.mts`). Misma API e igual rig (`glbRig` traduce los pivotes a huesos); la
   ropa se pinta por shader con cortes por planos, el mohicano y el calzado se generan en runtime.
-  `AvatarModel` (primitivas) queda como fallback mientras baja el GLB. Lo de arriba sobre
-  primitivas describe ese fallback.
+  Sin fallback 3D (feedback 2, 15/11): el muñeco de primitivas `AvatarModel` se borró; mientras baja el
+  GLB se ve un placeholder neutro y si falla, error con reintento. Lo de abajo sobre primitivas es historia.
 - **Modelo:** humano low-poly de proporciones ~7 cabezas (no stocky), con cuello y miembros
   segmentados, mirando a +Z. La **cabeza es una caja con cara** (nariz + ojos al frente):
   marca la orientación para que la rotación se note (una esfera no servía). **Dos cuerpos

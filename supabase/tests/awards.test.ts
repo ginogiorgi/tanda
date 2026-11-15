@@ -14,7 +14,6 @@ interface Stats {
   seasons: { season_id: string; division: string }[];
   current: { season_id: string; division: string; games: number } | null;
   cups: Record<string, { gold: number; silver: number; bronze: number }>;
-  divisions: unknown[];
 }
 
 async function stats(c: PoolClient, uid: string): Promise<Stats> {
@@ -53,6 +52,20 @@ describe("awards: un premio por competencia, solo al terminar", () => {
       expect(s.seasons).toEqual([]);
       expect(s.current).toEqual({ season_id: season, division: "ascenso", games: 1 });
       expect(await awardsOf(c, fx.userA)).toEqual([]);
+      // P2.3: sin los puentes de compat del deploy de F2/F3b.
+      expect(Object.keys(s).sort()).toEqual(["cups", "current", "ranked", "seasons"]);
+    });
+  });
+
+  it("compat de F2 fuera: sin `placement_left` en la tabla ni en las RPC de ranked", async () => {
+    await withRollback(async (c) => {
+      const fx = await makeMatchFixture(c);
+      const cols = await c.query("select 1 from information_schema.columns where table_name = 'ranked_players' and column_name = 'placement_left'");
+      expect(cols.rowCount).toBe(0);
+      await asRole(c, "authenticated", fx.userA);
+      const me = (await c.query<{ j: Record<string, unknown> }>("select public.get_ranked_me() as j")).rows[0]!.j;
+      await resetRole(c);
+      expect(me).not.toHaveProperty("placement_left");
     });
   });
 

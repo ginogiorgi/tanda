@@ -84,7 +84,8 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
 - **3D solo en dos lugares**: creador de avatar y escena de penal (cancha/arco/arquero/
   pateador/pelota). Todo lo demás es 2D. R3F code-splitteado; personaje **GLB CC0 de
   Quaternius** (`public/models/avatar/`, generado con `scripts/avatar/build-glb.mts`; decisión de Gino en
-  Tanda 2.0) con `AvatarModel` (primitivas propias) como fallback mientras carga; la escena del penal
+  Tanda 2.0) **sin fallback 3D**: mientras baja el GLB, placeholder neutro (`Scene3DSkeleton`) y si falla, error
+  con reintento (`useGlbReady` decide antes de montar el canvas); la instancia nace posada (nunca T-pose). La escena del penal
   sigue siendo geometría propia. Animación por **rig propio** (`lib/avatar/rig.ts`, clips por keyframes) +
   jugada determinista (`lib/penal/shot.ts`); revisar en `/dev/penal`. El avatar del jugador ES el pateador/arquero
   del penal. Ver SPEC §8.2.

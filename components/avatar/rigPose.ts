@@ -1,5 +1,5 @@
 /**
- * Puente entre el rig puro (`lib/avatar/rig.ts`) y la jerarquía de pivotes de `AvatarModel`. Se usa
+ * Puente entre el rig puro (`lib/avatar/rig.ts`) y los pivotes que registra `GlbAvatar`. Se usa
  * dentro de `useFrame`: muta transforms (sin re-render de React).
  */
 import { useCallback, useRef, type RefObject } from "react";
@@ -10,7 +10,7 @@ export type RigNode = Joint | "root";
 export type RigHandles = Partial<Record<RigNode, Group>>;
 export type RigRegister = (node: RigNode, group: Group | null) => void;
 
-/** Handles del esqueleto + callback para que `AvatarModel` registre sus pivotes. */
+/** Handles del esqueleto + callback para que `GlbAvatar` registre sus pivotes. */
 export function useRig(): { handles: RefObject<RigHandles>; register: RigRegister } {
   const handles = useRef<RigHandles>({});
   const register = useCallback<RigRegister>((node, group) => {

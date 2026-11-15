@@ -9,16 +9,13 @@
  * canvas renderiza on-demand.
  */
 
-import { Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import type { AvatarConfig } from "@/lib/avatar/types";
 import { IDLE, REST, samplePose } from "@/lib/avatar/rig";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
 import { useBlobTexture } from "@/lib/three/blobTexture";
-import { Avatar3D } from "./Avatar3D";
-import { ErrorFallback } from "./ErrorFallback";
-import { WarmGlbBodies } from "./GlbAvatar";
+import { GlbAvatar } from "./GlbAvatar";
 import { applyPose, useRig } from "./rigPose";
 
 suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3F internamente
@@ -29,7 +26,7 @@ function AnimatedAvatar({ config, animate }: { config: AvatarConfig; animate: bo
   useFrame((state) => {
     applyPose(handles.current, animate ? samplePose(IDLE, state.clock.elapsedTime) : REST);
   }, -1);
-  return <Avatar3D config={config} rig={register} />;
+  return <GlbAvatar config={config} rig={register} />;
 }
 
 interface AvatarCanvasProps {
@@ -56,13 +53,6 @@ export function AvatarCanvas({ config, rotationY = 0.4 }: AvatarCanvasProps) {
       <group rotation={[0, rotationY, 0]}>
         <AnimatedAvatar config={config} animate={!reducedMotion} />
       </group>
-      {/* el creador cambia de cuerpo: los dos GLB + templates listos de antemano (no dibuja nada).
-          Best-effort: si falla el GLB del otro cuerpo, se ignora. */}
-      <ErrorFallback fallback={null}>
-        <Suspense fallback={null}>
-          <WarmGlbBodies />
-        </Suspense>
-      </ErrorFallback>
       {shadow && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.925, 0]}>
           <planeGeometry args={[1.1, 1.1]} />

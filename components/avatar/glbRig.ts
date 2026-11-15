@@ -35,7 +35,7 @@ const BONE_OF: readonly (readonly [Joint, string])[] = [
   ["kneeR", "calf_r"],
 ];
 
-/** Cadena del rig (de la cadera a la articulación), igual a la jerarquía de pivotes de `AvatarModel`. */
+/** Cadena del rig (de la cadera a la articulación), igual a la jerarquía de pivotes del rig (`rigPose`). */
 const CHAIN: Record<Joint, readonly Joint[]> = {
   hips: ["hips"],
   spine: ["hips", "spine"],

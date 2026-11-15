@@ -44,8 +44,8 @@ async function setRating(c: PoolClient, uid: string, rating: number): Promise<vo
 }
 
 async function player(c: PoolClient, uid: string) {
-  const { rows } = await c.query<{ rating: number; games: number; wins: number; placement_left: number }>(
-    "select rating, games, wins, placement_left from public.ranked_players where user_id = $1",
+  const { rows } = await c.query<{ rating: number; games: number; wins: number }>(
+    "select rating, games, wins from public.ranked_players where user_id = $1",
     [uid],
   );
   return rows[0]!;
@@ -299,18 +299,18 @@ describe("ranked: temporadas y perfil", () => {
         "insert into public.ranked_seasons values ('apertura-2020', 'Apertura 2020', '2020-01-01', '2020-07-01')",
       );
       await c.query(
-        `insert into public.ranked_players (user_id, rating, placement_left, season_id, season_games, season_wins, season_peak)
-         values ($1, 1800, 0, 'apertura-2020', 10, 7, 1820)`,
+        `insert into public.ranked_players (user_id, rating, season_id, season_games, season_wins, season_peak)
+         values ($1, 1800, 'apertura-2020', 10, 7, 1820)`,
         [a],
       );
       await c.query("select public.ranked_roll_season(null)");
       const p = (
-        await c.query<{ rating: number; placement_left: number; season_id: string }>(
-          "select rating, placement_left, season_id from public.ranked_players where user_id = $1",
+        await c.query<{ rating: number; season_id: string }>(
+          "select rating, season_id from public.ranked_players where user_id = $1",
           [a],
         )
       ).rows[0]!;
-      expect(p).toEqual({ rating: 1650, placement_left: 0, season_id: seasonIdFor(new Date()) });
+      expect(p).toEqual({ rating: 1650, season_id: seasonIdFor(new Date()) });
       const res = (
         await c.query<{ peak_rating: number }>(
           "select peak_rating from public.ranked_season_results where user_id = $1 and season_id = 'apertura-2020'",
@@ -349,12 +349,11 @@ describe("ranked: grants", () => {
 
 describe("ranked: paridad TS↔SQL", () => {
   it("ranked_apply_result / division / difficulty = lib/engine/ranked", async () => {
-    const cases: { s: RankedState; placement: number; opp: number; won: boolean }[] = [];
+    const cases: { s: RankedState; opp: number; won: boolean }[] = [];
     for (let i = 0; i < 400; i++) {
       const r = (i * 7919) % 2600;
       cases.push({
         s: { rating: r, shield: i % 4 },
-        placement: i % 7, // la SQL conserva el parámetro pero lo ignora (K=32 fijo)
         opp: (i * 104729) % 2600,
         won: i % 2 === 0,
       });
@@ -362,7 +361,6 @@ describe("ranked: paridad TS↔SQL", () => {
     const { rows } = await getPool().query<{
       i: number;
       rating: number;
-      placement_left: number;
       shield: number;
       delta: number;
       promoted: boolean;
@@ -373,13 +371,12 @@ describe("ranked: paridad TS↔SQL", () => {
     }>(
       `select x.i, r.*, public.ranked_division(x.rating) as div,
               public.ranked_difficulty(x.rating, ((x.i % 14) + 1)::int)::text as diff
-         from unnest($1::int[], $2::int[], $3::int[], $4::int[], $5::bool[]) with ordinality
-              as x(rating, placement, shield, opp, won, i)
-         cross join lateral public.ranked_apply_result(x.rating, x.placement, x.shield, x.opp, x.won) r
+         from unnest($1::int[], $2::int[], $3::int[], $4::bool[]) with ordinality
+              as x(rating, shield, opp, won, i)
+         cross join lateral public.ranked_apply_result(x.rating, x.shield, x.opp, x.won) r
         order by x.i`,
       [
         cases.map((c) => c.s.rating),
-        cases.map((c) => c.placement),
         cases.map((c) => c.s.shield),
         cases.map((c) => c.opp),
         cases.map((c) => c.won),
@@ -396,7 +393,6 @@ describe("ranked: paridad TS↔SQL", () => {
         demoted: row.demoted,
         shieldSaved: row.shield_saved,
       }).toEqual({ ...o.state, delta: o.delta, promoted: o.promoted, demoted: o.demoted, shieldSaved: o.shieldSaved });
-      expect(row.placement_left).toBe(0);
       expect(row.div).toBe(divisionIndex(c.s.rating));
       expect(row.diff).toBe(rankedDifficulty(c.s.rating, (Number(row.i) % 14) + 1));
     });

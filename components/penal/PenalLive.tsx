@@ -390,7 +390,7 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
           className="h-full w-full"
         />
         <div
-          className={`absolute inset-0 ${soft ? "bg-bg/10" : "bg-bg/45"}`}
+          className={`pointer-events-none absolute inset-0 ${soft ? "bg-bg/10" : "bg-bg/45"}`}
         />
       </div>
     ) : null;

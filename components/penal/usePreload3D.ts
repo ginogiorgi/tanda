@@ -23,7 +23,7 @@ export function usePreload3D(): void {
       if (done) return;
       done = true;
       void import("./PenalScene");
-      void import("@/components/avatar/GlbAvatar").then((m) => m.preloadGlbBodies());
+      void import("@/components/avatar/glbLoad").then((m) => m.preloadGlbBodies());
     };
     if (typeof window.requestIdleCallback === "function") {
       const id = window.requestIdleCallback(run, { timeout: 2500 });

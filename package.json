@@ -12,6 +12,7 @@
     "knip": "knip",
     "perf:budget": "tsx scripts/perf/budget.ts",
     "db:check-migrations": "tsx scripts/db/check-migrations.ts",
+    "assets:check": "tsx scripts/assets/unused.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit --passWithNoTests",
     "test:watch": "vitest --project unit",
