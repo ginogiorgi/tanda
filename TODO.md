@@ -10,6 +10,14 @@
   `pnpm db:check-migrations` en CI + rls_audit exige que toda RPC tipada esté en la allowlist. Verde: unit 157,
   db 92, flow 6/6, smoke 24/24; prod 25/25 + penal de invitado (`e2e/prod-guest.spec.ts`, a pedido con
   `E2E_PROD_GUEST=1`). Stack aislado: `$SP/sbfb` (copia de config.toml con project_id tanda-fb y puertos +100).
+- **🚀 P2 ✅ (15/11)** en prod (`5e02c29`): muñeco procedural borrado (`AvatarModel`/`Avatar3D`/`ErrorFallback`);
+  `useGlbReady` precarga fuera del canvas → `Scene3DSkeleton` neutro / `Scene3DError` con Reintentar (e2e flow lo
+  cubre abortando los GLB). **T-pose — causa:** bind del pack = T y la pose solo se aplicaba en `useFrame` (con
+  frameloop demand a veces no hay frame) → `instantiate` posa al crear (test en node: bind >70°, instancia <35°).
+  Pateador en `KICKER_READY`. Velo del penal `pointer-events-none` (tapaba el Reintentar). Migración
+  `20261124000001_compat_cleanup` (front primero): fuera `placement_left` (columna + RPC) y `divisions` del perfil;
+  ledger ok, advisors = baseline. `pnpm assets:check` en CI (91 assets, 0 huérfanos). Verde: unit 162, db 93,
+  flow 6/6, smoke 24/24; prod 25/25 + penal de invitado.
 Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
