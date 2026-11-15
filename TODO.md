@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-## 🗺 Plan Feedback 2 (14/11 noche) — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · esperando OK de Gino
+## 🗺 Plan Feedback 2 (14/11 noche) — [`docs/PLAN-FEEDBACK-2 (✅ aprobado por Gino 14/11, paletas a criterio de Claude).md`](docs/PLAN-FEEDBACK-2.md) · esperando OK de Gino
 Corrida SOLO de planificación (sin código, sin merge, sin deploy). Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`

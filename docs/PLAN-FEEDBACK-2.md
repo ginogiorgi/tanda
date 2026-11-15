@@ -608,7 +608,7 @@ Partido en 4 fases deployables. **Regla de Gino:** no se marca nada hecho sin re
 - **Zapatos:** cerrar el loft (tapa de la punta con fan desde el centroide de la última sección, tapa del talón y anillo de la boca), normales recalculadas con winding hacia afuera (test de volumen > 0) y `FrontSide`. Puntera con una leve curva hacia arriba para que la cara frontal se lea en el plano de la cámara del penal.
 - **Piel:** tinte de la región `aHead`/piel en el `kitMaterial` existente (ya decide la región por fragmento) con la paleta de piel. El pack trae la textura `Light`, que se agrega al build como base clara para que los tonos claros no salgan grises.
 
-**P7a.4 Paletas curadas** (tokens en `lib/avatar/palette.ts`, separadas por categoría; **pregunta 3** para que Gino apruebe con la lámina de swatches que sale de la galería):
+**P7a.4 Paletas curadas** (tokens en `lib/avatar/palette.ts`, separadas por categoría; definitivas: Gino delegó la decisión (14/11); se validan con la lámina de swatches de la galería sin esperar aprobación):
 
 | Paleta | Colores |
 |---|---|
@@ -671,6 +671,8 @@ Lo del plan original (sección C) más lo de I:
 ---
 
 ## Preguntas para Gino (solo lo que es suyo; con mi recomendación)
+
+> **✅ Respuestas de Gino (2026-11-14 22:39):** aprueba **todas las recomendaciones** (1 "Ver cómo sigue", 2 los 30 s en las dos, 4 bracket de dos lados, 5 hoja, 6 P2 antes que el layout, 7 deps asumidas listas), **salvo la 3:** no quiere aprobar las paletas, que las decida Claude. Quedan **las de la tabla de P7a.4 como definitivas**: la sesión las valida sola en la lámina de swatches de la galería de QA (contraste con piel, que nada sea chillón, coherencia con "Programa") y las ajusta si hace falta, **sin esperar a Gino**. Fuera de eso, Gino ve el resultado en prod.
 
 1. **Nombre del botón para seguir mirando el torneo.** Recomiendo **"Ver cómo sigue"** (dice qué vas a ver; aparece solo si el torneo sigue). Alternativas: "Seguir mirando", "Ver el torneo".
 2. **Espera de 30 s: ¿también en "Partida rápida" o solo en "Con amigos"?** Recomiendo **las dos** (es el mismo lobby; 30 s con bots que completan no cambia la partida).
