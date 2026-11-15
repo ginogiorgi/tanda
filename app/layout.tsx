@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Instrument_Sans } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
+import { Footer } from "@/components/ui/Footer";
 import { PitchBackground } from "@/components/ui/PitchBackground";
 import "./globals.css";
 
@@ -67,10 +68,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${instrument.variable} ${bigShoulders.variable} h-full`}>
-      <body className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
+    <html lang="es" className={`${instrument.variable} ${bigShoulders.variable}`}>
+      {/* Feedback 2 (P4): la página scrollea el DOCUMENTO. El contenido ocupa al menos el alto visible y
+          el footer va al final del flujo, en TODAS las pantallas (juego incluido): aparece al scrollear. */}
+      <body className="flex min-h-svh flex-col bg-bg text-fg">
         <PitchBackground />
-        {children}
+        <div className="flex min-h-svh w-full flex-col">{children}</div>
+        <Footer />
       </body>
     </html>
   );

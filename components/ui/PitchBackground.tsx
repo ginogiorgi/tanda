@@ -10,6 +10,7 @@ export function PitchBackground() {
   return (
     <div
       aria-hidden
+      data-layer="bg"
       className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[100svh] overflow-hidden"
     >
       <svg

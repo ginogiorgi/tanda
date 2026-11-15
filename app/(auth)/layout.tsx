@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { Footer } from "@/components/ui/Footer";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 export default function AuthLayout({
@@ -9,7 +8,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+    <main className="flex w-full flex-1 flex-col">
       <ScreenHeader hideTitle className="border-b-0 bg-transparent" />
       <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16">
         <Link href="/" aria-label="Tanda — inicio">
@@ -19,7 +18,6 @@ export default function AuthLayout({
           {children}
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

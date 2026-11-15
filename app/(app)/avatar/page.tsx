@@ -5,6 +5,7 @@ import { AvatarCreator } from "@/components/avatar/AvatarCreator";
 import { saveAvatar } from "./actions";
 import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
 import type { AvatarConfig } from "@/lib/avatar/types";
+import { Page } from "@/components/ui/Page";
 
 // Privada (requiere sesión) → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -36,7 +37,7 @@ export default async function AvatarPage({
     : DEFAULT_AVATAR;
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 px-2 py-6">
+    <Page width="wide" className="items-center px-2">
       <div className="flex flex-col items-center gap-2 text-center">
         <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg">
           Armá tu jugador
@@ -47,6 +48,6 @@ export default async function AvatarPage({
         </p>
       </div>
       <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo={redirectTo} />
-    </div>
+    </Page>
   );
 }

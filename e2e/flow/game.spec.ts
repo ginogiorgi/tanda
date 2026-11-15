@@ -1,5 +1,6 @@
 import { expect, test } from "../_csp";
 import { assertLocalSupabase, enterAsGuest, openPlay } from "./_helpers";
+import { assertLayout, VIEWPORTS } from "../_layout";
 
 /**
  * Flujo de juego completo como invitado: sesión anónima → Jugar (Mundial) → sala → lobby (30 s
@@ -80,6 +81,17 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
 
   await test.step("resolución a los 10s", async () => {
     await expect(page.getByText(/¡GOL!|ATAJADO/)).toBeVisible({ timeout: 30_000 });
+  });
+
+  await test.step("penal (resultado y el que sigue): GameStage de un viewport (360, mobile y 1440), footer abajo del pliegue", async () => {
+    // Después de responder: con el cierre temprano, chequear antes cambiaba el timing del penal.
+    const mobile = page.viewportSize()!;
+    for (const vp of [VIEWPORTS[0], VIEWPORTS[3]]) {
+      await page.setViewportSize({ width: vp.width, height: vp.height });
+      await assertLayout(page, { stage: true });
+    }
+    await page.setViewportSize(mobile);
+    await assertLayout(page, { stage: true });
   });
 
   expect(errors).toEqual([]);

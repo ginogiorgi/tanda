@@ -153,6 +153,43 @@ function argSnapshot(): BracketSnapshot {
   };
 }
 
+/** Mundial en 16avos: 16 llaves (la tuya en vivo, la mitad terminadas) y el resto del árbol por armarse. */
+function wcKoSnapshot(): BracketSnapshot {
+  const teams = (wcTeams as CatalogTeam[]).slice(0, 32).map(brief);
+  const participants: BracketTeam[] = teams.map((b) => ({ ...b, group_letter: null, placement: null, eliminated_phase: null }));
+  const matches: ScoreLivePayload[] = Array.from({ length: 16 }, (_, k) => {
+    const h = at(participants, k * 2);
+    const a = at(participants, k * 2 + 1);
+    const done = k % 2 === 1;
+    const hs = done ? (k * 3) % 4 : k === 0 ? 1 : 0;
+    const as_ = done ? (k + 1) % 3 : 0;
+    return {
+      match_id: `m-r32-${k}`,
+      phase: "round_of_32",
+      group_letter: null,
+      bracket_slot: k,
+      status: k === 0 ? "in_progress" : done ? "finished" : "pending",
+      home_score: hs,
+      away_score: as_,
+      winner_participant_id: done ? (hs >= as_ ? h.participant_id : a.participant_id) : null,
+      home: h,
+      away: a,
+      server_now: "2026-11-13T00:00:00Z",
+    };
+  });
+  return {
+    tournament_id: "t-kit-ko",
+    mode_id: "worldcup",
+    format: { qualifiers_per_zone: 2, best_thirds: 8, knockout_start: "round_of_32", third_place: true, tiebreak: "gd_h2h" },
+    my_participant_id: at(participants, 0).participant_id,
+    current_phase: "round_of_32",
+    round_deadline: null,
+    champion_participant_id: null,
+    participants,
+    matches,
+  };
+}
+
 export default function KitPage() {
   if (process.env.NODE_ENV === "production") notFound();
 
@@ -165,7 +202,7 @@ export default function KitPage() {
   const meWc: BracketTeam = { ...arg, group_letter: "C", placement: null, eliminated_phase: null };
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col items-center gap-10 overflow-y-auto px-4 py-10">
+    <main className="flex w-full flex-1 flex-col items-center gap-10 px-4 py-10">
       <section className="flex w-full max-w-md flex-col gap-4">
         <Eyebrow>Kit · Programa</Eyebrow>
         <Wordmark className="text-7xl" />
@@ -298,6 +335,11 @@ export default function KitPage() {
       <section className="flex w-full flex-col items-center gap-4">
         <SectionTitle className="w-full max-w-md">Zonas (AR)</SectionTitle>
         <Bracket view={view} />
+      </section>
+
+      <section data-testid="kit-ko" className="flex w-full flex-col items-center gap-4">
+        <SectionTitle className="w-full max-w-md">Eliminación (Mundial, 16avos)</SectionTitle>
+        <Bracket view={buildBracketView(wcKoSnapshot(), {})} />
       </section>
     </main>
   );

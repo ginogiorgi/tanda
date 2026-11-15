@@ -34,6 +34,7 @@ import {
   type RoundNextPayload,
 } from "@/lib/realtime/penal";
 import { usePreload3D } from "@/components/penal/usePreload3D";
+import { Page } from "@/components/ui/Page";
 
 
 /** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
@@ -238,6 +239,7 @@ export function TournamentLive({
   if (!snapshot) {
     if (loadError) {
       return (
+        <Page center>
         <div className="flex flex-col items-center gap-4 text-center">
           <p className="text-balance text-sm text-fg-muted">
             No pudimos cargar el torneo. Revisá tu conexión y probá de nuevo.
@@ -255,9 +257,14 @@ export function TournamentLive({
             Volver al inicio
           </Link>
         </div>
+        </Page>
       );
     }
-    return <p className="text-sm text-fg-subtle">Cargando el torneo…</p>;
+    return (
+      <Page center>
+        <p className="text-sm text-fg-subtle">Cargando el torneo…</p>
+      </Page>
+    );
   }
 
   // Mi corrida terminó (eliminado o coronado) → resumen de fin de torneo (8.6).
@@ -271,7 +278,11 @@ export function TournamentLive({
     me.eliminated_phase == null &&
     me.placement == null
   ) {
-    return <TeamReveal me={me} />;
+    return (
+      <Page center>
+        <TeamReveal me={me} />
+      </Page>
+    );
   }
 
   if (me && (me.eliminated_phase != null || me.placement != null)) {
@@ -279,19 +290,25 @@ export function TournamentLive({
     const koLoss =
       me.eliminated_phase != null && me.eliminated_phase !== "group" && me.placement == null;
     if (koLoss && !koRevealDone) {
-      return <Bracket view={buildBracketView(snapshot, live)} />;
+      return (
+        <Page width="wide" center>
+          <Bracket view={buildBracketView(snapshot, live)} />
+        </Page>
+      );
     }
     return (
-      <RunSummary
-        snapshot={snapshot}
-        myParticipantId={snapshot.my_participant_id}
-        isGuest={isGuest}
-      />
+      <Page center>
+        <RunSummary
+          snapshot={snapshot}
+          myParticipantId={snapshot.my_participant_id}
+          isGuest={isGuest}
+        />
+      </Page>
     );
   }
 
   return (
-    <>
+    <Page width="wide" center>
       {/* B5.2: mi tanda resolvió pero la ronda sigue (otros humanos terminando) → aviso de espera sobre
           el bracket. No en la presentación inicial (everPlayed=false). */}
       {everPlayed && (
@@ -303,6 +320,6 @@ export function TournamentLive({
         </div>
       )}
       <Bracket view={buildBracketView(snapshot, live)} />
-    </>
+    </Page>
   );
 }

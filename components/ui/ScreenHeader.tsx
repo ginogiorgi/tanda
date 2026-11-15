@@ -15,7 +15,8 @@ import { cn } from "@/lib/cn";
  *  · Con `onBack` (pantallas de juego): el volver es una ACCIÓN (salir de la sala, cancelar la cola)
  *    que navega al padre sin esperar al server (ver `useNav().leave`).
  *
- * Client Component solo por `usePathname`. Área táctil ≥ 44px.
+ * `sticky top-0`: el volver siempre a mano aunque el documento scrollee (única excepción de layout
+ * además de fondos y overlays). Client Component solo por `usePathname`. Área táctil ≥ 44px.
  */
 export function ScreenHeader({
   title,
@@ -52,8 +53,9 @@ export function ScreenHeader({
 
   return (
     <header
+      data-layer="header"
       className={cn(
-        "relative z-20 flex min-h-14 w-full shrink-0 items-center gap-2 border-b-2 border-ink bg-bg px-4 pt-[env(safe-area-inset-top)]",
+        "sticky top-0 z-20 flex min-h-14 w-full shrink-0 items-center gap-2 border-b-2 border-ink bg-bg px-4 pt-[env(safe-area-inset-top)]",
         className,
       )}
     >

@@ -17,7 +17,7 @@ export default async function RankedPage() {
   if (!me) redirect("/jugar?aviso=no_match");
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col">
+    <div className="flex w-full flex-1 flex-col">
       <RankedQueue me={me} />
     </div>
   );

@@ -1,12 +1,9 @@
 /**
- * Layout de JUEGO (sala, cola ranked, partido): pantalla fija del alto del viewport, sin footer y sin
- * scroll de página ni rebote (feedback 14/11: "dentro de la partida, que esté fijo en la pantalla").
- * Si una vista no entra (bracket de 48), scrollea SOLO su panel, nunca la página.
+ * Layout de JUEGO (sala, cola ranked, partido). Feedback 2 (P4): la pantalla de juego es un
+ * `GameStage` de un viewport (escena, tarjeta y HUD `absolute` adentro) y debajo, en el flujo, el
+ * footer. Nada `fixed`, nada de paneles con scroll propio: si una vista es más alta (bracket), scrollea
+ * el documento.
  */
 export default function GameLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="flex min-h-0 w-full flex-1 flex-col overflow-hidden overscroll-none pb-[env(safe-area-inset-bottom)]">
-      {children}
-    </main>
-  );
+  return <main className="flex w-full flex-1 flex-col pb-[env(safe-area-inset-bottom)]">{children}</main>;
 }

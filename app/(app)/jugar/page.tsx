@@ -4,6 +4,7 @@ import { getSession } from "@/lib/supabase/session";
 import { PlayMenu } from "@/components/lobby/PlayMenu";
 import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { MODE_LIST, isModeId, type ModeId } from "@/lib/modes";
+import { Page } from "@/components/ui/Page";
 
 export const metadata: Metadata = { title: "Jugar", robots: { index: false, follow: false } };
 
@@ -36,13 +37,13 @@ export default async function JugarPage({
     : (modesRes.data ?? []).map((m) => m.id).filter(isModeId);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-6 py-6">
+    <Page>
       {avisoMsg && (
         <p className="rounded-[4px] border-2 border-ink bg-bg-elevated px-3 py-2 text-sm font-semibold text-brand-ink">
           {avisoMsg}
         </p>
       )}
       <PlayMenu activeModes={activeModes} ranked={rankedRes.data ?? null} />
-    </div>
+    </Page>
   );
 }

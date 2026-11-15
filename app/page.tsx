@@ -5,7 +5,6 @@ import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { Footer } from "@/components/ui/Footer";
 
 export default async function Home({
   searchParams,
@@ -40,7 +39,7 @@ export default async function Home({
   }
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto text-center">
+    <main className="flex w-full flex-1 flex-col items-center text-center">
       <JsonLd />
       <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16">
       <div className="flex flex-col items-center gap-5">
@@ -138,8 +137,6 @@ export default async function Home({
         diseños originales.
       </p>
       </div>
-      {/* El footer es del sitio: en la landing sí; en la home de la app (logueado) no. */}
-      {!user && <Footer />}
     </main>
   );
 }

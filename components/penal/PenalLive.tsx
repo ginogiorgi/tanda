@@ -25,6 +25,7 @@ import {
   unlockAudio,
 } from "@/lib/audio";
 import { loadPrefs, savePrefs } from "@/lib/prefs";
+import { GameStage } from "@/components/ui/GameStage";
 
 type PenalLiveProps = {
   matchId: string;
@@ -42,7 +43,19 @@ type PenalLiveProps = {
  * Canal **privado**: requiere `realtime.setAuth(token)` antes de suscribir; la lectura la
  * gobierna la policy `match_broadcast_select` en `realtime.messages` (solo participantes).
  */
-export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
+/**
+ * El penal vive en un `GameStage` (feedback 2, P4): escena, globo y tarjeta van `absolute` adentro, no
+ * `fixed` al viewport → mientras jugás se ven fijos y el footer queda debajo, en el flujo.
+ */
+export function PenalLive(props: PenalLiveProps) {
+  return (
+    <GameStage>
+      <PenalView {...props} />
+    </GameStage>
+  );
+}
+
+function PenalView({ matchId, ranked = false }: PenalLiveProps) {
   const router = useNav();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
@@ -372,7 +385,7 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
   }
 
   if (!penal) {
-    return <p className="text-sm text-fg-subtle">Esperando el penal…</p>;
+    return <p className="grid h-full place-items-center text-sm text-fg-subtle">Esperando el penal…</p>;
   }
 
   // Escena 3D detrás de la tarjeta: cancha/arco/pelota + avatares pateador/arquero (§8.2). Durante
@@ -382,7 +395,7 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
   const sceneRoles = resolveSceneRoles(penal, scene);
   const sceneBg = (soft: boolean, anim: PenalAnimation | null = null) =>
     sceneRoles ? (
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         <PenalSceneViewer
           kicker={sceneRoles.kicker}
           keeper={sceneRoles.keeper}
@@ -434,10 +447,9 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
     return (
       <>
         {sceneBg(true, anim)}
-        {/* El globo de resultado va ANCLADO ARRIBA (encima del arco) con posición fija al viewport, no
-            en el flujo centrado del wrapper de /partido (su `my-auto` recentra y tapaba la animación de
-            la pateada). Placa sutil con blur para no confundirse con el arco claro del fondo. */}
-        <div className="fade-in fixed left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
+        {/* El globo de resultado va ANCLADO ARRIBA del stage (encima del arco), no centrado: si no,
+            tapaba la animación de la pateada. */}
+        <div className="fade-in absolute left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
           <div className="flex w-full flex-col items-center gap-3 rounded-[6px] border-2 border-ink bg-bg-elevated px-5 py-5 shadow-pop">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
               Penal {result.idx} · {result.home_score}–{result.away_score}
@@ -488,15 +500,16 @@ export function PenalLive({ matchId, ranked = false }: PenalLiveProps) {
   return (
     <>
       {sceneBg(false)}
-      {/* La tarjeta del penal activo va ANCLADA ARRIBA (encima del arco) con posición fija al viewport
-          —mismo criterio que el globo de resultado—, no en el flujo centrado del wrapper de /partido.
-          `max-h-[90svh]` + scroll propio para que nunca desborde en pantallas chicas. */}
+      {/* La tarjeta del penal activo va ANCLADA ARRIBA del stage (encima del arco), mismo criterio que
+          el globo. El ancla ocupa el alto del stage (para que `max-h-full` tenga referencia) pero no
+          recibe toques: solo la tarjeta. Si no entra (360×640), scrollea SOLO la tarjeta. */}
       <div
-        className="fade-in fixed left-1/2 top-[4%] z-10 w-full max-w-md -translate-x-1/2 px-4"
+        className="fade-in pointer-events-none absolute inset-x-0 bottom-[4%] top-[4%] z-10 mx-auto flex w-full max-w-md flex-col px-4"
       >
       {/* Hoja del programa: papel con borde de tinta sobre la escena (se lee siempre, sin blur). */}
       <div
-        className={`flex max-h-[90svh] flex-col gap-5 overflow-y-auto rounded-[6px] border-2 bg-bg-elevated p-4 shadow-pop ${
+        data-layer="card"
+        className={`pointer-events-auto flex max-h-full flex-col gap-5 overflow-y-auto rounded-[6px] border-2 bg-bg-elevated p-4 shadow-pop ${
           isSecondChance ? "border-accent-orange" : "border-ink"
         }`}
       >

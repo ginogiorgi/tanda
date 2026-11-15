@@ -17,6 +17,8 @@ import {
 } from "@/lib/realtime/score";
 import { TeamMark } from "@/components/common/TeamMark";
 import type { BracketView, GroupRow, GroupView, KoMatchView } from "@/lib/bracket/bracket";
+import type { MatchPhase } from "@/lib/realtime/score";
+import { useRef } from "react";
 import { koPhasesFor, phaseLabel, type ModeMeta } from "@/lib/modes";
 
 
@@ -174,41 +176,113 @@ function TreeMatch({ m }: { m: KoMatchView }) {
   );
 }
 
-/** Árbol completo de eliminación (tarea 16): columnas por fase con scroll horizontal (mobile-first). */
+interface TreeColumn {
+  phase: MatchPhase;
+  /** `null` = llave de una ronda que todavía no se armó (se dibuja vacía para ver el árbol entero). */
+  slots: (KoMatchView | null)[];
+}
+
+/** Llave todavía sin equipos (ronda futura): mismo alto que una llave real. */
+function EmptyMatch() {
+  return (
+    <div aria-hidden className="flex flex-col gap-1 rounded-md border border-dashed border-ink/30 px-2 py-1.5">
+      <span className="font-mono text-xs leading-4 text-fg-subtle">—</span>
+      <span className="font-mono text-xs leading-4 text-fg-subtle">—</span>
+    </div>
+  );
+}
+
+/** Una columna de fase. `connect` dibuja los conectores hacia la siguiente (`rev` = espejada, lado derecho). */
+function PhaseColumn({
+  col,
+  label,
+  connect,
+  wide,
+}: {
+  col: TreeColumn;
+  label: string;
+  connect: "fwd" | "rev" | null;
+  wide?: boolean;
+}) {
+  const mine = col.slots.some((m) => m?.isMe);
+  return (
+    <div className={`flex shrink-0 flex-col ${wide ? "w-32" : "w-24"}`} {...(mine ? { "data-mine": "" } : {})}>
+      <span className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-fg-muted">{label}</span>
+      {/* T16: celdas flex:1 + conectores CSS (.bracket-cell) en las columnas que alimentan a otra. */}
+      <div className="flex flex-1 flex-col" {...(connect ? { "data-bracket-connect": connect } : {})}>
+        {col.slots.map((m, i) => (
+          <div key={m?.match.match_id ?? `${col.phase}-${i}`} className="bracket-cell">
+            {m ? <TreeMatch m={m} /> : <EmptyMatch />}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Árbol completo de eliminación (tarea 16). Feedback 2 (P4):
+ *  · mobile/tablet: un lado, con scroll horizontal DEL COMPONENTE (nunca de la página) y tu columna
+ *    centrada al montar;
+ *  · `lg+`: dos lados que convergen en la final al centro → la mitad del alto, usando el ancho que sobra
+ *    (la mitad de arriba de cada ronda alimenta la de arriba de la siguiente, así que se parte limpio).
+ */
 function BracketTree({ ko, mode }: { ko: BracketView["ko"]; mode: ModeMeta }) {
   const byPhase = new Map(ko.map((p) => [p.phase, p.matches]));
-  const columns = koPhasesFor(mode).filter((p) => p !== "third_place").map((phase) => ({ phase, matches: byPhase.get(phase) ?? [] })).filter(
-    (c) => c.matches.length > 0,
-  );
   const thirdPlace = byPhase.get("third_place") ?? [];
+  const label = (phase: MatchPhase) => phaseLabel(mode, phase);
+
+  // Desde la primera ronda armada hasta la final; las rondas que faltan, con llaves vacías (la mitad de
+  // la anterior) → el árbol entero se ve desde los 16avos y se puede partir en dos lados.
+  const phases = koPhasesFor(mode).filter((p) => p !== "third_place");
+  const first = phases.findIndex((p) => byPhase.has(p));
+  const columns: TreeColumn[] = [];
+  let expected = first >= 0 ? (byPhase.get(phases[first]!)?.length ?? 0) : 0;
+  for (const phase of first >= 0 ? phases.slice(first) : []) {
+    const real = byPhase.get(phase);
+    const slots: (KoMatchView | null)[] = real ?? Array.from({ length: expected }, () => null);
+    columns.push({ phase, slots });
+    expected = Math.max(1, Math.ceil(slots.length / 2));
+  }
+
+  // Dos lados si la última columna es la final (1 llave) y las anteriores son pares.
+  const last = columns.at(-1);
+  const twoSided = last !== undefined && last.slots.length === 1 && columns.slice(0, -1).every((c) => c.slots.length % 2 === 0);
+  const sides = columns.slice(0, -1);
+  const left = sides.map((c) => ({ ...c, slots: c.slots.slice(0, c.slots.length / 2) }));
+  const right = sides.map((c) => ({ ...c, slots: c.slots.slice(c.slots.length / 2) })).reverse();
+
+  // Centrar tu columna en mobile una sola vez (sin re-scrollear con cada marcador en vivo).
+  const centered = useRef(false);
+  const centerMine = (el: HTMLDivElement | null) => {
+    if (!el || centered.current) return;
+    const mine = el.querySelector<HTMLElement>("[data-mine]");
+    centered.current = true;
+    if (mine) el.scrollLeft = mine.offsetLeft - (el.clientWidth - mine.clientWidth) / 2;
+  };
 
   return (
     <div className="w-full">
-      <div className="-mx-1 overflow-x-auto pb-2">
-        {/* gap-8 (2rem) deja lugar a los conectores: su ancho coincide con el stub del CSS (.bracket-cell). */}
+      <div ref={centerMine} className={`-mx-1 overflow-x-auto pb-2 ${twoSided ? "lg:hidden" : ""}`}>
         <div className="flex min-w-max gap-8 px-1">
-          {columns.map(({ phase, matches }, ci) => (
-            <div key={phase} className="flex w-32 shrink-0 flex-col">
-              <span className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-fg-muted">
-                {phaseLabel(mode, phase)}
-              </span>
-              {/* T16: celdas flex:1 + conectores CSS en todas las columnas menos la última (la final). */}
-              <div
-                className="flex flex-1 flex-col"
-                {...(ci < columns.length - 1 ? { "data-bracket-connect": "" } : {})}
-              >
-                {matches.map((m) => (
-                  <div key={m.match.match_id} className="bracket-cell">
-                    <TreeMatch m={m} />
-                  </div>
-                ))}
-              </div>
-            </div>
+          {columns.map((col, ci) => (
+            <PhaseColumn key={col.phase} col={col} label={label(col.phase)} connect={ci < columns.length - 1 ? "fwd" : null} wide />
           ))}
         </div>
       </div>
+      {twoSided && last && (
+        <div data-bracket-tree="two-sided" className="hidden justify-center gap-5 [--bracket-gap:1.25rem] lg:flex">
+          {left.map((col) => (
+            <PhaseColumn key={`l-${col.phase}`} col={col} label={label(col.phase)} connect="fwd" />
+          ))}
+          <PhaseColumn col={last} label={label(last.phase)} connect={null} />
+          {right.map((col) => (
+            <PhaseColumn key={`r-${col.phase}`} col={col} label={label(col.phase)} connect="rev" />
+          ))}
+        </div>
+      )}
       {thirdPlace.length > 0 && (
-        <div className="mt-3 flex w-32 flex-col">
+        <div className="mx-auto mt-3 flex w-32 flex-col">
           <span className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-fg-muted">
             {phaseLabel(mode, "third_place")}
           </span>
@@ -244,7 +318,7 @@ export function Bracket({ view }: { view: BracketView }) {
   // ── Eliminación directa: cartel de tu próximo rival (tarea 8) + árbol completo (tarea 16). ──
   if (inKnockout) {
     return (
-      <div className="fade-in relative z-10 flex w-full max-w-3xl flex-col items-center gap-5">
+      <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">
         {view.myNextMatch ? (
           <div className="w-full max-w-md">
             <VersusCard match={view.myNextMatch} mode={view.mode} />
@@ -262,32 +336,37 @@ export function Bracket({ view }: { view: BracketView }) {
   // ── Fase de grupos (y arranque del torneo): tu grupo destacado + todas las tablas. ──
   const myGroup = view.groups.find((g) => g.letter === view.myGroupLetter);
   const otherGroups = view.groups.filter((g) => g.letter !== view.myGroupLetter);
+  // Desktop (P4): tu partido y tu grupo a la izquierda; el resto en grilla de 2–3 columnas a la derecha.
   return (
-    <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-5">
+    <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">
       <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
         Fase de {view.mode.zonesLabel.toLowerCase()}
       </span>
-      {view.myNextMatch && <VersusCard match={view.myNextMatch} mode={view.mode} />}
-      {myGroup && (
-        <div className="w-full">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand">
-            Tu {view.mode.zoneNoun.toLowerCase()}
-          </span>
-          <GroupTable group={myGroup} mode={view.mode} />
+      <div className="flex w-full max-w-md flex-col gap-5 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <div className="flex w-full flex-col gap-5">
+          {view.myNextMatch && <VersusCard match={view.myNextMatch} mode={view.mode} />}
+          {myGroup && (
+            <div className="w-full">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand">
+                Tu {view.mode.zoneNoun.toLowerCase()}
+              </span>
+              <GroupTable group={myGroup} mode={view.mode} />
+            </div>
+          )}
         </div>
-      )}
-      {otherGroups.length > 0 && (
-        <div className="flex w-full flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
-            {otherGroups.length === 1 ? `La otra ${view.mode.zoneNoun.toLowerCase()}` : `Otros ${view.mode.zonesLabel.toLowerCase()}`}
-          </span>
-          <div className={`grid gap-2 ${otherGroups.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
-            {otherGroups.map((g) => (
-              <GroupTable key={g.letter} group={g} compact mode={view.mode} />
-            ))}
+        {otherGroups.length > 0 && (
+          <div className="flex w-full flex-col gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
+              {otherGroups.length === 1 ? `La otra ${view.mode.zoneNoun.toLowerCase()}` : `Otros ${view.mode.zonesLabel.toLowerCase()}`}
+            </span>
+            <div className={`grid gap-2 ${otherGroups.length === 1 ? "grid-cols-1" : "grid-cols-2 xl:grid-cols-3"}`}>
+              {otherGroups.map((g) => (
+                <GroupTable key={g.letter} group={g} compact mode={view.mode} />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

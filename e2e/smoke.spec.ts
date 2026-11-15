@@ -42,7 +42,7 @@ test("metadatos SEO y OG en la landing", async ({ page }) => {
 });
 
 // Navegación común (feedback 14/11): toda pantalla no raíz tiene "volver" al padre del mapa
-// (lib/nav/routes.ts), y el footer es SOLO del sitio.
+// (lib/nav/routes.ts). El footer y el layout de cada pantalla los cubre e2e/layout.spec.ts.
 for (const { path, parent } of [
   { path: "/login", parent: "/" },
   { path: "/register", parent: "/" },
@@ -63,11 +63,4 @@ test("landing sin volanta ni sello en el wordmark", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("Mundial · Fútbol argentino · En vivo")).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^\s*Tanda\s*$/i);
-});
-
-test("la landing y el login tienen footer", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator("footer")).toHaveCount(1);
-  await page.goto("/login");
-  await expect(page.locator("footer")).toHaveCount(1);
 });

@@ -22,17 +22,11 @@ export default async function PartidoPage() {
   const { data } = await supabase.rpc("get_active_tournament");
   if (!data?.tournament_id) redirect("/jugar?aviso=no_match");
 
-  return (
-    // Pantalla fija (layout de juego): la vista del penal ocupa el viewport; el bracket y los resúmenes,
-    // si no entran, scrollean solo este panel — nunca la página.
-    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-4 py-6">
-      <div className="my-auto flex w-full flex-col items-center gap-6">
-        {data.mode_id === "ranked" ? (
-          <RankedLive tournamentId={data.tournament_id} />
-        ) : (
-          <TournamentLive tournamentId={data.tournament_id} isGuest={user.isAnonymous} />
-        )}
-      </div>
-    </div>
+  // Feedback 2 (P4): el penal es un `GameStage` de un viewport; el bracket y los resúmenes van en un
+  // `Page` y, si son más altos, scrollea el documento (nunca un panel).
+  return data.mode_id === "ranked" ? (
+    <RankedLive tournamentId={data.tournament_id} />
+  ) : (
+    <TournamentLive tournamentId={data.tournament_id} isGuest={user.isAnonymous} />
   );
 }

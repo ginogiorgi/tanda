@@ -16,6 +16,7 @@ import {
 } from "@/lib/lobby/presence";
 import { getMode, type ModeId } from "@/lib/modes";
 import { usePreload3D } from "@/components/penal/usePreload3D";
+import { Page } from "@/components/ui/Page";
 
 type LobbyProps = {
   code: string;
@@ -157,8 +158,8 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
       backLabel={leaving ? "Saliendo…" : "Salir"}
       title={`Sala · ${mode.name}`}
     />
-    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-6 py-6">
-    <div className="my-auto flex w-full max-w-md flex-col items-center gap-8">
+    <Page center>
+    <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
           Sala de espera · {mode.name}
@@ -219,7 +220,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
         Compartir
       </Button>
     </div>
-    </div>
+    </Page>
     </>
   );
 }

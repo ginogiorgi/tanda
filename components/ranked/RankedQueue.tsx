@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionProgress } from "./DivisionProgress";
 import { usePreload3D } from "@/components/penal/usePreload3D";
+import { Page } from "@/components/ui/Page";
 
 const POLL_MS = 2000;
 
@@ -103,8 +104,8 @@ export function RankedQueue({ me }: { me: RankedMe }) {
   return (
     <>
     <ScreenHeader onBack={cancel} backLabel="Cancelar" />
-    <div className="flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain px-4 py-6">
-    <div className="my-auto flex w-full max-w-sm flex-col items-center gap-6">
+    <Page center>
+    <div className="flex w-full max-w-sm flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-1 text-center">
         <Eyebrow>Ranked · 1 contra 1</Eyebrow>
         <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
@@ -152,7 +153,7 @@ export function RankedQueue({ me }: { me: RankedMe }) {
       </Card>
 
     </div>
-    </div>
+    </Page>
     </>
   );
 }

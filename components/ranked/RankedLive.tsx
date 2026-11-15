@@ -22,6 +22,7 @@ import { DivisionCrest } from "./DivisionCrest";
 import { RankedResult } from "./RankedResult";
 import { usePreload3D } from "@/components/penal/usePreload3D";
 import { RANKED_RESULT_LINGER_MS } from "@/lib/engine/timing";
+import { Page } from "@/components/ui/Page";
 
 
 function Fighter({ username, rating, align }: { username: string; rating: number; align: "left" | "right" }) {
@@ -147,6 +148,17 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
 
   if (showPenal && matchId) return <PenalLive key={matchId} matchId={matchId} ranked />;
 
+  return <Page center>{rankedBody(view, loadError, everPlayed, offset, now)}</Page>;
+}
+
+/** Lo que va en la pantalla del partido ranked fuera de la tanda (en un `Page`, no en el stage). */
+function rankedBody(
+  view: RankedMatchView | null,
+  loadError: boolean,
+  everPlayed: boolean,
+  offset: number,
+  now: number,
+): React.ReactNode {
   if (!view) {
     return (
       <p className="text-sm text-fg-subtle">
@@ -154,13 +166,10 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
       </p>
     );
   }
-
   if (view.settled && view.me.result) return <RankedResult view={view} result={view.me.result} />;
-
   if (everPlayed || view.status === "finished") {
     return <p className="text-sm font-semibold text-fg-muted">Sumando los puntos…</p>;
   }
-
   const remaining = view.starts_at ? remainingMs(view.starts_at, offset, now) : 0;
   return <Versus view={view} remaining={remaining} />;
 }

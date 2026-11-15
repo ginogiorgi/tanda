@@ -7,6 +7,8 @@
  * Assets originales: nada de emblemas/tipos oficiales de FIFA.
  */
 :root {
+  /* Alto del ScreenHeader (min-h-14 + notch). El GameStage ocupa el viewport menos esto (DESIGN-RULES §Layout). */
+  --header-h: calc(3.5rem + env(safe-area-inset-top));
   /* Papel (fondos) */
   --bg: #ede9df; /* papel */
   --bg-elevated: #f7f4ec; /* hoja suelta / card */
@@ -52,6 +54,8 @@
 
   /* Marca Pyrux (coral) — solo para el crédito de autoría. */
   --pyrux: #e8602a;
+  /* Texto chico en naranja Pyrux sobre papel: #e8602a da ~2,9:1; este tono da ~4,7:1 (AA). */
+  --pyrux-ink: #b0431a;
 
   /* Trama de puntos de imprenta (fondo general). */
   --halftone: radial-gradient(rgba(20, 20, 20, 0.075) 1px, transparent 1.2px);
@@ -79,6 +83,7 @@
 
   --color-accent: var(--accent);
   --color-pyrux: var(--pyrux);
+  --color-pyrux-ink: var(--pyrux-ink);
   --color-accent-blue: var(--accent-blue);
   --color-accent-green: var(--accent-green);
   --color-accent-red: var(--accent-red);
@@ -144,17 +149,30 @@ body {
   position: absolute;
   left: 100%;
   top: 50%;
-  width: 2rem;
+  width: var(--bracket-gap, 2rem);
   border-top: 1px solid var(--ink);
 }
 /* Línea vertical que une el centro de la llave de arriba con el de abajo (entra al match siguiente). */
 [data-bracket-connect] > .bracket-cell:nth-child(odd)::before {
   content: "";
   position: absolute;
-  left: calc(100% + 2rem);
+  left: calc(100% + var(--bracket-gap, 2rem));
   top: 50%;
   height: 100%;
   border-left: 1px solid var(--ink);
+}
+/* Una llave sin par (semis de cada lado en el árbol de dos lados) entra derecho: sin vertical. */
+[data-bracket-connect] > .bracket-cell:nth-child(odd):last-child::before {
+  display: none;
+}
+/* Lado derecho del árbol de dos lados (lg+): los mismos conectores, espejados hacia la izquierda. */
+[data-bracket-connect="rev"] > .bracket-cell::after {
+  left: auto;
+  right: 100%;
+}
+[data-bracket-connect="rev"] > .bracket-cell:nth-child(odd)::before {
+  left: auto;
+  right: calc(100% + var(--bracket-gap, 2rem));
 }
 
 /* Confeti del campeón (8.12). Lo neutraliza el bloque prefers-reduced-motion de abajo. */

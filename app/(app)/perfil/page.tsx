@@ -5,6 +5,7 @@ import { freshUserMetadata, getSession } from "@/lib/supabase/session";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { RecoveryEmailForm } from "@/components/auth/RecoveryEmailForm";
 import { getTournamentHistory } from "@/lib/profile/queries";
+import { Page } from "@/components/ui/Page";
 
 // Privada y por usuario → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -38,7 +39,7 @@ export default async function PerfilPage() {
     ]);
 
     return (
-      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
+      <Page className="gap-8">
 
         <div className="flex flex-col gap-1">
           <Eyebrow>Invitado</Eyebrow>
@@ -71,7 +72,7 @@ export default async function PerfilPage() {
         </Card>
 
         <LogoutButton className="self-center" />
-      </div>
+      </Page>
     );
   }
 
@@ -90,7 +91,7 @@ export default async function PerfilPage() {
   const stats = aggregateStats(history);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
+    <Page className="gap-8">
 
       <div className="flex flex-col gap-1">
         <Eyebrow>Perfil</Eyebrow>
@@ -167,6 +168,6 @@ export default async function PerfilPage() {
       </Card>
 
       <LogoutButton className="self-center" />
-    </div>
+    </Page>
   );
 }

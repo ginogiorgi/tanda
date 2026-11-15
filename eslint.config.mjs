@@ -52,18 +52,49 @@ const eslintConfig = defineConfig([
   })(),
   // Sesión en el server: solo vía getSession() (getClaims local). `auth.getUser()` es una ida de red a
   // Auth por página: era la mitad del delay de cada toque (docs/PERF-BASELINE.md).
-  {
-    files: ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "CallExpression[callee.property.name='getUser'][callee.object.property.name='auth']",
-          message: "Usá getSession() de @/lib/supabase/session (valida el JWT local con getClaims).",
-        },
-      ],
-    },
-  },
+  // Layout (feedback 2, P4 — DESIGN-RULES §Layout): la página scrollea el DOCUMENTO. Nada de alturas de
+  // viewport a mano, paneles con scroll propio ni `fixed`/`sticky` en className, salvo la allowlist de
+  // abajo (fondo, overlays, header, tarjeta del penal y las primitivas Page/GameStage).
+  // Van en el MISMO bloque: dos bloques con `no-restricted-syntax` sobre el mismo archivo se pisan.
+  ...(() => {
+    const getUser = {
+      selector: "CallExpression[callee.property.name='getUser'][callee.object.property.name='auth']",
+      message: "Usá getSession() de @/lib/supabase/session (valida el JWT local con getClaims).",
+    };
+    const layoutMsg = "Layout: la página scrollea el documento (DESIGN-RULES §Layout). Usá <Page>/<GameStage>.";
+    const LAYOUT = "/(^|\\s|:)(h-dvh|h-screen|min-h-0|overflow-y-auto|overflow-y-scroll|fixed|sticky)(\\s|$)/";
+    const layout = [
+      { selector: `JSXAttribute[name.name='className'] Literal[value=${LAYOUT}]`, message: layoutMsg },
+      { selector: `JSXAttribute[name.name='className'] TemplateElement[value.raw=${LAYOUT}]`, message: layoutMsg },
+    ];
+    const layoutAllow = [
+      "components/ui/PitchBackground.tsx", // fondo decorativo (data-layer=bg)
+      "components/penal/Confetti.tsx", // overlay transitorio (data-layer=overlay)
+      "components/ui/ScreenHeader.tsx", // header sticky (data-layer=header)
+      "components/ui/HelpSheet.tsx", // sheet/diálogo (overlay)
+      "components/penal/PenalLive.tsx", // tarjeta del penal: max-h + scroll propio (data-layer=card)
+      "components/ui/Page.tsx",
+      "components/ui/GameStage.tsx",
+      "app/dev/**", // harness de desarrollo (404 en prod)
+    ];
+    // getUser: solo server (app/lib); en el cliente `auth.getUser()` es legítimo. Layout: app + components.
+    return [
+      {
+        files: ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+        ignores: layoutAllow,
+        rules: { "no-restricted-syntax": ["error", getUser, ...layout] },
+      },
+      {
+        files: ["components/**/*.{ts,tsx}"],
+        ignores: layoutAllow,
+        rules: { "no-restricted-syntax": ["error", ...layout] },
+      },
+      {
+        files: layoutAllow.filter((f) => f.startsWith("app/")),
+        rules: { "no-restricted-syntax": ["error", getUser] },
+      },
+    ];
+  })(),
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

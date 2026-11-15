@@ -8,6 +8,7 @@ import { DivisionCrest } from "@/components/ranked/DivisionCrest";
 import { buttonVariants } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
+import { Page } from "@/components/ui/Page";
 
 export const metadata: Metadata = { title: "Tabla ranked", robots: { index: false, follow: false } };
 
@@ -42,7 +43,7 @@ export default async function RankingPage() {
   const meInTop = rows.some((r) => r.is_me);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
+    <Page>
       <div className="flex items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
           <Eyebrow>Ranked</Eyebrow>
@@ -83,6 +84,6 @@ export default async function RankingPage() {
         Temporadas por torneo: Apertura (ene–jun) y Clausura (jul–dic). Al cerrar, tu mejor división
         queda en tu perfil y los puntos se acercan a 1500.
       </p>
-    </div>
+    </Page>
   );
 }

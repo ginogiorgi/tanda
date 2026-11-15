@@ -1,15 +1,15 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Footer del SITIO (landing y auth): crédito de autoría al final del contenido scrolleable. NO va en
- * la app ni en el juego (feedback 14/11: en partida la pantalla es fija, sin footer). `mt-auto` lo
- * empuja al fondo cuando el contenido es corto.
+ * Footer de TODAS las pantallas (feedback 2, P4): lo monta el layout raíz al final del documento. El
+ * contenido ocupa al menos el alto visible, así que el footer no se ve al cargar y aparece al scrollear
+ * hasta el fondo (en juego, debajo del GameStage).
  */
 export function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "mt-auto w-full border-t-2 border-ink px-6 py-6 text-center",
+        "w-full border-t-2 border-ink bg-bg px-6 py-6 text-center",
         className,
       )}
     >
@@ -19,7 +19,7 @@ export function Footer({ className }: { className?: string }) {
           href="https://www.pyrux.com.ar/es/creator/gino-ruben-giorgi"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-semibold text-pyrux underline-offset-2 hover:underline"
+          className="font-semibold text-pyrux-ink underline-offset-2 hover:underline"
         >
           Gino Giorgi
         </a>{" "}

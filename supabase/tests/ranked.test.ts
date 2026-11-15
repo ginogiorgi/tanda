@@ -266,7 +266,10 @@ describe("ranked: partido", () => {
         g,
         "select public.get_ranking() as r",
       );
-      expect(ranking.rows).toHaveLength(2);
+      // Los dos del partido están en la tabla (puede haber más jugadores en la DB: el flow e2e juega ranked
+      // contra la misma DB local, así que no se asume una tabla vacía).
+      const names = ranking.rows.map((r) => r.username);
+      expect(names.filter((n) => n.startsWith("rk_guest_") || n.startsWith("rk_g2_"))).toHaveLength(2);
       expect(ranking.me?.position).toBeGreaterThan(0);
     });
   });

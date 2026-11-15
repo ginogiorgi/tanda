@@ -5,6 +5,7 @@ import { getTournamentHistory } from "@/lib/profile/queries";
 import { HistoryPager } from "@/components/profile/HistoryPager";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
+import { Page } from "@/components/ui/Page";
 
 // Privada y por usuario → noindex (D2).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -21,7 +22,7 @@ export default async function HistorialPage() {
   const history = await getTournamentHistory(supabase, user.id);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-6">
+    <Page className="gap-8">
       <div className="flex flex-col gap-1">
         <Eyebrow>Historial completo</Eyebrow>
         <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg">
@@ -38,6 +39,6 @@ export default async function HistorialPage() {
       ) : (
         <HistoryPager entries={history} />
       )}
-    </div>
+    </Page>
   );
 }
