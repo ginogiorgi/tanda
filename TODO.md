@@ -1,7 +1,9 @@
 # TODO — TANDA ⚽
 
-## 🗺 Plan Feedback 2 (14/11 noche) — [`docs/PLAN-FEEDBACK-2 (✅ aprobado por Gino 14/11, paletas a criterio de Claude).md`](docs/PLAN-FEEDBACK-2.md) · esperando OK de Gino
-Corrida SOLO de planificación (sin código, sin merge, sin deploy). Orden (tamaño):
+## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
+- **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
+  errores ni violaciones CSP; GLB pedido a los ~450 ms de entrar a la sala; TTFB p50 ~180 ms (F0 ~300) → `docs/PERF-BASELINE.md`.
+Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
   (es un barrido dinámico: tiene que correr después de todo) + check de migraciones en CI.

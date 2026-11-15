@@ -35,3 +35,20 @@ de una ruta dinámica y cada toque espera el SSR completo. GLB: `avatar-male.glb
 - Proxy y páginas con `getClaims()` (sin red a Auth salvo refresh).
 - `loading.tsx` por grupo → tap → header destino visible ≤ 300 ms (e2e mobile).
 - TTFB p50 de rutas dinámicas sin sesión ≤ 200 ms medido igual que arriba.
+
+## Después de F1–F4 — 15/11/2026 (prod, `main` 7b97ce2)
+Funciones en **gru1** (`x-vercel-id: gru1::gru1::…`), `getClaims` local, `loading.tsx` por grupo, cliente de Supabase
+bajo demanda fuera del juego y precarga del 3D en sala/cola.
+
+| Ruta | p50 F0 | p50 ahora | min | max |
+|---|---|---|---|---|
+| `/` | 315 ms | **181 ms** | 167 | 196 |
+| `/login` | 306 ms | **185 ms** | 169 | 203 |
+| `/ranking` (redirige) | 303 ms | **172 ms** | 166 | 189 |
+| `/perfil` (redirige) | 291 ms | **180 ms** | 166 | 194 |
+| `/jugar` (redirige) | — | **175 ms** | 170 | 187 |
+
+- Objetivo "TTFB p50 ≤ 200 ms" ✅ en todas.
+- First Load JS (gzip, `pnpm perf:budget`): landing/login/registro/perfil/jugar ~220 → ~155 KB; three en ninguna
+  entrada (lo exige CI).
+- Precarga: en prod el invitado pide los GLB a los ~450 ms de entrar a la sala (antes: recién al abrir el penal).
