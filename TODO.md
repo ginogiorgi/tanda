@@ -1,20 +1,31 @@
 # TODO — TANDA ⚽
 
-## ⏸ HANDOFF (15/11 noche, corte por reinicio de PC) — rama `wip/p5-fin-de-partido`, NADA nuevo en main/prod
+## ⏸ HANDOFF (15/11 ~23:10, corte por usage-guard 91%) — rama `wip/p5-fin-de-partido`, NADA nuevo en main/prod
 **Prod = main `fb3cd1a` (P4), sano.** Migración `20261124000003_ko_eliminated_at_finish` **NO aplicada en prod**.
-- ✅ `1105ca8` **P5** completo (TournamentLive con `tournamentView`, espectador, campeón, ResultActions, e2e lento
-  `ko-loss.spec`). ✅ `68f6075` **P6** (HelpSheet `<dialog>`, ? por card, Cómo jugar, `modes_help.test.ts`).
-  Verde: typecheck/lint/knip, unit 207, db 103, flow 6/6 + help 2/2. **Falta:** corrida lenta (`E2E_SLOW=1`: ko-loss + champion), quedó cortada.
-- 🟡 commit `wip: P7a` encima: botines con winding invertido → corregido (`assets.test.ts`); pelo por cuerpo
-  (`HAIR_BY_BODY` + `HAIR_FIT` para Long/Buns en M, cobertura ≤2 %), cresta borrada, tinte por luminancia + cejas
-  separadas, paletas `lib/avatar/palette.ts` en el creador, galería `/dev/avatar/qa` + `pnpm qa:avatar`. Sin capturas revisadas.
+- ✅ `1105ca8` **P5** + ✅ `68f6075` **P6**: verde completo **incluida la corrida lenta** (15/11 23:05, sobre
+  `68f6075` en detached): `test:db` 103/103 y `E2E_SLOW=1 test:e2e:flow` **10/10** (champion 8,1 min, ko-loss 4,3 min,
+  game, guest, help ×2, nav ×3, ranked). **Listo para deployar.**
+- 🟡 commit `wip: P7a` encima (sin tocar desde el handoff anterior): botines con winding corregido, pelo por cuerpo
+  (`HAIR_BY_BODY` + `HAIR_FIT`), cresta borrada, tinte por luminancia + cejas separadas, paletas `lib/avatar/palette.ts`,
+  galería `/dev/avatar/qa` + `pnpm qa:avatar`. Sin capturas revisadas.
+- 🐛 **Flake de CI en main** (`game.spec` mobile, 3 de las últimas 5 corridas): NO es bug del juego. Traza de
+  la run 43752407415: tras el tap, el penal ya estaba resuelto ("¡GOL! Correcta: Brasil") porque con el cierre
+  temprano de F2 (actuaron todos) la resolución llega antes de que se pinte "Respondiste a los". Fix (test):
+  en `e2e/flow/game.spec.ts:78-79` esperar `getByText(/respondiste a los/i).or(getByText(/¡GOL!|ATAJADO/))` y
+  chequear `toBeDisabled` solo si el cartel sigue.
+**Entorno:** `pnpm` no está en el PATH de las shells de Claude → `export PATH=$HOME/.npm-global/bin:$PATH`.
+Stack aislado en `$SP/sbfb` (scratchpad de la sesión: symlinks a `supabase/{migrations,tests,README.md}` +
+config.toml con `project_id="tanda-fb"` y puertos +100; si el scratchpad se borró, recrearlo igual). Si el build
+falla con `.next/dev/types/validator.ts`, `rm -rf .next/dev` (tipos viejos del dev server de P7a).
 **Próximo paso:**
-1. Recrear `$SP/sbfb` (symlinks a `supabase/*` + config.toml con `project_id="tanda-fb"`, puertos +100) → db reset →
-   `pnpm test:db` → `E2E_SLOW=1 SUPABASE_WORKDIR=$SP/sbfb E2E_FLOW_PORT=3201 pnpm test:e2e:flow`.
-2. Verde → `git push origin 68f6075:main` (sin el wip) → migración `…03` por MCP + ledger
-   (`update supabase_migrations.schema_migrations set version='20261124000003' where name='ko_eliminated_at_finish'`) + advisors → smoke prod → anotar.
-3. P7a: `pnpm exec next dev -p 3301` + `QA_BASE_URL=http://localhost:3301 pnpm qa:avatar` → revisar capturas
-   (calibrar `HAIR_TEX_MID`) → `docs/avatar-qa/REVIEW.md` → P7b.
+1. `git push origin 68f6075:main` (sin el wip; main = `fb3cd1a` es ancestro) → esperar deploy de Vercel →
+   migración `…03` por MCP `apply_migration` + ledger
+   (`update supabase_migrations.schema_migrations set version='20261124000003' where name='ko_eliminated_at_finish'`)
+   + `get_advisors` → smoke prod `E2E_BASE_URL=https://tanda2026.com.ar pnpm exec playwright test` + invitado
+   (`E2E_PROD_GUEST=1`) → anotar P5/P6 en prod acá.
+2. Fix del flake de `game.spec` (arriba) en main + CI verde.
+3. Rebase de `wip: P7a` sobre main → `pnpm exec next dev -p 3301` + `QA_BASE_URL=http://localhost:3301 pnpm qa:avatar`
+   → revisar capturas (calibrar `HAIR_TEX_MID`) → `docs/avatar-qa/REVIEW.md` → P7b (`docs/PLAN-FEEDBACK-2.md`).
 
 ## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
 - **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
@@ -128,7 +139,6 @@ competencia terminada (tabla `awards`).
      tipo, `placement_left` de `ranked_players` → migración de limpieza; actualizar CLAUDE.md que menciona
      `AvatarModel` como fallback). Deploy a prod como las demás fases.
 
-||||||| 714b898
 ## 📦 Deps mayores — rama `wip/deps-major` (sobre main + `wip/fix-iat-dedupe`), LISTA para que Gino decida
 Sin merge ni deploy. Un commit por paso, verde completo tras cada uno (typecheck · lint · knip · 151 unit ·
 build · 78 db · flow game/guest/ranked con CSP enforced · smoke 14); champion al final.
