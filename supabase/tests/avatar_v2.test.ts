@@ -6,7 +6,7 @@ import { makeRng, randInt } from "@/lib/engine/rng";
 import { PALETTES } from "@/lib/avatar/catalog";
 import { DEFAULT_AVATAR, migrateAvatar } from "@/lib/avatar/schema";
 import { PROD_V1 } from "@/lib/avatar/fixtures";
-import { closePool, createUser, withRollback } from "./_db";
+import { asRole, closePool, createUser, resetRole, withRollback } from "./_db";
 
 afterAll(closePool);
 
@@ -82,6 +82,19 @@ describe("avatar v2: TS ↔ SQL", () => {
         /profiles_avatar_v2/,
       );
       await c.query("rollback to savepoint s");
+    });
+  });
+
+  it("como authenticated: guardar avatar v2 y cambiar el username pasan el CHECK (sin permisos extra)", async () => {
+    await withRollback(async (c) => {
+      const uid = await createUser(c, "av2_self");
+      await asRole(c, "authenticated", uid);
+      const v2 = { ...DEFAULT_AVATAR, skin: "#4D3020" };
+      await c.query("update public.profiles set avatar = $2 where id = $1", [uid, JSON.stringify(v2)]);
+      await c.query("update public.profiles set username = 'av2_self_2' where id = $1", [uid]);
+      await resetRole(c);
+      const { rows } = await c.query<{ avatar: unknown; username: string }>("select avatar, username from public.profiles where id = $1", [uid]);
+      expect(rows[0]).toEqual({ avatar: v2, username: "av2_self_2" });
     });
   });
 });
