@@ -4,7 +4,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { makeRng, randInt } from "@/lib/engine/rng";
 import { PALETTES } from "@/lib/avatar/catalog";
-import { DEFAULT_AVATAR, migrateAvatar } from "@/lib/avatar/schema";
+import { DEFAULT_AVATAR, migrateAvatar, parseAvatar } from "@/lib/avatar/schema";
 import { PROD_V1 } from "@/lib/avatar/fixtures";
 import { asRole, closePool, createUser, resetRole, withRollback } from "./_db";
 
@@ -82,6 +82,15 @@ describe("avatar v2: TS ↔ SQL", () => {
         /profiles_avatar_v2/,
       );
       await c.query("rollback to savepoint s");
+    });
+  });
+
+  it("v2 mujer+rapado (front viejo) → cola de caballo, como parseAvatar", async () => {
+    await withRollback(async (c) => {
+      const old = { ...DEFAULT_AVATAR, body: "female", hair: { style: "buzz", color: "#1E1B19" } };
+      const { rows } = await c.query<{ a: unknown }>("select public.avatar_to_v2($1::jsonb) a", [JSON.stringify(old)]);
+      expect(rows[0]!.a).toEqual(parseAvatar(old));
+      expect(rows[0]!.a).toMatchObject({ hair: { style: "ponytail" } });
     });
   });
 

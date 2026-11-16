@@ -25,6 +25,7 @@ const VIEWS: Record<string, { pos: [number, number, number]; target: [number, nu
   head: { pos: [0.5, 1.75, 1.1], target: [0, 1.65, 0], fov: 30 },
   top: { pos: [0.01, 2.9, 0.35], target: [0, 1.65, 0], fov: 30 },
   headback: { pos: [-0.5, 1.75, -1.1], target: [0, 1.65, 0], fov: 30 },
+  headside: { pos: [1.25, 1.68, -0.05], target: [0, 1.6, -0.05], fov: 30 },
   feet: { pos: [0.25, 0.25, 0.9], target: [0, 0.06, 0.05], fov: 35 },
   low: { pos: [0.3, 0.02, 0.7], target: [0, 0.1, 0], fov: 40 },
 };

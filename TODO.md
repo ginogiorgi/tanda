@@ -1,28 +1,23 @@
 # TODO — TANDA ⚽
 
-## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar`, A MEDIAS
-Cortado por usage-guard (90%). Pedido completo: (1) mujer: sacar "Rapado" y sumar un peinado nuevo prolijo (cola
-de caballo o trenza), revisar que los de mujer se vean bien; si hay perfiles mujer+rapado → migración SIN aplicar en
-prod; (2) hombre: cuello de la camiseta dentado; (3) capturas 360/1440 frente/costado/atrás de todos los peinados de
-ambos cuerpos; tests verdes + PR con preview de Vercel y capturas. NO mergear ni deployar. Al final: una línea en
-`gino-os/bot/diario.md` + commit ahí.
-- ✅ **(2) Cuello** (`components/avatar/glbModel.ts`, `COLLAR` + uniform `uCollar`): el corte remera/piel ya no sale
-  del hueso dominante por vértice (seguía los triángulos → serrucho en H) sino de una superficie lisa sobre el bind:
-  `y = y0 − tilt·dz + curv·dx²` alrededor del eje del cuello (z −0.035) y radio `r` → cuello redondo, más bajo
-  adelante, igual en H y M. Revisado headless (head/headback/front). Detalle menor: una ondita mínima al centro del
-  frente en H; si molesta, subir `y0` H 1.555→1.56. Verde: typecheck · lint · 208 unit.
-- ⏳ **(1) Peinados de mujer:** NO empezado. El pack Standard de Quaternius NO trae cola ni trenza (solo SimpleParted,
-  Long, Buzzed, BuzzedFemale, Buns, Beard) → la cola hay que generarla como `glbCrest`/`glbShoes` (malla propia
-  colgada del hueso `Head`, teñida con `uHair`), sobre `Hair_BuzzedFemale` como casquete "tirado para atrás".
-  Pasos: `HairStyle` + `ponytail` en `lib/avatar/catalog.ts` (sacar `female` de `buzz` → su `fallback` en mujer pasa a
-  `ponytail`), `scripts/avatar/qa.mts` (lista HAIR), tests de `schema`/`assets`, `supabase/tests/avatar_v2.test.ts`.
-  Datos: `select count(*) from profiles where avatar->>'body'='female' and avatar#>>'{hair,style}'='buzz'` (por MCP,
-  solo lectura) → si >0, migración nueva que los pase a `ponytail` (+ el CHECK de `…24000005_avatar_check_inline`
-  si lista estilos por cuerpo). Pack bajado en el scratchpad de la sesión (se pierde); re-bajar con la receta de
-  la sección 6b (upload 15861669) solo si hace falta la malla fuente.
-- ⏳ **(3) Capturas + PR:** `pnpm dev -p 3301` + `/dev/avatar/qa?body=…&hair=…&view=front|side|back` a 360 y 1440.
-- Retomar: `git switch wip/avatar-hair-collar && export PATH=~/.npm-global/bin:$PATH && pnpm install --frozen-lockfile`
-  (si `typecheck` se queja de `.next/types`, borrar `.next/types` y `.next/dev/types`: son de otra rama).
+## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar` · PR abierto, ESPERA OK DE GINO
+**NO mergear ni deployar ni aplicar la migración en prod hasta que Gino apruebe.**
+- ✅ **Cuello H** (`components/avatar/glbModel.ts`, `COLLAR` + `uCollar`): el corte remera/piel sale de una superficie
+  lisa sobre el bind (`y = y0 − tilt·dz + curv·dx²`) y no del hueso por vértice (serrucho). Igual en H y M.
+- ✅ **Peinados de mujer:** fuera "Rapado" (`buzz` solo H, `fallback: "ponytail"`); nueva **Cola**
+  (`ponytail`): malla generada en `components/avatar/glbPonytail.ts` (tubo cerrado sobre una Catmull-Rom que nace
+  en la nuca del casquete `Hair_BuzzedFemale` y apoya en la espalda, 100% al hueso `Head`, mismo material del
+  casquete → mismo tinte). `HAIR_LAYERS`/`hairMeshes` en el catálogo: la cola prende su casquete. Sin clipping en
+  kick/dive/celebrate. Tests: cobertura de cráneo con capas + cola cerrada/vol>0/detrás de la nuca/hueso `Head`.
+- ✅ **Migración `20261124000006_avatar_ponytail` (SIN aplicar en prod):** `avatar_to_v2` sigue en paridad
+  (v1 F rapado/mohicano → cola; v2 F+rapado → cola, como `parseAvatar`) + UPDATE con backup. Prod 16/11: **0**
+  perfiles F+rapado (18 perfiles, todos H) → el UPDATE es no-op; la función hay que aplicarla igual (alta de
+  usuario con front viejo). Orden al aprobar: merge → front en prod → migración por MCP + ledger.
+- ✅ **Capturas:** matriz 2 cuerpos × peinados × front/side/back/headside/headback + galería `/dev/avatar` a
+  360/1440 + cola en poses → página privada linkeada en el PR. `qa:avatar` suma la vista `headside`.
+- Verde: typecheck · lint · unit 209 · components 48 · db 110 (stack local `tanda-fb`, :54422).
+- Pendiente aparte: la línea del pelo en la sien del casquete F (`Hair_BuzzedFemale`) es dentada — es la malla
+  del pack, no la cola; si molesta, se suaviza con un recorte en shader como el del cuello.
 
 ## 🧪 Tests de componentes (RTL) ✅ (16/11) — propuesta `gino-os/laburo/propuesta-tests-rtl-tanda.md`
 Proyecto Vitest `components` (happy-dom, `vitest.setup.components.ts`), `pnpm test:components` (en el job `verify` de

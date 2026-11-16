@@ -21,7 +21,7 @@ const VARIANTS: readonly { label: string; config: AvatarV2; rotationY?: number }
   { label: "Hombre · rapado · muy oscura", config: av("male", "#4D3020", "buzz", "#1E1B19", "#A8352B", "#1F2B47", "#ECE6D8") },
   { label: "Mujer · largo · media", config: av("female", "#C68E66", "long", "#8C3F24", "#C4A042", "#1C1C1C", "#1C1C1C") },
   { label: "Hombre · largo · clara (perfil)", config: av("male", "#E0B593", "long", "#A07D4E", "#1C1C1C", "#ECE6D8", "#C4A042"), rotationY: 1.2 },
-  { label: "Mujer · rapado · oscura", config: av("female", "#764A2E", "buzz", "#1E1B19", "#ECE6D8", "#6B2433", "#2C4A9A") },
+  { label: "Mujer · cola · oscura", config: av("female", "#764A2E", "ponytail", "#1E1B19", "#ECE6D8", "#6B2433", "#2C4A9A") },
   { label: "Hombre · pelado · media", config: av("male", "#C68E66", "none", "#1E1B19", "#2E5A3C", "#ECE6D8", "#8A8984") },
   { label: "Hombre · rodete · canoso", config: av("male", "#E0B593", "bun", "#A9A6A0", "#6B2433", "#1C1C1C", "#1C1C1C") },
 ];

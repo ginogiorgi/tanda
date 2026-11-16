@@ -28,7 +28,7 @@ export const PRESETS: readonly { label: string; avatar: AvatarV2 }[] = [
   p("El 5", "male", "#4D3020", "buzz", "#1E1B19", "#A8352B", "#1F2B47", "#ECE6D8"),
   p("La 7", "female", "#764A2E", "bun", "#1E1B19", "#C4A042", "#1C1C1C", "#1C1C1C"),
   p("El arquero", "male", "#F2D3BC", "long", "#CFAE76", "#2E5A3C", "#1C1C1C", "#C4A042"),
-  p("La 4", "female", "#C68E66", "buzz", "#3A2A20", "#6B2433", "#ECE6D8", "#2C4A9A"),
+  p("La 4", "female", "#C68E66", "ponytail", "#3A2A20", "#6B2433", "#ECE6D8", "#2C4A9A"),
   p("El 8", "male", "#C68E66", "none", "#1E1B19", "#ECE6D8", "#1F2B47", "#8A8984"),
   p("El capitán", "male", "#E0B593", "bun", "#A9A6A0", "#1C1C1C", "#8A8984", "#A8352B"),
 ];

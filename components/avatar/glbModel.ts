@@ -13,8 +13,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { JOINTS } from "@/lib/avatar/rig";
-import { HAIR_MESHES } from "@/lib/avatar/catalog";
+import { HAIR_MESHES, hairMeshes } from "@/lib/avatar/catalog";
 import type { BodyType, HexColor } from "@/lib/avatar/types";
+import { attachPonytail } from "./glbPonytail";
 import { attachShoes } from "./glbShoes";
 import { createGlbRig, dominantBone, driveGlbRig, type GlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y } from "./rigPose";
@@ -307,6 +308,7 @@ export function templateOf(source: THREE.Object3D, body: BodyType): THREE.Object
   });
   // Fuera del traverse: agrega grupos a la escena.
   for (const b of bodies) attachShoes(t, b);
+  attachPonytail(t);
   templates.set(source, t);
   return t;
 }
@@ -355,8 +357,9 @@ export function instantiate(
 /** Peinado visible + tinte (pelo y cejas leen `uHair`; los materiales ya son de la instancia). */
 export function applyHair(scene: THREE.Object3D, hairUniforms: HairUniforms, mesh: string | null, color: HexColor): void {
   hairUniforms.uHair.value.set(color);
+  const on = hairMeshes(mesh);
   scene.traverse((obj) => {
-    if (obj instanceof THREE.Mesh && (HAIR_MESHES as readonly string[]).includes(obj.name)) obj.visible = obj.name === mesh;
+    if (obj instanceof THREE.Mesh && (HAIR_MESHES as readonly string[]).includes(obj.name)) obj.visible = on.includes(obj.name);
   });
 }
 

@@ -17,11 +17,11 @@ mkdirSync(out, { recursive: true });
 
 type Shot = { row: string; col: string; query: string };
 const shots: Shot[] = [];
-const HAIR: Record<string, string[]> = { male: ["none", "buzz", "parted", "long", "bun"], female: ["none", "buzz", "long", "bun"] };
+const HAIR: Record<string, string[]> = { male: ["none", "buzz", "parted", "long", "bun"], female: ["none", "long", "ponytail", "bun"] };
 const SKINS = ["#F2D3BC", "#E0B593", "#C68E66", "#A06B45", "#764A2E", "#4D3020"];
 for (const body of ["male", "female"]) {
   for (const hair of HAIR[body]!) {
-    for (const view of ["head", "headback", "top", "side"]) {
+    for (const view of ["head", "headside", "headback", "top", "side"]) {
       shots.push({ row: `pelo ${hair} · ${body}`, col: view, query: `body=${body}&hair=${hair}&view=${view}` });
     }
     shots.push({ row: `pelo ${hair} · ${body}`, col: "canoso", query: `body=${body}&hair=${hair}&view=head&hc=%23A9A6A0` });

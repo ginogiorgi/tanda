@@ -9,7 +9,7 @@ import { loadGlbScene } from "@/lib/avatar/glbNode";
 import { uncoveredFraction, type HairTri, type ScalpPoint } from "@/lib/avatar/hairCoverage";
 import { boundaryEdges, inwardFraction, signedVolume, triangles, type Tri } from "@/lib/avatar/meshChecks";
 import type { BodyType } from "@/lib/avatar/types";
-import { HAIR_MESHES, hairMesh, hairOptionsFor } from "@/lib/avatar/catalog";
+import { HAIR_MESHES, hairMesh, hairMeshes, hairOptionsFor } from "@/lib/avatar/catalog";
 import { BODIES, templateOf } from "./glbModel";
 import { dominantBone } from "./glbRig";
 
@@ -44,6 +44,25 @@ describe.each(BODIES)("botines %s", (body) => {
       }
     });
   }
+});
+
+describe("cola de caballo (malla generada)", () => {
+  it("cerrada, normales hacia afuera, detrás de la nuca y colgada del hueso Head", () => {
+    const scene = scenes.get("female")!;
+    const tail = scene.getObjectByName("Hair_Ponytail") as THREE.SkinnedMesh;
+    expect(tail).toBeInstanceOf(THREE.SkinnedMesh);
+    const tris = trisOf(tail);
+    expect(boundaryEdges(tris)).toBe(0);
+    // Cerrada + volumen con signo > 0 = hacia afuera (`inwardFraction` mide contra el centroide global:
+    // en un tubo curvo la cara interna de la curva lo "mira" y no aplica).
+    expect(signedVolume(tris)).toBeGreaterThan(0);
+    expect(tail.skeleton.bones.map((b) => b.name)).toEqual(["Head"]);
+    const box = new THREE.Box3().setFromBufferAttribute(tail.geometry.getAttribute("position") as THREE.BufferAttribute);
+    const cap = new THREE.Box3().setFromObject(scene.getObjectByName("Hair_BuzzedFemale")!);
+    expect(box.min.z).toBeLessThan(cap.min.z - 0.03); // sobresale atrás
+    expect(box.max.z).toBeLessThan(cap.min.z + 0.03); // nace en la nuca, no en la cara
+    expect(box.min.y).toBeGreaterThan(1.3); // no pasa de los omóplatos
+  });
 });
 
 describe("meshChecks discrimina", () => {
@@ -111,8 +130,8 @@ describe.each(BODIES)("pelo %s: tapa el cráneo (no lo corta)", (body) => {
     it(id, () => {
       const scene = scenes.get(body)!;
       const name = hairMesh(id, body)!;
-      const mesh = scene.getObjectByName(name) as THREE.SkinnedMesh;
-      const f = uncoveredFraction(scalpOf(scene), hairTris(mesh), 0.04);
+      const tris = hairMeshes(name).flatMap((n) => hairTris(scene.getObjectByName(n) as THREE.SkinnedMesh));
+      const f = uncoveredFraction(scalpOf(scene), tris, 0.04);
       expect(f, `${name} en ${body}: ${(f * 100).toFixed(1)}% del cuero asoma`).toBeLessThanOrEqual(MAX_UNCOVERED);
     });
   }

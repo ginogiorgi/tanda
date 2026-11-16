@@ -11,7 +11,7 @@ export const BODY_TYPES: readonly { id: BodyType; label: string }[] = [
   { id: "female", label: "Mujer" },
 ];
 
-export type HairStyle = "none" | "buzz" | "parted" | "long" | "bun";
+export type HairStyle = "none" | "buzz" | "parted" | "long" | "ponytail" | "bun";
 
 export interface HairOption {
   id: HairStyle;
@@ -26,13 +26,35 @@ export interface HairOption {
 
 export const HAIR_STYLES: readonly HairOption[] = [
   { id: "none", label: "Pelado", bodies: { male: null, female: null }, fallback: "none" },
-  { id: "buzz", label: "Rapado", bodies: { male: "Hair_Buzzed", female: "Hair_BuzzedFemale" }, fallback: "buzz" },
+  // Mujer sin rapado (pedido de Gino 16/11): en su lugar, la cola de caballo.
+  { id: "buzz", label: "Rapado", bodies: { male: "Hair_Buzzed" }, fallback: "ponytail" },
   { id: "parted", label: "Corto", bodies: { male: "Hair_SimpleParted" }, fallback: "bun" },
   { id: "long", label: "Largo", bodies: { male: "Hair_Long", female: "Hair_Long" }, fallback: "long" },
+  { id: "ponytail", label: "Cola", bodies: { female: "Hair_Ponytail" }, fallback: "long" },
   { id: "bun", label: "Rodete", bodies: { male: "Hair_Buns", female: "Hair_Buns" }, fallback: "bun" },
 ];
 
-export const HAIR_MESHES = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"] as const;
+export const HAIR_MESHES = [
+  "Hair_SimpleParted",
+  "Hair_Long",
+  "Hair_Buzzed",
+  "Hair_BuzzedFemale",
+  "Hair_Buns",
+  "Hair_Ponytail",
+] as const;
+
+/**
+ * Mallas que se prenden JUNTO con la del peinado. La cola (`Hair_Ponytail`, generada en
+ * `components/avatar/glbPonytail.ts`) va sobre el casquete corto de mujer: pelo tirado para atrás.
+ */
+export const HAIR_LAYERS: Partial<Record<string, readonly string[]>> = {
+  Hair_Ponytail: ["Hair_BuzzedFemale"],
+};
+
+/** Todas las mallas visibles de un peinado (la principal + sus capas). */
+export function hairMeshes(mesh: string | null): readonly string[] {
+  return mesh ? [mesh, ...(HAIR_LAYERS[mesh] ?? [])] : [];
+}
 
 export function isHairStyle(v: unknown): v is HairStyle {
   return HAIR_STYLES.some((h) => h.id === v);
