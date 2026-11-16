@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../_csp";
-import { assertLocalSupabase, enterAsGuest } from "./_helpers";
+import { assertLocalSupabase, enterAsGuest, homePlay } from "./_helpers";
 import { visiblePrimaries } from "../_primary";
 
 /**
@@ -14,6 +14,7 @@ test.beforeAll(assertLocalSupabase);
 test("home: Cómo jugar abre la hoja; Esc / tap afuera cierran y el foco vuelve", async ({ page }) => {
   await enterAsGuest(page);
   await page.goto("/");
+  await expect(homePlay(page)).toBeVisible(); // contar recién con la home pintada (flake de CI: 0 primarias)
   expect(await visiblePrimaries(page)).toHaveLength(1);
 
   const trigger = page.getByRole("button", { name: "Cómo jugar" });
