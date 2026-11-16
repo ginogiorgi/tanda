@@ -3,7 +3,7 @@
 // competitivo real como cualquiera. Se le autoasigna un username `invitado_<random>` (válido y
 // único de hecho) y el avatar default; el trigger handle_new_user le arma el profile liviano.
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { DEFAULT_AVATAR } from "@/lib/avatar/parts";
+import { DEFAULT_AVATAR } from "@/lib/avatar/schema";
 
 /** `invitado_` + 9 dígitos → 18 chars, matchea USERNAME_REGEX. Colisión despreciable (1e9). */
 export function generateGuestUsername(): string {

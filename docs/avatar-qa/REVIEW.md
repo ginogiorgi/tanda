@@ -41,3 +41,10 @@ Tinte por luminancia (`HAIR_TEX_MID = 0.32`): negro y castaños se leen distinto
 
 ✅ Pelo 8 · piel 6 · ropa 10 · botines 6, nada chillón, en clave papel/tinta. Ropa vs piel: único ΔE < 15 =
 **crudo sobre piel muy clara (12)** → el creador (P7d) no lo arma en presets/aleatorio.
+
+## Piel (P7b, `piel_*_s1…s6`)
+
+✅ 6 tonos × 2 cuerpos con tinte por luminancia en `kitMaterial` (región piel). El tone mapping ACES lavaba
+los claros y cerraba los oscuros → compensación en el shader (+30% saturación, lift 0,9). Medido en la mejilla
+(cara iluminada): muy clara `#C7AC8E`, morena `#92501C`, muy oscura `#3A1C0C`. Los v1 migran a **morena**
+(textura del pack ≈ `#9C6D4D`): no les cambia la cara.

@@ -3,7 +3,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
-import type { AvatarConfig } from "@/lib/avatar/types";
+import type { AvatarV2 } from "@/lib/avatar/schema";
 import { CELEBRATE, KEEPER_DIVE, KICK, KICKER_READY, samplePose, type Clip } from "@/lib/avatar/rig";
 import { GlbAvatar } from "@/components/avatar/GlbAvatar";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
@@ -29,7 +29,7 @@ const VIEWS: Record<string, { pos: [number, number, number]; target: [number, nu
   low: { pos: [0.3, 0.02, 0.7], target: [0, 0.1, 0], fov: 40 },
 };
 
-function Posed({ config, pose, onReady }: { config: AvatarConfig; pose: string; onReady: () => void }) {
+function Posed({ config, pose, onReady }: { config: AvatarV2; pose: string; onReady: () => void }) {
   const { handles, register } = useRig();
   const [clip, t] = POSES[pose] ?? POSES.ready!;
   const frames = useRef(0);
@@ -41,7 +41,7 @@ function Posed({ config, pose, onReady }: { config: AvatarConfig; pose: string; 
 }
 
 /** Canvas determinista de la galería: DPR 1, 768×768, luz de estudio fija, sin animación. */
-export function QaCanvas({ config, view, pose }: { config: AvatarConfig; view: string; pose: string }) {
+export function QaCanvas({ config, view, pose }: { config: AvatarV2; view: string; pose: string }) {
   const [ready, setReady] = useState(false);
   const v = VIEWS[view] ?? VIEWS.front!;
   return (

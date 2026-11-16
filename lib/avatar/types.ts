@@ -1,9 +1,7 @@
 /**
- * Tipos del avatar 3D. El avatar es un objeto serializable que se guarda en
- * `profiles.avatar` (jsonb) y se usa para reconstruir el personaje en el creador y en la
- * escena de penal. NO lleva color de nación: en el penal el avatar va tal cual lo armó el
- * jugador SALVO la camiseta, que toma el `kit_primary` de la nación vía el override de runtime
- * `kitTop` del render (no se persiste acá). Ver SPEC §8.2 / §8.3 #1.
+ * Tipos base del avatar 3D. La forma persistida (v2) vive en `schema.ts` y el catálogo en `catalog.ts`.
+ * En el penal el avatar va tal cual lo armó el jugador SALVO la camiseta, que toma el `kit_primary` de
+ * la nación vía el override de runtime `kitTop` del render (no se persiste). Ver SPEC §8.2 / §8.3 #1.
  */
 
 /** Cuerpo base. Define el rig y la silueta; las piezas modulares se montan encima. */
@@ -14,31 +12,6 @@ export type BodyType = "male" | "female";
  * por color). Se valida en runtime con {@link isHexColor}.
  */
 export type HexColor = string;
-
-/** Pieza con color tintable (pelo, remera, pantalón, zapatos). */
-export interface TintedPart {
-  /** Id de la malla dentro del catálogo de su categoría (ver `parts.ts`). */
-  part: string;
-  /** Color de tintado del material. */
-  color: HexColor;
-}
-
-/**
- * Avatar serializable. La cabeza es fija por cuerpo (hombre/mujer): no hay variantes de
- * forma de cabeza, solo de pelo. El resto son piezas tintables.
- */
-export interface AvatarConfig {
-  bodyType: BodyType;
-  hair: TintedPart;
-  /** Remera. */
-  top: TintedPart;
-  /** Pantalón. */
-  bottom: TintedPart;
-  shoes: TintedPart;
-}
-
-/** Categorías de pieza intercambiable expuestas en el creador. */
-export type PartCategory = "hair" | "top" | "bottom" | "shoes";
 
 const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 

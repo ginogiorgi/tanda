@@ -5,7 +5,6 @@
  * ARGS en compilación, y tipa el `data` con nuestros shapes reales (los `jsonb` se mapean a los
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
  */
-import type { AvatarConfig } from "@/lib/avatar/types";
 import type { ActiveMatch, MatchScene, PenalResultPayload } from "@/lib/realtime/penal";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import type { TournamentHistoryEntry } from "@/lib/profile/history";
@@ -21,9 +20,9 @@ export type Database = {
   public: {
     Tables: {
       profiles: {
-        Row: { id: string; username: string; avatar: AvatarConfig; created_at: string; updated_at: string };
-        Insert: { id: string; username: string; avatar?: AvatarConfig; created_at?: string; updated_at?: string };
-        Update: { id?: string; username?: string; avatar?: AvatarConfig; created_at?: string; updated_at?: string };
+        Row: { id: string; username: string; avatar: unknown; created_at: string; updated_at: string };
+        Insert: { id: string; username: string; avatar?: unknown; created_at?: string; updated_at?: string };
+        Update: { id?: string; username?: string; avatar?: unknown; created_at?: string; updated_at?: string };
         Relationships: [];
       };
       rooms: {

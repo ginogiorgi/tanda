@@ -17,7 +17,8 @@ mkdirSync(out, { recursive: true });
 
 type Shot = { row: string; col: string; query: string };
 const shots: Shot[] = [];
-const HAIR: Record<string, string[]> = { male: ["none", "buzz", "short", "long", "bun"], female: ["none", "buzz", "long", "bun"] };
+const HAIR: Record<string, string[]> = { male: ["none", "buzz", "parted", "long", "bun"], female: ["none", "buzz", "long", "bun"] };
+const SKINS = ["#F2D3BC", "#E0B593", "#C68E66", "#A06B45", "#764A2E", "#4D3020"];
 for (const body of ["male", "female"]) {
   for (const hair of HAIR[body]!) {
     for (const view of ["head", "headback", "top", "side"]) {
@@ -25,13 +26,14 @@ for (const body of ["male", "female"]) {
     }
     shots.push({ row: `pelo ${hair} · ${body}`, col: "canoso", query: `body=${body}&hair=${hair}&view=head&hc=%23A9A6A0` });
   }
-  for (const shoes of ["sneakers", "boots", "cleats"]) {
-    for (const view of ["feet", "low", "side"]) {
-      shots.push({ row: `botín ${shoes} · ${body}`, col: view, query: `body=${body}&shoes=${shoes}&view=${view}` });
-    }
+  for (const view of ["feet", "low", "side"]) {
+    shots.push({ row: `botín · ${body}`, col: view, query: `body=${body}&view=${view}` });
+  }
+  for (const [i, sk] of SKINS.entries()) {
+    shots.push({ row: `piel · ${body}`, col: `s${i + 1}`, query: `body=${body}&view=head&sk=${encodeURIComponent(sk)}` });
   }
   for (const pose of ["ready", "kick", "dive", "celebrate"]) {
-    shots.push({ row: `poses · ${body}`, col: pose, query: `body=${body}&hair=${body === "male" ? "short" : "long"}&view=q34&pose=${pose}` });
+    shots.push({ row: `poses · ${body}`, col: pose, query: `body=${body}&hair=${body === "male" ? "parted" : "long"}&view=q34&pose=${pose}` });
   }
 }
 

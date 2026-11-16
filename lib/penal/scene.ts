@@ -6,20 +6,20 @@
  *
  * El avatar va tal cual lo armó el jugador SALVO la camiseta, que se tiñe con la nación (SPEC
  * §8.3 #1). Bots/usuarios sin avatar → `DEFAULT_AVATAR`; naciones sin kit (p. ej. el dev harness) →
- * `kitTop` null y la escena usa el `top.color` propio del avatar.
+ * `kitTop` null y la escena usa el `kit.shirt` propio del avatar.
  *
  * Patrón espejo de `lib/lobby/presence.ts` y `lib/realtime/penal.ts`.
  */
 
-import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
-import { isHexColor, type AvatarConfig, type HexColor } from "@/lib/avatar/types";
+import { parseAvatar, type AvatarV2 } from "@/lib/avatar/schema";
+import { isHexColor, type HexColor } from "@/lib/avatar/types";
 import type { MatchScene, PenalStartPayload } from "@/lib/realtime/penal";
 import type { ParticipantBrief } from "@/lib/realtime/score";
 
 /** Render de un rol (pateador o arquero) en la escena. */
 export type SceneRole = {
   /** Avatar a renderizar (validado; `DEFAULT_AVATAR` si el jugador no tiene uno válido). */
-  avatar: AvatarConfig;
+  avatar: AvatarV2;
   /** Color de camiseta de la nación (override del `top`), o `null` si la nación no tiene kit. */
   kitTop: HexColor | null;
   /**
@@ -36,10 +36,8 @@ export type SceneRoles = {
   keeper: SceneRole;
 };
 
-/** Avatar válido o el default. */
-function avatarOf(raw: AvatarConfig | null): AvatarConfig {
-  return raw && isValidAvatar(raw) ? raw : DEFAULT_AVATAR;
-}
+/** Avatar v2 (v1 migrado en memoria; inválido/ausente → default). */
+const avatarOf = parseAvatar;
 
 /** Color de kit de la nación si es un hex válido, si no `null`. */
 function kitOf(brief: ParticipantBrief | null): HexColor | null {

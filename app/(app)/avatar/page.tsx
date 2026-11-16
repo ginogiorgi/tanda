@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/supabase/session";
 import { AvatarCreator } from "@/components/avatar/AvatarCreator";
 import { saveAvatar } from "./actions";
-import { DEFAULT_AVATAR, isValidAvatar } from "@/lib/avatar/parts";
-import type { AvatarConfig } from "@/lib/avatar/types";
+import { parseAvatar } from "@/lib/avatar/schema";
 import { Page } from "@/components/ui/Page";
 
 // Privada (requiere sesión) → noindex (D2).
@@ -32,9 +31,7 @@ export default async function AvatarPage({
     .eq("id", user.id)
     .single();
 
-  const initial: AvatarConfig = isValidAvatar(profile?.avatar)
-    ? profile.avatar
-    : DEFAULT_AVATAR;
+  const initial = parseAvatar(profile?.avatar);
 
   return (
     <Page width="wide" className="items-center px-2">

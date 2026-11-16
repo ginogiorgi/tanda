@@ -10,7 +10,7 @@
  */
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import type { AvatarConfig } from "@/lib/avatar/types";
+import type { AvatarV2 } from "@/lib/avatar/schema";
 import { IDLE, REST, samplePose } from "@/lib/avatar/rig";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
@@ -20,7 +20,7 @@ import { applyPose, useRig } from "./rigPose";
 
 suppressThreeClockDeprecation(); // tarea 6: warning de THREE.Clock que emite R3F internamente
 
-function AnimatedAvatar({ config, animate }: { config: AvatarConfig; animate: boolean }) {
+function AnimatedAvatar({ config, animate }: { config: AvatarV2; animate: boolean }) {
   const { handles, register } = useRig();
   // Prioridad -1: la pose se aplica antes de que `GlbAvatar` la traduzca a huesos (mismo frame).
   useFrame((state) => {
@@ -30,7 +30,7 @@ function AnimatedAvatar({ config, animate }: { config: AvatarConfig; animate: bo
 }
 
 interface AvatarCanvasProps {
-  config: AvatarConfig;
+  config: AvatarV2;
   /** Rotación en Y controlada (radianes). El creador la maneja con drag (tarea 2.4). */
   rotationY?: number;
 }

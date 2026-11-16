@@ -13,7 +13,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { JOINTS } from "@/lib/avatar/rig";
-import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
+import { HAIR_MESHES } from "@/lib/avatar/catalog";
+import type { BodyType, HexColor } from "@/lib/avatar/types";
 import { attachShoes } from "./glbShoes";
 import { createGlbRig, dominantBone, driveGlbRig, type GlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y } from "./rigPose";
@@ -24,44 +25,12 @@ export const GLB_URL: Record<BodyType, string> = {
 };
 
 /**
- * `hair.part` → malla del pack, POR CUERPO (feedback 2, P7a). El QA geométrico (`assets.test.ts`,
- * `lib/avatar/hairCoverage`) mostró que `Hair_Long`/`Hair_Buns` están modelados para la cabeza F (en M
- * el cráneo atravesaba el pelo: "corta la cabeza") y `Hair_SimpleParted`/`Hair_Buzzed` para la M (en F
- * no tienen ajuste posible). Long/Buns en M se adaptan con `HAIR_FIT`; lo que no tiene arreglo cae al
- * peinado más parecido de ese cuerpo. El mohicano no existe en el pack: es el rapado.
- */
-const HAIR_BY_BODY: Record<BodyType, Record<string, string | null>> = {
-  male: {
-    none: null,
-    buzz: "Hair_Buzzed",
-    mohawk: "Hair_Buzzed",
-    short: "Hair_SimpleParted",
-    long: "Hair_Long",
-    bun: "Hair_Buns",
-  },
-  female: {
-    none: null,
-    buzz: "Hair_BuzzedFemale",
-    mohawk: "Hair_BuzzedFemale",
-    short: "Hair_Buns",
-    long: "Hair_Long",
-    bun: "Hair_Buns",
-  },
-};
-export const HAIR_MESHES = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"] as const;
-
-/**
  * Ajuste de un peinado a otra cabeza: escala uniforme alrededor del hueso `head` + corrimiento (m),
  * en reposo. Valores elegidos con el barrido de cobertura (asoma ≤ lo mismo que en su cuerpo nativo).
  */
 export const HAIR_FIT: Partial<Record<BodyType, Partial<Record<string, { scale: number; dy: number }>>>> = {
   male: { Hair_Long: { scale: 1.15, dy: 0.02 }, Hair_Buns: { scale: 1.15, dy: 0.02 } },
 };
-
-export function hairMesh(part: string, body: BodyType): string | null {
-  const table = HAIR_BY_BODY[body];
-  return part in table ? (table[part] ?? null) : (table.short ?? null);
-}
 
 /** Aplica `HAIR_FIT` a la geometría de los peinados del template (en reposo, antes de clonar). */
 function fitHair(scene: THREE.Object3D, body: BodyType): void {
@@ -142,35 +111,19 @@ function hairMaterial(base: THREE.Material, u: HairUniforms, shade: number): THR
 /** Mitad de la altura (~1.85 m) para centrar en el creador; en la escena va `grounded`. */
 export const HALF_HEIGHT = 0.92;
 
-export interface Outfit {
-  /** Fin de la manga: |x| en bind (T-pose → el plano es perpendicular al brazo). */
-  sleeveX: number;
-  /** Dobladillo del pantalón: y en bind (0 = hasta el botín). */
-  hemY: number;
-}
-
 /**
  * Cortes medidos sobre el bind normalizado (T-pose, pies en 0, 1.85 m). Brazos: solo por encima
- * de y≈1.39; torso hasta |x| 0.21 (H) / 0.16 (M); codo ≈0.45/0.40; muñeca ≈0.71/0.665.
+ * de y≈1.39; torso hasta |x| 0.21 (H) / 0.16 (M). v2: el equipo es siempre remera de manga corta +
+ * short (las variantes de manga/pantalón de v1 se fueron con el catálogo único).
  */
-const SLEEVE_X: Record<BodyType, Record<"tank" | "tee" | "longsleeve", number>> = {
-  male: { tank: 0.215, tee: 0.32, longsleeve: 0.705 },
-  female: { tank: 0.165, tee: 0.28, longsleeve: 0.66 },
-};
+const SLEEVE_X: Record<BodyType, number> = { male: 0.32, female: 0.28 };
 /**
  * Corte del short (rodilla ≈0.54, cadera ≈0.97 en el modelo). Más largo que medio muslo: tapa la
  * ropa interior que trae pintada la textura del pack.
  */
 const SHORT_HEM_Y = 0.66;
-
-export function outfitOf(config: AvatarConfig): Outfit {
-  const t = config.top.part;
-  const sleeve = t === "tank" || t === "longsleeve" ? t : "tee";
-  return {
-    sleeveX: SLEEVE_X[config.bodyType][sleeve],
-    hemY: config.bottom.part === "shorts" ? SHORT_HEM_Y : 0,
-  };
-}
+/** Luminancia lineal media (mediana) de la textura de piel del pack (M 0,208 · F 0,221). */
+const SKIN_TEX_MID = 0.214;
 
 /** Altura del cuerpo en bind (m), para normalizar. */
 const BODY_HEIGHT = 1.85;
@@ -230,13 +183,25 @@ export interface KitUniforms {
   uSashOn: { value: number };
   uBottom: { value: THREE.Color };
   uShoes: { value: THREE.Color };
+  uSkin: { value: THREE.Color };
   uSleeveX: { value: number };
   uHemY: { value: number };
 }
 
-export function setKit(u: KitUniforms, o: Outfit, top: HexColor, sash: HexColor | null, bottom: HexColor, shoes: HexColor): void {
-  u.uSleeveX.value = o.sleeveX;
-  u.uHemY.value = o.hemY;
+export interface Kit {
+  body: BodyType;
+  skin: HexColor;
+  top: HexColor;
+  /** Segundo color de la camiseta de la nación (banda diagonal); `null` = lisa. */
+  sash: HexColor | null;
+  bottom: HexColor;
+  shoes: HexColor;
+}
+
+export function setKit(u: KitUniforms, { body, skin, top, sash, bottom, shoes }: Kit): void {
+  u.uSleeveX.value = SLEEVE_X[body];
+  u.uHemY.value = SHORT_HEM_Y;
+  u.uSkin.value.set(skin);
   u.uTop.value.set(top);
   u.uSash.value.set(sash ?? top);
   u.uSashOn.value = sash ? 1 : 0;
@@ -260,7 +225,7 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nuniform float uSleeveX;\nuniform float uHemY;\nvarying float vHead;\nvarying vec3 vBind;",
+        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nuniform vec3 uSkin;\nuniform float uSleeveX;\nuniform float uHemY;\nvarying float vHead;\nvarying vec3 vBind;",
       )
       .replace(
         "#include <map_fragment>",
@@ -276,7 +241,17 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
           `else if (vBind.y > ${ARM_Y.toFixed(3)} && ax > uSleeveX) region = 0;`,
           "else region = 1;",
           "if (vHead > 0.5) region = 0;",
-          "if (region > 0) {",
+          // piel: tinte por luminancia (el tono elegido es el que se ve; la textura aporta el detalle)
+          "if (region == 0) {",
+          "  float sl = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));",
+          // detalle comprimido (pow) y acotado: sin esto la cara (más clara que la mediana) lavaba los tonos
+          // claros y los oscuros cerraban del todo
+          `  diffuseColor.rgb = uSkin * clamp(pow(sl / ${SKIN_TEX_MID.toFixed(3)}, 0.6), 0.7, 1.2);`,
+          // compensa el tone mapping (ACES desatura los claros y cierra los oscuros): +30% de
+          // saturación y un leve lift → el tono elegido en la paleta es el que se lee en pantalla
+          "  float cl = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));",
+          "  diffuseColor.rgb = pow(max(mix(vec3(cl), diffuseColor.rgb, 1.3), 0.0), vec3(0.9));",
+          "} else {",
           "  vec3 c = region == 1 ? uTop : (region == 2 ? uBottom : uShoes);",
           // banda diagonal: hombro izquierdo (+X) → cadera derecha, solo en la remera
           "  float d = abs((vBind.y - 1.22) - 1.15 * vBind.x);",
@@ -385,6 +360,7 @@ export function createUniforms(): KitUniforms {
     uSashOn: { value: 0 },
     uBottom: { value: new THREE.Color() },
     uShoes: { value: new THREE.Color() },
+    uSkin: { value: new THREE.Color() },
     uSleeveX: { value: 0 },
     uHemY: { value: 0 },
   };

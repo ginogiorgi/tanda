@@ -2,37 +2,27 @@
 
 /**
  * Creador de avatar 3D. A la izquierda el personaje rotable **arrastrando**; a la derecha
- * 4 selectores (pelo, remera, pantalón, zapatos) + toggle de cuerpo base. Preview en vivo:
- * todo cambio actualiza el `AvatarConfig` en estado y se refleja al instante. Con `onSave`
+ * los selectores del catálogo v2 (piel, pelo, camiseta, short, botines) + toggle de cuerpo base.
+ * Preview en vivo: todo cambio actualiza el `AvatarV2` en estado y se refleja al instante. Con `onSave`
  * (Server Action) persiste en `profiles.avatar` y, si hay `redirectTo`, navega al guardar.
  * Ver SPEC §8.2.
  */
 
-import { BOOTS_PALETTE, HAIR_PALETTE, KIT_PALETTE, type Swatch } from "@/lib/avatar/palette";
+import { BOOTS_PALETTE, HAIR_PALETTE, KIT_PALETTE, SKIN_PALETTE, type Swatch } from "@/lib/avatar/palette";
 import { useCallback, useRef, useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
-import type {
-  AvatarConfig,
-  BodyType,
-  PartCategory,
-  TintedPart,
-} from "@/lib/avatar/types";
-import {
-  BODY_TYPES,
-  hairOptionsFor,
-  DEFAULT_AVATAR,
-  PARTS,
-  type PartOption,
-} from "@/lib/avatar/parts";
+import type { BodyType } from "@/lib/avatar/types";
+import { BODY_TYPES, hairFor, hairOptionsFor, type HairOption } from "@/lib/avatar/catalog";
+import { DEFAULT_AVATAR, type AvatarV2 } from "@/lib/avatar/schema";
 import type { SaveAvatarResult } from "@/app/(app)/avatar/actions";
 import { Button } from "@/components/ui/Button";
 import { AvatarViewer } from "./AvatarViewer";
 
 interface AvatarCreatorProps {
   /** Avatar inicial (al editar desde Perfil). Por defecto, el avatar base. */
-  initial?: AvatarConfig;
+  initial?: AvatarV2;
   /** Server Action que persiste el avatar. Si falta, no se muestra el botón. */
-  onSave?: (avatar: AvatarConfig) => Promise<SaveAvatarResult>;
+  onSave?: (avatar: AvatarV2) => Promise<SaveAvatarResult>;
   /** Texto del botón de guardado. */
   saveLabel?: string;
   /** Si se pasa, al guardar con éxito navega a esta ruta (p. ej. "/perfil"). */
@@ -46,7 +36,7 @@ export function AvatarCreator({
   redirectTo,
 }: AvatarCreatorProps) {
   const router = useNav();
-  const [avatar, setAvatar] = useState<AvatarConfig>(initial);
+  const [avatar, setAvatar] = useState<AvatarV2>(initial);
   const [rotationY, setRotationY] = useState(0.4);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -105,15 +95,12 @@ export function AvatarCreator({
   }, []);
 
   // Helpers de actualización inmutable. Cualquier cambio invalida el "Guardado ✓".
-  const setBodyType = (bodyType: BodyType) => {
+  const update = (fn: (a: AvatarV2) => AvatarV2) => {
     setSaved(false);
-    setAvatar((a) => ({ ...a, bodyType }));
+    setAvatar(fn);
   };
-
-  const setTintedPart = (category: PartCategory, next: TintedPart) => {
-    setSaved(false);
-    setAvatar((a) => ({ ...a, [category]: next }));
-  };
+  // Al cambiar de cuerpo, el peinado cae a uno que ese cuerpo ofrezca.
+  const setBody = (body: BodyType) => update((a) => ({ ...a, body, hair: { ...a.hair, style: hairFor(a.hair.style, body) } }));
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 lg:flex-row lg:items-stretch">
@@ -135,9 +122,9 @@ export function AvatarCreator({
             <button
               key={b.id}
               type="button"
-              onClick={() => setBodyType(b.id)}
+              onClick={() => setBody(b.id)}
               className={`flex-1 rounded-[6px] px-3 py-2 text-sm font-medium ring-1 transition ${
-                avatar.bodyType === b.id
+                avatar.body === b.id
                   ? "bg-ink text-bg ring-ink"
                   : "bg-bg-raised text-fg ring-ink hover:bg-bg-overlay"
               }`}
@@ -150,40 +137,32 @@ export function AvatarCreator({
 
       {/* Selectores */}
       <div className="flex flex-col gap-4 lg:w-1/2">
-        {/* Pelo */}
+        <Selector label="Piel">
+          <ColorRow palette={SKIN_PALETTE} selected={avatar.skin} onSelect={(skin) => update((a) => ({ ...a, skin }))} />
+        </Selector>
         <Selector label="Pelo">
           <ChipRow
-            options={hairOptionsFor(avatar.bodyType)}
-            selected={avatar.hair.part}
-            onSelect={(part) => setTintedPart("hair", { ...avatar.hair, part })}
+            options={hairOptionsFor(avatar.body)}
+            selected={avatar.hair.style}
+            onSelect={(style) => update((a) => ({ ...a, hair: { ...a.hair, style } }))}
           />
-          {avatar.hair.part !== "none" && (
+          {avatar.hair.style !== "none" && (
             <ColorRow
               palette={HAIR_PALETTE}
               selected={avatar.hair.color}
-              onSelect={(color) => setTintedPart("hair", { ...avatar.hair, color })}
+              onSelect={(color) => update((a) => ({ ...a, hair: { ...a.hair, color } }))}
             />
           )}
         </Selector>
-
-        <TintedSelector
-          label="Remera"
-          category="top"
-          value={avatar.top}
-          onChange={(next) => setTintedPart("top", next)}
-        />
-        <TintedSelector
-          label="Pantalón"
-          category="bottom"
-          value={avatar.bottom}
-          onChange={(next) => setTintedPart("bottom", next)}
-        />
-        <TintedSelector
-          label="Zapatos"
-          category="shoes"
-          value={avatar.shoes}
-          onChange={(next) => setTintedPart("shoes", next)}
-        />
+        <Selector label="Camiseta">
+          <ColorRow palette={KIT_PALETTE} selected={avatar.kit.shirt} onSelect={(shirt) => update((a) => ({ ...a, kit: { ...a.kit, shirt } }))} />
+        </Selector>
+        <Selector label="Short">
+          <ColorRow palette={KIT_PALETTE} selected={avatar.kit.shorts} onSelect={(shorts) => update((a) => ({ ...a, kit: { ...a.kit, shorts } }))} />
+        </Selector>
+        <Selector label="Botines">
+          <ColorRow palette={BOOTS_PALETTE} selected={avatar.boots.color} onSelect={(color) => update((a) => ({ ...a, boots: { color } }))} />
+        </Selector>
 
         {onSave && (
           <div className="mt-2 flex flex-col gap-2">
@@ -215,41 +194,14 @@ function Selector({
   );
 }
 
-function TintedSelector({
-  label,
-  category,
-  value,
-  onChange,
-}: {
-  label: string;
-  category: PartCategory;
-  value: TintedPart;
-  onChange: (next: TintedPart) => void;
-}) {
-  return (
-    <Selector label={label}>
-      <ChipRow
-        options={PARTS[category]}
-        selected={value.part}
-        onSelect={(part) => onChange({ ...value, part })}
-      />
-      <ColorRow
-        palette={category === "shoes" ? BOOTS_PALETTE : KIT_PALETTE}
-        selected={value.color}
-        onSelect={(color) => onChange({ ...value, color })}
-      />
-    </Selector>
-  );
-}
-
-function ChipRow({
+function ChipRow<T extends string>({
   options,
   selected,
   onSelect,
 }: {
-  options: readonly PartOption[];
-  selected: string;
-  onSelect: (id: string) => void;
+  options: readonly (HairOption & { id: T })[];
+  selected: T;
+  onSelect: (id: T) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-2">

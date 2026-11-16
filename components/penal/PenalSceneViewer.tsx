@@ -32,7 +32,7 @@ interface PenalSceneViewerProps {
 }
 
 export function PenalSceneViewer({ kicker, keeper, result, className, freezeAt }: PenalSceneViewerProps) {
-  const { status, retry } = useGlbReady([kicker.avatar.bodyType, keeper.avatar.bodyType]);
+  const { status, retry } = useGlbReady([kicker.avatar.body, keeper.avatar.body]);
   return (
     <div className={className}>
       {status === "ready" ? (

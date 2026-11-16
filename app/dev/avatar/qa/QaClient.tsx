@@ -1,7 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { AvatarConfig, BodyType } from "@/lib/avatar/types";
+import { isHairStyle } from "@/lib/avatar/catalog";
+import { parseAvatar } from "@/lib/avatar/schema";
+import type { BodyType } from "@/lib/avatar/types";
 import { BOOTS_PALETTE, deltaE, HAIR_PALETTE, KIT_PALETTE, MIN_KIT_SKIN_DELTA_E, SKIN_PALETTE, type Swatch } from "@/lib/avatar/palette";
 import { useGlbReady } from "@/components/avatar/useGlbReady";
 
@@ -67,8 +69,7 @@ export function QaClient(props: {
   body: BodyType;
   hair: string;
   hairColor: string;
-  top: string;
-  shoes: string;
+  skin: string;
   view: string;
   pose: string;
 }) {
@@ -85,13 +86,14 @@ export function QaClient(props: {
       </main>
     );
   }
-  const config: AvatarConfig = {
-    bodyType: props.body,
-    hair: { part: props.hair, color: props.hairColor },
-    top: { part: props.top, color: "#2C4A9A" },
-    bottom: { part: "shorts", color: "#1C1C1C" },
-    shoes: { part: props.shoes, color: "#A8352B" },
-  };
+  const config = parseAvatar({
+    v: 2,
+    body: props.body,
+    skin: props.skin,
+    hair: { style: isHairStyle(props.hair) ? props.hair : "parted", color: props.hairColor },
+    kit: { shirt: "#2C4A9A", shorts: "#1C1C1C" },
+    boots: { color: "#A8352B" },
+  });
   return (
     <main className="size-[768px] bg-bg">
       {status === "ready" ? <QaCanvas config={config} view={props.view} pose={props.pose} /> : <p>{status}</p>}

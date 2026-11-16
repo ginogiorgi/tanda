@@ -1,45 +1,29 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { AvatarViewer } from "@/components/avatar/AvatarViewer";
-import type { AvatarConfig } from "@/lib/avatar/types";
+import type { AvatarV2 } from "@/lib/avatar/schema";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-/** Combinaciones que cubren todos los peinados, cortes de ropa y cuerpos (≤8 canvas WebGL). */
-const VARIANTS: readonly { label: string; config: AvatarConfig; rotationY?: number }[] = [
-  {
-    label: "Hombre · corto · remera · short",
-    config: { bodyType: "male", hair: { part: "short", color: "#2b1d14" }, top: { part: "tee", color: "#75aadb" }, bottom: { part: "shorts", color: "#141414" }, shoes: { part: "cleats", color: "#d7261e" } },
-  },
-  {
-    label: "Mujer · rodete · manga larga · pantalón",
-    config: { bodyType: "female", hair: { part: "bun", color: "#c58b4a" }, top: { part: "longsleeve", color: "#1f3fa8" }, bottom: { part: "pants", color: "#3b3b3b" }, shoes: { part: "boots", color: "#141414" } },
-  },
-  {
-    label: "Hombre · rapado · musculosa · jogger",
-    config: { bodyType: "male", hair: { part: "buzz", color: "#141414" }, top: { part: "tank", color: "#d7261e" }, bottom: { part: "joggers", color: "#1f3fa8" }, shoes: { part: "sneakers", color: "#ede9df" } },
-  },
-  {
-    label: "Mujer · largo · remera · short",
-    config: { bodyType: "female", hair: { part: "long", color: "#6b3e1e" }, top: { part: "tee", color: "#f2c230" }, bottom: { part: "shorts", color: "#141414" }, shoes: { part: "cleats", color: "#141414" } },
-  },
-  {
-    label: "Hombre · mohicano · manga larga · pantalón (perfil)",
-    config: { bodyType: "male", hair: { part: "mohawk", color: "#d7261e" }, top: { part: "longsleeve", color: "#141414" }, bottom: { part: "pants", color: "#ede9df" }, shoes: { part: "boots", color: "#d7261e" } },
-    rotationY: 1.2,
-  },
-  {
-    label: "Mujer · rapado · musculosa · jogger",
-    config: { bodyType: "female", hair: { part: "buzz", color: "#e8d8b0" }, top: { part: "tank", color: "#ede9df" }, bottom: { part: "joggers", color: "#141414" }, shoes: { part: "sneakers", color: "#1f3fa8" } },
-  },
-  {
-    label: "Hombre · pelado",
-    config: { bodyType: "male", hair: { part: "none", color: "#141414" }, top: { part: "tee", color: "#ede9df" }, bottom: { part: "shorts", color: "#1f3fa8" }, shoes: { part: "cleats", color: "#141414" } },
-  },
-  {
-    label: "Mujer · mohicano · remera · short",
-    config: { bodyType: "female", hair: { part: "mohawk", color: "#1f3fa8" }, top: { part: "tee", color: "#141414" }, bottom: { part: "shorts", color: "#d7261e" }, shoes: { part: "cleats", color: "#ede9df" } },
-  },
+const av = (body: AvatarV2["body"], skin: string, style: AvatarV2["hair"]["style"], hair: string, shirt: string, shorts: string, boots: string): AvatarV2 => ({
+  v: 2,
+  body,
+  skin,
+  hair: { style, color: hair },
+  kit: { shirt, shorts },
+  boots: { color: boots },
+});
+
+/** Combinaciones que cubren peinados, pieles y cuerpos (≤8 canvas WebGL). */
+const VARIANTS: readonly { label: string; config: AvatarV2; rotationY?: number }[] = [
+  { label: "Hombre · corto · morena", config: av("male", "#A06B45", "parted", "#3A2A20", "#8FB2D3", "#1C1C1C", "#1C1C1C") },
+  { label: "Mujer · rodete · muy clara", config: av("female", "#F2D3BC", "bun", "#CFAE76", "#2C4A9A", "#ECE6D8", "#A8352B") },
+  { label: "Hombre · rapado · muy oscura", config: av("male", "#4D3020", "buzz", "#1E1B19", "#A8352B", "#1F2B47", "#ECE6D8") },
+  { label: "Mujer · largo · media", config: av("female", "#C68E66", "long", "#8C3F24", "#C4A042", "#1C1C1C", "#1C1C1C") },
+  { label: "Hombre · largo · clara (perfil)", config: av("male", "#E0B593", "long", "#A07D4E", "#1C1C1C", "#ECE6D8", "#C4A042"), rotationY: 1.2 },
+  { label: "Mujer · rapado · oscura", config: av("female", "#764A2E", "buzz", "#1E1B19", "#ECE6D8", "#6B2433", "#2C4A9A") },
+  { label: "Hombre · pelado · media", config: av("male", "#C68E66", "none", "#1E1B19", "#2E5A3C", "#ECE6D8", "#8A8984") },
+  { label: "Hombre · rodete · canoso", config: av("male", "#E0B593", "bun", "#A9A6A0", "#6B2433", "#1C1C1C", "#1C1C1C") },
 ];
 
 /** Galería del avatar GLB (Fase 6b): todas las piezas de un vistazo. 404 en producción. */

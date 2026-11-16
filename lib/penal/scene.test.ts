@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_AVATAR } from "@/lib/avatar/parts";
-import type { AvatarConfig } from "@/lib/avatar/types";
+import { DEFAULT_AVATAR, type AvatarV2 } from "@/lib/avatar/schema";
 import type { MatchScene, PenalStartPayload } from "@/lib/realtime/penal";
 import type { ParticipantBrief } from "@/lib/realtime/score";
 import { resolveSceneRoles } from "./scene";
@@ -32,12 +31,13 @@ function brief(
   };
 }
 
-const homeAvatar: AvatarConfig = {
-  bodyType: "female",
-  hair: { part: "long", color: "#1d1d1d" },
-  top: { part: "tee", color: "#e63946" },
-  bottom: { part: "shorts", color: "#264653" },
-  shoes: { part: "cleats", color: "#f1f1f1" },
+const homeAvatar: AvatarV2 = {
+  v: 2,
+  body: "female",
+  skin: "#C68E66",
+  hair: { style: "long", color: "#1E1B19" },
+  kit: { shirt: "#A8352B", shorts: "#1F2B47" },
+  boots: { color: "#ECE6D8" },
 };
 
 function scene(over: Partial<MatchScene> = {}): MatchScene {
@@ -73,7 +73,7 @@ describe("resolveSceneRoles", () => {
     const roles = resolveSceneRoles(penal(), scene());
     expect(roles).not.toBeNull();
     // home patea → su avatar real + su kit (base + banda)
-    expect(roles!.kicker.avatar).toBe(homeAvatar);
+    expect(roles!.kicker.avatar).toEqual(homeAvatar);
     expect(roles!.kicker.kitTop).toBe("#6cabdd");
     expect(roles!.kicker.kitSash).toBe("#ffffff");
     expect(roles!.kicker.brief?.participant_id).toBe(HOME);
@@ -114,9 +114,9 @@ describe("resolveSceneRoles", () => {
   it("avatar inválido cae a DEFAULT_AVATAR", () => {
     const roles = resolveSceneRoles(
       penal(),
-      scene({ home_avatar: { bodyType: "alien" } as unknown as AvatarConfig }),
+      scene({ home_avatar: { bodyType: "alien" } }),
     );
-    expect(roles!.kicker.avatar).toBe(DEFAULT_AVATAR);
+    expect(roles!.kicker.avatar).toEqual(DEFAULT_AVATAR);
   });
 
   it("null sin escena, sin ids de pateador/arquero, o ids inconsistentes", () => {

@@ -10,7 +10,8 @@
  */
 
 import dynamic from "next/dynamic";
-import type { AvatarConfig, BodyType } from "@/lib/avatar/types";
+import type { AvatarV2 } from "@/lib/avatar/schema";
+import type { BodyType } from "@/lib/avatar/types";
 import { Scene3DError, Scene3DSkeleton } from "./Scene3DStatus";
 import { useGlbReady } from "./useGlbReady";
 
@@ -22,7 +23,7 @@ const AvatarCanvas = dynamic(() => import("./AvatarCanvas").then((m) => m.Avatar
 const BOTH: readonly BodyType[] = ["male", "female"];
 
 interface AvatarViewerProps {
-  config: AvatarConfig;
+  config: AvatarV2;
   rotationY?: number;
   className?: string;
 }

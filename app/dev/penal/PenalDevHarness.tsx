@@ -9,26 +9,14 @@ import type { SceneRole } from "@/lib/penal/scene";
 import type { PenaltyReason } from "@/lib/realtime/penal";
 
 const KICKER: SceneRole = {
-  avatar: {
-    bodyType: "male",
-    hair: { part: "short", color: "#2b1d14" },
-    top: { part: "tee", color: "#75aadb" },
-    bottom: { part: "shorts", color: "#141414" },
-    shoes: { part: "cleats", color: "#d7261e" },
-  },
+  avatar: { v: 2, body: "male", skin: "#A06B45", hair: { style: "parted", color: "#3A2A20" }, kit: { shirt: "#8FB2D3", shorts: "#1C1C1C" }, boots: { color: "#A8352B" } },
   kitTop: "#75aadb",
   kitSash: "#ffffff",
   brief: null,
 };
 
 const KEEPER: SceneRole = {
-  avatar: {
-    bodyType: "female",
-    hair: { part: "bun", color: "#c58b4a" },
-    top: { part: "longsleeve", color: "#1f3fa8" },
-    bottom: { part: "shorts", color: "#141414" },
-    shoes: { part: "boots", color: "#141414" },
-  },
+  avatar: { v: 2, body: "female", skin: "#E0B593", hair: { style: "bun", color: "#A07D4E" }, kit: { shirt: "#2C4A9A", shorts: "#1C1C1C" }, boots: { color: "#1C1C1C" } },
   kitTop: "#f2c230",
   kitSash: "#f2c230",
   brief: null,

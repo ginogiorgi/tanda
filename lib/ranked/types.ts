@@ -2,7 +2,6 @@
  * Shapes de las RPC ranked (Fase 4b) + helpers de presentación. La regla vive en
  * `lib/engine/ranked.ts`; acá solo lo que viaja del server y cómo se nombra.
  */
-import type { AvatarConfig } from "@/lib/avatar/types";
 import { DIVISIONS, type Division, type DivisionId } from "@/lib/engine/ranked";
 
 export type { DivisionId };
@@ -45,7 +44,8 @@ export interface RankedSideResult {
 export interface RankedSide {
   participant_id: string;
   username: string;
-  avatar: AvatarConfig | Record<string, never>;
+  /** Crudo de `profiles.avatar` (v1 o v2): se lee con `parseAvatar`. */
+  avatar: unknown;
   /** Rating de ENTRADA al partido. */
   rating: number;
 }

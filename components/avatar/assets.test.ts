@@ -9,7 +9,8 @@ import { loadGlbScene } from "@/lib/avatar/glbNode";
 import { uncoveredFraction, type HairTri, type ScalpPoint } from "@/lib/avatar/hairCoverage";
 import { boundaryEdges, inwardFraction, signedVolume, triangles, type Tri } from "@/lib/avatar/meshChecks";
 import type { BodyType } from "@/lib/avatar/types";
-import { BODIES, hairMesh, templateOf } from "./glbModel";
+import { HAIR_MESHES, hairMesh, hairOptionsFor } from "@/lib/avatar/catalog";
+import { BODIES, templateOf } from "./glbModel";
 import { dominantBone } from "./glbRig";
 
 const scenes = new Map<BodyType, THREE.Object3D>();
@@ -106,10 +107,10 @@ function hairTris(mesh: THREE.SkinnedMesh): HairTri[] {
 const MAX_UNCOVERED = 0.02;
 
 describe.each(BODIES)("pelo %s: tapa el cráneo (no lo corta)", (body) => {
-  for (const part of ["short", "buzz", "long", "bun"]) {
-    it(part, () => {
+  for (const { id } of hairOptionsFor(body).filter((h) => h.id !== "none")) {
+    it(id, () => {
       const scene = scenes.get(body)!;
-      const name = hairMesh(part, body)!;
+      const name = hairMesh(id, body)!;
       const mesh = scene.getObjectByName(name) as THREE.SkinnedMesh;
       const f = uncoveredFraction(scalpOf(scene), hairTris(mesh), 0.04);
       expect(f, `${name} en ${body}: ${(f * 100).toFixed(1)}% del cuero asoma`).toBeLessThanOrEqual(MAX_UNCOVERED);
@@ -145,10 +146,16 @@ describe.each(BODIES)("skinning y catálogo %s", (body) => {
     });
   });
 
-  it("cada peinado del catálogo existe en el GLB de ese cuerpo", () => {
-    for (const part of ["none", "buzz", "mohawk", "short", "long", "bun"]) {
-      const name = hairMesh(part, body);
-      if (name) expect(scenes.get(body)!.getObjectByName(name), `${part}→${name}`).toBeDefined();
+  it("catálogo ↔ GLB: cada peinado ofrecido existe y no hay mallas de pelo fuera del catálogo", () => {
+    const scene = scenes.get(body)!;
+    for (const { id } of hairOptionsFor(body)) {
+      const name = hairMesh(id, body);
+      if (name) expect(scene.getObjectByName(name), `${id}→${name}`).toBeDefined();
     }
+    const inGlb: string[] = [];
+    scene.traverse((o) => {
+      if (o.name.startsWith("Hair_")) inGlb.push(o.name);
+    });
+    for (const n of inGlb) expect(HAIR_MESHES as readonly string[], n).toContain(n);
   });
 });

@@ -14,7 +14,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import type * as THREE from "three";
 import { JOINTS } from "@/lib/avatar/rig";
-import type { AvatarConfig, HexColor } from "@/lib/avatar/types";
+import { hairMesh } from "@/lib/avatar/catalog";
+import type { AvatarV2 } from "@/lib/avatar/schema";
+import type { HexColor } from "@/lib/avatar/types";
 import { setShoes } from "./glbShoes";
 import { loadedGlb } from "./glbLoad";
 import {
@@ -22,10 +24,8 @@ import {
   createHairUniforms,
   createProxies,
   createUniforms,
-  hairMesh,
   HALF_HEIGHT,
   instantiate,
-  outfitOf,
   setKit,
   templateOf,
 } from "./glbModel";
@@ -33,8 +33,8 @@ import { driveGlbRig } from "./glbRig";
 import { ROOT_PIVOT_Y, type RigRegister } from "./rigPose";
 
 interface GlbAvatarProps {
-  config: AvatarConfig;
-  /** Color de camiseta de la selección (escena de penal): pisa el `top.color` del avatar. */
+  config: AvatarV2;
+  /** Color de camiseta de la selección (escena de penal): pisa el `kit.shirt` del avatar. */
   kitTop?: HexColor;
   /** Segundo color de la camiseta: banda diagonal. */
   kitSash?: HexColor;
@@ -45,14 +45,14 @@ interface GlbAvatarProps {
 }
 
 export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: GlbAvatarProps) {
-  const gltf = loadedGlb(config.bodyType);
-  const topColor = kitTop ?? config.top.color;
+  const gltf = loadedGlb(config.body);
+  const topColor = kitTop ?? config.kit.shirt;
   const sash = kitTop && kitSash && kitSash !== kitTop ? kitSash : null;
 
   const uniforms = useMemo(() => createUniforms(), []);
   const hairUniforms = useMemo(() => createHairUniforms(), []);
   const inst = useMemo(
-    () => instantiate(templateOf(gltf.scene, config.bodyType), uniforms, hairUniforms),
+    () => instantiate(templateOf(gltf.scene, config.body), uniforms, hairUniforms),
     [gltf, uniforms, hairUniforms], // eslint-disable-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
   );
   useEffect(() => () => inst.materials.forEach((m) => m.dispose()), [inst]);
@@ -63,15 +63,14 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   // Colores, cortes, peinado, botines y registro del rig en UN layout effect, y recién al final el
   // frame (con frameloop "demand" es el único): así el primer frame ya tiene la pose de la escena.
   const invalidate = useThree((s) => s.invalidate);
-  const { sleeveX, hemY } = outfitOf(config);
-  const hairName = hairMesh(config.hair.part, config.bodyType);
-  const { hair, bottom, shoes } = config;
+  const { body, skin, hair, kit, boots } = config;
+  const hairName = hairMesh(hair.style, body);
   useLayoutEffect(() => {
-    setKit(uniforms, { sleeveX, hemY }, topColor, sash, bottom.color, shoes.color);
+    setKit(uniforms, { body, skin, top: topColor, sash, bottom: kit.shorts, shoes: boots.color });
     applyHair(inst.scene, hairUniforms, hairName, hair.color);
-    setShoes(inst.scene, shoes.part, shoes.color);
+    setShoes(inst.scene, "cleats", boots.color);
     invalidate();
-  }, [inst, uniforms, invalidate, sleeveX, hemY, topColor, sash, bottom.color, shoes.part, shoes.color, hairUniforms, hairName, hair.color]);
+  }, [inst, uniforms, invalidate, body, skin, topColor, sash, kit.shorts, boots.color, hairUniforms, hairName, hair.color]);
 
   useLayoutEffect(() => {
     if (!rig) return;
