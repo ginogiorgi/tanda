@@ -1,5 +1,29 @@
 # TODO — TANDA ⚽
 
+## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar`, A MEDIAS
+Cortado por usage-guard (90%). Pedido completo: (1) mujer: sacar "Rapado" y sumar un peinado nuevo prolijo (cola
+de caballo o trenza), revisar que los de mujer se vean bien; si hay perfiles mujer+rapado → migración SIN aplicar en
+prod; (2) hombre: cuello de la camiseta dentado; (3) capturas 360/1440 frente/costado/atrás de todos los peinados de
+ambos cuerpos; tests verdes + PR con preview de Vercel y capturas. NO mergear ni deployar. Al final: una línea en
+`gino-os/bot/diario.md` + commit ahí.
+- ✅ **(2) Cuello** (`components/avatar/glbModel.ts`, `COLLAR` + uniform `uCollar`): el corte remera/piel ya no sale
+  del hueso dominante por vértice (seguía los triángulos → serrucho en H) sino de una superficie lisa sobre el bind:
+  `y = y0 − tilt·dz + curv·dx²` alrededor del eje del cuello (z −0.035) y radio `r` → cuello redondo, más bajo
+  adelante, igual en H y M. Revisado headless (head/headback/front). Detalle menor: una ondita mínima al centro del
+  frente en H; si molesta, subir `y0` H 1.555→1.56. Verde: typecheck · lint · 208 unit.
+- ⏳ **(1) Peinados de mujer:** NO empezado. El pack Standard de Quaternius NO trae cola ni trenza (solo SimpleParted,
+  Long, Buzzed, BuzzedFemale, Buns, Beard) → la cola hay que generarla como `glbCrest`/`glbShoes` (malla propia
+  colgada del hueso `Head`, teñida con `uHair`), sobre `Hair_BuzzedFemale` como casquete "tirado para atrás".
+  Pasos: `HairStyle` + `ponytail` en `lib/avatar/catalog.ts` (sacar `female` de `buzz` → su `fallback` en mujer pasa a
+  `ponytail`), `scripts/avatar/qa.mts` (lista HAIR), tests de `schema`/`assets`, `supabase/tests/avatar_v2.test.ts`.
+  Datos: `select count(*) from profiles where avatar->>'body'='female' and avatar#>>'{hair,style}'='buzz'` (por MCP,
+  solo lectura) → si >0, migración nueva que los pase a `ponytail` (+ el CHECK de `…24000005_avatar_check_inline`
+  si lista estilos por cuerpo). Pack bajado en el scratchpad de la sesión (se pierde); re-bajar con la receta de
+  la sección 6b (upload 15861669) solo si hace falta la malla fuente.
+- ⏳ **(3) Capturas + PR:** `pnpm dev -p 3301` + `/dev/avatar/qa?body=…&hair=…&view=front|side|back` a 360 y 1440.
+- Retomar: `git switch wip/avatar-hair-collar && export PATH=~/.npm-global/bin:$PATH && pnpm install --frozen-lockfile`
+  (si `typecheck` se queja de `.next/types`, borrar `.next/types` y `.next/dev/types`: son de otra rama).
+
 ## 🧪 Tests de componentes (RTL) ✅ (16/11) — propuesta `gino-os/laburo/propuesta-tests-rtl-tanda.md`
 Proyecto Vitest `components` (happy-dom, `vitest.setup.components.ts`), `pnpm test:components` (en el job `verify` de
 CI). **48 tests en 8 archivos (~4 s):** `ui/Button`, `ui/Input`(+Field), `penal/TimeBar`, `penal/PenalHud`,

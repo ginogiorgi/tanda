@@ -118,6 +118,16 @@ export const HALF_HEIGHT = 0.92;
  */
 const SLEEVE_X: Record<BodyType, number> = { male: 0.32, female: 0.28 };
 /**
+ * Cuello redondo de la remera: superficie `y = y0 − tilt·dz + curv·dx²` (dz, dx desde el eje del
+ * cuello, z = −0.035): más baja adelante (+z) y curvada hacia los costados. Por encima, y a menos de
+ * `r` del eje, es piel. Antes era "piel = vértice del hueso neck/head": ese borde sigue los triángulos
+ * y en el hombre quedaba dentado (serrucho). Medido en el bind: el cuello mide r≈0.06–0.1 en y 1.54–1.6.
+ */
+const COLLAR: Record<BodyType, { y: number; tilt: number; curv: number; r: number }> = {
+  male: { y: 1.555, tilt: 0.25, curv: 3.5, r: 0.17 },
+  female: { y: 1.54, tilt: 0.25, curv: 3.5, r: 0.15 },
+};
+/**
  * Corte del short (rodilla ≈0.54, cadera ≈0.97 en el modelo). Más largo que medio muslo: tapa la
  * ropa interior que trae pintada la textura del pack.
  */
@@ -186,6 +196,8 @@ export interface KitUniforms {
   uSkin: { value: THREE.Color };
   uSleeveX: { value: number };
   uHemY: { value: number };
+  /** (y0, inclinación, curvatura, radio) del cuello; ver `COLLAR`. */
+  uCollar: { value: THREE.Vector4 };
 }
 
 export interface Kit {
@@ -201,6 +213,8 @@ export interface Kit {
 export function setKit(u: KitUniforms, { body, skin, top, sash, bottom, shoes }: Kit): void {
   u.uSleeveX.value = SLEEVE_X[body];
   u.uHemY.value = SHORT_HEM_Y;
+  const c = COLLAR[body];
+  u.uCollar.value.set(c.y, c.tilt, c.curv, c.r);
   u.uSkin.value.set(skin);
   u.uTop.value.set(top);
   u.uSash.value.set(sash ?? top);
@@ -225,7 +239,7 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nuniform vec3 uSkin;\nuniform float uSleeveX;\nuniform float uHemY;\nvarying float vHead;\nvarying vec3 vBind;",
+        "#include <common>\nuniform vec3 uTop;\nuniform vec3 uSash;\nuniform float uSashOn;\nuniform vec3 uBottom;\nuniform vec3 uShoes;\nuniform vec3 uSkin;\nuniform float uSleeveX;\nuniform float uHemY;\nuniform vec4 uCollar;\nvarying float vHead;\nvarying vec3 vBind;",
       )
       .replace(
         "#include <map_fragment>",
@@ -240,7 +254,11 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
           // brazos (solo existen arriba de y≈1.39): manga hasta uSleeveX, después piel
           `else if (vBind.y > ${ARM_Y.toFixed(3)} && ax > uSleeveX) region = 0;`,
           "else region = 1;",
-          "if (vHead > 0.5) region = 0;",
+          // cuello: plano inclinado cerca del eje (corte liso); la cabeza, por hueso, bien arriba del corte
+          "vec2 nk = vec2(vBind.x, vBind.z + 0.035);",
+          "float collarY = uCollar.x - uCollar.y * nk.y + uCollar.z * nk.x * nk.x;",
+          "if (vBind.y > collarY && length(nk) < uCollar.w) region = 0;",
+          "if (vHead > 0.5 && vBind.y > collarY + 0.04) region = 0;",
           // piel: tinte por luminancia (el tono elegido es el que se ve; la textura aporta el detalle)
           "if (region == 0) {",
           "  float sl = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));",
@@ -363,6 +381,7 @@ export function createUniforms(): KitUniforms {
     uSkin: { value: new THREE.Color() },
     uSleeveX: { value: 0 },
     uHemY: { value: 0 },
+    uCollar: { value: new THREE.Vector4() },
   };
 }
 
