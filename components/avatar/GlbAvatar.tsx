@@ -19,6 +19,7 @@ import { setShoes } from "./glbShoes";
 import { loadedGlb } from "./glbLoad";
 import {
   applyHair,
+  createHairUniforms,
   createProxies,
   createUniforms,
   hairMesh,
@@ -49,9 +50,10 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   const sash = kitTop && kitSash && kitSash !== kitTop ? kitSash : null;
 
   const uniforms = useMemo(() => createUniforms(), []);
+  const hairUniforms = useMemo(() => createHairUniforms(), []);
   const inst = useMemo(
-    () => instantiate(templateOf(gltf.scene, config.bodyType), uniforms),
-    [gltf, uniforms], // eslint-disable-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
+    () => instantiate(templateOf(gltf.scene, config.bodyType), uniforms, hairUniforms),
+    [gltf, uniforms, hairUniforms], // eslint-disable-line react-hooks/exhaustive-deps -- `gltf` ya depende del cuerpo
   );
   useEffect(() => () => inst.materials.forEach((m) => m.dispose()), [inst]);
 
@@ -66,10 +68,10 @@ export function GlbAvatar({ config, kitTop, kitSash, rig, grounded = false }: Gl
   const { hair, bottom, shoes } = config;
   useLayoutEffect(() => {
     setKit(uniforms, { sleeveX, hemY }, topColor, sash, bottom.color, shoes.color);
-    applyHair(inst.scene, hairName, hair.part === "mohawk", hair.color);
+    applyHair(inst.scene, hairUniforms, hairName, hair.color);
     setShoes(inst.scene, shoes.part, shoes.color);
     invalidate();
-  }, [inst, uniforms, invalidate, sleeveX, hemY, topColor, sash, bottom.color, shoes.part, shoes.color, hairName, hair.part, hair.color]);
+  }, [inst, uniforms, invalidate, sleeveX, hemY, topColor, sash, bottom.color, shoes.part, shoes.color, hairUniforms, hairName, hair.color]);
 
   useLayoutEffect(() => {
     if (!rig) return;

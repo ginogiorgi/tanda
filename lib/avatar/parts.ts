@@ -60,19 +60,19 @@ export const PARTS: Record<PartCategory, readonly PartOption[]> = {
   shoes: SHOES_PARTS,
 };
 
-/** Paleta de colores ofrecida para tintar piezas en el creador. */
-export const COLOR_PALETTE: readonly string[] = [
-  "#e63946", // rojo
-  "#f4a261", // naranja
-  "#e9c46a", // amarillo
-  "#2a9d8f", // verde agua
-  "#264653", // azul petróleo
-  "#457b9d", // azul
-  "#7209b7", // violeta
-  "#1d1d1d", // negro
-  "#f1f1f1", // blanco
-  "#8d5524", // marrón (pelo)
-] as const;
+/**
+ * Peinados que se OFRECEN por cuerpo (P7a): los que pasan el QA de cobertura en esa cabeza
+ * (`components/avatar/assets.test.ts`). El mohicano no existe en el pack (era una cresta generada) y
+ * el corto en F cae al rodete: siguen siendo ids válidos para los avatares guardados, pero no se ofrecen.
+ */
+const HAIR_OFFER: Record<BodyType, readonly string[]> = {
+  male: ["none", "buzz", "short", "long", "bun"],
+  female: ["none", "buzz", "long", "bun"],
+};
+
+export function hairOptionsFor(body: BodyType): readonly PartOption[] {
+  return HAIR_PARTS.filter((p) => HAIR_OFFER[body].includes(p.id));
+}
 
 function partExists(category: PartCategory, id: string): boolean {
   return PARTS[category].some((p) => p.id === id);
@@ -81,10 +81,10 @@ function partExists(category: PartCategory, id: string): boolean {
 /** Avatar por defecto al abrir el creador por primera vez. */
 export const DEFAULT_AVATAR: AvatarConfig = {
   bodyType: "male",
-  hair: { part: "short", color: "#1d1d1d" },
-  top: { part: "tee", color: "#e63946" },
-  bottom: { part: "shorts", color: "#264653" },
-  shoes: { part: "sneakers", color: "#f1f1f1" },
+  hair: { part: "short", color: "#3A2A20" },
+  top: { part: "tee", color: "#A8352B" },
+  bottom: { part: "shorts", color: "#1F2B47" },
+  shoes: { part: "sneakers", color: "#ECE6D8" },
 };
 
 /**

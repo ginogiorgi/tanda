@@ -14,7 +14,6 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { JOINTS } from "@/lib/avatar/rig";
 import type { AvatarConfig, BodyType, HexColor } from "@/lib/avatar/types";
-import { attachCrest, CREST_NAME } from "./glbCrest";
 import { attachShoes } from "./glbShoes";
 import { createGlbRig, dominantBone, driveGlbRig, type GlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y } from "./rigPose";
@@ -24,30 +23,121 @@ export const GLB_URL: Record<BodyType, string> = {
   female: "/models/avatar/avatar-female.glb",
 };
 
-/** `hair.part` → malla del pack. `mohawk` = rapado + cresta generada (`glbCrest`). */
-const HAIR_MESH: Record<string, string | null> = {
-  none: null,
-  short: "Hair_SimpleParted",
-  long: "Hair_Long",
-  bun: "Hair_Buns",
+/**
+ * `hair.part` → malla del pack, POR CUERPO (feedback 2, P7a). El QA geométrico (`assets.test.ts`,
+ * `lib/avatar/hairCoverage`) mostró que `Hair_Long`/`Hair_Buns` están modelados para la cabeza F (en M
+ * el cráneo atravesaba el pelo: "corta la cabeza") y `Hair_SimpleParted`/`Hair_Buzzed` para la M (en F
+ * no tienen ajuste posible). Long/Buns en M se adaptan con `HAIR_FIT`; lo que no tiene arreglo cae al
+ * peinado más parecido de ese cuerpo. El mohicano no existe en el pack: es el rapado.
+ */
+const HAIR_BY_BODY: Record<BodyType, Record<string, string | null>> = {
+  male: {
+    none: null,
+    buzz: "Hair_Buzzed",
+    mohawk: "Hair_Buzzed",
+    short: "Hair_SimpleParted",
+    long: "Hair_Long",
+    bun: "Hair_Buns",
+  },
+  female: {
+    none: null,
+    buzz: "Hair_BuzzedFemale",
+    mohawk: "Hair_BuzzedFemale",
+    short: "Hair_Buns",
+    long: "Hair_Long",
+    bun: "Hair_Buns",
+  },
 };
-const HAIR_MESHES = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"];
+export const HAIR_MESHES = ["Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", "Hair_BuzzedFemale", "Hair_Buns"] as const;
 
-/** El rapado está modelado por cuerpo (el de hombre flota sobre la cabeza de la mujer). */
-function buzzedMesh(body: BodyType): string {
-  return body === "female" ? "Hair_BuzzedFemale" : "Hair_Buzzed";
-}
+/**
+ * Ajuste de un peinado a otra cabeza: escala uniforme alrededor del hueso `head` + corrimiento (m),
+ * en reposo. Valores elegidos con el barrido de cobertura (asoma ≤ lo mismo que en su cuerpo nativo).
+ */
+export const HAIR_FIT: Partial<Record<BodyType, Partial<Record<string, { scale: number; dy: number }>>>> = {
+  male: { Hair_Long: { scale: 1.15, dy: 0.02 }, Hair_Buns: { scale: 1.15, dy: 0.02 } },
+};
 
 export function hairMesh(part: string, body: BodyType): string | null {
-  if (part === "buzz" || part === "mohawk") return buzzedMesh(body);
-  return HAIR_MESH[part] ?? null;
+  const table = HAIR_BY_BODY[body];
+  return part in table ? (table[part] ?? null) : (table.short ?? null);
+}
+
+/** Aplica `HAIR_FIT` a la geometría de los peinados del template (en reposo, antes de clonar). */
+function fitHair(scene: THREE.Object3D, body: BodyType): void {
+  const fits = HAIR_FIT[body];
+  if (!fits) return;
+  const head = scene.getObjectByName("Head");
+  if (!head) return;
+  const center = head.getWorldPosition(new THREE.Vector3());
+  for (const [name, fit] of Object.entries(fits)) {
+    const mesh = scene.getObjectByName(name);
+    if (!(mesh instanceof THREE.SkinnedMesh) || !fit) continue;
+    // Las posiciones vienen cuantizadas y el skinning (boneInverse) las lleva al mundo: por vértice
+    // se arma su matriz de skinning A = Σ wₖ·Bₖ, se transforma en mundo y se vuelve con A⁻¹.
+    const g = mesh.geometry.clone();
+    const src = g.getAttribute("position");
+    const si = g.getAttribute("skinIndex");
+    const sw = g.getAttribute("skinWeight");
+    const { bones, boneInverses } = mesh.skeleton;
+    const boneMats = bones.map((b, k) => new THREE.Matrix4().multiplyMatrices(b.matrixWorld, boneInverses[k]!));
+    const out = new Float32Array(src.count * 3);
+    const v = new THREE.Vector3();
+    const a = new THREE.Matrix4();
+    const tmp = new THREE.Matrix4();
+    for (let i = 0; i < src.count; i++) {
+      a.makeScale(0, 0, 0);
+      a.elements[15] = 0;
+      for (let k = 0; k < 4; k++) {
+        const w = sw.getComponent(i, k);
+        if (w === 0) continue;
+        tmp.copy(boneMats[si.getComponent(i, k)]!);
+        for (let e = 0; e < 16; e++) a.elements[e]! += tmp.elements[e]! * w;
+      }
+      const world = mesh.matrixWorld.clone().multiply(mesh.bindMatrixInverse).multiply(a).multiply(mesh.bindMatrix);
+      v.fromBufferAttribute(src, i).applyMatrix4(world);
+      v.sub(center).multiplyScalar(fit.scale).add(center);
+      v.y += fit.dy;
+      v.applyMatrix4(world.invert());
+      out.set([v.x, v.y, v.z], i * 3);
+    }
+    g.setAttribute("position", new THREE.BufferAttribute(out, 3));
+    g.computeBoundingSphere();
+    mesh.geometry = g;
+  }
 }
 
 /**
- * La textura del pelo es gris (~0.6) y se tiñe multiplicando: la cresta, sin textura, usa el color
- * atenuado para que pegue con el rapado.
+ * Tinte del pelo por LUMINANCIA (P7a): antes `material.color` multiplicaba una textura gris (~0,6) y
+ * todo salía oscuro (el blanco, gris). Ahora el color elegido es el que se ve y la textura solo
+ * aporta el detalle (mechones) alrededor de su luminancia media. Las cejas, mismo tinte más oscuro.
  */
-const CREST_SHADE = 0.62;
+const HAIR_TEX_MID = 0.32; // luminancia lineal media de la textura gris del pack
+const BROW_SHADE = 0.7;
+
+export interface HairUniforms {
+  uHair: { value: THREE.Color };
+}
+
+function hairMaterial(base: THREE.Material, u: HairUniforms, shade: number): THREE.Material {
+  const m = base.clone();
+  if (m instanceof THREE.MeshStandardMaterial) m.color.set("#ffffff");
+  m.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, u);
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nuniform vec3 uHair;")
+      .replace(
+        "#include <map_fragment>",
+        [
+          "#include <map_fragment>",
+          "float hl = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));",
+          `diffuseColor.rgb = uHair * ${shade.toFixed(3)} * clamp(hl / ${HAIR_TEX_MID.toFixed(3)}, 0.55, 1.35);`,
+        ].join("\n"),
+      );
+  };
+  m.customProgramCacheKey = () => `tanda-hair-${shade}`;
+  return m;
+}
 
 /** Mitad de la altura (~1.85 m) para centrar en el creador; en la escena va `grounded`. */
 export const HALF_HEIGHT = 0.92;
@@ -201,6 +291,7 @@ function kitMaterial(base: THREE.Material, u: KitUniforms): THREE.Material {
 }
 
 const isBody = (m: THREE.Material) => m.name.startsWith("MI_Superhero");
+const isHair = (m: THREE.Material) => m.name.startsWith("MI_Hair");
 
 /** GLB → clon preparado (en reposo, nunca se anima ni se renderiza): solo se clona. */
 const templates = new WeakMap<THREE.Object3D, THREE.Object3D>();
@@ -210,11 +301,7 @@ export function templateOf(source: THREE.Object3D, body: BodyType): THREE.Object
   if (cached) return cached;
   const t = cloneSkinned(source);
   t.updateMatrixWorld(true);
-  // La cresta se arma en reposo (antes de que el rig toque los huesos); el material es un molde.
-  const buzzed = t.getObjectByName(buzzedMesh(body));
-  if (buzzed instanceof THREE.SkinnedMesh) {
-    attachCrest(buzzed, new THREE.MeshStandardMaterial({ roughness: 0.85, flatShading: true }));
-  }
+  fitHair(t, body);
   const bodies: THREE.SkinnedMesh[] = [];
   t.traverse((obj) => {
     if (!(obj instanceof THREE.SkinnedMesh)) return;
@@ -240,20 +327,31 @@ export interface Instance {
 
 /**
  * Clon del template con materiales propios: el del cuerpo con los uniforms del kit y una copia de
- * cada uno de los demás (pelo, cresta, botines se tiñen por instancia). Se respeta el material
- * compartido (pelo y cejas usan el mismo).
+ * cada uno de los demás (pelo, cejas y botines se tiñen por instancia).
  */
-export function instantiate(template: THREE.Object3D, uniforms: KitUniforms): Instance {
+export function instantiate(
+  template: THREE.Object3D,
+  uniforms: KitUniforms,
+  hairUniforms: HairUniforms = createHairUniforms(),
+): Instance {
   const scene = cloneSkinned(template);
-  const own = new Map<THREE.Material, THREE.Material>();
-  const copy = (m: THREE.Material) => {
-    const c = own.get(m) ?? (isBody(m) ? kitMaterial(m, uniforms) : m.clone());
-    own.set(m, c);
+  // Pelo y cejas comparten material en el pack: acá se separan (las cejas van más oscuras).
+  const own = new Map<string, THREE.Material>();
+  const copy = (m: THREE.Material, meshName: string) => {
+    const hair = isHair(m);
+    const brow = meshName === "Eyebrows";
+    const k = hair ? `${m.uuid}:${brow ? "brow" : "hair"}` : m.uuid;
+    const c =
+      own.get(k) ??
+      (isBody(m) ? kitMaterial(m, uniforms) : hair ? hairMaterial(m, hairUniforms, brow ? BROW_SHADE : 1) : m.clone());
+    own.set(k, c);
     return c;
   };
   scene.traverse((obj) => {
     if (!(obj instanceof THREE.Mesh)) return;
-    obj.material = Array.isArray(obj.material) ? obj.material.map(copy) : copy(obj.material);
+    obj.material = Array.isArray(obj.material)
+      ? obj.material.map((m) => copy(m, obj.name))
+      : copy(obj.material, obj.name);
   });
   const glbRig = createGlbRig(scene);
   // Nace posada: rig en reposo (brazos abajo) aplicado a los huesos YA, sin esperar un frame.
@@ -261,20 +359,16 @@ export function instantiate(template: THREE.Object3D, uniforms: KitUniforms): In
   return { scene, glbRig, materials: [...own.values()] };
 }
 
-/** Peinado visible + tinte (los materiales ya son de la instancia). */
-export function applyHair(scene: THREE.Object3D, mesh: string | null, crest: boolean, color: HexColor): void {
+/** Peinado visible + tinte (pelo y cejas leen `uHair`; los materiales ya son de la instancia). */
+export function applyHair(scene: THREE.Object3D, hairUniforms: HairUniforms, mesh: string | null, color: HexColor): void {
+  hairUniforms.uHair.value.set(color);
   scene.traverse((obj) => {
-    if (!(obj instanceof THREE.Mesh)) return;
-    if (obj.name === CREST_NAME) {
-      obj.visible = crest;
-      if (obj.material instanceof THREE.MeshStandardMaterial) obj.material.color.set(color).multiplyScalar(CREST_SHADE);
-      return;
-    }
-    if (HAIR_MESHES.includes(obj.name)) obj.visible = obj.name === mesh;
-    if (obj.material instanceof THREE.MeshStandardMaterial && obj.material.name.startsWith("MI_Hair")) {
-      obj.material.color.set(color);
-    }
+    if (obj instanceof THREE.Mesh && (HAIR_MESHES as readonly string[]).includes(obj.name)) obj.visible = obj.name === mesh;
   });
+}
+
+export function createHairUniforms(): HairUniforms {
+  return { uHair: { value: new THREE.Color() } };
 }
 
 export const withMeshopt = (loader: GLTFLoader) => {

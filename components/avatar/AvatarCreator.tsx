@@ -8,6 +8,7 @@
  * Ver SPEC §8.2.
  */
 
+import { BOOTS_PALETTE, HAIR_PALETTE, KIT_PALETTE, type Swatch } from "@/lib/avatar/palette";
 import { useCallback, useRef, useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
 import type {
@@ -18,7 +19,7 @@ import type {
 } from "@/lib/avatar/types";
 import {
   BODY_TYPES,
-  COLOR_PALETTE,
+  hairOptionsFor,
   DEFAULT_AVATAR,
   PARTS,
   type PartOption,
@@ -152,12 +153,13 @@ export function AvatarCreator({
         {/* Pelo */}
         <Selector label="Pelo">
           <ChipRow
-            options={PARTS.hair}
+            options={hairOptionsFor(avatar.bodyType)}
             selected={avatar.hair.part}
             onSelect={(part) => setTintedPart("hair", { ...avatar.hair, part })}
           />
           {avatar.hair.part !== "none" && (
             <ColorRow
+              palette={HAIR_PALETTE}
               selected={avatar.hair.color}
               onSelect={(color) => setTintedPart("hair", { ...avatar.hair, color })}
             />
@@ -232,6 +234,7 @@ function TintedSelector({
         onSelect={(part) => onChange({ ...value, part })}
       />
       <ColorRow
+        palette={category === "shoes" ? BOOTS_PALETTE : KIT_PALETTE}
         selected={value.color}
         onSelect={(color) => onChange({ ...value, color })}
       />
@@ -269,23 +272,26 @@ function ChipRow({
 }
 
 function ColorRow({
+  palette,
   selected,
   onSelect,
 }: {
+  palette: readonly Swatch[];
   selected: string;
   onSelect: (color: string) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {COLOR_PALETTE.map((color) => (
+      {palette.map(({ id, label, hex }) => (
         <button
-          key={color}
+          key={id}
           type="button"
-          aria-label={`Color ${color}`}
-          onClick={() => onSelect(color)}
-          style={{ backgroundColor: color }}
+          aria-label={`Color ${label}`}
+          aria-pressed={selected.toLowerCase() === hex.toLowerCase()}
+          onClick={() => onSelect(hex)}
+          style={{ backgroundColor: hex }}
           className={`h-7 w-7 rounded-full ring-2 transition ${
-            selected.toLowerCase() === color.toLowerCase()
+            selected.toLowerCase() === hex.toLowerCase()
               ? "ring-ink ring-offset-2 ring-offset-bg"
               : "ring-border hover:ring-ring"
           }`}
