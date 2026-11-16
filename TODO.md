@@ -1,6 +1,6 @@
 # TODO — TANDA ⚽
 
-## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar` · PR abierto, ESPERA OK DE GINO
+## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar` · [PR #4](https://github.com/ginogiorgi/tanda/pull/4) (CI + preview verdes), ESPERA OK DE GINO
 **NO mergear ni deployar ni aplicar la migración en prod hasta que Gino apruebe.**
 - ✅ **Cuello H** (`components/avatar/glbModel.ts`, `COLLAR` + `uCollar`): el corte remera/piel sale de una superficie
   lisa sobre el bind (`y = y0 − tilt·dz + curv·dx²`) y no del hueso por vértice (serrucho). Igual en H y M.
