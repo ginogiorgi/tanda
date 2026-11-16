@@ -4,6 +4,7 @@
     "app/**/{page,layout,route,error,not-found,sitemap,robots,manifest,icon,apple-icon,opengraph-image,template,loading,default}.{ts,tsx}",
     "app/**/actions.ts",
     "**/*.test.ts",
+    "**/*.test.tsx",
     "scripts/**/*.ts",
     "e2e/**/*.spec.ts",
     "playwright.flow.config.ts"

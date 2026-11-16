@@ -11,6 +11,7 @@ export function Input({ className, invalid, ...props }: InputProps) {
         invalid && "border-danger focus:shadow-[3px_3px_0_0_var(--danger)]",
         className,
       )}
+      aria-invalid={invalid || undefined}
       {...props}
     />
   );

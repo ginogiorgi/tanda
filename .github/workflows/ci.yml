@@ -45,6 +45,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Test de componentes (React Testing Library)
+        run: pnpm test:components
+
       - name: Build
         run: pnpm build
 

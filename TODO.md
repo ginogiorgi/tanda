@@ -40,6 +40,13 @@ SUPABASE_WORKDIR=$SP/sbfb E2E_FLOW_PORT=3201 pnpm test:e2e:flow     # después: 
 si el scratchpad se borró, recrearlo así.) Estado al cortar: typecheck/lint/unit 182 ✅; knip marca solo lo de P5 sin
 conectar (`ResultActions`, consts de `flow.ts`).
 
+## 🧪 Tests de componentes (RTL) ✅ (16/11) — propuesta `gino-os/laburo/propuesta-tests-rtl-tanda.md`
+Proyecto Vitest `components` (happy-dom, `vitest.setup.components.ts`), `pnpm test:components` (en el job `verify` de
+CI). **48 tests en 8 archivos (~4 s):** `ui/Button`, `ui/Input`(+Field), `penal/TimeBar`, `penal/PenalHud`,
+`ranked/DivisionProgress`, `profile/HistoryPager`, `auth/LoginForm`, `auth/RegisterForm` (Supabase y `useNav`
+mockeados con `vi.hoisted`; debounce con fake timers `shouldAdvanceTime` para que no se filtre entre tests).
+Arreglo que salió de los tests: `Input invalid` ahora pone `aria-invalid` (antes solo era color).
+
 ## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
 - **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
   errores ni violaciones CSP; GLB pedido a los ~450 ms de entrar a la sala; TTFB p50 ~180 ms (F0 ~300) → `docs/PERF-BASELINE.md`.
