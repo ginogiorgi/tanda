@@ -1,6 +1,7 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF (15/11 ~23:10, corte por usage-guard 91%) — rama `wip/p5-fin-de-partido`, NADA nuevo en main/prod
+- ⚠️ En paralelo, worktree `tanda-rtl` (rama `feat/rtl-components`) suma tests de componentes con RTL (`components/**/*.test.tsx`, `pnpm test:components`). Si llegan a main y cambiás un componente testeado, actualizá su test en el mismo paso; antes de mergear, rebase sobre origin/main.
 **Prod = main `fb3cd1a` (P4), sano.** Migración `20261124000003_ko_eliminated_at_finish` **NO aplicada en prod**.
 - ✅ `1105ca8` **P5** + ✅ `68f6075` **P6**: verde completo **incluida la corrida lenta** (15/11 23:05, sobre
   `68f6075` en detached): `test:db` 103/103 y `E2E_SLOW=1 test:e2e:flow` **10/10** (champion 8,1 min, ko-loss 4,3 min,
