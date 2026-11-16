@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { divisionFor } from "@/lib/engine/ranked";
 import { signed, type RankedMatchView, type RankedSideResult } from "@/lib/ranked/types";
-import { buttonVariants } from "@/components/ui/Button";
+import { ResultActions } from "@/components/ui/ResultActions";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
 import { Confetti } from "@/components/penal/Confetti";
@@ -74,15 +73,11 @@ export function RankedResult({ view, result }: { view: RankedMatchView; result: 
         )}
       </Card>
 
-      <div className="flex w-full flex-col gap-3">
-        <Link href="/ranked" className={buttonVariants({ variant: "primary", size: "lg", block: true })}>
-          Otra ranked
-        </Link>
-        {/* La tabla vive en el perfil (mapa de pantallas, feedback 14/11): acá solo seguir o salir. */}
-        <Link href="/" className={buttonVariants({ variant: "outline", block: true })}>
-          Inicio
-        </Link>
-      </div>
+      {/* La tabla vive en el perfil (mapa de pantallas, feedback 14/11): acá solo seguir o salir. */}
+      <ResultActions
+        primary={{ label: "Otra ranked", href: "/ranked" }}
+        secondary={[{ label: "Volver al inicio", href: "/" }]}
+      />
     </div>
   );
 }

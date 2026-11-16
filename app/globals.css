@@ -229,6 +229,22 @@ body {
   animation: tanda-reveal-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Tablero de penales (P5): el círculo se "imprime" al resolverse el penal (escala + color). */
+@keyframes tanda-dot-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.dot-pop {
+  animation: tanda-dot-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /*
  * T9 — fondo de cancha animado (penal en loop). El SVG de la cancha es estático; solo la pelota y el
  * arquero se animan por CSS (transform en unidades de usuario del viewBox). El bloque
@@ -267,6 +283,21 @@ body {
 }
 
 /* Accesibilidad: respetar prefers-reduced-motion globalmente (SPEC §9/F9) */
+/* Hoja de ayuda (P6): sube desde abajo en mobile, aparece en desktop. La neutraliza reduced-motion. */
+@keyframes tanda-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.help-sheet[open] {
+  animation: tanda-sheet-in 0.22s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

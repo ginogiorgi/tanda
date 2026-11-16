@@ -35,16 +35,17 @@ import {
 } from "@/lib/realtime/penal";
 import { usePreload3D } from "@/components/penal/usePreload3D";
 import { Page } from "@/components/ui/Page";
+import { Confetti } from "@/components/penal/Confetti";
+import { getMode, phaseInText } from "@/lib/modes";
+import {
+  CHAMPION_MS,
+  CROSSINGS_MIN_MS,
+  REVEAL_MS,
+  isOut,
+  nextRoundReady,
+  tournamentView,
+} from "@/lib/tournament/flow";
 
-
-/** Cuánto dura la pantalla de revelación de nación (B2.3) antes de ceder al bracket (2s país). */
-const REVEAL_MS = 2000;
-
-/**
- * T9: al ser eliminado en fase directa, mostrar primero los cruces del bracket ~4s (como el reveal
- * de grupos) para que el jugador vea cómo quedaron al perder, antes del cartel de derrota (RunSummary).
- */
-const KO_LOSS_REVEAL_MS = 4000;
 
 export function TournamentLive({
   tournamentId,
@@ -65,8 +66,11 @@ export function TournamentLive({
   // B5.2: ¿ya jugué al menos un penal en este torneo? Distingue "espera entre rondas" (mi tanda
   // resolvió, faltan otros) de la presentación inicial (todavía nadie pateó → no es espera).
   const [everPlayed, setEverPlayed] = useState(false);
-  // T9: ya pasaron los ~4s de cruces tras una eliminación en fase directa → mostrar el resumen.
-  const [koRevealDone, setKoRevealDone] = useState(false);
+  // P5: relojes de la máquina de estados (lib/tournament/flow) — cruces mínimos tras quedar afuera,
+  // pantalla de campeón, y "Ver cómo sigue" (espectador).
+  const [crossingsElapsed, setCrossingsElapsed] = useState(false);
+  const [championElapsed, setChampionElapsed] = useState(false);
+  const [spectating, setSpectating] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
@@ -218,28 +222,48 @@ export function TournamentLive({
     return () => clearTimeout(id);
   }, [snapshot]);
 
-  // T9: si me eliminaron en fase directa (no en grupos, no coronado), agendar el pase al resumen tras
-  // los ~4s de cruces. El QUÉ mostrar se deriva en el render; este effect solo corre el reloj.
+  // Afuera (no campeón): los cruces se ven al menos CROSSINGS_MIN_MS desde que el server me marcó.
+  // Campeón: la pantalla de copa dura CHAMPION_MS. QUÉ mostrar lo decide `tournamentView` en el render.
+  const meNow = snapshot?.participants.find((p) => p.participant_id === snapshot.my_participant_id) ?? null;
+  const outNow = meNow != null && isOut({ hasTeam: true, eliminatedPhase: meNow.eliminated_phase, placement: meNow.placement });
+  const championNow = meNow?.placement === 1;
   useEffect(() => {
-    if (!snapshot) return;
-    const meNow = snapshot.participants.find((p) => p.participant_id === snapshot.my_participant_id);
-    const koLoss =
-      meNow?.eliminated_phase != null &&
-      meNow.eliminated_phase !== "group" &&
-      meNow.placement == null;
-    if (!koLoss) return;
-    const id = setTimeout(() => setKoRevealDone(true), KO_LOSS_REVEAL_MS);
+    if (!outNow || championNow) return;
+    const id = setTimeout(() => setCrossingsElapsed(true), CROSSINGS_MIN_MS);
     return () => clearTimeout(id);
-  }, [snapshot]);
+  }, [outNow, championNow]);
+  useEffect(() => {
+    if (!championNow) return;
+    const id = setTimeout(() => setChampionElapsed(true), CHAMPION_MS);
+    return () => clearTimeout(id);
+  }, [championNow]);
 
-  if (showPenal && currentMatchId) {
+  const me = meNow;
+  const finished = snapshot?.current_phase === "finished";
+  const view = tournamentView({
+    hasSnapshot: snapshot != null,
+    loadError,
+    penalActive: showPenal && currentMatchId != null,
+    revealExpired,
+    me: me ? { hasTeam: me.team_name != null, eliminatedPhase: me.eliminated_phase, placement: me.placement } : null,
+    tournamentFinished: finished,
+    nextRoundReady: nextRoundReady(
+      me?.eliminated_phase ?? null,
+      snapshot?.matches.map((m) => m.phase) ?? [],
+      finished,
+    ),
+    crossingsElapsed,
+    championElapsed,
+    spectating,
+  });
+
+  if (view === "penal" && currentMatchId) {
     return <PenalLive key={currentMatchId} matchId={currentMatchId} />;
   }
 
-  if (!snapshot) {
-    if (loadError) {
-      return (
-        <Page center>
+  if (view === "error") {
+    return (
+      <Page center>
         <div className="flex flex-col items-center gap-4 text-center">
           <p className="text-balance text-sm text-fg-muted">
             No pudimos cargar el torneo. Revisá tu conexión y probá de nuevo.
@@ -257,9 +281,11 @@ export function TournamentLive({
             Volver al inicio
           </Link>
         </div>
-        </Page>
-      );
-    }
+      </Page>
+    );
+  }
+
+  if (!snapshot || view === "loading") {
     return (
       <Page center>
         <p className="text-sm text-fg-subtle">Cargando el torneo…</p>
@@ -267,17 +293,9 @@ export function TournamentLive({
     );
   }
 
-  // Mi corrida terminó (eliminado o coronado) → resumen de fin de torneo (8.6).
-  const me = snapshot.participants.find((p) => p.participant_id === snapshot.my_participant_id);
+  const mode = getMode(snapshot.mode_id);
 
-  // Revelación de nación (B2.3): una sola vez al entrar (ventana no vencida) y solo si recién arranca
-  // (no eliminado/coronado → así un refresh tardío cae directo al bracket/resumen, no a la revelación).
-  if (
-    !revealExpired &&
-    me?.team_name &&
-    me.eliminated_phase == null &&
-    me.placement == null
-  ) {
+  if (view === "reveal" && me) {
     return (
       <Page center>
         <TeamReveal me={me} />
@@ -285,33 +303,63 @@ export function TournamentLive({
     );
   }
 
-  if (me && (me.eliminated_phase != null || me.placement != null)) {
-    // T9: eliminación en fase directa → ver los cruces ~4s antes del cartel de derrota.
-    const koLoss =
-      me.eliminated_phase != null && me.eliminated_phase !== "group" && me.placement == null;
-    if (koLoss && !koRevealDone) {
-      return (
-        <Page width="wide" center>
-          <Bracket view={buildBracketView(snapshot, live)} />
-        </Page>
-      );
-    }
+  if (view === "champion") {
+    return (
+      <Page center>
+        <Confetti />
+        <div data-testid="champion-screen" className="fade-in relative z-10 flex flex-col items-center gap-3 text-center">
+          <span className="text-8xl drop-shadow" aria-hidden>
+            🏆
+          </span>
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">{mode.championTitle}</span>
+          <p className="font-display text-5xl font-extrabold uppercase tracking-tight text-brand">
+            {me?.team_name ?? "Campeón"}
+          </p>
+        </div>
+      </Page>
+    );
+  }
+
+  if (view === "summary") {
     return (
       <Page center>
         <RunSummary
           snapshot={snapshot}
           myParticipantId={snapshot.my_participant_id}
           isGuest={isGuest}
+          onSpectate={finished ? undefined : () => setSpectating(true)}
         />
       </Page>
     );
   }
 
+  if (view === "spectator") {
+    return (
+      <Page width="wide" center>
+        <div
+          data-testid="spectator-banner"
+          className="fade-in relative z-10 flex flex-wrap items-center justify-center gap-3 rounded-md border-2 border-ink bg-bg-elevated px-4 py-2 text-sm font-semibold text-fg shadow-card"
+        >
+          <span>
+            Estás mirando · quedaste afuera en{" "}
+            {me?.eliminated_phase ? phaseInText(mode, me.eliminated_phase) : "el torneo"}
+          </span>
+          <Button type="button" variant="outline" size="sm" onClick={() => setSpectating(false)}>
+            Ver mi resultado
+          </Button>
+        </div>
+        <span hidden data-testid="tournament-view" data-view={view} />
+        <Bracket view={buildBracketView(snapshot, live)} />
+      </Page>
+    );
+  }
+
+  // "crossings" (quedé afuera: cuadro con la ronda nueva armada) y "bracket" (sigo en carrera).
   return (
     <Page width="wide" center>
       {/* B5.2: mi tanda resolvió pero la ronda sigue (otros humanos terminando) → aviso de espera sobre
-          el bracket. No en la presentación inicial (everPlayed=false). */}
-      {everPlayed && (
+          el bracket. No en la presentación inicial (everPlayed=false) ni en los cruces. */}
+      {everPlayed && view === "bracket" && (
         <div className="fade-in relative z-10 flex items-center gap-2 rounded-full border border-border bg-bg-elevated/80 px-4 py-1.5 text-xs font-medium text-fg-muted backdrop-blur-sm">
           <span className="flex gap-1" aria-hidden>
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
@@ -319,6 +367,7 @@ export function TournamentLive({
           Esperando que todos terminen su tanda…
         </div>
       )}
+      <span hidden data-testid="tournament-view" data-view={view} />
       <Bracket view={buildBracketView(snapshot, live)} />
     </Page>
   );

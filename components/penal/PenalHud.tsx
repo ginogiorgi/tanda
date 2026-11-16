@@ -10,38 +10,21 @@ import { kitSwatchStyle, type ParticipantBrief } from "@/lib/realtime/score";
 import { TeamMark } from "@/components/common/TeamMark";
 import { Badge } from "@/components/ui/Badge";
 import { ScorePill } from "@/components/ui/ScorePill";
+import { PenaltyDots } from "@/components/penal/PenaltyDots";
+import { penaltyBoard, type DotState } from "@/lib/penal/dots";
 
 /** Un penal ya resuelto: su idx global (impar = patea home, par = away) y si el pateador convirtió. */
 export type PenalDot = { idx: number; scored: boolean };
 
-/** Tablero estilo transmisión (10.12): un círculo por penal pateado por este lado — verde gol, rojo erró. */
-function Dots({ dots, align }: { dots: PenalDot[]; align: "left" | "right" }) {
-  return (
-    <span className={`flex flex-wrap gap-1 ${align === "right" ? "justify-end" : ""}`}>
-      {dots.length === 0 ? (
-        <span className="text-xs text-fg-subtle">—</span>
-      ) : (
-        dots.map((d) => (
-          <span
-            key={d.idx}
-            title={`Penal ${d.idx}`}
-            className={`h-2.5 w-2.5 rounded-full border-2 ${d.scored ? "border-ink bg-ink" : "border-brand bg-transparent"}`}
-          />
-        ))
-      )}
-    </span>
-  );
-}
-
 function Side({
   brief,
   score,
-  dots,
+  states,
   align,
 }: {
   brief: ParticipantBrief | null;
   score: number;
-  dots: PenalDot[];
+  states: DotState[];
   align: "left" | "right";
 }) {
   return (
@@ -60,7 +43,7 @@ function Side({
           {score}
         </ScorePill>
       </div>
-      <Dots dots={dots} align={align} />
+      <PenaltyDots states={states} team={brief?.team_name ?? "???"} align={align} />
     </div>
   );
 }
@@ -97,8 +80,15 @@ export function PenalHud({
   const suddenDeath = idx > kicksPerSide * 2;
   const label = suddenDeath ? "Muerte súbita" : `Penal ${Math.ceil(idx / 2)} de ${kicksPerSide}`;
   // impar = patea home, par = away (mismo criterio que engine_advance_match).
-  const homeDots = dots.filter((d) => d.idx % 2 === 1);
-  const awayDots = dots.filter((d) => d.idx % 2 === 0);
+  // Tablero (P5): todos los slots desde el arranque; se pinta cada uno al resolverse su penal.
+  const kicks = (odd: boolean) =>
+    dots
+      .filter((d) => d.idx % 2 === (odd ? 1 : 0))
+      .sort((a, b) => a.idx - b.idx)
+      .map((d) => d.scored);
+  const board = penaltyBoard(kicks(true), kicks(false), kicksPerSide);
+  const homeDots = board.home;
+  const awayDots = board.away;
 
   // T3: el lado izquierdo es siempre el del caller. Si patea/ataja como away, se invierten brief,
   // score y dots de cada lado (la paridad de cada penal sigue siendo home=impar / away=par).
@@ -112,12 +102,12 @@ export function PenalHud({
   return (
     <div className="flex w-full flex-col items-center gap-2">
       <div className="flex w-full items-start gap-3 border-t-[3px] border-b border-ink py-2">
-        <Side brief={left.brief} score={left.score} dots={left.dots} align="left" />
+        <Side brief={left.brief} score={left.score} states={left.dots} align="left" />
         {/* 10px a propósito: a 12px "PENAL 3 DE 5" no entra entre los dos lados en 375px. */}
         <span className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-fg-muted">
           {label}
         </span>
-        <Side brief={right.brief} score={right.score} dots={right.dots} align="right" />
+        <Side brief={right.brief} score={right.score} states={right.dots} align="right" />
       </div>
       {role && (
         <Badge variant={role === "kick" ? "brand" : "blue"}>

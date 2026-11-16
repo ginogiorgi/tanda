@@ -46,7 +46,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
 
   await test.step("Jugar → Mundial → sala", async () => {
     await openPlay(page);
-    await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /mundial/i }).click();
+    await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /^mundial/i }).click();
     await expect(page).toHaveURL(/\/sala\/[A-Z0-9]+$/, { timeout: 20_000 });
     // P3: la sala espera 30 s (TIMING/lobby_seconds), no el minuto de antes.
     await expect(page.getByTestId("lobby-countdown")).toHaveText(/^0:(30|[12]\d)$/, { timeout: 10_000 });
@@ -70,6 +70,10 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   await test.step("responde el primer penal", async () => {
     const options = page.locator("button[aria-pressed]");
     await expect(options.first()).toBeEnabled({ timeout: 90_000 });
+    // P5: el tablero arranca con los 3+3 slots de grupos, todos pendientes.
+    const dots = page.getByTestId("penalty-dots");
+    await expect(dots).toHaveCount(2);
+    await expect(page.locator('[data-dot="pending"]')).toHaveCount(6);
     // Con el penal abierto y antes de responder: la correcta no viajó al cliente.
     collecting = false;
     expect(payloads.length).toBeGreaterThan(0);
@@ -81,6 +85,8 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
 
   await test.step("resolución a los 10s", async () => {
     await expect(page.getByText(/¡GOL!|ATAJADO/)).toBeVisible({ timeout: 30_000 });
+    // El slot de ese penal se pinta al resolverse (verde gol / rojo errado).
+    await expect(page.locator('[data-dot="scored"], [data-dot="missed"]')).toHaveCount(1, { timeout: 10_000 });
   });
 
   await test.step("penal (resultado y el que sigue): GameStage de un viewport (360, mobile y 1440), footer abajo del pliegue", async () => {

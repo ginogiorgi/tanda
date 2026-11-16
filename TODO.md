@@ -1,5 +1,45 @@
 # TODO — TANDA ⚽
 
+## ⏸ HANDOFF (15/11, corte por usage 90%) — P0–P4 en prod; P5 a medias en la rama `wip/p5-fin-de-partido`
+**Prod = main `fb3cd1a` (P4), sano:** smoke prod 43/43. Migraciones aplicadas hasta `20261124000002_game_timing`.
+**P5 (H: fin de partido) — hecho en `wip/p5-fin-de-partido` (NO en main, sin deploy):**
+- ✅ Server: `supabase/migrations/20261124000003_ko_eliminated_at_finish.sql`. Trigger `matches_ko_mark_loser`: el
+  perdedor de un cruce queda eliminado al terminar SU partido (el subcampeón con `placement=2` apenas termina la
+  final). Test `supabase/tests/ko_eliminated.test.ts` (db 102/102). **No aplicada en prod.**
+- ✅ Tablero único: `lib/penal/dots.ts` (+test) + `components/penal/PenaltyDots.tsx` (slots pendientes, verde/rojo,
+  `dot-pop`). Ya conectado en `PenalHud`.
+- ✅ Máquina de estados pura: `lib/tournament/flow.ts` (+test, 15 casos): REVEAL/BRACKET/PENAL/CRUCES/CAMPEÓN/
+  RESUMEN/ESPECTADOR.
+- ✅ `components/ui/ResultActions.tsx` (primaria + ≤2 outline del mismo tamaño + invitación de invitado debajo).
+- ⏳ **Falta (en orden):**
+  1. `RunSummary`: usar `penaltyBoard`/`PenaltyDots` (borrar su `PenalDots`; kicksPerSide con `kicksPerSide()`
+     de `lib/engine/match.ts`, ya exportado) y `ResultActions`: Jugar de nuevo / Ver cómo sigue (solo si el torneo
+     sigue) / Volver al inicio.
+  2. `TournamentLive`: renderizar con `tournamentView(facts)`. Timers de `REVEAL_MS`, `CROSSINGS_MIN_MS` (desde
+     que `isOut`) y `CHAMPION_MS`; `nextRoundReady(...)` sobre las fases con partidos del snapshot; estado
+     `spectating` (ESPECTADOR = `Bracket` vivo + cinta "Estás mirando · quedaste afuera en {fase}" + botón
+     "Ver mi resultado"). Borrar `KO_LOSS_REVEAL_MS`/`koRevealDone`/`REVEAL_MS` locales.
+  3. `RankedResult` con `ResultActions`.
+  4. e2e: `game.spec` (HUD arranca con 3+3 slots `pending`; después de resolver, uno `scored|missed`);
+     `champion.spec` (texto "Creá tu cuenta"; botones del mismo alto); un spec lento de derrota en KO
+     (cruces antes del resumen → "Ver cómo sigue" → "Ver mi resultado").
+  5. Verde completo → rebase → ff main → push → aplicar la migración `…03` por MCP (front primero) + ledger
+     (`update supabase_migrations.schema_migrations set version='20261124000003' where name='ko_eliminated_at_finish'`)
+     + `get_advisors` → smoke prod → anotar.
+- Después siguen **P6 (K, ayuda)** y **P7a–d** (personaje) del plan, sin cambios.
+**Retomar:**
+```
+cd /mnt/hera/Proyectos/tanda-feedback && git switch wip/p5-fin-de-partido
+export PATH=/mnt/hera/dev/npm/global/bin:$PATH VITE_CONFIG_NATIVE_IGNORE_WARNING=true
+SP=<scratchpad>; pnpm exec supabase start --workdir $SP/sbfb -x edge-runtime,imgproxy,logflare,vector,studio,storage-api,postgres-meta,supavisor,mailpit
+pnpm exec supabase db reset --workdir $SP/sbfb
+SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres pnpm test:db
+SUPABASE_WORKDIR=$SP/sbfb E2E_FLOW_PORT=3201 pnpm test:e2e:flow     # después: pnpm build && pnpm exec playwright test
+```
+(`$SP/sbfb` = copia de `supabase/config.toml` con `project_id="tanda-fb"` y puertos +100, migraciones con symlink;
+si el scratchpad se borró, recrearlo así.) Estado al cortar: typecheck/lint/unit 182 ✅; knip marca solo lo de P5 sin
+conectar (`ResultActions`, consts de `flow.ts`).
+
 ## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
 - **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
   errores ni violaciones CSP; GLB pedido a los ~450 ms de entrar a la sala; TTFB p50 ~180 ms (F0 ~300) → `docs/PERF-BASELINE.md`.

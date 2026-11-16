@@ -19,7 +19,7 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
 
   await enterAsGuest(page);
   await openPlay(page);
-  await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /mundial/i }).click();
+  await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: /^mundial/i }).click();
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]+$/, { timeout: 20_000 });
   await expect(page).toHaveURL(/\/partido$/, { timeout: 120_000 });
 
@@ -33,11 +33,18 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
   await test.step("resumen de campeón", async () => {
     await expect(page.getByText("¡Campeón!", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Jugar de nuevo" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /creá una cuenta/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /creá tu cuenta/i })).toBeVisible();
+    // P5: acciones del mismo alto; torneo terminado → sin "Ver cómo sigue".
+    const actions = page.getByTestId("result-actions");
+    const play = await actions.getByRole("button", { name: "Jugar de nuevo" }).boundingBox();
+    const home = await actions.getByRole("link", { name: "Volver al inicio" }).boundingBox();
+    expect(play?.height).toBeGreaterThan(0);
+    expect(home?.height).toBe(play?.height);
+    await expect(actions.getByRole("button", { name: "Ver cómo sigue" })).toHaveCount(0);
   });
 
   await test.step("perfil: copa de oro del Mundial", async () => {
-    await page.getByRole("link", { name: "Inicio", exact: true }).click();
+    await page.getByRole("link", { name: "Volver al inicio" }).click();
     await expect(homePlay(page)).toBeVisible({ timeout: 20_000 });
     await page.goto("/perfil");
     const gold = page.getByRole("listitem").filter({ hasText: "Campeón" }).first();

@@ -3,17 +3,19 @@
 /**
  * Resumen de fin de partido/torneo (8.6): se muestra cuando la corrida del jugador terminó
  * (eliminado o campeón). Marcador final del último partido + penal a penal + tu desenlace, con
- * "Jugar de nuevo" (quick_play) / "Inicio". Si sos invitado, además CTA "Creá una cuenta" (cierre
- * de 8.1). El campeón tiene su pantalla dedicada con trofeo/confeti en 8.12; acá va la versión base.
+ * acciones de `ResultActions` (P5): Jugar de nuevo (quick_play) / Ver cómo sigue (si el torneo sigue) /
+ * Volver al inicio, y la invitación a crear cuenta para el invitado.
  */
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useNav } from "@/lib/nav/useNav";
 import { createClient } from "@/lib/supabase/client";
 import { Confetti } from "@/components/penal/Confetti";
 import { ResultCard } from "@/components/penal/ResultCard";
-import { Button, buttonVariants } from "@/components/ui/Button";
+import { PenaltyDots } from "@/components/penal/PenaltyDots";
+import { ResultActions, type ResultAction } from "@/components/ui/ResultActions";
+import { penaltyBoard } from "@/lib/penal/dots";
+import { kicksPerSide } from "@/lib/engine/match";
 import type { MatchPhase, ScoreLivePayload } from "@/lib/realtime/score";
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import { getMode, phaseInText, type ModeMeta } from "@/lib/modes";
@@ -35,28 +37,6 @@ type PenalRow = {
   reason: string;
 };
 
-function PenalDots({
-  penals,
-  side,
-}: {
-  penals: PenalRow[];
-  side: string | null;
-}) {
-  const mine = penals.filter((p) => p.kicker_participant_id === side);
-  if (mine.length === 0) return <span className="text-xs text-fg-subtle">—</span>;
-  return (
-    <span className="flex flex-wrap gap-1">
-      {mine.map((p) => (
-        <span
-          key={p.idx}
-          title={`Penal ${p.idx}`}
-          className={`h-3 w-3 rounded-full border-2 ${p.scored ? "border-ink bg-ink" : "border-brand bg-transparent"}`}
-        />
-      ))}
-    </span>
-  );
-}
-
 function outcomeText(mode: ModeMeta, placement: number | null, eliminated: MatchPhase | null): string {
   if (placement === 1) return "¡Campeón!";
   if (placement === 2) return "Subcampeón 🥈";
@@ -70,10 +50,13 @@ export function RunSummary({
   snapshot,
   myParticipantId,
   isGuest,
+  onSpectate,
 }: {
   snapshot: BracketSnapshot;
   myParticipantId: string | null;
   isGuest: boolean;
+  /** "Ver cómo sigue": solo mientras el torneo está en juego (si no, el botón no aparece). */
+  onSpectate?: () => void;
 }) {
   const router = useNav();
   const [supabase] = useState(() => createClient());
@@ -106,6 +89,19 @@ export function RunSummary({
       active = false;
     };
   }, [supabase, lastMatch]);
+
+  // Tablero del último partido: home patea los impares; `scored` es desde el pateador.
+  const kicksOf = (pid: string | null | undefined) =>
+    penals.filter((p) => p.kicker_participant_id === pid).sort((x, y) => x.idx - y.idx).map((p) => p.scored);
+  const board = penaltyBoard(
+    kicksOf(lastMatch?.home?.participant_id),
+    kicksOf(lastMatch?.away?.participant_id),
+    kicksPerSide(lastMatch?.phase === "group" ? "group" : "elimination"),
+  );
+  const home: ResultAction = { label: "Volver al inicio", href: "/" };
+  const secondary: [ResultAction] | [ResultAction, ResultAction] = onSpectate
+    ? [{ label: "Ver cómo sigue", onClick: onSpectate }, home]
+    : [home];
 
   async function playAgain() {
     setError(null);
@@ -159,39 +155,28 @@ export function RunSummary({
           leftScore={lastMatch.home_score}
           rightScore={lastMatch.away_score}
         >
-          {/* Tarea 14: sin la leyenda "penal a penal"; quedan los dos tableros de penales. */}
           <div className="mt-4 flex items-center justify-between gap-4">
-            <PenalDots penals={penals} side={lastMatch.home?.participant_id ?? null} />
-            <PenalDots penals={penals} side={lastMatch.away?.participant_id ?? null} />
+            <PenaltyDots
+              states={board.home}
+              team={lastMatch.home?.team_name ?? "local"}
+              size="md"
+            />
+            <PenaltyDots
+              states={board.away}
+              team={lastMatch.away?.team_name ?? "visitante"}
+              align="right"
+              size="md"
+            />
           </div>
         </ResultCard>
       )}
 
-      <div className="flex w-full flex-col items-center gap-3">
-        <Button type="button" onClick={playAgain} disabled={busy} block size="lg">
-          {busy ? "Buscando…" : "Jugar de nuevo"}
-        </Button>
-        {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
-        {isGuest && (
-          <Link
-            href="/register"
-            className={buttonVariants({
-              variant: "outline",
-              size: "lg",
-              block: true,
-              className: "border-brand/50 text-brand hover:border-brand",
-            })}
-          >
-            Creá una cuenta para guardar tu progreso
-          </Link>
-        )}
-        <Link
-          href="/"
-          className="text-sm font-medium text-fg-subtle transition-colors hover:text-fg-muted"
-        >
-          Inicio
-        </Link>
-      </div>
+      <ResultActions
+        primary={{ label: busy ? "Buscando…" : "Jugar de nuevo", onClick: () => void playAgain(), disabled: busy }}
+        secondary={secondary}
+        guest={isGuest}
+        error={error}
+      />
     </div>
   );
 }

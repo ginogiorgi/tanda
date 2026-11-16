@@ -65,7 +65,12 @@ export function answerUntil(page: Page, pick: 0 | -1, done: RegExp, timeoutMs: n
  * opción se busca por TEXTO (no por índice): sigue andando si alguna vez hay 2ª chance (que esconde
  * una opción y corre los índices). Devuelve cuántos penales respondió.
  */
-export async function answerCorrectUntil(page: Page, done: RegExp, timeoutMs: number): Promise<number> {
+export async function answerCorrectUntil(
+  page: Page,
+  done: RegExp,
+  timeoutMs: number,
+  want: "correct" | "wrong" = "correct",
+): Promise<number> {
   const dbUrl = process.env.E2E_DB_URL ?? "";
   if (!/^postgresql:\/\/[^@]+@(127\.0\.0\.1|localhost):/.test(dbUrl)) {
     throw new Error(`answerCorrectUntil solo contra el Postgres local (E2E_DB_URL=${dbUrl || "∅"})`);
@@ -85,7 +90,8 @@ export async function answerCorrectUntil(page: Page, done: RegExp, timeoutMs: nu
     }
     const answer = correct.get(prompt) ?? "";
     // El botón es "<letra><texto>": se compara el final exacto del texto.
-    return options.filter({ hasText: new RegExp(`${answer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`) }).first();
+    const re = new RegExp(`${answer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`);
+    return want === "correct" ? options.filter({ hasText: re }).first() : options.filter({ hasNotText: re }).first();
   };
   try {
     return await answerLoop(page, pickCorrect, done, timeoutMs);

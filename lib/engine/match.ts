@@ -21,7 +21,7 @@ export type MatchSide = "home" | "away";
 export type MatchKind = "group" | "elimination";
 
 /** Penales por lado en regulación, por fase (10.4): grupos 3, eliminación 5. */
-function kicksPerSide(kind: MatchKind): number {
+export function kicksPerSide(kind: MatchKind): number {
   return kind === "group" ? 3 : 5;
 }
 
