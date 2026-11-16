@@ -6,7 +6,8 @@ import { browserClient } from "@/lib/supabase/lazy";
 import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { MODE_LIST, type ModeId } from "@/lib/modes";
+import { MODE_LIST, PLAY_KINDS, type ModeId } from "@/lib/modes";
+import { HelpSheet, modeHelpSections } from "@/components/ui/HelpSheet";
 import { divisionFor } from "@/lib/engine/ranked";
 import type { RankedMe } from "@/lib/ranked/types";
 import { DivisionCrest } from "@/components/ranked/DivisionCrest";
@@ -80,12 +81,14 @@ export function PlayMenu({
         const enabled = activeModes.includes(mode.id);
         const key = `${action}:${mode.id}`;
         return (
+          // P6: cada card lleva su "?" (hermano del botón, no anidado). Solo en Partida rápida: la
+          // grilla de "Crear sala" repite los mismos modos.
+          <div key={mode.id} className="relative flex">
           <button
-            key={mode.id}
             type="button"
             onClick={() => start(action, mode.id)}
             disabled={!enabled || busy !== null}
-            className="group relative flex min-h-26 flex-col items-start justify-between gap-2 overflow-hidden rounded-[4px] border-2 border-ink bg-bg-elevated p-3 pt-4 text-left shadow-card transition-colors hover:bg-ink hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-bg-elevated disabled:hover:text-fg"
+            className="group relative flex min-h-26 w-full flex-col items-start justify-between gap-2 overflow-hidden rounded-[4px] border-2 border-ink bg-bg-elevated p-3 pt-4 pr-13 text-left shadow-card transition-colors hover:bg-ink hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-bg-elevated disabled:hover:text-fg"
           >
             {/* Filete superior con el color del modo (sub-identidad). */}
             <span aria-hidden className={`absolute inset-x-0 top-0 h-1.5 ${mode.swatch}`} />
@@ -96,6 +99,16 @@ export function PlayMenu({
               {enabled ? mode.tagline : "Próximamente"}
             </span>
           </button>
+          {action === "play" && (
+            <HelpSheet
+              trigger="icon"
+              label={`Cómo se juega ${mode.name}`}
+              title={mode.name}
+              sections={modeHelpSections(mode.help)}
+              className="absolute right-1.5 top-3"
+            />
+          )}
+          </div>
         );
       })}
       {action === "play" && <RankedCard ranked={ranked} disabled={busy !== null} />}
@@ -117,7 +130,15 @@ export function PlayMenu({
       </section>
 
       <section className="flex flex-col gap-3">
-        <SectionTitle>Con amigos</SectionTitle>
+        <div className="flex items-center justify-between gap-3">
+          <SectionTitle>Con amigos</SectionTitle>
+          <HelpSheet
+            trigger="icon"
+            label={`Cómo se juega ${PLAY_KINDS.room.name}`}
+            title={PLAY_KINDS.room.name}
+            sections={modeHelpSections(PLAY_KINDS.room.help)}
+          />
+        </div>
         <Button
           onClick={() => {
             setError(null);
@@ -169,11 +190,12 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
   const router = useNav();
   const div = divisionFor(ranked?.rating ?? 1500);
   return (
+    <div className="col-span-2 flex items-center gap-2">
     <button
       type="button"
       onClick={() => router.push("/ranked")}
       disabled={disabled}
-      className="group col-span-2 flex items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
+      className="group flex min-w-0 flex-1 items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
     >
       <DivisionCrest id={div.id} className="h-12" />
       <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -184,5 +206,12 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
       </span>
       <span aria-hidden className="font-display text-2xl font-black">→</span>
     </button>
+    <HelpSheet
+      trigger="icon"
+      label={`Cómo se juega ${PLAY_KINDS.ranked.name}`}
+      title={PLAY_KINDS.ranked.name}
+      sections={modeHelpSections(PLAY_KINDS.ranked.help)}
+    />
+    </div>
   );
 }

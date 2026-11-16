@@ -29,7 +29,7 @@ test("prod: invitado juega un penal sin errores ni violaciones CSP", async ({ pa
   await page.getByRole("button", { name: "Jugar como invitado" }).click();
   await page.getByRole("link", { name: "Jugar", exact: true }).click();
   await expect(page).toHaveURL(/\/jugar/);
-  await page.getByRole("group", { name: "Elegí el modo para jugar" }).getByRole("button", { name: /Mundial/ }).click();
+  await page.getByRole("group", { name: "Elegí el modo para jugar" }).getByRole("button", { name: /^Mundial/ }).click();
   await expect(page).toHaveURL(/\/sala\//, { timeout: 20_000 });
   const inSala = Date.now();
   // P3: espera de sala de 30 s (puede ser menos si entró a una sala ya abierta).

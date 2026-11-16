@@ -59,7 +59,7 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   // Sala (crear sala Mundial). Mientras se espera, se precargan los GLB del penal (F4).
   const glb = page.waitForRequest(/\/models\/avatar\/avatar-(male|female)\.glb/, { timeout: 15_000 });
   await page.getByRole("button", { name: "Crear sala" }).click();
-  await page.getByRole("group", { name: /crear sala/i }).getByRole("button", { name: /mundial/i }).click();
+  await page.getByRole("group", { name: /crear sala/i }).getByRole("button", { name: /^mundial/i }).click();
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]{6}$/, { timeout: 20_000 });
   const mobile = page.viewportSize()!;
   for (const vp of VIEWPORTS) {
@@ -70,17 +70,17 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
   await glb; // precarga 3D arrancó en la sala, antes de cualquier penal
   const salir = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
-    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
   });
 
   // Cola ranked: sin "Tabla", Cancelar en el header, layout único.
-  await page.getByRole("button", { name: /ranked 1v1/i }).click();
+  await page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i }).click();
   await expect(page).toHaveURL(/\/ranked$/);
   await expect(page.getByText(/Buscando/).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Tabla" })).toHaveCount(0);
   await assertLayout(page);
   const cancelar = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
-    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
   });
   console.log(`[nav] salir de sala ${salir} ms · cancelar cola ${cancelar} ms`);
   expect(salir).toBeLessThan(1500);
@@ -101,8 +101,8 @@ test("información: home con una sola acción, Jugar con los caminos, perfil con
   await test.step("jugar: partida rápida, ranked, crear sala y código; volver a la home", async () => {
     await openPlay(page);
     const quick = page.getByRole("group", { name: /elegí el modo para jugar/i });
-    await expect(quick.getByRole("button", { name: /mundial/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /ranked 1v1/i })).toBeVisible();
+    await expect(quick.getByRole("button", { name: /^mundial/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "Crear sala" })).toBeVisible();
     await expect(page.getByPlaceholder("CÓDIGO")).toBeVisible();
     expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);

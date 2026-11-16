@@ -27,7 +27,7 @@ async function guestInQueue(browser: Browser, errors: string[], csp: string[]): 
   page.on("crash", () => test.info().annotations.push({ type: "renderer crash", description: page.url() }));
   await enterAsGuest(page);
   await openPlay(page);
-  await page.getByRole("button", { name: /ranked 1v1/i }).click();
+  await page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i }).click();
   await expect(page).toHaveURL(/\/ranked$/, { timeout: 20_000 });
   return page;
 }

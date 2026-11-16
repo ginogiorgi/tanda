@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { HelpSheet } from "@/components/ui/HelpSheet";
+import { HOWTO } from "@/lib/help/howto";
 import { getSession } from "@/lib/supabase/session";
 import { GuestButton } from "@/components/lobby/GuestButton";
 import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
@@ -101,6 +103,7 @@ export default async function Home({
               Jugar
             </Link>
           )}
+          <HelpSheet trigger="button" label="Cómo jugar" title="Cómo jugar" sections={HOWTO} />
           <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
             {isGuest ? "Perfil" : "Mi perfil"}
           </Link>
