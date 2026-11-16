@@ -12,6 +12,7 @@
 import dynamic from "next/dynamic";
 import type { AvatarV2 } from "@/lib/avatar/schema";
 import type { BodyType } from "@/lib/avatar/types";
+import type { AvatarFocus } from "./AvatarCanvas";
 import { Scene3DError, Scene3DSkeleton } from "./Scene3DStatus";
 import { useGlbReady } from "./useGlbReady";
 
@@ -25,15 +26,17 @@ const BOTH: readonly BodyType[] = ["male", "female"];
 interface AvatarViewerProps {
   config: AvatarV2;
   rotationY?: number;
+  focus?: AvatarFocus;
+  zoom?: number;
   className?: string;
 }
 
-export function AvatarViewer({ config, rotationY, className }: AvatarViewerProps) {
+export function AvatarViewer({ config, rotationY, focus, zoom, className }: AvatarViewerProps) {
   const { status, retry } = useGlbReady(BOTH);
   return (
     <div className={className}>
       {status === "ready" ? (
-        <AvatarCanvas config={config} rotationY={rotationY} />
+        <AvatarCanvas config={config} rotationY={rotationY} focus={focus} zoom={zoom} />
       ) : status === "error" ? (
         <Scene3DError onRetry={retry} />
       ) : (

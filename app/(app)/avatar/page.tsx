@@ -44,7 +44,7 @@ export default async function AvatarPage({
           perfil.
         </p>
       </div>
-      <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo={redirectTo} />
+      <AvatarCreator initial={initial} onSave={saveAvatar} redirectTo={redirectTo} firstTime={from === "signup"} />
     </Page>
   );
 }

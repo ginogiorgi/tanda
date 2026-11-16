@@ -48,3 +48,15 @@ Tinte por luminancia (`HAIR_TEX_MID = 0.32`): negro y castaños se leen distinto
 los claros y cerraba los oscuros → compensación en el shader (+30% saturación, lift 0,9). Medido en la mejilla
 (cara iluminada): muy clara `#C7AC8E`, morena `#92501C`, muy oscura `#3A1C0C`. Los v1 migran a **morena**
 (textura del pack ≈ `#9C6D4D`): no les cambia la cara.
+
+## Creador (P7d, `QA_SHOTS=1 pnpm test:e2e:flow avatar` → `artifacts/avatar-qa/creator/`)
+
+| Pestaña | 360 | 1440 | Nota |
+|---|---|---|---|
+| Cuerpo | ✅ | ✅ | cuerpo entero, sombra de contacto |
+| Piel | ✅ | ✅ | cámara a la cabeza |
+| Pelo | ✅ | ✅ | cámara a la cabeza; peinados solo los del cuerpo |
+| Equipo | ✅ | ✅ | aviso "la camiseta es la de tu selección" |
+| Botines | ✅ | ✅ | cámara a los pies (corregida: arrancaba en las canillas); tapones visibles |
+
+Una sola primaria (Guardar); Aleatorio/Deshacer outline. Primera vez (`from=signup`): 8 puntos de partida.

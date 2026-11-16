@@ -9,7 +9,9 @@
  * canvas renderiza on-demand.
  */
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useLayoutEffect } from "react";
+import * as THREE from "three";
 import type { AvatarV2 } from "@/lib/avatar/schema";
 import { IDLE, REST, samplePose } from "@/lib/avatar/rig";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -29,13 +31,51 @@ function AnimatedAvatar({ config, animate }: { config: AvatarV2; animate: boolea
   return <GlbAvatar config={config} rig={register} />;
 }
 
+/** Foco de cámara del creador (P7d): cuerpo entero, cabeza (pelo/piel) o pies (botines). */
+export type AvatarFocus = "body" | "head" | "feet";
+
+/** Avatar centrado: pies en y≈-0.92, cabeza ≈0.72. Posición de cámara y objetivo por foco. */
+const FOCUS: Record<AvatarFocus, { pos: THREE.Vector3; target: THREE.Vector3 }> = {
+  body: { pos: new THREE.Vector3(0, 0, 3.8), target: new THREE.Vector3(0, 0, 0) },
+  head: { pos: new THREE.Vector3(0, 0.74, 1.45), target: new THREE.Vector3(0, 0.7, 0) },
+  feet: { pos: new THREE.Vector3(0, -0.62, 1.3), target: new THREE.Vector3(0, -0.86, 0) },
+};
+
+const tmpPos = new THREE.Vector3();
+const lookAt = new THREE.Vector3();
+
+/** Lleva la cámara al foco (lerp por frame; con reduced motion, corte directo). `zoom` acerca/aleja. */
+function CameraRig({ focus, zoom, animate }: { focus: AvatarFocus; zoom: number; animate: boolean }) {
+  const camera = useThree((s) => s.camera);
+  const invalidate = useThree((s) => s.invalidate);
+  const goal = FOCUS[focus];
+  const place = (t: number) => {
+    tmpPos.copy(goal.pos).sub(goal.target).multiplyScalar(zoom).add(goal.target);
+    camera.position.lerp(tmpPos, t);
+    lookAt.lerp(goal.target, t);
+    camera.lookAt(lookAt);
+  };
+  useLayoutEffect(() => {
+    if (animate) return;
+    place(1);
+    invalidate();
+  });
+  useFrame((_, dt) => {
+    if (animate) place(1 - Math.exp(-dt * 6));
+  });
+  return null;
+}
+
 interface AvatarCanvasProps {
   config: AvatarV2;
   /** Rotación en Y controlada (radianes). El creador la maneja con drag (tarea 2.4). */
   rotationY?: number;
+  focus?: AvatarFocus;
+  /** Multiplica la distancia de la cámara al foco (pinch/rueda del creador). */
+  zoom?: number;
 }
 
-export function AvatarCanvas({ config, rotationY = 0.4 }: AvatarCanvasProps) {
+export function AvatarCanvas({ config, rotationY = 0.4, focus = "body", zoom = 1 }: AvatarCanvasProps) {
   const reducedMotion = useReducedMotion();
   const shadow = useBlobTexture();
   return (
@@ -50,6 +90,7 @@ export function AvatarCanvas({ config, rotationY = 0.4 }: AvatarCanvasProps) {
       <directionalLight position={[2.5, 4, 3]} intensity={1.35} color="#fff1dc" />
       <directionalLight position={[-3, 1.5, 2]} intensity={0.35} color="#dfe6ff" />
       <directionalLight position={[0, 3, -4]} intensity={0.9} color="#ffffff" />
+      <CameraRig focus={focus} zoom={zoom} animate={!reducedMotion} />
       <group rotation={[0, rotationY, 0]}>
         <AnimatedAvatar config={config} animate={!reducedMotion} />
       </group>
