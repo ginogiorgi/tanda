@@ -118,7 +118,11 @@ function loft(slices: Slice[], y0: (s: Slice) => number, y1: (s: Slice) => numbe
     rings.push(ring);
   });
   const pos: number[] = [];
-  const tri = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  // Winding (feedback 2, P7a): los anillos giran antihorario vistos desde +Z y avanzan talón → punta,
+  // así que el orden "natural" de abajo deja las normales HACIA ADENTRO; con FrontSide se veía el
+  // interior (la cara de adelante del botín "no estaba"). Se emite al revés → hacia afuera
+  // (`assets.test.ts`: volumen con signo > 0 y 0 caras hacia el centro).
+  const tri = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => pos.push(a.x, a.y, a.z, c.x, c.y, c.z, b.x, b.y, b.z);
   for (let j = 0; j < n - 1; j++) {
     for (let k = 0; k < RING; k++) {
       const a = rings[j]![k]!;
