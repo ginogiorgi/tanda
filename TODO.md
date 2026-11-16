@@ -1,21 +1,5 @@
 # TODO — TANDA ⚽
 
-## ⏸ HANDOFF (15/11 noche, corte por reinicio de PC) — rama `wip/p5-fin-de-partido`, NADA nuevo en main/prod
-**Prod = main `fb3cd1a` (P4), sano.** Migración `20261124000003_ko_eliminated_at_finish` **NO aplicada en prod**.
-- ✅ `1105ca8` **P5** completo (TournamentLive con `tournamentView`, espectador, campeón, ResultActions, e2e lento
-  `ko-loss.spec`). ✅ `68f6075` **P6** (HelpSheet `<dialog>`, ? por card, Cómo jugar, `modes_help.test.ts`).
-  Verde: typecheck/lint/knip, unit 207, db 103, flow 6/6 + help 2/2. **Falta:** corrida lenta (`E2E_SLOW=1`: ko-loss + champion), quedó cortada.
-- 🟡 commit `wip: P7a` encima: botines con winding invertido → corregido (`assets.test.ts`); pelo por cuerpo
-  (`HAIR_BY_BODY` + `HAIR_FIT` para Long/Buns en M, cobertura ≤2 %), cresta borrada, tinte por luminancia + cejas
-  separadas, paletas `lib/avatar/palette.ts` en el creador, galería `/dev/avatar/qa` + `pnpm qa:avatar`. Sin capturas revisadas.
-**Próximo paso:**
-1. Recrear `$SP/sbfb` (symlinks a `supabase/*` + config.toml con `project_id="tanda-fb"`, puertos +100) → db reset →
-   `pnpm test:db` → `E2E_SLOW=1 SUPABASE_WORKDIR=$SP/sbfb E2E_FLOW_PORT=3201 pnpm test:e2e:flow`.
-2. Verde → `git push origin 68f6075:main` (sin el wip) → migración `…03` por MCP + ledger
-   (`update supabase_migrations.schema_migrations set version='20261124000003' where name='ko_eliminated_at_finish'`) + advisors → smoke prod → anotar.
-3. P7a: `pnpm exec next dev -p 3301` + `QA_BASE_URL=http://localhost:3301 pnpm qa:avatar` → revisar capturas
-   (calibrar `HAIR_TEX_MID`) → `docs/avatar-qa/REVIEW.md` → P7b.
-
 ## 🧪 Tests de componentes (RTL) ✅ (16/11) — propuesta `gino-os/laburo/propuesta-tests-rtl-tanda.md`
 Proyecto Vitest `components` (happy-dom, `vitest.setup.components.ts`), `pnpm test:components` (en el job `verify` de
 CI). **48 tests en 8 archivos (~4 s):** `ui/Button`, `ui/Input`(+Field), `penal/TimeBar`, `penal/PenalHud`,
@@ -23,7 +7,7 @@ CI). **48 tests en 8 archivos (~4 s):** `ui/Button`, `ui/Input`(+Field), `penal/
 mockeados con `vi.hoisted`; debounce con fake timers `shouldAdvanceTime` para que no se filtre entre tests).
 Arreglo que salió de los tests: `Input invalid` ahora pone `aria-invalid` (antes solo era color).
 
-## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · EN EJECUCIÓN
+## 🗺 Plan Feedback 2 — [`docs/PLAN-FEEDBACK-2.md`](docs/PLAN-FEEDBACK-2.md) · ✅ aprobado por Gino 14/11 (paletas a criterio de Claude) · ✅ TERMINADO 16/11 (P0–P7d en prod)
 - **🚀 P0 ✅ (15/11)** F4 en prod (`7b97ce2`, fast-forward): smoke prod 25/25 (axe + CSP) + invitado → sala → penal sin
   errores ni violaciones CSP; GLB pedido a los ~450 ms de entrar a la sala; TTFB p50 ~180 ms (F0 ~300) → `docs/PERF-BASELINE.md`.
 - **🚀 P1 ✅ (15/11)** deps mayores en prod (`2b89040`, merge de `wip/deps-major` ⊃ `wip/fix-iat-dedupe`; las ramas
@@ -54,6 +38,23 @@ Arreglo que salió de los tests: `Input invalid` ahora pone `aria-invalid` (ante
   futuras) y grupos en grilla. Lint de layout + `e2e/_layout.ts` en 360/430/820/1440 (público, app, sala, cola, penal).
   Extra: `pyrux-ink` (el link del footer no llegaba a AA). **Desvío del plan:** tabla e historial quedaron en
   `content` (2xl), no `wide`: son listas de una columna y a 6xl se estiraban. Prod 43/43 (smoke + layout + penal).
+- **🚀 P5 + P6 ✅ (16/11)** en prod (`1105ca8`, `68f6075` + fix del flake de `game.spec` `0dc94f4`): migración
+  `20261124000003_ko_eliminated_at_finish` + ledger; advisors = baseline. Prod 42/42 + penal de invitado; CI verde.
+- **🚀 P7a ✅ (16/11)** en prod (`c92daa7`): galería `/dev/avatar/qa` + `pnpm qa:avatar`, chequeos de malla/pelo,
+  botines cerrados, pelo por cuerpo, tinte por luminancia, paletas. Revisión manual en `docs/avatar-qa/REVIEW.md`.
+  **Desvío:** las 3 variantes de botín no se distinguían en las capturas → v2 tiene **un** botín (con tapones) + color.
+- **🚀 P7b ✅ (16/11)** en prod (`f762d0d`): `lib/avatar/catalog.ts` (catálogo único) + `schema.ts` (`AvatarV2`,
+  `parseAvatar` por campo que acepta v1, `migrateAvatar` puro, `isAvatarV2` estricto en `saveAvatar`) + piel tintable
+  en el shader (compensa ACES). Equipo v2 = remera + short (sin variantes de manga/pantalón). `parts.ts` borrado.
+- **🚀 P7c ✅ (16/11)** en prod (`0b9a51f` + fix `319ffea`): migración `20261124000004_avatar_v2` (`avatar_to_v2` port
+  fiel con paridad TS↔SQL, backup `profiles_avatar_backup` 16 filas, default v2, `handle_new_user` y
+  `participant_brief` leen v2) → 16/16 perfiles en v2. **Incidente (~15 min):** el CHECK llamaba a `avatar_is_valid`
+  (revocada a `authenticated`) → todo UPDATE de `profiles` del cliente fallaba (guardar avatar / upgrade de invitado).
+  Fix `20261124000005_avatar_check_inline` (CHECK inline con `coalesce(…, false)`: un CHECK en NULL pasa) + test db
+  como `authenticated`. Lección: **un CHECK/trigger corre con los permisos de quien escribe**.
+- **🚀 P7d ✅ (16/11)** en prod (`b4be10d`): creador nuevo con pestañas Cuerpo/Piel/Pelo/Equipo/Botines, cámara por
+  pestaña (`data-focus`), pinch zoom, 8 puntos de partida + Aleatorio legible + Deshacer; e2e `flow/avatar.spec.ts`
+  (registro → guardar → persiste + axe). Verde: unit 208, components 48, db 109, flow 9/9, perf:budget OK.
 Orden (tamaño):
 - **P0 (S)** cerrar F4: CI verde en `c64849e`; falta fast-forward a main, smoke prod y TTFB vs F0.
 - **P1 (S–M)** deps (`wip/deps-major` ⊃ `fix-iat-dedupe`) a main; su migración de grants se **renumera** a `…24…`
@@ -114,28 +115,8 @@ competencia terminada (tabla `awards`).
   ~220→~155 KB gz; precarga del 3D (chunk + GLB) mientras se espera en sala/cola/torneo (`usePreload3D`);
   `pnpm perf:budget` en CI (`scripts/perf/budget.{ts,json}`, falla si three entra en una ruta). Verde local:
   unit 156, smoke 24/24, flow 6/6. CI del commit estaba corriendo al cortar (usage-guard 91%).
-- **▶ Handoff (cortado por usage, 14/11):**
-  1. `gh run list --branch feat/feedback-1411 --limit 1` → si CI de `c64849e` (o del commit de este TODO) está
-     verde: `git fetch && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (F4 no
-     tiene migraciones). Esperar deploy, smoke prod `E2E_BASE_URL=https://tanda2026.com.ar pnpm exec playwright
-     test` + invitado → partida (consola/CSP), medir TTFB p50 vs F0 en `docs/PERF-BASELINE.md`, anotar acá.
-  2. **F5 (avatar)** sin arrancar código, solo relevado: pack gratis Standard trae además `Hair_Beard`,
-     `Eyebrows_Regular/Female` y texturas de piel Light (bajado en el scratchpad, se re-baja igual que en 6b).
-     Consumidores de la forma v1: `lib/avatar/*`, `components/avatar/*`, `lib/penal/scene.ts`,
-     `lib/realtime/penal.ts`, `lib/ranked/types.ts`, `lib/guest/anon.ts`, `database.types.ts`, SQL
-     `participant_brief` (`avatar #>> '{top,color}'`) y default `'{}'`. Plan en sección C del plan file;
-     migración SQL futura `20261123000003_avatar_v2` (verificar número libre vs otras ramas). Orden: front
-     que lee v1+v2 primero, después la migración con backup `profiles_avatar_backup`.
-  3. **Pedido de Gino (14/11, va en F5 o antes):** al abrir penal/creador aparece primero el muñeco procedural
-     viejo (`AvatarModel`) y después el GLB → **borrar `AvatarModel` por completo** (y sus tests/usos en
-     `GlbAvatar`, `PenalScene`, `AvatarCanvas`, `/dev/*`), precargar el GLB antes de mostrar la escena
-     (Suspense con `preloadGlbBodies`), mientras carga un **placeholder neutro** (skeleton/loader, nunca otro
-     muñeco) y si el GLB falla un **estado de error claro** (error boundary). Sumar pasada de **código muerto/
-     legado**: knip, componentes, assets sin uso, compat temporales (`divisions: []` en `get_profile_stats` +
-     tipo, `placement_left` de `ranked_players` → migración de limpieza; actualizar CLAUDE.md que menciona
-     `AvatarModel` como fallback). Deploy a prod como las demás fases.
+- Pendientes del 14/11 (F4 → P0, `AvatarModel` → P2, F5 → P7) **cerrado**: todo en prod (ver Plan Feedback 2).
 
-||||||| 714b898
 ## 📦 Deps mayores — rama `wip/deps-major` (sobre main + `wip/fix-iat-dedupe`), LISTA para que Gino decida
 Sin merge ni deploy. Un commit por paso, verde completo tras cada uno (typecheck · lint · knip · 151 unit ·
 build · 78 db · flow game/guest/ranked con CSP enforced · smoke 14); champion al final.
@@ -434,6 +415,11 @@ micro-rótulos 10px→12px y 100 "¿De qué país es X?" → partidos/finales (+
 ---
 
 ### Pendiente de revisión con Gino (al FINAL del proyecto, decisión suya)
+- **Avatar (P7, 16/11):** (1) **barba diferida**: no está en el GLB actual; requiere re-bajar el pack Standard
+  (CC0) y regenerar con `pnpm avatar:build` — ¿la querés? (2) Miniaturas de presets = chips de color (piel/pelo/
+  camiseta), no renders offline (`thumbs.mts` del plan): más liviano; si querés renders, es un script. (3) Sin aviso
+  de "cambios sin guardar" al volver desde el creador. (4) Botín único con tapones (las 3 variantes de v1 no se
+  distinguían). (5) Tabla `profiles_avatar_backup` (16 filas) se puede dropear cuando revises los avatares en prod.
 - Preguntas: la verificación dato por dato ya se hizo (Fase 5b). Queda para Gino una pasada de
   gusto/tono. Las 100 nuevas de partidos/finales (post-6b) ya están verificadas contra fuentes (ver
   sección post-6b); queda solo la pasada de gusto.

@@ -82,7 +82,8 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     // Con el cierre temprano (F2: actuaron todos) el penal puede resolverse antes de que se pinte
     // "Respondiste a los": vale cualquiera de los dos; el bloqueo se chequea solo si el cartel sigue.
     const answered = page.getByText(/respondiste a los/i);
-    await expect(answered.or(page.getByText(/¡GOL!|ATAJADO/)).first()).toBeVisible();
+    // Entre un cartel y el otro corre la jugada (sin texto): mismo margen que la resolución.
+    await expect(answered.or(page.getByText(/¡GOL!|ATAJADO/)).first()).toBeVisible({ timeout: 30_000 });
     if (await answered.isVisible()) await expect(options.first()).toBeDisabled();
   });
 
