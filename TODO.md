@@ -1,5 +1,22 @@
 # TODO — TANDA ⚽
 
+## ⏸ HANDOFF — Limpieza integral (17/11)
+Pedido de Gino (17/11 04:22, Telegram): OK para todo, incluido deploy a prod, sin consultarle. Fases en orden,
+cada una verde antes de seguir. Si se corta por usage, retomar desde la primera fase sin ✅.
+1. **AVATAR** — recorte liso (shader, como el del cuello) para la línea dentada del pelo en la sien del casquete F
+   (`Hair_BuzzedFemale`); capturas `qa:avatar` antes/después. Después publicar PR #4: tests completos → merge a
+   main → deploy prod → migración `20261124000006_avatar_ponytail` por MCP + ledger → smoke prod.
+   - Estado: tests completos de la rama ✅ (typecheck · lint · unit 209 · components 48 · check-migrations · db 110).
+2. **LIMPIEZA INTEGRAL** — backups (.bak/.old/copias), ramas wip mergeadas, worktrees viejos (`../tanda-feedback` si
+   está todo mergeado), `artifacts/` y salidas de QA sin uso, código muerto, exports/deps sin uso (knip), assets
+   huérfanos, docs/planes cumplidos (→ `docs/HISTORY.md`), comentarios obsoletos, flags/compat viejos.
+   **DB prod: NO borrar datos ni tablas de backup** → tablas `*_backup` se listan acá para que decida Gino.
+3. **OPTIMIZACIÓN** — buenas prácticas actuales (Next App Router, React 19/Compiler, three/R3F, Supabase, bundle,
+   CWV) archivo por archivo, sin cambiar comportamiento; documentar en `docs/` con fuentes.
+4. **VERIFICACIÓN Y PROD** — batería completa (typecheck, lint, unit, components, db, e2e, layout, smoke), comparar con
+   `docs/PERF-BASELINE.md`, merge a main, deploy prod, smoke prod. Nunca dejar prod roto.
+Al terminar: sacar este HANDOFF, resumen corto arriba y commit. Respetar protocolo de 90% de usage.
+
 ## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar` · [PR #4](https://github.com/ginogiorgi/tanda/pull/4) (CI + preview verdes), ESPERA OK DE GINO
 **NO mergear ni deployar ni aplicar la migración en prod hasta que Gino apruebe.**
 - ✅ **Cuello H** (`components/avatar/glbModel.ts`, `COLLAR` + `uCollar`): el corte remera/piel sale de una superficie
