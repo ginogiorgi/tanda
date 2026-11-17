@@ -1,27 +1,11 @@
 # TODO — TANDA ⚽
 
-## ⏸ HANDOFF — Limpieza integral (17/11)
-Pedido de Gino (17/11 04:22, Telegram): OK para todo, incluido deploy a prod, sin consultarle. Fases en orden,
-cada una verde antes de seguir. Si se corta por usage, retomar desde la primera fase sin ✅.
-1. **AVATAR** — recorte liso (shader, como el del cuello) para la línea dentada del pelo en la sien del casquete F
-   (`Hair_BuzzedFemale`); capturas `qa:avatar` antes/después. Después publicar PR #4: tests completos → merge a
-   main → deploy prod → migración `20261124000006_avatar_ponytail` por MCP + ledger → smoke prod.
-   - ✅ HECHO 17/11: sien lisa + PR #4 en prod (`c5c65c1`), migración + ledger, smoke prod verde.
-2. **LIMPIEZA INTEGRAL** — backups (.bak/.old/copias), ramas wip mergeadas, worktrees viejos (`../tanda-feedback` si
-   está todo mergeado), `artifacts/` y salidas de QA sin uso, código muerto, exports/deps sin uso (knip), assets
-   huérfanos, docs/planes cumplidos (→ `docs/HISTORY.md`), comentarios obsoletos, flags/compat viejos.
-   **DB prod (agregado de Gino 04:25):** borrar también las tablas/copias de backup (`*_backup` y similares). Por
-   cada una, ANTES del DROP: (a) verificar que los datos vivos estén bien, (b) exportarla a
-   `/mnt/hera/Backups/tanda-db/2026-11-17/<tabla>.sql` (fuera del repo, nunca commiteado). Recién después DROP por
-   migración + ledger. Anotar acá qué se borró y dónde quedó cada export. Nunca borrar datos vivos.
-   - ✅ HECHO 17/11: ver "Limpieza integral" abajo.
-3. **OPTIMIZACIÓN** — buenas prácticas actuales (Next App Router, React 19/Compiler, three/R3F, Supabase, bundle,
-   CWV) archivo por archivo, sin cambiar comportamiento; documentar en `docs/` con fuentes.
-   - ✅ HECHO 17/11: ver `docs/OPTIMIZATION.md` (AuthShell + fix de doble footer, `use client` de más, React
-     Compiler medido y descartado por presupuesto de JS).
-4. **VERIFICACIÓN Y PROD** — batería completa (typecheck, lint, unit, components, db, e2e, layout, smoke), comparar con
-   `docs/PERF-BASELINE.md`, merge a main, deploy prod, smoke prod. Nunca dejar prod roto.
-Al terminar: sacar este HANDOFF, resumen corto arriba y commit. Respetar protocolo de 90% de usage.
+## ✅ Limpieza integral terminada (17/11) — en prod `218b23e`
+- **Avatar:** PR #4 en prod (cola, cuello, sien lisa) + migración `avatar_ponytail`.
+- **Limpieza:** solo queda `main`; tablas de backup de prod exportadas a `/mnt/hera/Backups/tanda-db/2026-11-17/` y
+  borradas; compat v1 del avatar fuera; docs cumplidos → `docs/HISTORY.md`.
+- **Optimización:** `docs/OPTIMIZATION.md` (fix de doble footer en `/auth/reset`, React Compiler medido y descartado).
+- **Prod:** batería completa verde, smoke prod + penal de invitado OK, TTFB igual que la base (`docs/PERF-BASELINE.md`).
 
 ## Estado (17/11/2026)
 En prod (https://tanda2026.com.ar): Mundial + Modo Argentina + Ranked 1v1, invitado anónimo, avatar v2 GLB con

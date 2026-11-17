@@ -52,3 +52,18 @@ bajo demanda fuera del juego y precarga del 3D en sala/cola.
 - First Load JS (gzip, `pnpm perf:budget`): landing/login/registro/perfil/jugar ~220 → ~155 KB; three en ninguna
   entrada (lo exige CI).
 - Precarga: en prod el invitado pide los GLB a los ~450 ms de entrar a la sala (antes: recién al abrir el penal).
+
+## Después de la limpieza integral — 17/11/2026 (prod, `main` 218b23e)
+Mismo método (6 requests en caliente desde Rosario, p50 ≈ media de los centrales).
+
+| Ruta | p50 15/11 | p50 17/11 antes del deploy | p50 17/11 después | min | max |
+|---|---|---|---|---|---|
+| `/` | 181 ms | ~335 ms (ruidoso) | **~201 ms** | 187 | 239 |
+| `/login` | 185 ms | 190 ms | **178 ms** | 173 | 197 |
+| `/ranking` (redirige) | 172 ms | 181 ms | **192 ms** | 180 | 241 |
+| `/perfil` (redirige) | 180 ms | 178 ms | **176 ms** | 166 | 179 |
+| `/jugar` (redirige) | 175 ms | 185 ms | **174 ms** | 166 | 268 |
+
+- Sin regresión: misma banda que el 15/11 (la diferencia es ruido de red; `/` venía de ~335 ms antes del deploy).
+- First Load JS (`pnpm perf:budget`): igual que antes (landing 155,8 KB gz, `/partido` 241,5 KB gz). El React
+  Compiler se probó y se descartó por presupuesto (ver `docs/OPTIMIZATION.md`).
