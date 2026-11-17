@@ -10,7 +10,8 @@ import { uncoveredFraction, type HairTri, type ScalpPoint } from "@/lib/avatar/h
 import { boundaryEdges, inwardFraction, signedVolume, triangles, type Tri } from "@/lib/avatar/meshChecks";
 import type { BodyType } from "@/lib/avatar/types";
 import { HAIR_MESHES, hairMesh, hairMeshes, hairOptionsFor } from "@/lib/avatar/catalog";
-import { BODIES, templateOf } from "./glbModel";
+import { BODIES, capClipped, templateOf } from "./glbModel";
+import { CAP_MESH } from "./glbPonytail";
 import { dominantBone } from "./glbRig";
 
 const scenes = new Map<BodyType, THREE.Object3D>();
@@ -62,6 +63,27 @@ describe("cola de caballo (malla generada)", () => {
     expect(box.min.z).toBeLessThan(cap.min.z - 0.03); // sobresale atrás
     expect(box.max.z).toBeLessThan(cap.min.z + 0.03); // nace en la nuca, no en la cara
     expect(box.min.y).toBeGreaterThan(1.3); // no pasa de los omóplatos
+  });
+});
+
+describe("sien del casquete F (recorte liso en shader)", () => {
+  it("el recorte solo toca la franja frente-patilla, simétrico, y deja la coronilla y la nuca", () => {
+    const cap = scenes.get("female")!.getObjectByName(CAP_MESH) as THREE.SkinnedMesh;
+    const a = cap.geometry.getAttribute("aCap");
+    expect(a.count).toBe(cap.geometry.getAttribute("position").count);
+    let cut = 0;
+    let left = 0;
+    for (let i = 0; i < a.count; i++) {
+      const [x, y, z] = [a.getX(i), a.getY(i), a.getZ(i)];
+      if (!capClipped(x, y, z)) continue;
+      cut++;
+      if (x < 0) left++;
+      expect(Math.abs(x)).toBeGreaterThan(0.2); // nunca el centro de la frente
+      expect(z).toBeGreaterThan(0.25); // nunca de la oreja para atrás
+    }
+    expect(cut / a.count).toBeGreaterThan(0.05);
+    expect(cut / a.count).toBeLessThan(0.35);
+    expect(left / cut).toBeCloseTo(0.5, 1);
   });
 });
 

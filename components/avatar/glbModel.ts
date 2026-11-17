@@ -15,7 +15,7 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import { JOINTS } from "@/lib/avatar/rig";
 import { HAIR_MESHES, hairMeshes } from "@/lib/avatar/catalog";
 import type { BodyType, HexColor } from "@/lib/avatar/types";
-import { attachPonytail } from "./glbPonytail";
+import { attachPonytail, CAP_MESH } from "./glbPonytail";
 import { attachShoes } from "./glbShoes";
 import { createGlbRig, dominantBone, driveGlbRig, type GlbRig, type ProxyRig } from "./glbRig";
 import { ROOT_PIVOT_Y } from "./rigPose";
@@ -89,24 +89,66 @@ export interface HairUniforms {
   uHair: { value: THREE.Color };
 }
 
-function hairMaterial(base: THREE.Material, u: HairUniforms, shade: number): THREE.Material {
+/**
+ * Línea del pelo en la sien del casquete F (`Hair_BuzzedFemale`): en la malla del pack el borde entre la
+ * esquina de la frente y la patilla sigue los triángulos (dentado). Se recorta por fragmento con una
+ * superficie lisa sobre el bind del casquete (espacio cuantizado del GLB, ±1, +z adelante): se descarta lo
+ * que queda adelante de `z = a + b·y + c·max(0, x0 − |x|)`, con piso `zMin` para no comerse la patilla.
+ * El término en |x| la empuja hacia adelante en el centro (la frente queda intacta). Medido en el bind:
+ * el serrucho va de (y 0.43, z 0.69) a (y −0.30, z 0.28); el corte pasa ~0.08 por detrás (a 0.37, a ojo en `qa:avatar`).
+ */
+export const CAP_CLIP = { a: 0.37, b: 0.56, c: 1.2, x0: 0.45, zMin: 0.33 } as const;
+
+/** Mismo criterio que el shader (para tests): ¿el punto del bind del casquete queda recortado? */
+export function capClipped(x: number, y: number, z: number): boolean {
+  const { a, b, c, x0, zMin } = CAP_CLIP;
+  return z > Math.max(a + b * y + c * Math.max(0, x0 - Math.abs(x)), zMin);
+}
+
+function hairMaterial(base: THREE.Material, u: HairUniforms, shade: number, capClip = false): THREE.Material {
   const m = base.clone();
   if (m instanceof THREE.MeshStandardMaterial) m.color.set("#ffffff");
+  const { a, b, c, x0, zMin } = CAP_CLIP;
   m.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, u);
+    if (capClip) {
+      shader.vertexShader = shader.vertexShader
+        .replace("#include <common>", "#include <common>\nattribute vec3 aCap;\nvarying vec3 vCap;")
+        .replace("#include <begin_vertex>", "#include <begin_vertex>\nvCap = aCap;");
+    }
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nuniform vec3 uHair;")
+      .replace("#include <common>", `#include <common>\nuniform vec3 uHair;${capClip ? "\nvarying vec3 vCap;" : ""}`)
       .replace(
         "#include <map_fragment>",
         [
+          ...(capClip
+            ? [
+                `float capZ = max(${a.toFixed(3)} + ${b.toFixed(3)} * vCap.y + ${c.toFixed(3)} * max(0.0, ${x0.toFixed(3)} - abs(vCap.x)), ${zMin.toFixed(3)});`,
+                "if (vCap.z > capZ) discard;",
+              ]
+            : []),
           "#include <map_fragment>",
           "float hl = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));",
           `diffuseColor.rgb = uHair * ${shade.toFixed(3)} * clamp(hl / ${HAIR_TEX_MID.toFixed(3)}, 0.55, 1.35);`,
         ].join("\n"),
       );
   };
-  m.customProgramCacheKey = () => `tanda-hair-${shade}`;
+  m.customProgramCacheKey = () => `tanda-hair-${shade}${capClip ? "-cap" : ""}`;
   return m;
+}
+
+/** Atributo `aCap` (posición en el bind del casquete) para el recorte de la sien. */
+function prepareCap(mesh: THREE.SkinnedMesh): void {
+  const g = mesh.geometry.clone();
+  const pos = g.getAttribute("position");
+  const out = new Float32Array(pos.count * 3);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i).applyMatrix4(mesh.bindMatrix);
+    out.set([v.x, v.y, v.z], i * 3);
+  }
+  g.setAttribute("aCap", new THREE.BufferAttribute(out, 3));
+  mesh.geometry = g;
 }
 
 /** Mitad de la altura (~1.85 m) para centrar en el creador; en la escena va `grounded`. */
@@ -305,6 +347,7 @@ export function templateOf(source: THREE.Object3D, body: BodyType): THREE.Object
       prepareBody(obj);
       bodies.push(obj);
     }
+    if (obj.name === CAP_MESH) prepareCap(obj);
   });
   // Fuera del traverse: agrega grupos a la escena.
   for (const b of bodies) attachShoes(t, b);
@@ -335,10 +378,15 @@ export function instantiate(
   const copy = (m: THREE.Material, meshName: string) => {
     const hair = isHair(m);
     const brow = meshName === "Eyebrows";
-    const k = hair ? `${m.uuid}:${brow ? "brow" : "hair"}` : m.uuid;
+    const cap = meshName === CAP_MESH;
+    const k = hair ? `${m.uuid}:${brow ? "brow" : cap ? "cap" : "hair"}` : m.uuid;
     const c =
       own.get(k) ??
-      (isBody(m) ? kitMaterial(m, uniforms) : hair ? hairMaterial(m, hairUniforms, brow ? BROW_SHADE : 1) : m.clone());
+      (isBody(m)
+        ? kitMaterial(m, uniforms)
+        : hair
+          ? hairMaterial(m, hairUniforms, brow ? BROW_SHADE : 1, cap)
+          : m.clone());
     own.set(k, c);
     return c;
   };

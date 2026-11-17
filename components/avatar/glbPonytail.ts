@@ -13,7 +13,7 @@ import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 /** Malla generada (la del catálogo); se ve junto con su casquete (`HAIR_LAYERS`). */
 export const PONYTAIL_MESH = "Hair_Ponytail";
-const CAP_MESH = "Hair_BuzzedFemale";
+export const CAP_MESH = "Hair_BuzzedFemale";
 
 const SLICES = 18;
 const RING = 14;
