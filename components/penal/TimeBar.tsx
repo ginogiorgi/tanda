@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Barra de tiempo del penal (8.3): se vacía contra el `deadline` del server (PenalLive ya corrige
  * el reloj con el offset, SPEC §1.3/§4.6b). Barra de imprenta (marco de tinta): tinta → naranja →

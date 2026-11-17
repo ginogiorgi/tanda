@@ -17,6 +17,8 @@ cada una verde antes de seguir. Si se corta por usage, retomar desde la primera 
    - ✅ HECHO 17/11: ver "Limpieza integral" abajo.
 3. **OPTIMIZACIÓN** — buenas prácticas actuales (Next App Router, React 19/Compiler, three/R3F, Supabase, bundle,
    CWV) archivo por archivo, sin cambiar comportamiento; documentar en `docs/` con fuentes.
+   - ✅ HECHO 17/11: ver `docs/OPTIMIZATION.md` (AuthShell + fix de doble footer, `use client` de más, React
+     Compiler medido y descartado por presupuesto de JS).
 4. **VERIFICACIÓN Y PROD** — batería completa (typecheck, lint, unit, components, db, e2e, layout, smoke), comparar con
    `docs/PERF-BASELINE.md`, merge a main, deploy prod, smoke prod. Nunca dejar prod roto.
 Al terminar: sacar este HANDOFF, resumen corto arriba y commit. Respetar protocolo de 90% de usage.
@@ -84,7 +86,7 @@ pnpm assets:check | perf:budget | questions:check | db:check-migrations | qa:ava
 - `app/` — rutas (Server Components; grupos `(app)`, `(game)`, `(auth)`), `components/` (UI; primitivas en
   `components/ui/`), `e2e/` (Playwright), `scripts/` (assets, catálogo, preguntas, QA, perf).
 - Docs: `docs/BRIEF.md` (producto), `SPEC.md` (arquitectura/contratos), `docs/DESIGN-RULES.md`,
-  `docs/PERF-BASELINE.md`, `docs/HISTORY.md`.
+  `docs/PERF-BASELINE.md`, `docs/OPTIMIZATION.md`, `docs/HISTORY.md`.
 
 ## Verde de referencia (17/11)
 typecheck · lint · knip · assets · unit 209 · components 48 · db 108 · build · e2e 42 · flow 9 · smoke prod 42 +

@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * HUD de la tanda (8.10), montado sobre la tarjeta de penal: marcador en vivo (con nación + color
  * de kit), "Penal N de 5" (o muerte súbita) y si en este penal PATEÁS o ATAJÁS. La opción elegida
