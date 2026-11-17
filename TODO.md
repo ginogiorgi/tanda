@@ -6,7 +6,7 @@ cada una verde antes de seguir. Si se corta por usage, retomar desde la primera 
 1. **AVATAR** — recorte liso (shader, como el del cuello) para la línea dentada del pelo en la sien del casquete F
    (`Hair_BuzzedFemale`); capturas `qa:avatar` antes/después. Después publicar PR #4: tests completos → merge a
    main → deploy prod → migración `20261124000006_avatar_ponytail` por MCP + ledger → smoke prod.
-   - Estado: tests completos de la rama ✅ (typecheck · lint · unit 209 · components 48 · check-migrations · db 110).
+   - ✅ HECHO 17/11: sien lisa + PR #4 en prod (`c5c65c1`), migración + ledger, smoke prod verde.
 2. **LIMPIEZA INTEGRAL** — backups (.bak/.old/copias), ramas wip mergeadas, worktrees viejos (`../tanda-feedback` si
    está todo mergeado), `artifacts/` y salidas de QA sin uso, código muerto, exports/deps sin uso (knip), assets
    huérfanos, docs/planes cumplidos (→ `docs/HISTORY.md`), comentarios obsoletos, flags/compat viejos.
@@ -20,24 +20,16 @@ cada una verde antes de seguir. Si se corta por usage, retomar desde la primera 
    `docs/PERF-BASELINE.md`, merge a main, deploy prod, smoke prod. Nunca dejar prod roto.
 Al terminar: sacar este HANDOFF, resumen corto arriba y commit. Respetar protocolo de 90% de usage.
 
-## 🧍 Avatar: peinados de mujer + cuello de hombre (16/11, pedido de Gino) — rama `wip/avatar-hair-collar` · [PR #4](https://github.com/ginogiorgi/tanda/pull/4) (CI + preview verdes), ESPERA OK DE GINO
-**NO mergear ni deployar ni aplicar la migración en prod hasta que Gino apruebe.**
-- ✅ **Cuello H** (`components/avatar/glbModel.ts`, `COLLAR` + `uCollar`): el corte remera/piel sale de una superficie
-  lisa sobre el bind (`y = y0 − tilt·dz + curv·dx²`) y no del hueso por vértice (serrucho). Igual en H y M.
-- ✅ **Peinados de mujer:** fuera "Rapado" (`buzz` solo H, `fallback: "ponytail"`); nueva **Cola**
-  (`ponytail`): malla generada en `components/avatar/glbPonytail.ts` (tubo cerrado sobre una Catmull-Rom que nace
-  en la nuca del casquete `Hair_BuzzedFemale` y apoya en la espalda, 100% al hueso `Head`, mismo material del
-  casquete → mismo tinte). `HAIR_LAYERS`/`hairMeshes` en el catálogo: la cola prende su casquete. Sin clipping en
-  kick/dive/celebrate. Tests: cobertura de cráneo con capas + cola cerrada/vol>0/detrás de la nuca/hueso `Head`.
-- ✅ **Migración `20261124000006_avatar_ponytail` (SIN aplicar en prod):** `avatar_to_v2` sigue en paridad
-  (v1 F rapado/mohicano → cola; v2 F+rapado → cola, como `parseAvatar`) + UPDATE con backup. Prod 16/11: **0**
-  perfiles F+rapado (18 perfiles, todos H) → el UPDATE es no-op; la función hay que aplicarla igual (alta de
-  usuario con front viejo). Orden al aprobar: merge → front en prod → migración por MCP + ledger.
-- ✅ **Capturas:** matriz 2 cuerpos × peinados × front/side/back/headside/headback + galería `/dev/avatar` a
-  360/1440 + cola en poses → página privada linkeada en el PR. `qa:avatar` suma la vista `headside`.
-- Verde: typecheck · lint · unit 209 · components 48 · db 110 (stack local `tanda-fb`, :54422).
-- Pendiente aparte: la línea del pelo en la sien del casquete F (`Hair_BuzzedFemale`) es dentada — es la malla
-  del pack, no la cola; si molesta, se suaviza con un recorte en shader como el del cuello.
+## 🧍 Avatar: cola de caballo + cuello + sien ✅ EN PROD (17/11, PR #4 aprobado por Gino)
+`c5c65c1` en prod (Vercel READY, tanda2026.com.ar) + migración `20261124000006_avatar_ponytail` por MCP (ledger
+reconciliado: 25 = archivos del repo; 0 perfiles F+rapado → UPDATE no-op; `avatar_to_v2` verificada v1/v2 → cola).
+- Cuello H liso (`COLLAR`/`uCollar`), "Rapado" solo H (`fallback: "ponytail"`), **Cola** (`glbPonytail.ts`) sobre el
+  casquete `Hair_BuzzedFemale`.
+- **Sien del casquete F:** el borde frente→patilla era dentado (malla del pack). Recorte por fragmento sobre el bind
+  del casquete (`CAP_CLIP`/`capClipped` en `glbModel.ts`, atributo `aCap`, material propio del casquete); test en
+  `assets.test.ts`. Verificado con capturas antes/después (lateral/frente/nuca, pelo oscuro y canoso).
+- Verde: typecheck · lint · unit 210 · components 48 · db 110 · build · e2e 42 · flow 9 · smoke prod 42 + penal de
+  invitado en prod. Advisors: lo de siempre.
 
 ## 🧪 Tests de componentes (RTL) ✅ (16/11) — propuesta `gino-os/laburo/propuesta-tests-rtl-tanda.md`
 Proyecto Vitest `components` (happy-dom, `vitest.setup.components.ts`), `pnpm test:components` (en el job `verify` de
