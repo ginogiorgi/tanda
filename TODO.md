@@ -10,7 +10,10 @@ cada una verde antes de seguir. Si se corta por usage, retomar desde la primera 
 2. **LIMPIEZA INTEGRAL** — backups (.bak/.old/copias), ramas wip mergeadas, worktrees viejos (`../tanda-feedback` si
    está todo mergeado), `artifacts/` y salidas de QA sin uso, código muerto, exports/deps sin uso (knip), assets
    huérfanos, docs/planes cumplidos (→ `docs/HISTORY.md`), comentarios obsoletos, flags/compat viejos.
-   **DB prod: NO borrar datos ni tablas de backup** → tablas `*_backup` se listan acá para que decida Gino.
+   **DB prod (agregado de Gino 04:25):** borrar también las tablas/copias de backup (`*_backup` y similares). Por
+   cada una, ANTES del DROP: (a) verificar que los datos vivos estén bien, (b) exportarla a
+   `/mnt/hera/Backups/tanda-db/2026-11-17/<tabla>.sql` (fuera del repo, nunca commiteado). Recién después DROP por
+   migración + ledger. Anotar acá qué se borró y dónde quedó cada export. Nunca borrar datos vivos.
 3. **OPTIMIZACIÓN** — buenas prácticas actuales (Next App Router, React 19/Compiler, three/R3F, Supabase, bundle,
    CWV) archivo por archivo, sin cambiar comportamiento; documentar en `docs/` con fuentes.
 4. **VERIFICACIÓN Y PROD** — batería completa (typecheck, lint, unit, components, db, e2e, layout, smoke), comparar con
