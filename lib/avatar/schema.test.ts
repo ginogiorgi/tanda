@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { makeRng, randInt } from "@/lib/engine/rng";
 import { HAIR_STYLES, PALETTES, hairOptionsFor } from "./catalog";
-import { PROD_V1 } from "./fixtures";
-import { DEFAULT_AVATAR, LEGACY_SKIN, isAvatarV2, migrateAvatar, parseAvatar, type AvatarV2 } from "./schema";
+import { DEFAULT_AVATAR, isAvatarV2, parseAvatar, type AvatarV2 } from "./schema";
+
+/** Forma v1 (antes de P7c): ya no se migra, cae al default. */
+const V1 = { top: { part: "tee", color: "#e63946" }, hair: { part: "short", color: "#1d1d1d" }, shoes: { part: "sneakers", color: "#f1f1f1" }, bottom: { part: "shorts", color: "#264653" }, bodyType: "male" };
 
 
 describe("avatar v2", () => {
@@ -10,24 +12,9 @@ describe("avatar v2", () => {
     expect(isAvatarV2(DEFAULT_AVATAR)).toBe(true);
   });
 
-  it("migra los avatares reales de prod a colores de paleta y peinados del pack", () => {
-    const [a, b, c] = PROD_V1.map(migrateAvatar) as [AvatarV2, AvatarV2, AvatarV2];
-    expect(a).toEqual({
-      v: 2,
-      body: "male",
-      skin: LEGACY_SKIN,
-      hair: { style: "parted", color: "#1E1B19" },
-      kit: { shirt: "#A8352B", shorts: "#1F2B47" },
-      boots: { color: "#ECE6D8" },
-    });
-    expect(b.hair.style).toBe("bun");
-    expect(c.hair).toEqual({ style: "long", color: "#8C3F24" }); // #8d5524 (marrón rojizo) → colorado
-    for (const m of [a, b, c]) expect(isAvatarV2(m)).toBe(true);
-  });
-
-  it("v1: mohicano → rapado; corto en mujer → rodete (no pasa el QA en esa cabeza)", () => {
-    expect(migrateAvatar({ ...PROD_V1[0], hair: { part: "mohawk", color: "#000000" } }).hair.style).toBe("buzz");
-    expect(migrateAvatar({ ...PROD_V1[0], bodyType: "female" }).hair.style).toBe("bun");
+  it("v1 (sin `v: 2`) → default", () => {
+    expect(parseAvatar(V1)).toEqual(DEFAULT_AVATAR);
+    expect(parseAvatar({ ...V1, bodyType: "female" })).toEqual(DEFAULT_AVATAR);
   });
 
   it("parse por campo: un dato raro no resetea el resto", () => {
@@ -42,7 +29,7 @@ describe("avatar v2", () => {
     expect(isAvatarV2({ ...DEFAULT_AVATAR, skin: "#ffffff" })).toBe(false);
     expect(isAvatarV2({ ...DEFAULT_AVATAR, body: "female", hair: { style: "parted", color: "#1E1B19" } })).toBe(false);
     expect(isAvatarV2({ ...DEFAULT_AVATAR, extra: 1 })).toBe(false);
-    expect(isAvatarV2(PROD_V1[0])).toBe(false);
+    expect(isAvatarV2(V1)).toBe(false);
   });
 
   it("propiedad (2000 casos): parse(cualquier cosa) es un v2 estricto, e idempotente", () => {

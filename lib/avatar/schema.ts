@@ -1,7 +1,7 @@
 /**
  * Avatar v2 (feedback 2, P7b): lo que se guarda en `profiles.avatar`. Todo color sale de una paleta del
  * catálogo y todo peinado existe en ese cuerpo. El parser es POR CAMPO (un dato raro no resetea el resto)
- * y acepta v1 migrándolo en memoria → el front lee igual antes y después de la migración SQL (P7c).
+ * y cualquier cosa que no sea v2 (p. ej. un v1 de antes de P7c; prod ya es 100% v2) cae al default.
  *
  * Sin zod en runtime (está solo en dev y sumaría ~13 KB gz a la ruta del creador): el catálogo ya define
  * todo lo válido.
@@ -28,22 +28,6 @@ export const DEFAULT_AVATAR: AvatarV2 = {
   boots: { color: "#1C1C1C" },
 };
 
-/**
- * Piel de los avatares v1: no elegían piel y se veía la textura del pack tal cual. "Morena" es el tono
- * de la paleta más cercano a esa textura → la migración no les cambia la cara.
- */
-export const LEGACY_SKIN: HexColor = "#A06B45";
-
-/** v1 `hair.part` → v2 `hair.style`. El mohicano era una cresta generada (no existe en el pack). */
-export const V1_HAIR: Record<string, HairStyle> = {
-  none: "none",
-  buzz: "buzz",
-  mohawk: "buzz",
-  short: "parted",
-  long: "long",
-  bun: "bun",
-};
-
 const obj = (v: unknown): Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
 
@@ -60,30 +44,10 @@ function body(raw: unknown): BodyType {
   return raw === "female" ? "female" : "male";
 }
 
-/** v1 (`{bodyType, hair{part,color}, top, bottom, shoes}`) → v2. Puro y total. */
-export function migrateAvatar(raw: unknown): AvatarV2 {
-  const a = obj(raw);
-  const b = body(a.bodyType);
-  const hair = obj(a.hair);
-  const d = DEFAULT_AVATAR;
-  const style = typeof hair.part === "string" ? (V1_HAIR[hair.part] ?? d.hair.style) : d.hair.style;
-  return {
-    v: 2,
-    body: b,
-    skin: LEGACY_SKIN,
-    hair: { style: hairFor(style, b), color: color(PALETTES.hair, hair.color, d.hair.color) },
-    kit: {
-      shirt: color(PALETTES.kit, obj(a.top).color, d.kit.shirt),
-      shorts: color(PALETTES.kit, obj(a.bottom).color, d.kit.shorts),
-    },
-    boots: { color: color(PALETTES.boots, obj(a.shoes).color, d.boots.color) },
-  };
-}
-
-/** Cualquier cosa → avatar v2 válido del catálogo (v1 se migra; v2 se sanea campo por campo). */
+/** Cualquier cosa → avatar v2 válido del catálogo (v2 se sanea campo por campo; lo demás → default). */
 export function parseAvatar(raw: unknown): AvatarV2 {
   const a = obj(raw);
-  if (a.v !== 2) return "bodyType" in a ? migrateAvatar(a) : DEFAULT_AVATAR;
+  if (a.v !== 2) return DEFAULT_AVATAR;
   const d = DEFAULT_AVATAR;
   const b = body(a.body);
   const hair = obj(a.hair);
