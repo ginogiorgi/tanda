@@ -44,7 +44,7 @@ export interface RankedSideResult {
 export interface RankedSide {
   participant_id: string;
   username: string;
-  /** Crudo de `profiles.avatar` (v1 o v2): se lee con `parseAvatar`. */
+  /** Crudo de `profiles.avatar` (v2): se lee con `parseAvatar`. */
   avatar: unknown;
   /** Rating de ENTRADA al partido. */
   rating: number;

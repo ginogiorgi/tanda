@@ -36,7 +36,7 @@ export type SceneRoles = {
   keeper: SceneRole;
 };
 
-/** Avatar v2 (v1 migrado en memoria; inválido/ausente → default). */
+/** Avatar v2 (inválido/ausente → default). */
 const avatarOf = parseAvatar;
 
 /** Color de kit de la nación si es un hex válido, si no `null`. */

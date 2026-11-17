@@ -38,6 +38,7 @@ pnpm test:db    # Vitest contra la DB local
 - **`docs/BRIEF.md`** — diseño del producto y reglas del juego.
 - **`SPEC.md`** — arquitectura, modelo de datos, máquinas de estado, contratos.
 - **`TODO.md`** — estado actual + cómo correr/deployar.
+- **`docs/HISTORY.md`** — qué se hizo y cuándo.
 - **`CLAUDE.md`** — convenciones y gotchas (timing/RLS/anti-trampa).
 - **`supabase/migrations/`** — esquema y RPCs de la DB: **la fuente de verdad** (la base
   de prod se construye replayeando estos archivos; ver `supabase/README.md`).

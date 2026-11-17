@@ -124,7 +124,7 @@ export type MatchScene = {
   my_participant_id: string | null;
   home: ParticipantBrief | null;
   away: ParticipantBrief | null;
-  /** Crudo de `profiles.avatar` (v1 o v2): se lee con `parseAvatar`. */
+  /** Crudo de `profiles.avatar` (v2): se lee con `parseAvatar`. */
   home_avatar: unknown;
   away_avatar: unknown;
 };

@@ -28,7 +28,7 @@ penal/partido, reloj de ronda, anti-trampa, invitado anónimo). Lo que la 2.0 ca
   (`lib/penal/shot.ts`). Ver nota en §8.2.
 - **Marca**: identidad "B · Programa de partido" (ver `CLAUDE.md`).
 - **Verificación**: además de unit/db, `pnpm test:e2e` (Playwright + axe sobre las páginas públicas).
-  Informe de auditoría: `docs/AUDIT-2026-11.md`.
+  Historia y auditorías: `docs/HISTORY.md`.
 
 ---
 

@@ -54,7 +54,7 @@ test("registro → preset → pelo y botines con cámara por pestaña → guarda
   // Sin `from=signup` no ofrece los puntos de partida.
   await expect(page.getByText(/elegí un punto de partida/i)).toHaveCount(0);
 
-  // Galería del creador para la revisión manual (docs/avatar-qa/REVIEW.md): cada pestaña en 360 y 1440.
+  // Galería del creador para revisión manual (`QA_SHOTS=1`): cada pestaña en 360 y 1440.
   if (process.env.QA_SHOTS) {
     for (const vp of [{ width: 360, height: 780 }, { width: 1440, height: 900 }]) {
       await page.setViewportSize(vp);
