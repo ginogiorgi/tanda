@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Por qué `getClaims()` y no `getUser()`: el proyecto firma los JWT con ES256 (claves asimétricas), así
  * que `getClaims()` valida la firma localmente contra el JWKS cacheado, sin ir a Auth. `getUser()` es
- * una ida de red a Auth en cada página; con las funciones lejos de la DB (ver docs/PERF-BASELINE.md)
+ * una ida de red a Auth en cada página; con las funciones lejos de la DB
  * era la mitad del delay de cada toque. Si el token venció, `getClaims()` lo refresca (como antes).
  *
  * `cache()` → una sola validación por request aunque layout y página la pidan.

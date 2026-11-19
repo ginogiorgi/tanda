@@ -51,7 +51,7 @@ const eslintConfig = defineConfig([
     ];
   })(),
   // Sesión en el server: solo vía getSession() (getClaims local). `auth.getUser()` es una ida de red a
-  // Auth por página: era la mitad del delay de cada toque (docs/PERF-BASELINE.md).
+  // Auth por página: era la mitad del delay de cada toque.
   // Layout (feedback 2, P4 — DESIGN-RULES §Layout): la página scrollea el DOCUMENTO. Nada de alturas de
   // viewport a mano, paneles con scroll propio ni `fixed`/`sticky` en className, salvo la allowlist de
   // abajo (fondo, overlays, header, tarjeta del penal y las primitivas Page/GameStage).

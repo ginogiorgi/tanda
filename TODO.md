@@ -1,49 +1,9 @@
 # TODO — TANDA ⚽
 
-## ✅ Limpieza integral terminada (17/11) — en prod `218b23e`
-- **Avatar:** PR #4 en prod (cola, cuello, sien lisa) + migración `avatar_ponytail`.
-- **Limpieza:** solo queda `main`; tablas de backup de prod exportadas a `/mnt/hera/Backups/tanda-db/2026-11-17/` y
-  borradas; compat v1 del avatar fuera; docs cumplidos → `docs/HISTORY.md`.
-- **Optimización:** `docs/OPTIMIZATION.md` (fix de doble footer en `/auth/reset`, React Compiler medido y descartado).
-- **Prod:** batería completa verde, smoke prod + penal de invitado OK, TTFB igual que la base (`docs/PERF-BASELINE.md`).
+En prod: https://tanda2026.com.ar (Mundial + Modo Argentina + Ranked 1v1, invitado, avatar v2).
 
-## Estado (17/11/2026)
-En prod (https://tanda2026.com.ar): Mundial + Modo Argentina + Ranked 1v1, invitado anónimo, avatar v2 GLB con
-creador nuevo (cola de caballo, cuello y sien lisos). Historia completa en [`docs/HISTORY.md`](docs/HISTORY.md).
-
-### 🧹 Limpieza integral (17/11)
-- **Git:** borradas las ramas mergeadas (locales y remotas) y el worktree `../tanda-feedback` (limpio, en
-  `wip/p7a` ya mergeada). `wip/p5-fin-de-partido` (snapshot del 15/11, contenido ya en main por otra rama) quedó
-  como tag `archive/wip-p5-fin-de-partido`. Queda solo `main`.
-- **DB prod — tablas de backup BORRADAS** (migración `20261124000007_cleanup_backups_avatar_v1` + ledger). Antes:
-  datos vivos verificados (19 perfiles v2 válidos, 0 huérfanos; `ranked_players` consistente) y export con hash
-  de filas idéntico a prod (cargado en el Postgres local en una tx revertida):
-  - `profiles_avatar_backup` (16 filas, avatares v1 previos al 16/11) →
-    `/mnt/hera/Backups/tanda-db/2026-11-17/profiles_avatar_backup.sql`
-  - `ranked_players_backup_1411` (2 filas, ranked al 14/11) →
-    `/mnt/hera/Backups/tanda-db/2026-11-17/ranked_players_backup_1411.sql`
-  Cada archivo trae DDL + filas y se restaura corriéndolo en la DB. Fuera del repo, nunca commiteado.
-- **Compat v1 del avatar fuera:** `migrateAvatar`/`LEGACY_SKIN`/`V1_HAIR`/`lib/avatar/fixtures.ts` y, en SQL, el
-  port v1 de `avatar_to_v2` + `avatar_palette`/`avatar_hex_lab`/`avatar_nearest`. Lo que no es v2 → default.
-- **Código/deps/assets:** `pnpm knip` y `pnpm assets:check` limpios (no había nada muerto ni huérfano).
-  Sin archivos `.bak`/`.old`/copias; `artifacts/` no existía; borradas `test-results*` locales.
-- **Docs:** el TODO largo, `PLAN-FEEDBACK-2.md` (cumplido), `AUDIT-2026-11.md` y `avatar-qa/REVIEW.md` →
-  condensados en `docs/HISTORY.md` (texto completo: `git show 39d6312:<archivo>`).
-
-## Pendiente de decisión de Gino
-- **Avatar:** (1) barba: no está en el GLB; requiere re-bajar el pack Standard (CC0) y `pnpm avatar:build`.
-  (2) Miniaturas de presets = chips de color, no renders (si querés renders, es un script). (3) Sin aviso de
-  "cambios sin guardar" al volver del creador. (4) Botín único con tapones.
-- **Ranked:** falta probarlo con 2 personas reales en prod (cola → partido → puntos).
-- **Preguntas:** verificadas dato por dato; queda una pasada de gusto/tono. Recalibrar dificultad con aciertos
-  reales cuando haya tráfico.
-- **Datos AR:** ⚠️ GOD y TSU son provisorios (ascensos 2027) → migración chica de `teams` + escudos al definirse.
-  `kit_pattern` de `data/teams/arg.json` aproximados.
-- **UI:** micro-rótulos de 10px en HUD del penal, perfil, ranked y ranking → subir a 12px donde entre.
-- **3D:** la escena corre en loop continuo (idle animado) salvo reduced motion; si en gama baja se nota la batería,
-  volver a "demand" en idle.
-- **Compat que queda (a propósito):** `penalties.removed_option` (columna vieja = la del pateador; el cliente la
-  usa normalizada). Sacarla toca `resolve`/`game_timing` en plpgsql → solo en una tanda propia con paridad.
+## Plan
+_(vacío: el próximo plan va acá)_
 
 ## Cómo correr / testear / deployar
 ```bash
@@ -69,8 +29,7 @@ pnpm assets:check | perf:budget | questions:check | db:check-migrations | qa:ava
 - `supabase/tests/` — suite del camino autoritativo (paridad TS↔SQL, anti-trampa, RLS, torneo, ranked).
 - `app/` — rutas (Server Components; grupos `(app)`, `(game)`, `(auth)`), `components/` (UI; primitivas en
   `components/ui/`), `e2e/` (Playwright), `scripts/` (assets, catálogo, preguntas, QA, perf).
-- Docs: `docs/BRIEF.md` (producto), `SPEC.md` (arquitectura/contratos), `docs/DESIGN-RULES.md`,
-  `docs/PERF-BASELINE.md`, `docs/OPTIMIZATION.md`, `docs/HISTORY.md`.
+- Docs: `docs/BRIEF.md` (producto), `SPEC.md` (arquitectura/contratos), `docs/DESIGN-RULES.md`.
 
 ## Verde de referencia (17/11)
 typecheck · lint · knip · assets · unit 209 · components 48 · db 108 · build · e2e 42 · flow 9 · smoke prod 42 +
