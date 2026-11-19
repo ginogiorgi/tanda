@@ -39,7 +39,7 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
     const play = await actions.getByRole("button", { name: "Jugar de nuevo" }).boundingBox();
     const home = await actions.getByRole("link", { name: "Volver al inicio" }).boundingBox();
     expect(play?.height).toBeGreaterThan(0);
-    expect(home?.height).toBe(play?.height);
+    expect(Math.abs((home?.height ?? 0) - (play?.height ?? 0))).toBeLessThan(0.5); // subpíxel
     await expect(actions.getByRole("button", { name: "Ver cómo sigue" })).toHaveCount(0);
     // Feedback 3 #6: los papelitos son FONDO — sobre el título y los botones, lo primero no es un papelito.
     await expect(page.getByTestId("confetti")).toHaveCount(1);

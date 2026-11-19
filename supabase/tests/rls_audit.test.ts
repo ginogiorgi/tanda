@@ -53,6 +53,9 @@ const AUTH_ALLOWLIST = [
 
 // `anon` (sin sesión) solo necesita username_available (form de registro). Los helpers de pertenencia
 // los evalúan policies `TO authenticated` (y RPCs definer como owner): no se exponen a anon (advisor 0028).
+/** RPC tipadas que solo llama el server con la service role (`app/api/*`); nunca el cliente. */
+const SERVICE_ONLY = ["submit_feedback"];
+
 const ANON_ALLOWLIST = [
   "username_available",
 ].sort();
@@ -142,9 +145,15 @@ describe("superficie ejecutable == allowlist intencional", () => {
     const block = /Functions: \{([\s\S]*?)\n {4}\};/.exec(src)?.[1] ?? "";
     const typed = [...block.matchAll(/^ {6}([a-z_]+):/gm)].map((m) => m[1]!).sort();
     expect(typed.length).toBeGreaterThan(10);
-    expect(typed.filter((f) => !AUTH_ALLOWLIST.includes(f))).toEqual([]);
     const exec = await execNames("authenticated");
-    expect(typed.filter((f) => !exec.includes(f))).toEqual([]);
+    // Tipadas para el server (service role): el cliente NO las puede ejecutar.
+    for (const f of SERVICE_ONLY) {
+      expect(typed).toContain(f);
+      expect(exec).not.toContain(f);
+    }
+    const client = typed.filter((f) => !SERVICE_ONLY.includes(f));
+    expect(client.filter((f) => !AUTH_ALLOWLIST.includes(f))).toEqual([]);
+    expect(client.filter((f) => !exec.includes(f))).toEqual([]);
   });
 });
 

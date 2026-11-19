@@ -1,4 +1,5 @@
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 /**
  * Layout de la APP (perfil, tabla, avatar, historial, jugar): header común con volver al padre
@@ -10,6 +11,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <>
       <ScreenHeader />
       <main className="flex w-full flex-1 flex-col">{children}</main>
+      {/* Reportar bug / pedir mejora (feedback 3 #17): pantallas de menú, nunca en juego. */}
+      <FeedbackButton />
     </>
   );
 }

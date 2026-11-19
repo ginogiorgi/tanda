@@ -1,31 +1,17 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución. Cortado el 19/11 ~01:20
-  ART por usage-guard (5 h ≥ 90%).
-- **Hecho y en prod:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (`2457f09`,
-  migraciones `20261125000000/01`), F2 (`80e72fb`, migración `20261125000002`), F3 (`4142da8`+`0372c32`), F4
-  (`c520326`). Smoke prod tras cada fase: e2e 44 + penal de invitado OK.
-- **Antes de F5 (pedido de Gino 19/11):** capturas de la vista dron del penal en 390 y 1440 (`bash scripts/e2e/shots.sh penal`, local) → copiar 2-3 PNG a `~/Downloads/tanda-dron/` (el asistente se las manda a Gino para decidir encuadre vs muñecos ×1,2).
-- **Fase siguiente:** F5 (pantalla de campeón), **sin empezar** (ningún archivo tocado).
-- **Próximo paso concreto (F5):** el bug es de apilado: `<Confetti>` (`fixed inset-0 z-0`) está ADENTRO del
-  contenedor `relative z-10` de `RunSummary` (y en `RankedResult` sin contenedor z) → como posicionado pinta encima
-  del contenido. Plan: reescribir `components/penal/Confetti.tsx` como capa `fixed inset-0 -z-[1]` (debajo del
-  contenido, arriba de `PitchBackground` que es `-z-10`), papelitos con posición FINAL en el pasto como estilo base y
-  un keyframe nuevo en `globals.css` (`from` = offset hacia un borde vía `--dx/--dy`, `animation-fill-mode: both`,
-  sin `infinite`) → reduced motion los deja quietos en su lugar. Revisar el bloque `prefers-reduced-motion` de
-  `globals.css`. Test de capa en `e2e/flow/champion.spec.ts` (`document.elementsFromPoint` sobre el título y los
-  botones: el primero NO es un papelito). Capturas: extraer `ChampionScreen` o banco `/dev/…` para 390/1440.
-- **Ojo:** `pnpm build` suelto usa `.env.local` (prod). `flow.sh` ya reconstruye si `.next` no apunta a la API
-  local, pero `pnpm test:e2e` (puerto 3100) usa el `.next` que haya.
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), en ejecución autónoma. F0–F6 hechas y en prod.
+- **Fase en curso:** F7 (ranking de hinchas). El código de F7 está escrito (de la sesión del 19/11 que se cayó) y
+  guardado en `git stash` ("wip-f6f7-backup": contiene F6+F7+F8.1 juntos; F6 ya está commiteado → al aplicarlo,
+  quedarse solo con lo de F7 y F8.1). Falta: verde, wipe 7.6 (export primero), deploy y smoke.
 - **Para retomar:**
   ```
   export PATH=$HOME/.npm-global/bin:$PATH
-  git log --oneline -8 && pnpm e2e:stack   # Supabase local
-  # F5 → verde: pnpm typecheck lint knip test test:components test:db · pnpm build && pnpm test:e2e · pnpm test:e2e:flow
-  # deploy: git push (Vercel) · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e + E2E_PROD_GUEST=1 … e2e/prod-guest.spec.ts
+  git log --oneline -8 && git stash list && pnpm e2e:stack && pnpm db:reset
+  # verde: pnpm typecheck lint knip test test:components test:db · pnpm build && pnpm test:e2e · pnpm test:e2e:flow
+  # deploy: git push (Vercel) · migración por MCP + ledger · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e
   ```
-  Migraciones nuevas desde `20261125000003` (F6/F7 las necesitan).
 
 ## Plan — Feedback 3 (18/11)
 Fuente: `docs/FEEDBACK-3.md` (números #N = sus puntos). Vara: "app de multinacional". Todo lo visual con capturas
@@ -174,27 +160,32 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   Capturas: `e2e/shots/torneo.spec.ts` (Argentino/Mundial en fase de zonas).
 
 ### F5 — Pantalla de campeón (#6)
-- [ ] Hoy `<Confetti>` es una capa `fixed` que cae encima del resultado y los botones. Nuevo: escena de fondo con la
+- [x] (`284e2b7`, en prod) Hoy `<Confetti>` es una capa `fixed` que cae encima del resultado y los botones. Nuevo: escena de fondo con la
   cancha (`PitchBackground`) y papelitos **detrás** del contenido, lanzados desde los bordes (tribuna) hacia adentro y
   quedando en el pasto; resultado (copa + equipo + título) y botones con contraste perfecto. Reduced motion =
   papelitos quietos. Revisar también `RunSummary`/`Bracket` con campeón (propia). **Verifica:** capturas en 3 cuadros
   390/1440 + test de capa (los papelitos tienen z menor que el contenido) + `champion.spec` (E2E_SLOW).
 
 ### F6 — Reportar bugs / pedir mejoras (#17)
-- [ ] **6.1 UI:** botón flotante abajo a la derecha, solo en home y pantallas de menú (nunca en `(game)`, sala ni
+- [x] **6.1 UI:** botón flotante abajo a la derecha, solo en home y pantallas de menú (nunca en `(game)`, sala ni
   cola), `data-layer="overlay"` (allowlist de layout), ≥ 44 px, no tapa la acción principal. Hoja (`<dialog>`, como
   `HelpSheet`): tipo Bug/Mejora (radio) + texto (contador, máx. 1000), honeypot oculto, enviar, estado de envío y
   confirmación; errores claros. Accesible (axe), mobile first.
-- [ ] **6.2 Server:** route handler `POST /api/feedback` (Node): valida tipo/largo, honeypot, escapa HTML; rate-limit
+- [x] **6.2 Server:** route handler `POST /api/feedback` (Node): valida tipo/largo, honeypot, escapa HTML; rate-limit
   por usuario e IP (tabla con ventana, p. ej. 5/h y 20/día); guarda en `feedback_reports` (RLS sin policy, solo
   service role); manda mail con `lib/email/resend.ts` desde `Tanda <no-reply@tanda2026.com.ar>` a
   ginorubengiorgi@pyrux.com.ar, asunto **exacto** `[Tanda] Bug: <primeras palabras>` / `[Tanda] Mejora: <primeras
   palabras>`; cuerpo: usuario (o "Invitado"), id, fecha y hora America/Argentina/Buenos_Aires, tipo, mensaje, ruta,
   dispositivo/navegador/SO (UA parseado), viewport y pantalla, versión (`VERCEL_GIT_COMMIT_SHA`), idioma y zona
   horaria del cliente, último torneo activo si hay. Sin mail del usuario ni tokens. Si Resend falla, queda guardado.
-- [ ] **Verifica:** unit del armado (asunto exacto, truncado de palabras, escape, sin datos sensibles), db/route test
+- [x] **Verifica:** unit del armado (asunto exacto, truncado de palabras, escape, sin datos sensibles), db/route test
   del límite y honeypot, e2e del formulario (flow, sin mandar mail: `RESEND_API_KEY` vacío), capturas, y **un**
   reporte real en prod marcado "[prueba]" para validar la entrega y el filtro de Gmail.
+
+- [x] **Cierre F6:** verde (unit 263 · components 50 · db 125 · e2e 44 · flow 12) + migración `20261125000003` +
+  env `FEEDBACK_TO` en Vercel (el destinatario no está en el repo). `rls_audit` gana `SERVICE_ONLY` (RPC tipadas
+  solo para el server, que el cliente NO puede ejecutar). **Hallazgo (propia):** un invitado colgado en una sala
+  pública de un test lo levantaba el siguiente → torneo con 2 humanos y huecos de ~10 s (ver revisión con Gino).
 
 ### F7 — Ranking de hinchas (#15)
 - [ ] **7.1 DB:** `profiles.fav_club_id` / `fav_nation_id` (FK a `teams` del modo correspondiente, CHECK de modo
@@ -237,6 +228,10 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   commit ahí.
 
 ### Pendiente de revisión con Gino
+- **Reloj de ronda compartido y 2ª chance (hallado en F6, no cambiado):** si en un torneo hay 2+ humanos, todos los
+  partidos de la ronda esperan al más lento; cuando un partido va a 2ª chance (+5 s y su jugada), los demás ven el
+  cartel ~8 s y el próximo penal llega ~10 s después del anterior. Es la regla de diseño (sincronizar humanos), pero
+  se siente como el "bug de 10 s". Opciones: dejarlo, o que cada partido con humanos tenga su propio reloj intra-fecha.
 - **Datos de prueba en prod (19/11, error mío, sin daño):** un `pnpm build` suelto (env de prod) + `E2E_SKIP_BUILD=1`
   corrió el flow contra la API de prod entre 03:32 y 03:40 UTC: 10 invitados anónimos, 1 cuenta sintética
   `av_…@users.tanda2026.com.ar` (avatar.spec) y torneos con bots (terminan solos). Ningún dato real tocado. Se

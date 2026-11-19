@@ -77,6 +77,7 @@ const eslintConfig = defineConfig([
       "components/penal/Confetti.tsx", // papelitos de fondo del campeón (data-layer=bg)
       "components/ui/ScreenHeader.tsx", // header sticky (data-layer=header)
       "components/ui/HelpSheet.tsx", // sheet/diálogo (overlay)
+      "components/feedback/FeedbackButton.tsx", // botón flotante de reportes (data-layer=overlay)
       "components/penal/PenalLive.tsx", // tarjeta del penal: max-h + scroll propio (data-layer=card)
       "components/ui/Page.tsx",
       "components/ui/GameStage.tsx",

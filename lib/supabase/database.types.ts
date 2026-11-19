@@ -31,6 +31,12 @@ export type Database = {
         Update: { id?: string; code?: string; host_id?: string | null; status?: string; starts_at?: string; created_at?: string; mode_id?: ModeId };
         Relationships: [];
       };
+      feedback_reports: {
+        Row: { id: string; emailed: boolean };
+        Insert: never;
+        Update: { emailed?: boolean };
+        Relationships: [];
+      };
       game_modes: {
         Row: { id: ModeId; name: string; room_size: number; active: boolean; sort: number };
         Insert: never;
@@ -67,6 +73,19 @@ export type Database = {
       get_ranked_match: { Args: { p_tournament: string }; Returns: RankedMatchView };
       get_ranking: { Args: { p_limit?: number }; Returns: Ranking };
       get_profile_stats: { Args: Empty; Returns: ProfileStats };
+      /** Solo service role (`POST /api/feedback`). */
+      submit_feedback: {
+        Args: {
+          p_user: string | null;
+          p_username: string | null;
+          p_kind: "bug" | "idea";
+          p_message: string;
+          p_route: string | null;
+          p_meta: Json;
+          p_ip_hash: string;
+        };
+        Returns: string;
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

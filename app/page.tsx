@@ -7,6 +7,7 @@ import { ROOM_ERROR_MESSAGES } from "@/lib/errors";
 import { JsonLd } from "@/components/common/JsonLd";
 import { buttonVariants } from "@/components/ui/Button";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 export default async function Home({
   searchParams,
@@ -43,6 +44,7 @@ export default async function Home({
   return (
     <main className="flex w-full flex-1 flex-col items-center text-center">
       <JsonLd />
+      <FeedbackButton />
       <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16 [@media(max-height:820px)]:gap-5 [@media(max-height:820px)]:py-6">
       <div className="flex flex-col items-center gap-5">
         <h1 aria-label="Tanda">

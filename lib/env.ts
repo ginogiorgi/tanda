@@ -47,3 +47,9 @@ export function canonicalSiteUrl(): string {
 export function resendApiKey(): string | null {
   return process.env.RESEND_API_KEY ?? null;
 }
+
+/** Destino de los reportes de bug/mejora (feedback 3 #17). Solo servidor; sin configurar = se guardan y no se mandan. */
+export function feedbackRecipient(): string | null {
+  const to = process.env.FEEDBACK_TO?.trim();
+  return to ? to : null;
+}
