@@ -11,8 +11,9 @@
  * `open_next_round` (idempotente) arranca la tanda apenas vence la presentación (pg_cron = backstop).
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { fire } from "@/lib/supabase/fire";
 import { PenalLive } from "@/components/penal/PenalLive";
 import { clockOffset, remainingMs, type ActiveMatch } from "@/lib/realtime/penal";
 import { divisionFor } from "@/lib/engine/ranked";
@@ -21,7 +22,7 @@ import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionCrest } from "./DivisionCrest";
 import { RankedResult } from "./RankedResult";
 import { usePreload3D } from "@/components/penal/usePreload3D";
-import { RANKED_RESULT_LINGER_MS } from "@/lib/engine/timing";
+import { LATE_RESULT_GRACE_MS, lingerWaitMs } from "@/lib/engine/timing";
 import { Page } from "@/components/ui/Page";
 
 
@@ -80,6 +81,12 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
   const [offset, setOffset] = useState(0);
   const showPenalRef = useRef(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Feedback 3 #12: el último cartel del partido se ve completo (jugada + 2,5 s) contando desde que LLEGÓ
+  // su resultado, no desde que el poll notó el fin del partido.
+  const lastResultAtRef = useRef(0);
+  const onResult = useCallback((at: number) => {
+    lastResultAtRef.current = at;
+  }, []);
   const settledRef = useRef(false);
 
   // Vista del partido (fichas, apuesta y, al final, el resultado aplicado). Se deja de pedir al asentarse.
@@ -112,7 +119,7 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
       const { data } = await supabase.rpc("get_active_match");
       if (!active) return;
       const am = data as ActiveMatch | null;
-      if (am?.penal == null) void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+      if (am?.penal == null) fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
       if (am?.match_id) {
         if (lingerRef.current) {
           clearTimeout(lingerRef.current);
@@ -123,11 +130,17 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
         setEverPlayed(true);
         showPenalRef.current = true;
       } else if (showPenalRef.current && !lingerRef.current) {
-        lingerRef.current = setTimeout(() => {
+        const release = () => {
+          const wait = lingerWaitMs(lastResultAtRef.current, Date.now());
+          if (wait > 0) {
+            lingerRef.current = setTimeout(release, wait);
+            return;
+          }
           setShowPenal(false);
           showPenalRef.current = false;
           lingerRef.current = null;
-        }, RANKED_RESULT_LINGER_MS);
+        };
+        lingerRef.current = setTimeout(release, LATE_RESULT_GRACE_MS);
       }
     };
     void poll();
@@ -146,7 +159,7 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
     return () => clearInterval(id);
   }, [everPlayed]);
 
-  if (showPenal && matchId) return <PenalLive key={matchId} matchId={matchId} ranked />;
+  if (showPenal && matchId) return <PenalLive key={matchId} matchId={matchId} ranked onResult={onResult} />;
 
   return <Page center>{rankedBody(view, loadError, everPlayed, offset, now)}</Page>;
 }

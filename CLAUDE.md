@@ -76,7 +76,9 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
 - **Tiempos de juego en una sola fuente:** `TIMING` (`lib/engine/timing.ts`) ↔ `public.game_timing()` (paridad en
   `supabase/tests/timing.test.ts`); espera de sala por modo (`game_modes.lobby_seconds` ↔ `FORMATS[m].lobbyS`, 30 s).
   Nada de `interval 'N seconds'` en migraciones nuevas (`pnpm db:check-migrations` lo rechaza).
-- El penal **se resuelve recién a los 10s** (no antes). La respuesta **NO es cambiable**: el
+- El penal **se resuelve recién a los 10s** (no antes, aunque respondan los dos; feedback 3). Después: jugada sin cartel
+  (`TIMING.revealS`) → cartel `resultCardS` → próximo penal (`betweenPenalsS` = la suma). Los pokes del cliente van con
+  `fire()` (`lib/supabase/fire.ts`): `supabase.rpc()` es perezoso y `void supabase.rpc(...)` NO manda nada (lint). La respuesta **NO es cambiable**: el
   **primer tap queda fijo** (F10/10.11; `select_option` rechaza el cambio con `already_answered`)
   y la rapidez se mide por el `selected_at` de esa única selección (server). El cliente congela el
   contador en el instante del tap.

@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { fire } from "@/lib/supabase/fire";
 import type { RankedMe, RankedPoll } from "@/lib/ranked/types";
 import { othersWaiting, RANKED_QUEUE_CHANNEL, waitingLabel } from "@/lib/ranked/queue";
 import { buttonVariants } from "@/components/ui/Button";
@@ -91,7 +92,7 @@ export function RankedQueue({ me, userId }: { me: RankedMe; userId: string }) {
       active = false;
       clearInterval(poll);
       clearInterval(tick);
-      if (!matchedRef.current) void supabase.rpc("ranked_cancel");
+      if (!matchedRef.current) fire(supabase.rpc("ranked_cancel"));
     };
   }, [supabase, navPush]);
 

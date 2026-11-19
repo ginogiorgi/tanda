@@ -11,16 +11,17 @@
  * 6.5) mergeado con `applyScoreUpdate`. El penal lo resuelve `<PenalLive>` por su canal `match:{id}`.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { fire } from "@/lib/supabase/fire";
 import { PenalLive } from "@/components/penal/PenalLive";
 import { RunSummary } from "@/components/penal/RunSummary";
 import { Button } from "@/components/ui/Button";
 import { TeamReveal } from "@/components/penal/TeamReveal";
 import { Bracket } from "@/components/bracket/Bracket";
-import { MATCH_RESULT_LINGER_MS } from "@/lib/engine/timing";
+import { LATE_RESULT_GRACE_MS, lingerWaitMs } from "@/lib/engine/timing";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
   applyScoreUpdate,
@@ -72,6 +73,12 @@ export function TournamentLive({
   const [championElapsed, setChampionElapsed] = useState(false);
   const [spectating, setSpectating] = useState(false);
   const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Feedback 3 #12: el último cartel del partido se ve completo (jugada + 2,5 s) contando desde que LLEGÓ
+  // su resultado, no desde que el poll notó el fin del partido.
+  const lastResultAtRef = useRef(0);
+  const onResult = useCallback((at: number) => {
+    lastResultAtRef.current = at;
+  }, []);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
   const revealTimerRef = useRef(false);
@@ -87,7 +94,7 @@ export function TournamentLive({
   // B2.1: arrancar la ventana de presentación AL ENTRAR a /partido (no en start_tournament). Idempotente
   // en el server (1ª llamada de un humano comprime el backstop a ~6s; las siguientes son no-op).
   useEffect(() => {
-    void supabase.rpc("begin_presentation", { p_tournament: tournamentId });
+    fire(supabase.rpc("begin_presentation", { p_tournament: tournamentId }));
   }, [supabase, tournamentId]);
 
   // Canal privado del torneo: marcadores en vivo (score:live, 6.5).
@@ -115,7 +122,7 @@ export function TournamentLive({
           const delay = remainingMs(p.open_at, clockOffset(p.server_now));
           if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
           nextPokeRef.current = setTimeout(() => {
-            void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+            fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
             setTimeout(() => {
               pollRef.current?.();
               bracketLoadRef.current?.(); // reflejar el flip de fase (grupos→KO) sin esperar 5s
@@ -179,7 +186,7 @@ export function TournamentLive({
       // partidos) y ya venció el tiempo muerto, abrir la próxima ronda (idempotente, no-op si no). Sin
       // esto, intra-partido nadie pokeaba open_next_round y el penal lo abría recién el cron (≤10s).
       if (am?.penal == null) {
-        void supabase.rpc("open_next_round", { p_tournament: tournamentId });
+        fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
       }
       if (am != null && am.match_id) {
         if (lingerRef.current) {
@@ -193,11 +200,17 @@ export function TournamentLive({
       } else {
         // Terminó mi partido → soltar la escena de penal tras el linger (los ~3s de animación).
         if (showPenalRef.current && !lingerRef.current) {
-          lingerRef.current = setTimeout(() => {
+          const release = () => {
+            const wait = lingerWaitMs(lastResultAtRef.current, Date.now());
+            if (wait > 0) {
+              lingerRef.current = setTimeout(release, wait);
+              return;
+            }
             setShowPenal(false);
             showPenalRef.current = false;
             lingerRef.current = null;
-          }, MATCH_RESULT_LINGER_MS);
+          };
+          lingerRef.current = setTimeout(release, LATE_RESULT_GRACE_MS);
         }
       }
     };
@@ -258,7 +271,7 @@ export function TournamentLive({
   });
 
   if (view === "penal" && currentMatchId) {
-    return <PenalLive key={currentMatchId} matchId={currentMatchId} />;
+    return <PenalLive key={currentMatchId} matchId={currentMatchId} onResult={onResult} />;
   }
 
   if (view === "error") {

@@ -1,6 +1,6 @@
-// Regla de fase (feedback de Gino 14/11, migración `phase_close`): una fase con acción termina cuando
-// ACTUARON TODOS los que deben actuar, o al vencer su deadline — lo que pase primero. Vale en todos los
-// modos: ranked (2 humanos), salas y torneos con bots (el bot "actúa" en su horario precalculado).
+// Regla de fase (feedback 3 #2, migración `reveal_timing`, deshace la de `phase_close` del 14/11): el
+// penal — 1ª fase y 2ª chance — se resuelve SOLO al vencer su deadline, aunque hayan respondido todos.
+// Así nadie ve el resultado antes de tiempo. Vale en todos los modos (humanos y bots).
 import { afterAll, describe, expect, it } from "vitest";
 import type { PoolClient } from "pg";
 import { asRole, closePool, resetRole, withRollback } from "./_db";
@@ -27,31 +27,15 @@ async function answer(c: PoolClient, user: string, penalty: string, option: numb
   await resetRole(c);
 }
 
-describe("regla de fase: cierra cuando actuaron todos o al deadline", () => {
-  it("dos humanos responden → el penal se resuelve YA, con el deadline todavía lejos", async () => {
+describe("regla de fase: se resuelve solo al vencer el tiempo", () => {
+  it("dos humanos responden → sigue abierto (too_early) hasta el deadline; ahí resuelve", async () => {
     await withRollback(async (c) => {
       const fx = await makeMatchFixture(c);
       const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
       const ok = await correctOf(c, penalty);
-
       await answer(c, fx.userA, penalty, ok);
-      expect(await status(c, penalty)).toBe("open"); // falta el otro: no se adelanta
       await answer(c, fx.userB, penalty, (ok + 1) % 3);
-
-      const { rows } = await c.query<{ status: string; future: boolean; winner: string }>(
-        `select status, deadline > now() as future, resolution ->> 'winner' as winner
-           from public.penalties where id = $1`,
-        [penalty],
-      );
-      expect(rows[0]).toEqual({ status: "resolved", future: true, winner: "kicker" });
-    });
-  });
-
-  it("si falta una respuesta, sigue `too_early` hasta el deadline", async () => {
-    await withRollback(async (c) => {
-      const fx = await makeMatchFixture(c);
-      const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
-      await answer(c, fx.userA, penalty, 0);
+      expect(await status(c, penalty)).toBe("open");
 
       await c.query("savepoint sp");
       await expect(c.query("select public.resolve_penalty($1)", [penalty])).rejects.toThrow(/too_early/);
@@ -59,58 +43,43 @@ describe("regla de fase: cierra cuando actuaron todos o al deadline", () => {
       await c.query("select public.tick()"); // el cron tampoco lo adelanta
       expect(await status(c, penalty)).toBe("open");
 
-      // Al vencer, resuelve como siempre (el que no respondió recibe una al azar).
+      await c.query(`update public.penalties set deadline = now() - interval '1 second' where id = $1`, [penalty]);
+      await c.query("select public.tick()");
+      const { rows } = await c.query<{ status: string; winner: string }>(
+        "select status, resolution ->> 'winner' as winner from public.penalties where id = $1",
+        [penalty],
+      );
+      expect(rows[0]).toEqual({ status: "resolved", winner: "kicker" });
+    });
+  });
+
+  it("si falta una respuesta, igual: al vencer resuelve (el que no respondió recibe una al azar)", async () => {
+    await withRollback(async (c) => {
+      const fx = await makeMatchFixture(c);
+      const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
+      await answer(c, fx.userA, penalty, 0);
+      await c.query("select public.tick()");
+      expect(await status(c, penalty)).toBe("open");
       await c.query(`update public.penalties set deadline = now() - interval '1 second' where id = $1`, [penalty]);
       await c.query("select public.tick()");
       expect(await status(c, penalty)).not.toBe("open");
     });
   });
 
-  it("humano + bot: cierra cuando el tick materializa al bot (no espera los 10s)", async () => {
+  it("humano + bot: aunque el bot ya actuó, espera el deadline", async () => {
     await withRollback(async (c) => {
       const fx = await makeMatchFixture(c);
       await c.query("update public.participants set is_bot = true, user_id = null where id = $1", [fx.pB]);
       const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
       const ok = await correctOf(c, penalty);
-
       await answer(c, fx.userA, penalty, ok);
-      // El bot "piensa" hasta su horario (todavía no le llegó).
       await c.query(
         `insert into public.bot_intents (penalty_id, participant_id, phase, scheduled_answer_at, will_be_correct, chosen_option)
-         values ($1, $2, 'first', now() + interval '3 seconds', true, $3)`,
+         values ($1, $2, 'first', now() - interval '1 second', true, $3)`,
         [penalty, fx.pB, ok],
       );
-      await c.query("select public.tick()");
+      await c.query("select public.tick()"); // materializa al bot, no resuelve
       expect(await status(c, penalty)).toBe("open");
-
-      // Le llega el horario → el tick lo materializa y, con los dos, resuelve en la misma vuelta.
-      await c.query(
-        `update public.bot_intents set scheduled_answer_at = now() - interval '1 second' where penalty_id = $1`,
-        [penalty],
-      );
-      await c.query("select public.tick()");
-      const { rows } = await c.query<{ status: string; future: boolean }>(
-        "select status, deadline > now() as future from public.penalties where id = $1",
-        [penalty],
-      );
-      expect(rows[0]).toEqual({ status: "resolved", future: true });
-    });
-  });
-
-  it("carrera: dos respuestas que no se vieron entre sí → el tick lo cierra (backstop)", async () => {
-    await withRollback(async (c) => {
-      const fx = await makeMatchFixture(c);
-      const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
-      // Simula el caso READ COMMITTED: las dos filas existen pero ningún select_option resolvió.
-      await c.query(
-        `insert into public.penalty_answers (penalty_id, participant_id, option_index, selected_at, is_correct, is_random, phase)
-         values ($1, $2, 0, now(), false, false, 'first'), ($1, $3, 1, now(), false, false, 'first')`,
-        [penalty, fx.pA, fx.pB],
-      );
-      expect(await status(c, penalty)).toBe("open");
-      await c.query("select public.tick()");
-      await c.query("select public.tick()"); // idempotente: no duplica nada
-      expect(await status(c, penalty)).not.toBe("open");
       const { rows } = await c.query<{ n: string }>(
         "select count(*) n from public.penalty_answers where penalty_id = $1 and phase = 'first'",
         [penalty],
@@ -119,17 +88,24 @@ describe("regla de fase: cierra cuando actuaron todos o al deadline", () => {
     });
   });
 
-  it("la 2ª chance también cierra apenas responden los dos", async () => {
+  it("la 2ª chance también espera su deadline", async () => {
     await withRollback(async (c) => {
       const fx = await makeMatchFixture(c);
       const penalty = await openManualPenalty(c, fx.matchId, fx.pA, fx.pB, 1);
       const ok = await correctOf(c, penalty);
       await answer(c, fx.userA, penalty, (ok + 1) % 3);
       await answer(c, fx.userB, penalty, (ok + 2) % 3);
+      expect(await status(c, penalty)).toBe("open");
+      await c.query(`update public.penalties set deadline = now() - interval '1 second' where id = $1`, [penalty]);
+      await c.query("select public.tick()");
       expect(await status(c, penalty)).toBe("second_chance");
 
       await answer(c, fx.userA, penalty, ok);
       await answer(c, fx.userB, penalty, ok);
+      await c.query("select public.tick()");
+      expect(await status(c, penalty)).toBe("second_chance");
+      await c.query(`update public.penalties set deadline = now() - interval '1 second' where id = $1`, [penalty]);
+      await c.query("select public.tick()");
       expect(await status(c, penalty)).toBe("resolved");
     });
   });

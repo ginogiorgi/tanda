@@ -11,10 +11,17 @@ export const TIMING = {
   penaltyS: 10,
   /** Segunda oportunidad (empate en la respuesta). */
   secondChanceS: 5,
-  /** Entre penales del mismo partido (animación del resultado). */
-  betweenPenalsS: 3,
-  /** Entre partidos (último penal + ver la tabla del grupo). */
-  betweenMatchesS: 7,
+  /**
+   * Revelado (feedback 3 #2): la jugada se ve SIN cartel hasta que la pelota queda quieta en la red / en
+   * las manos / afuera (`BALL_T2` de `lib/penal/shot.ts`); recién ahí aparece el cartel.
+   */
+  revealS: 1.6,
+  /** Cuánto se queda el cartel de GOL/ATAJADO + la correcta antes del próximo penal. */
+  resultCardS: 2.5,
+  /** Entre penales del mismo partido = jugada + cartel (`revealS + resultCardS`). */
+  betweenPenalsS: 4.1,
+  /** Entre partidos = jugada + cartel del último penal + ≥3 s de tabla + 1 s de poll. */
+  betweenMatchesS: 8.1,
   /** Presentación del torneo cuando llega el humano (`begin_presentation`). */
   presentationS: 7,
   /** Respaldo de la presentación si ningún humano la abre (`start_tournament`). */
@@ -33,11 +40,23 @@ export const TIMING = {
   queuePurgeS: 15,
 } as const;
 
-/**
- * Cuánto se queda la pantalla del penal tras terminar el partido antes de ceder a la tabla del grupo.
- * Tiene que entrar en el hueco entre partidos dejando ≥3 s de tabla (con ~1 s de lag de poll).
- */
-export const MATCH_RESULT_LINGER_MS = 2000;
+/** Desde que llega el resultado hasta que aparece el cartel (ms). */
+export const REVEAL_MS = Math.round(TIMING.revealS * 1000);
 
-/** Ranked: lo que se deja ver el último GOL/ATAJADO antes del resultado. */
-export const RANKED_RESULT_LINGER_MS = 2500;
+/**
+ * Cuánto se queda la pantalla del penal tras el ÚLTIMO resultado de un partido antes de ceder a la tabla
+ * (o al resultado ranked), medido desde que LLEGÓ ese resultado: jugada + cartel completo. Así el
+ * resultado se ve siempre `resultCardS` sin depender del poll (feedback 3 #12).
+ */
+export const MATCH_RESULT_LINGER_MS = Math.round((TIMING.revealS + TIMING.resultCardS) * 1000);
+
+/**
+ * Cuánto falta para soltar la pantalla del penal (ms, ≤0 = ya). `lastResultAt` = instante local en que
+ * llegó el último resultado (0 = no vimos ninguno: se suelta enseguida).
+ */
+export function lingerWaitMs(lastResultAt: number, now: number): number {
+  return lastResultAt > 0 ? lastResultAt + MATCH_RESULT_LINGER_MS - now : 0;
+}
+
+/** Margen para que el `penal:result` del último penal llegue aunque el poll vea antes el fin del partido. */
+export const LATE_RESULT_GRACE_MS = 600;

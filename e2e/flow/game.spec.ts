@@ -11,7 +11,34 @@ import { assertLayout, VIEWPORTS } from "../_layout";
 
 test.beforeAll(assertLocalSupabase);
 
+/** Línea de tiempo del penal en el DOM (instante de cada transición): jugada sin cartel, cartel, pregunta. */
+type Ev = { at: number; kind: "playing" | "card" | "card-end" | "question" };
+declare global {
+  interface Window {
+    __penalEvents?: Ev[];
+  }
+}
+
 test("invitado → sala → partido → penal resuelto", async ({ page }) => {
+  test.setTimeout(330_000);
+  await page.addInitScript(() => {
+    const evs: Ev[] = (window.__penalEvents = []);
+    let state = { playing: false, card: false, question: false };
+    const check = () => {
+      const now = {
+        playing: !!document.querySelector("[data-testid=penal-playing]"),
+        card: !!document.querySelector("[data-testid=penal-result-card]"),
+        question: !!document.querySelector("button[aria-pressed]"),
+      };
+      const at = performance.timeOrigin + performance.now();
+      if (now.playing && !state.playing) evs.push({ at, kind: "playing" });
+      if (now.card && !state.card) evs.push({ at, kind: "card" });
+      if (!now.card && state.card) evs.push({ at, kind: "card-end" });
+      if (now.question && !state.question) evs.push({ at, kind: "question" });
+      state = now;
+    };
+    new MutationObserver(check).observe(document, { subtree: true, childList: true });
+  });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
@@ -79,12 +106,9 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     expect(payloads.length).toBeGreaterThan(0);
     expect(payloads.filter((p) => p.includes("correct_index"))).toEqual([]);
     await options.first().click();
-    // Con el cierre temprano (F2: actuaron todos) el penal puede resolverse antes de que se pinte
-    // "Respondiste a los": vale cualquiera de los dos; el bloqueo se chequea solo si el cartel sigue.
-    const answered = page.getByText(/respondiste a los/i);
-    // Entre un cartel y el otro corre la jugada (sin texto): mismo margen que la resolución.
-    await expect(answered.or(page.getByText(/¡GOL!|ATAJADO/)).first()).toBeVisible({ timeout: 30_000 });
-    if (await answered.isVisible()) await expect(options.first()).toBeDisabled();
+    // Feedback 3 #2: el penal no se cierra antes de los 10 s → la respuesta queda fija y a la vista.
+    await expect(page.getByText(/respondiste a los/i)).toBeVisible({ timeout: 10_000 });
+    await expect(options.first()).toBeDisabled();
   });
 
   await test.step("resolución a los 10s", async () => {
@@ -102,6 +126,50 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     }
     await page.setViewportSize(mobile);
     await assertLayout(page, { stage: true });
+  });
+
+  await test.step("revelado y huecos con reloj real: jugada sin cartel → cartel ≥2,4 s → próximo penal", async () => {
+    // Se espera al fin del partido de grupos: un cartel que se va y ninguna pregunta en los 3 s siguientes.
+    await expect
+      .poll(
+        async () =>
+          page.evaluate(() => {
+            const evs = window.__penalEvents ?? [];
+            const last = evs.at(-1);
+            const cards = evs.filter((e) => e.kind === "card").length;
+            return cards >= 2 && last?.kind === "card-end" && Date.now() - last.at > 3000;
+          }),
+        { timeout: 150_000, intervals: [1000] },
+      )
+      .toBe(true);
+    const evs = await page.evaluate(() => window.__penalEvents ?? []);
+    const cards: number[] = [];
+    const reveals: number[] = [];
+    const gaps: number[] = [];
+    evs.forEach((e, i) => {
+      if (e.kind === "card") {
+        const end = evs.slice(i + 1).find((x) => x.kind === "card-end");
+        if (end) cards.push(end.at - e.at);
+        const playing = evs.slice(0, i).reverse().find((x) => x.kind === "playing");
+        if (playing) reveals.push(e.at - playing.at);
+      }
+      if (e.kind === "playing") {
+        const next = evs.slice(i + 1).find((x) => x.kind === "question" || x.kind === "playing");
+        if (next?.kind === "question") gaps.push(next.at - e.at);
+      }
+    });
+    console.log(`[revelado] cartel ${cards.map((x) => Math.round(x)).join(",")} ms · jugada ${reveals.map((x) => Math.round(x)).join(",")} ms · hueco ${gaps.map((x) => Math.round(x)).join(",")} ms`);
+    expect(cards.length).toBeGreaterThanOrEqual(2);
+    // El cartel se lee ≥2,4 s, el ÚLTIMO del partido incluido (#12: antes se veía un instante).
+    for (const d of cards) expect(d).toBeGreaterThanOrEqual(2400);
+    // El cartel aparece recién cuando la jugada terminó (~1,6 s), nunca con la pelota en vuelo.
+    for (const d of reveals) expect(d).toBeGreaterThanOrEqual(1500);
+    // Resultado → próximo penal = betweenPenalsS (4,1 s) ± 1 s (incluye el ≤1 s del cron).
+    expect(gaps.length).toBeGreaterThanOrEqual(1);
+    for (const d of gaps) {
+      expect(d).toBeGreaterThanOrEqual(4100 - 1000);
+      expect(d).toBeLessThanOrEqual(4100 + 1000);
+    }
   });
 
   expect(errors).toEqual([]);

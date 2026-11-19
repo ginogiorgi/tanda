@@ -61,6 +61,11 @@ const eslintConfig = defineConfig([
       selector: "CallExpression[callee.property.name='getUser'][callee.object.property.name='auth']",
       message: "Usá getSession() de @/lib/supabase/session (valida el JWT local con getClaims).",
     };
+    // El builder de PostgREST es perezoso: sin `.then()` no sale la request (lib/supabase/fire.ts).
+    const lazyRpc = [
+      { selector: "UnaryExpression[operator='void'] > CallExpression[callee.property.name='rpc']", message: "supabase.rpc() es perezoso: `void` no lo manda. Usá fire() de @/lib/supabase/fire o await." },
+      { selector: "ExpressionStatement > CallExpression[callee.property.name='rpc']", message: "supabase.rpc() es perezoso: sin await/then no se manda. Usá fire() de @/lib/supabase/fire." },
+    ];
     const layoutMsg = "Layout: la página scrollea el documento (DESIGN-RULES §Layout). Usá <Page>/<GameStage>.";
     const LAYOUT = "/(^|\\s|:)(h-dvh|h-screen|min-h-0|overflow-y-auto|overflow-y-scroll|fixed|sticky)(\\s|$)/";
     const layout = [
@@ -82,16 +87,20 @@ const eslintConfig = defineConfig([
       {
         files: ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
         ignores: layoutAllow,
-        rules: { "no-restricted-syntax": ["error", getUser, ...layout] },
+        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc, ...layout] },
       },
       {
         files: ["components/**/*.{ts,tsx}"],
         ignores: layoutAllow,
-        rules: { "no-restricted-syntax": ["error", ...layout] },
+        rules: { "no-restricted-syntax": ["error", ...lazyRpc, ...layout] },
+      },
+      {
+        files: layoutAllow.filter((f) => f.startsWith("components/")),
+        rules: { "no-restricted-syntax": ["error", ...lazyRpc] },
       },
       {
         files: layoutAllow.filter((f) => f.startsWith("app/")),
-        rules: { "no-restricted-syntax": ["error", getUser] },
+        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc] },
       },
     ];
   })(),

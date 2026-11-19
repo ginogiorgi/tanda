@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { fire } from "@/lib/supabase/fire";
 import {
   clockOffset,
   remainingMs,
@@ -26,19 +27,28 @@ import {
 } from "@/lib/audio";
 import { loadPrefs, savePrefs } from "@/lib/prefs";
 import { GameStage } from "@/components/ui/GameStage";
+import { REVEAL_MS } from "@/lib/engine/timing";
+import { BALL_T1 } from "@/lib/penal/shot";
 
 type PenalLiveProps = {
   matchId: string;
   /** Ranked: abandonar es derrota inmediata (y cuesta puntos) → se avisa en la confirmación. */
   ranked?: boolean;
+  /**
+   * Llega un resultado (instante local, ms). El padre ancla ahí cuánto deja ver el último cartel del
+   * partido antes de ceder la pantalla (`MATCH_RESULT_LINGER_MS`, feedback 3 #12).
+   */
+  onResult?: (receivedAt: number) => void;
 };
 
 /**
  * Suscripción al canal privado `match:{id}` y render del penal en vivo. Es la base de la
  * pantalla de penal (F8 escena 3D + tarjeta premium). Maneja el ciclo completo:
- * `penal:start` (pregunta sin la correcta) → `select_option` (cambiable) → poke a 0s
- * (`resolve_penalty`, SPEC §1.3) → `penal:second_chance` (2 opciones, 5s) o `penal:result`
- * (GOL/ATAJADO + revela la correcta).
+ * `penal:start` (pregunta sin la correcta) → `select_option` (primer tap fijo) → poke a 0s
+ * (`resolve_penalty`, SPEC §1.3) → `penal:second_chance` (2 opciones, 5s) o `penal:result`.
+ * Revelado (feedback 3 #2): al llegar el resultado se juega la jugada SIN cartel; el sonido va cuando
+ * la pelota llega (`BALL_T1`) y el cartel (GOL/ATAJADO + la correcta) recién a `REVEAL_MS`, cuando la
+ * pelota quedó quieta; se queda hasta el próximo penal (`resultCardS` del server).
  *
  * Canal **privado**: requiere `realtime.setAuth(token)` antes de suscribir; la lectura la
  * gobierna la policy `match_broadcast_select` en `realtime.messages` (solo participantes).
@@ -55,12 +65,19 @@ export function PenalLive(props: PenalLiveProps) {
   );
 }
 
-function PenalView({ matchId, ranked = false }: PenalLiveProps) {
+function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
   const router = useNav();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
   const [scene, setScene] = useState<MatchScene | null>(null);
   const [result, setResult] = useState<PenalResultPayload | null>(null);
+  // Penal cuyo cartel ya se reveló (la jugada terminó). Hasta entonces, solo la escena.
+  const [revealedId, setRevealedId] = useState<string | null>(null);
+  const revealTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const onResultRef = useRef(onResult);
+  useEffect(() => {
+    onResultRef.current = onResult;
+  }, [onResult]);
   const [score, setScore] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
   // 10.12: tablero de penales resueltos del match (verde gol / rojo erró), por lado vía paridad de idx.
   const [dots, setDots] = useState<PenalDot[]>([]);
@@ -126,6 +143,8 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
   // perspectiva (10.8) y tablero de penales (10.12). Idempotente por `penalty_id`.
   const applyResult = useCallback((r: PenalResultPayload) => {
     if (resultRef.current?.penalty_id === r.penalty_id) return;
+    resultRef.current = r;
+    onResultRef.current?.(Date.now());
     setResult(r);
     setScore({ home: r.home_score, away: r.away_score });
     const myId = sceneRef.current?.my_participant_id ?? null;
@@ -134,14 +153,25 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
     const good =
       (myRole === "kick" && r.winner === "kicker") ||
       (myRole === "keep" && r.winner === "keeper");
-    if (myRole == null ? r.scored : good) playGood();
-    else playBad();
+    for (const t of revealTimers.current) clearTimeout(t);
+    revealTimers.current = [
+      // El sonido cuando la pelota llega (no al recibir el resultado: delataría la jugada).
+      setTimeout(() => ((myRole == null ? r.scored : good) ? playGood() : playBad()), BALL_T1 * 1000),
+      setTimeout(() => setRevealedId(r.penalty_id), REVEAL_MS),
+    ];
     setDots((prev) =>
       prev.some((d) => d.idx === r.idx)
         ? prev
         : [...prev, { idx: r.idx, scored: r.scored }].sort((a, b) => a.idx - b.idx),
     );
   }, []);
+
+  useEffect(
+    () => () => {
+      for (const t of revealTimers.current) clearTimeout(t);
+    },
+    [],
+  );
 
   useEffect(() => {
     let active = true;
@@ -282,7 +312,7 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
       pokedRef.current = phaseKey;
       setRemaining(0);
       remainingRef.current = 0;
-      void supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id });
+      fire(supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id }));
       // Tarea 5: respaldo si se pierde el broadcast `penal:result` (reconexión) → buscamos el
       // resultado por RPC y lo aplicamos igual, así no quedamos colgados en la animación. Reintenta
       // mientras el server todavía está resolviendo (devuelve null hasta que el penal está `resolved`).
@@ -301,7 +331,7 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
     };
 
     const tick = () => {
-      if (resultRef.current?.penalty_id === penal.penalty_id) return; // ya resuelto (cierre temprano)
+      if (resultRef.current?.penalty_id === penal.penalty_id) return; // ya resuelto
       const r = remainingMs(penal.deadline, offset);
       setRemaining(r);
       remainingRef.current = r;
@@ -329,8 +359,8 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
 
   // 10.11: elegir opción. PRIMER TAP GANA (no cambiable): el server rechaza un cambio con
   // `already_answered`. Optimista en el cliente; al tap congelo el contador (frozenRemaining) y
-  // bloqueo. El penal resuelve cuando respondieron los dos o a los 10s (server; la rapidez se mide por
-  // este `selected_at`).
+  // bloqueo. El penal resuelve a los 10s aunque hayan respondido los dos (server; la rapidez se mide
+  // por este `selected_at`).
   async function onSelect(option: number) {
     if (!penal || remainingRef.current <= 0 || answeredRef.current) return;
     answeredRef.current = true;
@@ -426,7 +456,13 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
     return null;
   };
 
-  // Resuelto: animación 3D goal/save/miss_wide (8.4/4.9) + GOL/ATAJADO + revela la correcta (§8.11).
+  // Resuelto, jugada en curso: solo la escena (nada que delate el resultado hasta que la pelota se quede
+  // quieta). Reduced motion: la escena ya muestra el cuadro final; el cartel llega igual a REVEAL_MS.
+  if (result && revealedId !== result.penalty_id) {
+    return <div data-testid="penal-playing" className="contents">{sceneBg(true, anim)}</div>;
+  }
+
+  // Resuelto y revelado: GOL/ATAJADO + la correcta (§8.11), hasta que abra el próximo penal.
   if (result) {
     const amWinner =
       (role === "kick" && result.winner === "kicker") ||
@@ -449,7 +485,7 @@ function PenalView({ matchId, ranked = false }: PenalLiveProps) {
         {sceneBg(true, anim)}
         {/* El globo de resultado va ANCLADO ARRIBA del stage (encima del arco), no centrado: si no,
             tapaba la animación de la pateada. */}
-        <div className="fade-in absolute left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
+        <div data-testid="penal-result-card" className="fade-in absolute left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
           <div className="flex w-full flex-col items-center gap-3 rounded-[6px] border-2 border-ink bg-bg-elevated px-5 py-5 shadow-pop">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
               Penal {result.idx} · {result.home_score}–{result.away_score}
