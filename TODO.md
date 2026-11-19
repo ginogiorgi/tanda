@@ -9,6 +9,8 @@
   `start_tournament` con prioridad) + F8.1 (CLAUDE.md y disclaimer). Verde parcial: typecheck · lint · knip ·
   unit 267 · components 52 · db 135 (rls_audit ya con las 3 RPC nuevas; `get_fan_ranking` también para anon) ·
   build · e2e 46. **Falta:** `pnpm test:e2e:flow` (incluye `fans.spec` nuevo), 7.6 wipe con export, deploy.
+- **Decisión de Gino (19/11):** el torneo con varios humanos sigue esperando al partido más lento (reloj común por
+  fecha, ~10 s en 2ª chance). No cambiar.
 - **Próximo paso concreto:** `git switch wip/f7-hinchas`, correr el flow; si pasa, squash a main
   (`git switch main && git merge --squash wip/f7-hinchas`, commit `feat: F7 …`, borrar la rama), push, aplicar
   `20261125000004` por MCP (+ ledger + advisors), smoke prod con alta y favoritos. Después 7.6 (wipe: export de
