@@ -29,5 +29,7 @@ export RESEND_API_KEY=""
 export E2E_DB_URL="$(get DB_URL)"   # solo el test (lee la correcta en champion.spec)
 export E2E_FLOW=1
 
-pnpm build
-pnpm exec playwright test --config playwright.flow.config.ts "$@"
+# `E2E_CONFIG` elige la config de Playwright (las capturas usan `playwright.shots.config.ts`) y
+# `E2E_SKIP_BUILD=1` reusa el `.next` ya construido contra la DB local.
+[ "${E2E_SKIP_BUILD:-}" = "1" ] || pnpm build
+pnpm exec playwright test --config "${E2E_CONFIG:-playwright.flow.config.ts}" "$@"
