@@ -4,14 +4,14 @@ import {
   DEJECTED,
   IDLE,
   JOINTS,
-  KEEPER_CELEBRATE,
-  KEEPER_DIVE,
   KEEPER_READY,
   KICK,
   KICKER_READY,
   REACTION_AT,
   REST,
   blendPose,
+  keeperDive,
+  keeperRecover,
   mirrorPose,
   resolvePose,
   samplePose,
@@ -19,7 +19,19 @@ import {
   type Clip,
 } from "./rig";
 
-const CLIPS: Record<string, Clip> = { IDLE, KICKER_READY, KICK, CELEBRATE, DEJECTED, KEEPER_READY, KEEPER_DIVE, KEEPER_CELEBRATE };
+const KEEPER_DIVE = keeperDive({ x: 1.5, y: 0.55, z: 0.25 });
+const KEEPER_DIVE_HIGH = keeperDive({ x: 1.5, y: 1.3, z: 0.25 });
+const CLIPS: Record<string, Clip> = {
+  IDLE,
+  KICKER_READY,
+  KICK,
+  CELEBRATE,
+  DEJECTED,
+  KEEPER_READY,
+  KEEPER_DIVE,
+  KEEPER_DIVE_HIGH,
+  KEEPER_RECOVER: keeperRecover(KEEPER_DIVE),
+};
 
 describe("rig", () => {
   it("resolvePose completa todas las articulaciones en 0", () => {
@@ -76,10 +88,18 @@ describe("rig", () => {
     expect(m.joints.shoulderR[2]).toBeCloseTo(-dive.joints.shoulderL[2]);
   });
 
-  it("la estirada termina en el piso desplazada hacia +X", () => {
+  it("la estirada termina en el piso desplazada hacia +X y la reincorporación arranca ahí", () => {
     const end = samplePose(KEEPER_DIVE, KEEPER_DIVE.duration);
-    expect(end.root.x).toBeGreaterThan(1);
+    expect(end.root.x).toBeGreaterThan(0.3);
     expect(end.root.y).toBeLessThan(-0.5);
+    expect(samplePose(keeperRecover(KEEPER_DIVE), 0)).toEqual(end);
+  });
+
+  it("feedback 3 #5: la pelota alta se ataja con el cuerpo más vertical que la rasante", () => {
+    const low = samplePose(KEEPER_DIVE, 0.75);
+    const high = samplePose(KEEPER_DIVE_HIGH, 0.75);
+    expect(Math.abs(high.root.rz)).toBeLessThan(Math.abs(low.root.rz));
+    expect(high.root.y).toBeGreaterThan(low.root.y);
   });
 
   it("blendPose interpola y sequencePose no salta al empezar la reacción", () => {

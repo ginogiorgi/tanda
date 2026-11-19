@@ -375,67 +375,159 @@ export const KEEPER_READY: Clip = {
   ],
 };
 
-/**
- * Estirada hacia +X (izquierda del arquero). Para el otro palo: `mirrorPose`. Vuelo pleno ≈ 0.75 s,
- * en el piso a 1.05 s. `root.x` es el desplazamiento lateral total.
- */
-export const KEEPER_DIVE: Clip = {
-  duration: 1.05,
-  loop: false,
-  keys: [
-    { t: 0, pose: READY_POSE },
-    {
-      t: 0.35,
-      pose: {
-        root: { y: -0.16, x: 0.08, rz: -0.18 },
-        joints: { ...READY_POSE.joints, kneeL: [1.2, 0, 0], kneeR: [1.2, 0, 0], hipL: [-0.65, 0, 0.1], hipR: [-0.65, 0, -0.1] },
-      },
-    },
-    {
-      t: 0.75,
-      pose: {
-        root: { x: 1.15, y: 0.3, rz: -1.25 },
-        joints: {
-          spine: [0, 0, -0.1],
-          head: [0, 0, -0.15],
-          shoulderL: [0, 0, 2.95],
-          shoulderR: [0, 0, -2.7],
-          elbowL: [0, 0, 0.1],
-          elbowR: [0, 0, -0.1],
-          hipL: [0, 0, 0.3],
-          hipR: [0.15, 0, -0.1],
-          kneeL: [0.2, 0, 0],
-          kneeR: [0.5, 0, 0],
-        },
-      },
-    },
-    {
-      t: 1.05,
-      pose: {
-        root: { x: 1.3, y: -0.7, rz: -1.5 },
-        joints: {
-          spine: [0, 0, -0.05],
-          shoulderL: [0, 0, 2.9],
-          shoulderR: [0, 0, -2.8],
-          hipL: [0, 0, 0.2],
-          hipR: [0.2, 0, -0.05],
-          kneeL: [0.3, 0, 0],
-          kneeR: [0.7, 0, 0],
-        },
-      },
-    },
-  ],
-};
+/** Pose en el instante del contacto con la pelota, estirada hacia +X (para el otro palo: `mirrorPose`). */
+interface DiveContact {
+  spec: PoseSpec;
+  /** Mano que ataja (hueso `hand_l`) con `root.x/y/z = 0`: promedio hombre/mujer medido sobre el GLB real. */
+  hand: readonly [number, number, number];
+}
 
-/** Arquero que atajó: se levanta (desde donde quedó tirado) con los puños arriba. `root.x` se suma. */
-export const KEEPER_CELEBRATE: Clip = {
-  duration: 0.7,
-  loop: false,
-  keys: [
-    { t: 0, pose: { root: { x: 1.3, y: -0.7, rz: -1.5 }, joints: { shoulderL: [0, 0, 2.9], shoulderR: [0, 0, -2.8] } } },
-    { t: 0.7, pose: { root: { x: 1.3, y: 0.05 }, joints: { ...FISTS_UP, spine: [-0.15, 0, 0] } } },
-  ],
+/**
+ * Feedback 3 #5: cuerpo en línea y de costado, brazos estirados HACIA la pelota (no los dos clavados arriba
+ * de la cabeza). Dos alturas de referencia; entre ellas se interpola. `hand` lo mide `rig.glb.test.ts`
+ * (cinemática directa sobre el GLB) — si cambian los ángulos, ese test dice los valores nuevos.
+ */
+const DIVE_LOW: DiveContact = {
+  spec: {
+    root: { rz: -1.3 },
+    joints: {
+      spine: [0, 0, -0.1],
+      head: [0, 0, -0.15],
+      shoulderL: [0.45, 0, 2.5],
+      shoulderR: [0.45, 0, -3.75],
+      elbowL: [0, 0, 0.05],
+      elbowR: [0, 0, -0.05],
+      hipL: [0, 0, 0.25],
+      hipR: [0.15, 0, -0.05],
+      kneeL: [0.3, 0, 0],
+      kneeR: [0.6, 0, 0],
+    },
+  },
+  hand: [0.966, 0.722, 0.136],
 };
+const DIVE_HIGH: DiveContact = {
+  spec: {
+    root: { rz: -0.95 },
+    joints: {
+      spine: [0, 0, -0.12],
+      head: [0, 0, -0.15],
+      shoulderL: [0.45, 0, 2.75],
+      shoulderR: [0.45, 0, -3.6],
+      elbowL: [0, 0, 0.05],
+      elbowR: [0, 0, -0.05],
+      hipL: [0, 0, 0.35],
+      hipR: [0.15, 0, -0.1],
+      kneeL: [0.3, 0, 0],
+      kneeR: [0.7, 0, 0],
+    },
+  },
+  hand: [0.948, 1.168, 0.152],
+};
+/** Referencias de la estirada (las mide `rig.glb.test.ts`). */
+export const DIVE_REFS = { low: DIVE_LOW, high: DIVE_HIGH } as const;
+/** Alturas (m) de la mano en las dos poses de referencia: abajo = rasante, arriba = media altura. */
+export const DIVE_LOW_Y = 0.55;
+export const DIVE_HIGH_Y = 1.3;
+/** La mano (muñeca) queda a esta distancia del centro de la pelota, del lado del cuerpo: la palma la toca. */
+const PALM = 0.12;
+
+/** A dónde tiene que llegar la mano: `x` lateral (>0, hacia donde se tira), `y` altura, `z` adelante. */
+export interface DiveReach {
+  x: number;
+  y: number;
+  z: number;
+}
+
+/** Instante (s desde que arranca la estirada) en que la mano llega a `reach`. */
+export const DIVE_CONTACT_T = 0.75;
+/** Duración total: impulso → vuelo → caída de costado amortiguada. */
+export const DIVE_DURATION = 1.15;
+
+/** Pose de contacto para `reach`: ángulos interpolados por altura y traslación tal que la mano quede ahí. */
+export function diveContactPose(reach: DiveReach): Pose {
+  const h = Math.max(0, Math.min(1, (reach.y - DIVE_LOW_Y) / (DIVE_HIGH_Y - DIVE_LOW_Y)));
+  const base = blendPose(resolvePose(DIVE_LOW.spec), resolvePose(DIVE_HIGH.spec), h);
+  const hx = DIVE_LOW.hand[0] * (1 - h) + DIVE_HIGH.hand[0] * h;
+  const hy = DIVE_LOW.hand[1] * (1 - h) + DIVE_HIGH.hand[1] * h;
+  const hz = DIVE_LOW.hand[2] * (1 - h) + DIVE_HIGH.hand[2] * h;
+  return { ...base, root: { ...base.root, x: reach.x - PALM - hx, y: reach.y - hy, z: reach.z - hz } };
+}
+
+/**
+ * Estirada hacia +X: flexión y paso de impulso hacia el lado → vuelo con el cuerpo en línea y la mano en
+ * `reach` a `DIVE_CONTACT_T` → caída de costado amortiguada (brazos que bajan, cuerpo apoyado).
+ */
+export function keeperDive(reach: DiveReach): Clip {
+  const contact = diveContactPose(reach);
+  const { x, z } = contact.root;
+  // Impulso: flexión y paso hacia el lado.
+  const load: PoseSpec = {
+    root: { x: 0.14, y: -0.17, z: z * 0.3, rz: -0.14 },
+    joints: {
+      ...READY_POSE.joints,
+      spine: [0.3, 0, -0.1],
+      hipL: [-0.55, 0, 0.3],
+      kneeL: [1.0, 0, 0],
+      hipR: [-0.7, 0, -0.05],
+      kneeR: [1.25, 0, 0],
+      shoulderL: [0.2, 0, 1.0],
+      shoulderR: [0.2, 0, -1.0],
+    },
+  };
+  // Despegue: a mitad de camino entre el impulso y el contacto, empujando hacia arriba (los pies no se hunden).
+  const mid = blendPose(resolvePose(load), contact, 0.5);
+  const takeoff: Pose = { ...mid, root: { ...mid.root, y: mid.root.y + 0.12 } };
+  return {
+    duration: DIVE_DURATION,
+    loop: false,
+    keys: [
+      { t: 0, pose: READY_POSE },
+      { t: 0.28, pose: load },
+      { t: 0.5, pose: takeoff },
+      { t: DIVE_CONTACT_T, pose: contact },
+      {
+        t: DIVE_DURATION,
+        pose: {
+          // De costado sobre el pasto: el brazo de abajo queda a lo largo del cuerpo (no lo atraviesa).
+          root: { x: x + 0.12, y: -0.64, z, rz: -1.45 },
+          joints: {
+            ...contact.joints,
+            spine: [0, 0, -0.05],
+            shoulderL: [0.35, 0, 3.0],
+            shoulderR: [0.35, 0, -3.35],
+            hipL: [0, 0, 0.02],
+            hipR: [0.2, 0, -0.1],
+            kneeL: [0.45, 0, 0],
+            kneeR: [0.8, 0, 0],
+          },
+        },
+      },
+    ],
+  };
+}
+
+/** Arquero que atajó: desde donde quedó tirado se arrodilla y se para con los puños arriba. */
+export function keeperRecover(dive: Clip): Clip {
+  const land = samplePose(dive, dive.duration);
+  const { x, z } = land.root;
+  return {
+    duration: 0.9,
+    loop: false,
+    keys: [
+      { t: 0, pose: land },
+      // Se apoya en el brazo y se sienta de costado antes de arrodillarse.
+      { t: 0.2, pose: { ...land, root: { ...land.root, y: land.root.y + 0.2, rz: -1.05 }, joints: { ...land.joints, hipL: [-0.6, 0, 0.1], kneeL: [1.2, 0, 0], hipR: [-0.5, 0, -0.1], kneeR: [1.3, 0, 0] } } },
+      {
+        t: 0.45,
+        pose: {
+          root: { x, y: -0.28, z, rz: -0.35 },
+          joints: { spine: [0.35, 0, 0], hipL: [-1.0, 0, 0.1], kneeL: [1.5, 0, 0], hipR: [-0.2, 0, -0.1], kneeR: [1.6, 0, 0], shoulderL: [0, 0, 0.5], shoulderR: [0, 0, -0.5] },
+        },
+      },
+      { t: 0.9, pose: { root: { x, y: 0.03, z }, joints: { ...FISTS_UP, spine: [-0.15, 0, 0] } } },
+    ],
+  };
+}
 
 /** Inicio de la reacción (s desde el remate): la pelota llega a 1.0 s, el arquero cae a ~1.3 s. */
 export const REACTION_AT = 1.6;

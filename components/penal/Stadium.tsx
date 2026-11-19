@@ -15,9 +15,15 @@ import { GOAL_H, GOAL_HALF_W, GOAL_Z } from "@/lib/penal/shot";
 
 const NET_DEPTH = 0.95;
 
-const GRASS_A = "#3c8a41";
-const GRASS_B = "#347c39";
+// Franjas anchas con contraste (feedback 3 #1, como la foto aérea de referencia).
+const GRASS_A = "#3f9446";
+const GRASS_B = "#2e7834";
+const STRIPE = 2.4;
 const LINE = "#f2efe6";
+/** Cal fina y prolija (antes 6 cm, se veía gruesa desde arriba). */
+const LINE_W = 0.045;
+/** Medialuna: radio desde el punto del penal; se dibuja solo la parte afuera del área. */
+const ARC_R = 5.4;
 const POST = "#f7f5ef";
 // Marca "Programa": rojo de imprenta, azul, tinta y papel en los carteles.
 const BOARDS = ["#d7261e", "#141414", "#1f3fa8", "#ede9df"] as const;
@@ -40,14 +46,14 @@ function rng(seed: number): () => number {
 function Grass() {
   const stripes = useMemo(() => {
     const out: { z: number; color: string }[] = [];
-    for (let i = 0; i < 14; i++) out.push({ z: 6 - i * 1.5, color: i % 2 === 0 ? GRASS_A : GRASS_B });
+    for (let i = 0; i < 12; i++) out.push({ z: 14 - i * STRIPE, color: i % 2 === 0 ? GRASS_A : GRASS_B });
     return out;
   }, []);
   return (
     <group>
       {stripes.map((s) => (
-        <mesh key={s.z} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, s.z - 0.75]}>
-          <planeGeometry args={[34, 1.5]} />
+        <mesh key={s.z} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, s.z - STRIPE / 2]}>
+          <planeGeometry args={[40, STRIPE]} />
           <meshStandardMaterial color={s.color} />
         </mesh>
       ))}
@@ -65,7 +71,7 @@ function Line({ from, to }: { from: [number, number]; to: [number, number] }) {
       rotation={[-Math.PI / 2, 0, -Math.atan2(dz, dx)]}
       position={[(from[0] + to[0]) / 2, 0.006, (from[1] + to[1]) / 2]}
     >
-      <planeGeometry args={[len, 0.06]} />
+      <planeGeometry args={[len + LINE_W, LINE_W]} />
       <meshBasicMaterial color={LINE} />
     </mesh>
   );
@@ -74,17 +80,25 @@ function Line({ from, to }: { from: [number, number]; to: [number, number] }) {
 function PitchLines() {
   const six = { hw: 3.4, front: GOAL_Z + 2.2 };
   const box = { hw: 8.5, front: 3.5 };
+  // Ángulo (desde +X, en el plano del césped) donde la medialuna cruza la línea del área.
+  const cut = Math.asin(box.front / ARC_R);
   return (
     <group>
-      <Line from={[-16, GOAL_Z]} to={[16, GOAL_Z]} />
+      <Line from={[-18, GOAL_Z]} to={[18, GOAL_Z]} />
       <Line from={[-six.hw, GOAL_Z]} to={[-six.hw, six.front]} />
       <Line from={[six.hw, GOAL_Z]} to={[six.hw, six.front]} />
       <Line from={[-six.hw, six.front]} to={[six.hw, six.front]} />
       <Line from={[-box.hw, GOAL_Z]} to={[-box.hw, box.front]} />
       <Line from={[box.hw, GOAL_Z]} to={[box.hw, box.front]} />
+      <Line from={[-box.hw, box.front]} to={[box.hw, box.front]} />
+      {/* medialuna (feedback 3 #1): arco centrado en el punto del penal, del lado de la cancha */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.006, 0]}>
+        <ringGeometry args={[ARC_R - LINE_W / 2, ARC_R + LINE_W / 2, 64, 1, Math.PI + cut, Math.PI - 2 * cut]} />
+        <meshBasicMaterial color={LINE} />
+      </mesh>
       {/* punto del penal */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.007, 0]}>
-        <circleGeometry args={[0.11, 14]} />
+        <circleGeometry args={[0.11, 20]} />
         <meshBasicMaterial color={LINE} />
       </mesh>
     </group>
@@ -117,20 +131,57 @@ function useNetGeometry(): THREE.BufferGeometry {
   }, []);
 }
 
+/** Radio de las esquinas del marco (curva en los ángulos, feedback 3 #5). */
+const CORNER_R = 0.12;
+const POST_R = 0.055;
+
+/** Marco de UN solo tubo: palo → esquina curva → travesaño → esquina curva → palo (sección redonda). */
+function useFrameGeometry(): THREE.BufferGeometry {
+  return useMemo(() => {
+    const W = GOAL_HALF_W;
+    const H = GOAL_H;
+    const r = CORNER_R;
+    const path = new THREE.CurvePath<THREE.Vector3>();
+    const v = (x: number, y: number) => new THREE.Vector3(x, y, 0);
+    path.add(new THREE.LineCurve3(v(-W, 0), v(-W, H - r)));
+    path.add(new THREE.QuadraticBezierCurve3(v(-W, H - r), v(-W, H), v(-W + r, H)));
+    path.add(new THREE.LineCurve3(v(-W + r, H), v(W - r, H)));
+    path.add(new THREE.QuadraticBezierCurve3(v(W - r, H), v(W, H), v(W, H - r)));
+    path.add(new THREE.LineCurve3(v(W, H - r), v(W, 0)));
+    return new THREE.TubeGeometry(path, 96, POST_R, 12, false);
+  }, []);
+}
+
+/** Soportes de atrás: caños finos del travesaño al piso, por detrás de la red. */
+function useSupportGeometry(): THREE.BufferGeometry {
+  return useMemo(() => {
+    const W = GOAL_HALF_W;
+    const D = -NET_DEPTH;
+    const path = new THREE.CurvePath<THREE.Vector3>();
+    const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
+    path.add(new THREE.LineCurve3(v(-W, 0.02, D), v(-W, GOAL_H * 0.9, D)));
+    path.add(new THREE.LineCurve3(v(-W, GOAL_H * 0.9, D), v(W, GOAL_H * 0.9, D)));
+    path.add(new THREE.LineCurve3(v(W, GOAL_H * 0.9, D), v(W, 0.02, D)));
+    return new THREE.TubeGeometry(path, 24, 0.022, 6, false);
+  }, []);
+}
+
 export function Goal({ netRef }: { netRef: Ref<THREE.Group> }) {
   const net = useNetGeometry();
-  const r = 0.06;
+  const frame = useFrameGeometry();
+  const supports = useSupportGeometry();
   return (
     <group position={[0, 0, GOAL_Z]}>
-      {[-GOAL_HALF_W, GOAL_HALF_W].map((x) => (
-        <mesh key={x} position={[x, GOAL_H / 2, 0]}>
-          <cylinderGeometry args={[r, r, GOAL_H, 8]} />
-          <meshStandardMaterial color={POST} />
-        </mesh>
-      ))}
-      <mesh position={[0, GOAL_H, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[r, r, GOAL_HALF_W * 2 + r * 2, 8]} />
-        <meshStandardMaterial color={POST} />
+      <mesh geometry={frame}>
+        <meshStandardMaterial color={POST} roughness={0.35} />
+      </mesh>
+      <mesh geometry={supports}>
+        <meshStandardMaterial color="#c9c4b8" roughness={0.6} />
+      </mesh>
+      {/* sombra del arco sobre el pasto (sol alto, de adelante): banda suave detrás de la línea */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.25, 0.004, -0.55]}>
+        <planeGeometry args={[GOAL_HALF_W * 2 + 0.2, 1.0]} />
+        <meshBasicMaterial color="#0a1e0c" transparent opacity={0.16} depthWrite={false} />
       </mesh>
       <group ref={netRef}>
         <lineSegments geometry={net}>

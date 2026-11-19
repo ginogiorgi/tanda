@@ -26,19 +26,17 @@ import {
   CELEBRATE,
   DEJECTED,
   KICKER_READY,
-  KEEPER_CELEBRATE,
-  KEEPER_DIVE,
   KEEPER_READY,
   KICK,
-  REACTION_AT,
   blendPose,
-  mirrorPose,
   samplePose,
   sequencePose,
   smoothstep,
 } from "@/lib/avatar/rig";
 import type { SceneRole } from "@/lib/penal/scene";
-import { BALL_R, BALL_T0, BALL_T1, DIVE_T0, GOAL_Z, SPOT, ballAt, netBulge, shotPlan } from "@/lib/penal/shot";
+import { droneCamera, idleCamera } from "@/lib/penal/camera";
+import { keeperClips, keeperPoseAt } from "@/lib/penal/keeper";
+import { BALL_R, BALL_T0, BALL_T1, KEEPER_Z, SPOT, ballAt, netBulge, shotPlan } from "@/lib/penal/shot";
 import type { PenaltyReason } from "@/lib/realtime/penal";
 import { useBlobTexture } from "@/lib/three/blobTexture";
 import { suppressThreeClockDeprecation } from "@/lib/three/suppress-clock-warning";
@@ -57,19 +55,9 @@ export type PenalAnimation = { id: string; reason: PenaltyReason; variant: numbe
 const KICKER_X = -0.095; // el pie derecho del pateador (mirando al arco) queda detrás de la pelota
 const KICKER_Z0 = 1.3;
 const KICKER_Z_CONTACT = 0.42;
-const KEEPER_Z = GOAL_Z + 0.3;
-const RESULT_REDUCED_T = 1000; // reduced motion: t grande → todas las curvas quedan en su pose final
+const RESULT_REDUCED_T = 1000;
+const IDLE_CAM = idleCamera(16 / 9); // reduced motion: t grande → todas las curvas quedan en su pose final
 
-// Cámara: idle → toma del remate → reacción (según el resultado).
-const CAM_IDLE = { pos: new THREE.Vector3(0.9, 2.8, 5.0), look: new THREE.Vector3(0, 0.95, -6) };
-const CAM_SHOT = { pos: new THREE.Vector3(1.7, 2.2, 4.1), look: new THREE.Vector3(-0.2, 0.9, -6.4) };
-
-const v = {
-  pos: new THREE.Vector3(),
-  look: new THREE.Vector3(),
-  rPos: new THREE.Vector3(),
-  rLook: new THREE.Vector3(),
-};
 
 /** Pelota low-poly con gajos oscuros (colores por cara, sin texturas). */
 function useBallGeometry(): THREE.BufferGeometry {
@@ -115,6 +103,8 @@ function Actors({
   const ballGeo = useBallGeometry();
 
   const plan = useMemo(() => (anim ? shotPlan(anim.reason, anim.variant) : null), [anim]);
+  // Estirada armada para ESTA pelota (la mano llega a `plan.reach`); si ataja, se levanta festejando.
+  const keeperAnim = useMemo(() => (plan ? keeperClips(plan) : null), [plan]);
 
   // Colores del público: las camisetas de los dos equipos (estables por valor, no por identidad).
   const crowdKey = [kicker.kitTop, kicker.kitSash, keeper.kitTop, keeper.kitSash].join("|");
@@ -164,19 +154,17 @@ function Actors({
 
     // ── Arquero ──
     let keeperX = 0;
+    let keeperZ = KEEPER_Z;
     let lying = 0;
     if (!plan) {
       const p = samplePose(KEEPER_READY, idleT);
       applyPose(keeperRig.handles.current, p);
       keeperX = p.root.x;
-    } else {
-      const ready = samplePose(KEEPER_READY, idleT);
-      const action = (tt: number) =>
-        tt < DIVE_T0 ? ready : blendPose(ready, samplePose(KEEPER_DIVE, tt - DIVE_T0), smoothstep((tt - DIVE_T0) / 0.12));
-      let p = sequencePose(action, plan.reason === "goal" ? null : KEEPER_CELEBRATE, t);
-      if (plan.keeperDir < 0) p = mirrorPose(p);
+    } else if (keeperAnim) {
+      const p = keeperPoseAt(plan, keeperAnim, t, idleT);
       applyPose(keeperRig.handles.current, p);
       keeperX = p.root.x;
+      keeperZ = KEEPER_Z + p.root.z;
       lying = Math.min(1, Math.abs(p.root.rz) / 1.5);
     }
 
@@ -206,7 +194,7 @@ function Actors({
     const [sk, sg, sb] = shadows.current;
     sk?.position.set(KICKER_X, 0.01, kz);
     if (sg) {
-      sg.position.set(keeperX, 0.01, KEEPER_Z);
+      sg.position.set(keeperX, 0.01, keeperZ);
       sg.scale.set(1 + lying * 0.9, 1, 1);
     }
     if (sb) {
@@ -215,30 +203,15 @@ function Actors({
       sb.scale.set(s, s, 1);
     }
 
-    // ── Cámara ──
+    // ── Cámara dron (lib/penal/camera.ts) ──
     const cam = state.camera;
-    if (!plan) {
-      cam.position.copy(CAM_IDLE.pos);
-      cam.lookAt(CAM_IDLE.look);
-      return;
+    const shot = droneCamera(state.size.width / Math.max(1, state.size.height), plan, t, plan?.reason === "save" ? keeperX : bp[0]);
+    cam.position.set(shot.pos[0], shot.pos[1], shot.pos[2]);
+    cam.lookAt(shot.look[0], shot.look[1], shot.look[2]);
+    if (cam instanceof THREE.PerspectiveCamera && cam.fov !== shot.fov) {
+      cam.fov = shot.fov;
+      cam.updateProjectionMatrix();
     }
-    const w1 = smoothstep(t / BALL_T1);
-    v.pos.lerpVectors(CAM_IDLE.pos, CAM_SHOT.pos, w1);
-    v.look.lerpVectors(CAM_IDLE.look, CAM_SHOT.look, w1);
-    if (plan.reason === "goal") {
-      v.rPos.set(2.0, 1.6, kz + 3.6);
-      v.rLook.set(KICKER_X, 1.0, kz - 0.5);
-    } else if (plan.reason === "save") {
-      v.rPos.set(keeperX * 0.45, 1.5, KEEPER_Z + 4.6);
-      v.rLook.set(keeperX * 0.9, 0.85, KEEPER_Z);
-    } else {
-      v.rPos.copy(CAM_SHOT.pos);
-      v.rLook.set(plan.settle[0] * 0.35, 1.2, GOAL_Z);
-    }
-    const w2 = smoothstep((t - REACTION_AT) / 0.9);
-    cam.position.lerpVectors(v.pos, v.rPos, w2);
-    v.look.lerp(v.rLook, w2);
-    cam.lookAt(v.look);
   }, -1); // antes que el `useFrame` de `GlbAvatar` (traduce la pose a huesos en el mismo frame)
 
   return (
@@ -306,7 +279,7 @@ export function PenalScene({ kicker, keeper, result = null, freezeAt }: PenalSce
       frameloop={live ? "always" : "demand"}
       dpr={[1, 1.75]}
       gl={{ antialias: true }}
-      camera={{ fov: 42, position: [CAM_IDLE.pos.x, CAM_IDLE.pos.y, CAM_IDLE.pos.z] }}
+      camera={{ fov: IDLE_CAM.fov, position: [IDLE_CAM.pos[0], IDLE_CAM.pos[1], IDLE_CAM.pos[2]] }}
     >
       <color attach="background" args={[SKY]} />
       <fog attach="fog" args={[SKY, 16, 34]} />

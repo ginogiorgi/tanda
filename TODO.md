@@ -3,9 +3,9 @@
 ## ⏸ HANDOFF
 - **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución.
 - **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (prod `2457f09`,
-  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`). Smoke prod 42 + penal de
+  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`), F3 (solo front). Smoke prod 42 + penal de
   invitado OK en ambas.
-- **Fase en curso:** F3 (vista dron, arquero, arco).
+- **Fase en curso:** F4 (sin scroll en PC + tablas de Argentino).
 - **Último deploy:** F2 — 19/11 00:30. Hueco medido en prod (cron, sin cliente): 4,40 s.
 - **Para retomar:** `git log --oneline -15`; seguir la primera tarea sin ✅. Migraciones nuevas desde
   `20261125000003`.
@@ -114,23 +114,30 @@ Archivos: `components/penal/PenalScene.tsx` (cámara `CAM_IDLE/CAM_SHOT`, actore
 `PitchLines`, `Goal`, red, tribuna), `lib/avatar/rig.ts` (`KEEPER_DIVE`, `KEEPER_CELEBRATE`), `lib/penal/shot.ts`.
 Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-chrome-stable --headless=new
 --use-angle=swiftshader`.
-- [ ] **3.1 Cámara dron inclinada** (≈ 50–60° de inclinación, no cenital), detrás y arriba del pateador mirando al
+- [x] **3.1 Cámara dron inclinada** (≈ 50–60° de inclinación, no cenital), detrás y arriba del pateador mirando al
   arco: arco arriba del cuadro, área grande, área chica, **medialuna** (falta hoy) y punto del penal; pasto a franjas
   anchas alternadas (más contraste, como la foto) y líneas de cal más finas y prolijas. Avatares legibles (escala y
   encuadre: pateador abajo de espaldas, arquero arriba de frente). Leve empuje de cámara en la jugada (propia);
   reduced motion = cuadro final. En celu la tarjeta de la pregunta tapa la parte de abajo → el encuadre deja la
   acción en el tercio superior. **Verifica:** capturas 390/1440 idle + 6 cuadros de gol, atajada y afuera
   (alto y bajo).
-- [ ] **3.2 Arquero:** hoy en `KEEPER_DIVE` los hombros van a ±2,7–2,95 rad (manos arriba de la cabeza) → parece
+- [x] **3.2 Arquero:** hoy en `KEEPER_DIVE` los hombros van a ±2,7–2,95 rad (manos arriba de la cabeza) → parece
   bugueado. Nueva atajada: flexión y paso de impulso hacia el lado, estirada lateral con el cuerpo en línea, brazos
   extendidos **hacia la altura de la pelota** (bajo/alto según `target.y`), caída de costado amortiguada y
   reincorporación; cuando no llega, misma estirada a destiempo y sin tocar. **Verifica:** test del rig (en la
   atajada la mano queda a < 0,3 m del `target` en `BALL_T1`; en el gol, lejos), capturas cuadro a cuadro
   (0,2–2,0 s cada 0,2) para los 4 variants.
-- [ ] **3.3 Arco:** hoy son 3 cilindros sueltos (se notan las esquinas). Marco de un solo tubo con esquinas
+- [x] **3.3 Arco:** hoy son 3 cilindros sueltos (se notan las esquinas). Marco de un solo tubo con esquinas
   redondeadas (curva en los ángulos, `TubeGeometry` sobre un path), sección redonda, red con caída natural
   (`backH`) y soportes traseros, sombra del arco sobre el pasto. **Verifica:** capturas de cerca y en la vista dron.
-- [ ] **Cierre F3:** verde + `perf:budget` de `/partido` + deploy + penal de invitado en prod.
+- [x] **Cierre F3:** verde (unit 248 · components 48 · db 118 · e2e 42 · flow 9) + `perf:budget` `/partido` 243,9/248
+  KB. Hecho: cámara `lib/penal/camera.ts` (dron ~49°, calibrada por búsqueda y testeada por proyección en celu/PC/
+  tablet), estirada paramétrica `keeperDive(reach)` + `keeperRecover` (`lib/avatar/rig.ts`, pose compartida en
+  `lib/penal/keeper.ts`) con test de cinemática directa sobre el GLB real (`lib/avatar/fkNode.ts` +
+  `rig.glb.test.ts`: mano < 0,3 m de la pelota en las 4 atajadas, lejos en el gol, nunca bajo el piso), atajada
+  más al palo (x ±1,5) y alta a 1,3 m; en el gol el arquero sale 0,12 s tarde. Arco de un tubo (`TubeGeometry`,
+  esquinas curvas) + soportes + sombra; franjas anchas, cal de 4,5 cm, línea del área y medialuna. El último
+  cartel se ancla también al revelado real (timer atrasado ⇒ igual dura entero).
 
 ### F4 — Sin scroll en PC + tablas de Argentino (#10, #3)
 - [ ] **4.1 Layout:** hoy `app/layout.tsx` pone el contenido en `min-h-svh` y el footer debajo → todo scrollea. Nuevo:
@@ -211,6 +218,13 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   commit ahí.
 
 ### Pendiente de revisión con Gino
+- **Datos de prueba en prod (19/11, error mío, sin daño):** un `pnpm build` suelto (env de prod) + `E2E_SKIP_BUILD=1`
+  corrió el flow contra la API de prod entre 03:32 y 03:40 UTC: 10 invitados anónimos, 1 cuenta sintética
+  `av_…@users.tanda2026.com.ar` (avatar.spec) y torneos con bots (terminan solos). Ningún dato real tocado. Se
+  van con el wipe de F7 (con export). `flow.sh` ahora verifica que `.next` apunte a la API local o reconstruye.
+- **Escena del penal (F3):** cámara dron fija con leve empuje; los avatares quedan chicos frente a la toma de atrás
+  (es el costo de ver arco + área + medialuna). Si los querés más grandes: cerrar el cuadro (sin medialuna) o
+  escalar los muñecos ×1,2.
 - **Cierre anticipado del penal (F2.1, hecho):** el penal vuelve a resolverse solo al vencer el tiempo aunque
   respondan los dos (deshace la regla del 14/11). Alternativa si lo querés de vuelta: cierre anticipado + demorar
   solo el cartel (una línea en `resolve_penalty`).

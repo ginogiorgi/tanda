@@ -38,6 +38,7 @@ type PenalLiveProps = {
    * Llega un resultado (instante local, ms). El padre ancla ahí cuánto deja ver el último cartel del
    * partido antes de ceder la pantalla (`MATCH_RESULT_LINGER_MS`, feedback 3 #12).
    */
+  /** Ancla del último cartel: al llegar el resultado y otra vez al revelarlo (`Date.now() - REVEAL_MS`, por si el timer se atrasó). */
   onResult?: (receivedAt: number) => void;
 };
 
@@ -157,7 +158,11 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     revealTimers.current = [
       // El sonido cuando la pelota llega (no al recibir el resultado: delataría la jugada).
       setTimeout(() => ((myRole == null ? r.scored : good) ? playGood() : playBad()), BALL_T1 * 1000),
-      setTimeout(() => setRevealedId(r.penalty_id), REVEAL_MS),
+      setTimeout(() => {
+        setRevealedId(r.penalty_id);
+        // Si el timer se atrasó (hilo ocupado), el cartel igual dura entero: el ancla del linger se corre.
+        onResultRef.current?.(Date.now() - REVEAL_MS);
+      }, REVEAL_MS),
     ];
     setDots((prev) =>
       prev.some((d) => d.idx === r.idx)

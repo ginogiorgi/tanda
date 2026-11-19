@@ -31,5 +31,14 @@ export E2E_FLOW=1
 
 # `E2E_CONFIG` elige la config de Playwright (las capturas usan `playwright.shots.config.ts`) y
 # `E2E_SKIP_BUILD=1` reusa el `.next` ya construido contra la DB local.
-[ "${E2E_SKIP_BUILD:-}" = "1" ] || pnpm build
+if [ "${E2E_SKIP_BUILD:-}" = "1" ]; then
+  # 19/11: un `pnpm build` suelto (env de prod) + E2E_SKIP_BUILD=1 mandó el flujo contra PROD. Solo se reusa
+  # el `.next` si su bundle de cliente apunta a ESTA API local; si no, se reconstruye.
+  if ! grep -rqF "$api" .next/static/chunks 2>/dev/null; then
+    echo "⚠ .next no apunta a $api (¿build de prod?): reconstruyo contra la DB local"
+    pnpm build
+  fi
+else
+  pnpm build
+fi
 pnpm exec playwright test --config "${E2E_CONFIG:-playwright.flow.config.ts}" "$@"

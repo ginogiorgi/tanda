@@ -77,7 +77,7 @@ export function TournamentLive({
   // su resultado, no desde que el poll notó el fin del partido.
   const lastResultAtRef = useRef(0);
   const onResult = useCallback((at: number) => {
-    lastResultAtRef.current = at;
+    lastResultAtRef.current = Math.max(lastResultAtRef.current, at);
   }, []);
   const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);

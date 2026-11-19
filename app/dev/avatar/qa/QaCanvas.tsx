@@ -4,7 +4,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 import type { AvatarV2 } from "@/lib/avatar/schema";
-import { CELEBRATE, KEEPER_DIVE, KICK, KICKER_READY, samplePose, type Clip } from "@/lib/avatar/rig";
+import { CELEBRATE, KICK, KICKER_READY, keeperDive, samplePose, type Clip } from "@/lib/avatar/rig";
 import { GlbAvatar } from "@/components/avatar/GlbAvatar";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
 
@@ -12,7 +12,7 @@ import { applyPose, useRig } from "@/components/avatar/rigPose";
 const POSES: Record<string, readonly [Clip, number]> = {
   ready: [KICKER_READY, 0],
   kick: [KICK, 0.45],
-  dive: [KEEPER_DIVE, 0.6],
+  dive: [keeperDive({ x: 1.5, y: 0.55, z: 0.25 }), 0.75],
   celebrate: [CELEBRATE, 1.2],
 };
 

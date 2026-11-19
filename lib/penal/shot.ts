@@ -8,6 +8,7 @@
  *   BALL_T1 → BALL_T2  después: cae en la red, rebota en el arquero o sigue de largo
  * El arquero arranca la estirada en `DIVE_T0`.
  */
+import { DIVE_HIGH_Y, DIVE_LOW_Y, type DiveReach } from "@/lib/avatar/rig";
 import type { PenaltyReason } from "@/lib/realtime/penal";
 
 export const GOAL_Z = -7;
@@ -20,6 +21,10 @@ export const BALL_T0 = 0.3;
 export const BALL_T1 = 1.0;
 export const BALL_T2 = 1.6;
 export const DIVE_T0 = 0.25;
+/** En el gol el arquero sale a destiempo (feedback 3 #5): misma estirada, tarde y al otro lado. */
+export const DIVE_LATE = 0.12;
+/** Línea del arquero: medio metro adelante de la línea de gol. */
+export const KEEPER_Z = GOAL_Z + 0.3;
 
 export type V3 = readonly [number, number, number];
 
@@ -33,12 +38,20 @@ export interface ShotPlan {
   keeperDir: 1 | -1;
   /** Altura del arco de la trayectoria. */
   lift: number;
+  /** Arranque de la estirada (s). En la atajada la mano llega a la pelota justo en `BALL_T1`. */
+  diveT0: number;
+  /** A dónde estira la mano el arquero, en su marco (x lateral > 0 hacia `keeperDir`). */
+  reach: DiveReach;
 }
+
+const clampY = (y: number) => Math.max(DIVE_LOW_Y, Math.min(DIVE_HIGH_Y, y));
 
 export function shotPlan(reason: PenaltyReason, variant: number): ShotPlan {
   const side: 1 | -1 = variant % 2 === 0 ? -1 : 1;
   const high = variant >= 2;
   const y = high ? GOAL_H * 0.7 : 0.45;
+  // Sin pelota que tocar (gol/afuera), el arquero estira al lado elegido, a la altura del remate.
+  const blind: DiveReach = { x: 1.5, y: clampY(y), z: 0.2 };
   switch (reason) {
     case "goal": {
       // Entra al ángulo; el arquero vuela al lado equivocado. Después cae dentro de la red.
@@ -49,12 +62,22 @@ export function shotPlan(reason: PenaltyReason, variant: number): ShotPlan {
         settle: [x * 1.04, BALL_R, GOAL_Z - 0.8],
         keeperDir: side === 1 ? -1 : 1,
         lift: high ? 0.5 : 0.25,
+        diveT0: DIVE_T0 + DIVE_LATE,
+        reach: blind,
       };
     }
     case "save": {
-      // El arquero llega y la rechaza hacia el costado.
-      const target: V3 = [side * 1.15, Math.max(0.55, y * 0.8), GOAL_Z + 0.55];
-      return { reason, target, settle: [side * 2.7, BALL_R, GOAL_Z + 2.4], keeperDir: side, lift: 0.3 };
+      // El arquero llega con la mano y la rechaza hacia el costado.
+      const target: V3 = [side * 1.5, high ? DIVE_HIGH_Y : DIVE_LOW_Y, GOAL_Z + 0.55];
+      return {
+        reason,
+        target,
+        settle: [side * 2.9, BALL_R, GOAL_Z + 2.4],
+        keeperDir: side,
+        lift: high ? 0.35 : 0.2,
+        diveT0: DIVE_T0,
+        reach: { x: Math.abs(target[0]), y: target[1], z: target[2] - KEEPER_Z },
+      };
     }
     case "miss_wide":
     default: {
@@ -67,6 +90,8 @@ export function shotPlan(reason: PenaltyReason, variant: number): ShotPlan {
         settle: [tx * 1.25, high ? GOAL_H + 0.9 : BALL_R, GOAL_Z - 2.4],
         keeperDir: side,
         lift: high ? 0.6 : 0.3,
+        diveT0: DIVE_T0,
+        reach: blind,
       };
     }
   }
