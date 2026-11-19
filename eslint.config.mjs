@@ -74,7 +74,7 @@ const eslintConfig = defineConfig([
     ];
     const layoutAllow = [
       "components/ui/PitchBackground.tsx", // fondo decorativo (data-layer=bg)
-      "components/penal/Confetti.tsx", // overlay transitorio (data-layer=overlay)
+      "components/penal/Confetti.tsx", // papelitos de fondo del campeón (data-layer=bg)
       "components/ui/ScreenHeader.tsx", // header sticky (data-layer=header)
       "components/ui/HelpSheet.tsx", // sheet/diálogo (overlay)
       "components/penal/PenalLive.tsx", // tarjeta del penal: max-h + scroll propio (data-layer=card)

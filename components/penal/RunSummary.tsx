@@ -117,9 +117,11 @@ export function RunSummary({
   }
 
   return (
-    <div className="fade-in relative z-10 flex w-full max-w-md flex-col items-center gap-6 text-center">
-      {/* El confeti cae por encima (overlay absoluto), así que no necesita empujar el contenido. */}
+    <>
+      {/* Papelitos de FONDO (feedback 3 #6): hermano del contenido y no hijo — `.fade-in` deja un transform
+          que volvería al contenedor el bloque contenedor del `fixed` y lo encerraría en la columna. */}
       {isChampion && <Confetti />}
+    <div className="fade-in flex w-full max-w-md flex-col items-center gap-6 text-center">
       {/* T14: el header va sin offset condicional → todos los estados (campeón / subcampeón /
           eliminado) quedan centrados parejo dentro del mismo contenedor max-w-md. */}
       <div className="flex flex-col items-center gap-2">
@@ -178,5 +180,6 @@ export function RunSummary({
         error={error}
       />
     </div>
+    </>
   );
 }

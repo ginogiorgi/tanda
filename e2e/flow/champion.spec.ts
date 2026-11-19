@@ -41,6 +41,22 @@ test("invitado → torneo completo → campeón", async ({ page }) => {
     expect(play?.height).toBeGreaterThan(0);
     expect(home?.height).toBe(play?.height);
     await expect(actions.getByRole("button", { name: "Ver cómo sigue" })).toHaveCount(0);
+    // Feedback 3 #6: los papelitos son FONDO — sobre el título y los botones, lo primero no es un papelito.
+    await expect(page.getByTestId("confetti")).toHaveCount(1);
+    await page.waitForTimeout(3500); // termina el vuelo
+    for (const target of [page.getByText("¡Campeón!", { exact: true }), actions.getByRole("button", { name: "Jugar de nuevo" }), actions.getByRole("link", { name: "Volver al inicio" })]) {
+      if (!target) continue;
+      const b = await target.boundingBox();
+      expect(b).not.toBeNull();
+      if (!b) continue;
+      for (const x of [b.x + 4, b.x + b.width / 2, b.x + b.width - 4]) {
+        const onConfetti = await page.evaluate(
+          ([px, py]) => Boolean(document.elementsFromPoint(px!, py!)[0]?.closest("[data-testid=confetti]")),
+          [x, b.y + b.height / 2],
+        );
+        expect(onConfetti).toBe(false);
+      }
+    }
   });
 
   await test.step("perfil: copa de oro del Mundial", async () => {

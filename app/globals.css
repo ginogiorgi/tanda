@@ -175,24 +175,23 @@ body {
   right: calc(100% + var(--bracket-gap, 2rem));
 }
 
-/* Confeti del campeón (8.12). Lo neutraliza el bloque prefers-reduced-motion de abajo. */
-@keyframes tanda-confetti {
-  0% {
-    transform: translateY(-12vh) rotate(0deg);
-    opacity: 1;
+/* Papelitos del campeón (feedback 3, #6): el estilo base es la posición FINAL en el pasto; el keyframe
+   solo trae el vuelo desde la tribuna (--dx/--dy, más grande = más alto) y aterriza una vez. Con reduced
+   motion no hay vuelo (ver el bloque de abajo): quedan quietos en su lugar. */
+@keyframes tanda-confetti-in {
+  from {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--r0)) scale(1.9);
   }
-  100% {
-    transform: translateY(112vh) rotate(720deg);
-    opacity: 0.85;
+  to {
+    transform: translate(0, 0) rotate(var(--r)) scale(1);
   }
 }
 .confetti-piece {
   position: absolute;
-  top: 0;
-  width: 0.6rem;
-  height: 0.9rem;
   border-radius: 1px;
-  animation: tanda-confetti linear infinite;
+  transform: rotate(var(--r));
+  box-shadow: 1px 1px 0 rgba(20, 20, 20, 0.25);
+  animation: tanda-confetti-in cubic-bezier(0.2, 0.75, 0.35, 1) both;
 }
 
 /* Transición de entrada entre pantallas (8.8). La neutraliza prefers-reduced-motion. */
@@ -306,5 +305,8 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .confetti-piece {
+    animation: none !important;
   }
 }
