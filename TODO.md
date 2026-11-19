@@ -1,13 +1,13 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), escrito el 18/11. **Todavía no se ejecutó nada**: Gino pidió solo el
-  plan; arrancar recién cuando lo apruebe. Git limpio salvo este archivo; prod intacto (= `96f7041` + docs).
-- **Fase en curso:** ninguna (próxima: F0).
-- **Último deploy:** — .
-- **Para retomar:** leer `docs/FEEDBACK-3.md` + este plan; `git log --oneline -15`; seguir la primera tarea sin ✅.
-  Las tareas de F1 ya se prototiparon una vez (18/11) y se revirtieron a pedido de Gino: el diseño descripto acá
-  es el que pasó los tests (db 116, unit 213) y las capturas; se puede reescribir tal cual.
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución.
+- **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (en prod `2457f09`,
+  migraciones `20261125000000/01` aplicadas + ledger reconciliado; smoke prod 42 + penal de invitado OK).
+- **Fase en curso:** F2 (revelado al final y tiempos).
+- **Último deploy:** F1 — 18/11 23:55.
+- **Para retomar:** `git log --oneline -15`; seguir la primera tarea sin ✅. Migraciones nuevas desde
+  `20261125000002`.
 
 ## Plan — Feedback 3 (18/11)
 Fuente: `docs/FEEDBACK-3.md` (números #N = sus puntos). Vara: "app de multinacional". Todo lo visual con capturas
@@ -18,9 +18,9 @@ contra prod (`E2E_BASE_URL=… pnpm test:e2e` + penal de invitado). Nunca dejar 
 autorizada por Gino. Migraciones nuevas desde `20261125000000_*` (último en prod: `20261124000007`).
 
 ### F0 — Baseline y herramienta de capturas
-- [ ] **0.1 Verde de referencia.** Medido el 18/11: typecheck · lint · knip OK, unit 209, components 48, db 108
+- [x] **0.1 Verde de referencia.** Medido el 18/11: typecheck · lint · knip OK, unit 209, components 48, db 108
   (e2e/flow no corridos). Repetir y anotar.
-- [ ] **0.2 Capturas reproducibles (propia):** `playwright.shots.config.ts` (proyectos `390` = 390×844 dpr 2 touch,
+- [x] **0.2 Capturas reproducibles (propia):** `playwright.shots.config.ts` (proyectos `390` = 390×844 dpr 2 touch,
   `1440` = 1440×900; `testDir: e2e/shots`, `reuseExistingServer`) + `scripts/e2e/shots.sh` (reusa el env local de
   `scripts/e2e/flow.sh`, que pasa a aceptar `E2E_CONFIG` y `E2E_SKIP_BUILD=1`) + `e2e/shots/*.spec.ts` que dejan PNG
   en `SHOTS_DIR` (scratchpad). `playwright.config.ts` ignora `shots/**`. Specs: menús (home, cómo jugar, /jugar,
@@ -28,21 +28,21 @@ autorizada por Gino. Migraciones nuevas desde `20261125000000_*` (último en pro
   **Acepta:** `bash scripts/e2e/shots.sh` genera las 2×N capturas sin tocar prod.
 
 ### F1 — Bugs y cosas a sacar
-- [ ] **1.1 (#7) Cómo jugar** sin la sección "Torneos y Ranked" (`lib/help/howto.ts`). **Verifica:** `help.spec`
+- [x] **1.1 (#7) Cómo jugar** sin la sección "Torneos y Ranked" (`lib/help/howto.ts`). **Verifica:** `help.spec`
   (la hoja no contiene "Torneos y Ranked") + captura.
-- [ ] **1.2 (#8) Globos de modo:** el "?" de Ranked pasa ADENTRO de su tarjeta (wrapper `relative`, botón `pr-13`,
+- [x] **1.2 (#8) Globos de modo:** el "?" de Ranked pasa ADENTRO de su tarjeta (wrapper `relative`, botón `pr-13`,
   "?" `absolute right-1.5 top-1/2 -translate-y-1/2`; se saca la flecha "→", como Mundial/Argentino que no la
   tienen). Se elimina el "?" de "Con amigos" y `PLAY_KINDS.room` (`PlayKindId = "ranked"`). **Verifica:**
   `help.spec` reescrito: 3 globos (no 4) y cada uno con su `boundingBox` dentro del de su tarjeta; capturas.
-- [ ] **1.3 (#9)** Fuera "Liga — No suma puntos de liga…" de Mundial y Argentino: `ModeHelp.ranked` opcional, se
+- [x] **1.3 (#9)** Fuera "Liga — No suma puntos de liga…" de Mundial y Argentino: `ModeHelp.ranked` opcional, se
   borra `NOT_RANKED`, `modeHelpSections` omite secciones vacías (flatMap). Ranked conserva su "Liga".
   **Verifica:** `help.spec` (la ayuda de Mundial no contiene "Liga"), `modes_help.test.ts` sigue verde.
-- [ ] **1.4 (#4) Creador de avatar** sin "Deshacer": se borran `history`, `undo`, el botón y la mención del doc
+- [x] **1.4 (#4) Creador de avatar** sin "Deshacer": se borran `history`, `undo`, el botón y la mención del doc
   (`AvatarCreator.tsx`); "Aleatorio" queda solo en su fila. `avatar.spec`: en vez de Aleatorio→Deshacer, asserta
   que no existe "Deshacer". Captura con usuario registrado (el invitado redirige a /perfil).
-- [ ] **1.5 (#11) Sala de espera** sin "Sala de espera · <modo>" (el modo ya está en el header "Sala · <modo>") ni
+- [x] **1.5 (#11) Sala de espera** sin "Sala de espera · <modo>" (el modo ya está en el header "Sala · <modo>") ni
   "Arranca solo cuando termine la cuenta". Un solo `Lobby` → todos los modos. Captura 390/1440.
-- [ ] **1.6 (#13) Cola Ranked:** fuera "Solo humanos · 5 penales + muerte súbita · Abandonar = derrota" y "Buscando
+- [x] **1.6 (#13) Cola Ranked:** fuera "Solo humanos · 5 penales + muerte súbita · Abandonar = derrota" y "Buscando
   a alguien de tu nivel". En su lugar "N esperando" (0, 1, 2…) **sin contarte**. Decisión de diseño (eficiencia DB):
   **Presence** de Realtime en el canal `ranked:queue` con `key = user.id` (la página pasa `userId`): estar en la
   pantalla = estar encolado (se encola al montar, cancela al salir, al emparejar navega y la presencia se va) →
@@ -52,7 +52,7 @@ autorizada por Gino. Migraciones nuevas desde `20261125000000_*` (último en pro
   cuenta, varias pestañas = 1, keys vacías no cuentan). El bloque del reloj queda con `border-t-2` solo (el borde de
   abajo sobraba). **Verifica:** unit, captura "0 esperando", y en flow `ranked.spec` (2 jugadores) que antes de
   emparejar alguno vea "1 esperando".
-- [ ] **1.7 (#16) No repetir preguntas — todos los modos.** Diagnóstico en prod (18/11, solo lectura): dentro de un
+- [x] **1.7 (#16) No repetir preguntas — todos los modos.** Diagnóstico en prod (18/11, solo lectura): dentro de un
   torneo NO se repite nada por jugador (36/36, 38/38 distintas); lo que se repite es **entre torneos** — Gino jugó
   dos de Argentino seguidos (99 penales, 96 preguntas distintas, 30 temas para 23 distintos); en Mundial había jugado
   uno solo, por eso "andaba". (Ojo: `assign_round_question` comparte la pregunta de una misma fecha/llave + idx entre
@@ -68,10 +68,10 @@ autorizada por Gino. Migraciones nuevas desde `20261125000000_*` (último en pro
   del mismo humano → 0 preguntas y 0 temas repetidos; dos humanos → evita lo de cualquiera; invitado
   (`is_anonymous`) igual; banco agotado → la más vieja; abrir el penal registra a los 2 humanos; el cliente no tiene
   privilegios sobre la tabla. (Prototipo: db 116/116 verde.)
-- [ ] **1.8 (propia) Perfil:** el nombre largo del invitado (`INVITADO_773416798`) desborda a lo ancho en 390 (scroll
+- [x] **1.8 (propia) Perfil:** el nombre largo del invitado (`INVITADO_773416798`) desborda a lo ancho en 390 (scroll
   horizontal). `h2` del perfil → `text-4xl sm:text-5xl wrap-anywhere` (los dos, invitado y registrado). Captura +
   `assertLayout` sobre /perfil en el flow.
-- [ ] **Cierre F1:** verde + deploy (front y migración) + smoke + captura en prod de /jugar y la cola.
+- [x] **Cierre F1:** (unit 213 · components 48 · db 116 · e2e 42 · flow 9; prod `2457f09`) verde + deploy (front y migración) + smoke + captura en prod de /jugar y la cola.
 
 ### F2 — Revelado al final y tiempos (#2, #12)
 Contexto: hoy, al llegar `penal:result`, `PenalLive` pinta el cartel (GOL/ATAJADO + "Correcta: …") en el mismo
