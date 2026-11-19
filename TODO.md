@@ -2,12 +2,13 @@
 
 ## ⏸ HANDOFF
 - **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución.
-- **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (en prod `2457f09`,
-  migraciones `20261125000000/01` aplicadas + ledger reconciliado; smoke prod 42 + penal de invitado OK).
-- **Fase en curso:** F2 (revelado al final y tiempos).
-- **Último deploy:** F1 — 18/11 23:55.
+- **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (prod `2457f09`,
+  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`). Smoke prod 42 + penal de
+  invitado OK en ambas.
+- **Fase en curso:** F3 (vista dron, arquero, arco).
+- **Último deploy:** F2 — 19/11 00:30. Hueco medido en prod (cron, sin cliente): 4,40 s.
 - **Para retomar:** `git log --oneline -15`; seguir la primera tarea sin ✅. Migraciones nuevas desde
-  `20261125000002`.
+  `20261125000003`.
 
 ## Plan — Feedback 3 (18/11)
 Fuente: `docs/FEEDBACK-3.md` (números #N = sus puntos). Vara: "app de multinacional". Todo lo visual con capturas
@@ -80,16 +81,16 @@ dos (`resolve_penalty`: `now() < deadline and not penalty_all_answered → too_e
 tiempo. Línea de tiempo de la jugada (`lib/penal/shot.ts` + `rig.ts`): patada 0,3 s · pelota en el arco 1,0 s ·
 se asienta 1,6 s · reacción 1,6–2,5 s. Huecos actuales: `betweenPenalsS 3`, `betweenMatchesS 7`,
 `MATCH_RESULT_LINGER_MS 2000`, `RANKED_RESULT_LINGER_MS 2500`.
-- [ ] **2.1 Regla:** el penal (1ª fase y 2ª chance) se resuelve **solo al vencer el tiempo**: se quita el cierre
+- [x] **2.1 Regla:** el penal (1ª fase y 2ª chance) se resuelve **solo al vencer el tiempo**: se quita el cierre
   anticipado de `resolve_penalty` (vuelve la regla de `CLAUDE.md`). El contador sigue congelado en tu tap.
   Tests db: `select_option` de los dos + `resolve_penalty` antes del deadline → `too_early`.
   *(Ver "Pendiente de revisión con Gino".)*
-- [ ] **2.2 Orden del revelado** (todos los modos: es el mismo `PenalLive`): tiempo cumplido → escena juega el remate
+- [x] **2.2 Orden del revelado** (todos los modos: es el mismo `PenalLive`): tiempo cumplido → escena juega el remate
   **sin cartel** (y sin la correcta) → al definirse la jugada (`REVEAL_AT` ≈ 1,6 s: pelota quieta en la red / en
   las manos / afuera) aparece el MISMO cartel de hoy (mismo contenido) → se queda **2,5 s** → próximo penal. El
   sonido de gol/atajada se dispara en `BALL_T1` (cuando la pelota llega), no al recibir el resultado (propia). Reduced
   motion: cuadro final y cartel a los `REVEAL_AT`. La espera visible durante la jugada no muestra texto que delate.
-- [ ] **2.3 Tiempos en la fuente única:** `TIMING` gana `revealS` (jugada) y `resultCardS: 2.5`;
+- [x] **2.3 Tiempos en la fuente única:** `TIMING` gana `revealS` (jugada) y `resultCardS: 2.5`;
   `betweenPenalsS = revealS + resultCardS` (≈ 4,1 → redondear a décimas) en `TIMING` ↔ `game_timing()` (paridad);
   el SQL pasa a leer `numeric` (`make_interval(secs => (…)::numeric)`) y el test "enteros" pasa a "positivos con ≤1
   decimal". Entre partidos: jugada + cartel + `MATCH_RESULT_LINGER` + tabla. `RANKED_RESULT_LINGER_MS` desaparece
@@ -99,11 +100,14 @@ se asienta 1,6 s · reacción 1,6–2,5 s. Huecos actuales: `betweenPenalsS 3`, 
     `betweenPenalsS` en cada penal (incluye 2ª chance, muerte súbita, cambio de fecha y de fase), sin acumulación;
   - e2e flow con reloj real: penal N `resolved` → penal N+1 `open` = `betweenPenalsS` ± 1 s en todo un partido, y el
     cartel visible ≥ 2,4 s (timestamps del DOM).
-- [ ] **2.4 (#12) Fase de grupos:** entre fechas, el resultado del partido se ve **≥ 2 s** antes de la tabla
+- [x] **2.4 (#12) Fase de grupos:** entre fechas, el resultado del partido se ve **≥ 2 s** antes de la tabla
   (hoy el linger compite con el poll de 1 s y a veces se ve un instante). `MATCH_RESULT_LINGER_MS` ≥ 2000 medido
   desde que aparece el cartel del último penal, y `betweenMatchesS` recalculado para dejar ≥ 3 s de tabla. Test de
   tiempos + e2e que mide el cartel final ≥ 2 s.
-- [ ] **Cierre F2:** verde + deploy + medición en prod (torneo de invitado: huecos reales anotados acá).
+- [x] **Cierre F2:** verde (unit 217 · db 118 · flow 9) + deploy `80e72fb`. Medido: local cartel 2,6–2,8 s,
+  jugada ~1,8 s, resultado→próximo penal 4,4–4,6 s; prod (cron) 4,40 s. **Hallazgo (propia):** `supabase.rpc()` es
+  perezoso → los `void supabase.rpc(...)` (resolve_penalty, open_next_round, begin_presentation, ranked_cancel)
+  nunca salían; todo lo hacía el cron con ~1 s de atraso. `fire()` + lint.
 
 ### F3 — Vista dron, arquero y arco (#1, #5)
 Archivos: `components/penal/PenalScene.tsx` (cámara `CAM_IDLE/CAM_SHOT`, actores), `Stadium.tsx` (`Grass`,
@@ -207,9 +211,9 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   commit ahí.
 
 ### Pendiente de revisión con Gino
-- **Cierre anticipado del penal (F2.1):** para que nadie vea el resultado "antes de tiempo", el penal vuelve a
-  resolverse solo al vencer el tiempo aunque respondan los dos (deshace la regla del 14/11 "cierra cuando actuaron
-  todos"). Alternativa: mantener el cierre anticipado y solo demorar el cartel (una línea en `resolve_penalty`).
+- **Cierre anticipado del penal (F2.1, hecho):** el penal vuelve a resolverse solo al vencer el tiempo aunque
+  respondan los dos (deshace la regla del 14/11). Alternativa si lo querés de vuelta: cierre anticipado + demorar
+  solo el cartel (una línea en `resolve_penalty`).
 - **Escudos de selecciones (F8.3):** hoy son banderas; el plan las revisa y corrige. ¿Querés además escudos de
   federación parecidos a los reales?
 - **Cola ranked por Presence (F1.6):** cuenta a quien tiene abierta la pantalla de cola (= encolado). Es exacto y no
