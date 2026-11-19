@@ -6,6 +6,7 @@
 - **Hecho y en prod:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (`2457f09`,
   migraciones `20261125000000/01`), F2 (`80e72fb`, migración `20261125000002`), F3 (`4142da8`+`0372c32`), F4
   (`c520326`). Smoke prod tras cada fase: e2e 44 + penal de invitado OK.
+- **Antes de F5 (pedido de Gino 19/11):** capturas de la vista dron del penal en 390 y 1440 (`bash scripts/e2e/shots.sh penal`, local) → copiar 2-3 PNG a `~/Downloads/tanda-dron/` (el asistente se las manda a Gino para decidir encuadre vs muñecos ×1,2).
 - **Fase siguiente:** F5 (pantalla de campeón), **sin empezar** (ningún archivo tocado).
 - **Próximo paso concreto (F5):** el bug es de apilado: `<Confetti>` (`fixed inset-0 z-0`) está ADENTRO del
   contenedor `relative z-10` de `RunSummary` (y en `RankedResult` sin contenedor z) → como posicionado pinta encima
