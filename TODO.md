@@ -1,133 +1,219 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), escrito el 18/11. Ejecutando fase por fase; deploy a prod al cerrar cada fase.
-- **Fase en curso:** F0 (baseline).
-- **Último deploy:** — (prod = `96f7041`).
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), escrito el 18/11. **Todavía no se ejecutó nada**: Gino pidió solo el
+  plan; arrancar recién cuando lo apruebe. Git limpio salvo este archivo; prod intacto (= `96f7041` + docs).
+- **Fase en curso:** ninguna (próxima: F0).
+- **Último deploy:** — .
 - **Para retomar:** leer `docs/FEEDBACK-3.md` + este plan; `git log --oneline -15`; seguir la primera tarea sin ✅.
-
-En prod: https://tanda2026.com.ar (Mundial + Modo Argentina + Ranked 1v1, invitado, avatar v2).
+  Las tareas de F1 ya se prototiparon una vez (18/11) y se revirtieron a pedido de Gino: el diseño descripto acá
+  es el que pasó los tests (db 116, unit 213) y las capturas; se puede reescribir tal cual.
 
 ## Plan — Feedback 3 (18/11)
-Fuente: `docs/FEEDBACK-3.md`. Vara: "app de multinacional"; todo lo visual con capturas Playwright a 390×844 y
-1440×900 (animaciones en varios frames) mirando cada captura. Cada fase cierra con verde completo
-(typecheck · lint · knip · unit · components · db · build · e2e · flow) → push a main → migraciones por MCP +
-ledger reconciliado + `get_advisors` → smoke contra prod. "(propia)" = mejora mía autorizada por Gino.
+Fuente: `docs/FEEDBACK-3.md` (números #N = sus puntos). Vara: "app de multinacional". Todo lo visual con capturas
+Playwright a 390×844 y 1440×900 (animaciones en varios cuadros), mirando cada captura como director de arte e
+iterando. Cada fase cierra con verde completo (typecheck · lint · knip · unit · components · db · build · e2e ·
+flow) → push a main → migraciones por MCP + ledger reconciliado al nombre de archivo + `get_advisors` → smoke
+contra prod (`E2E_BASE_URL=… pnpm test:e2e` + penal de invitado). Nunca dejar prod roto. "(propia)" = mejora mía
+autorizada por Gino. Migraciones nuevas desde `20261125000000_*` (último en prod: `20261124000007`).
 
-### F0 — Baseline
-- [ ] Verde de referencia local (todas las suites) y stack Docker/Chrome funcionando. **Acepta:** misma cifra que el
-  verde del 17/11 (o se anota la diferencia y por qué).
+### F0 — Baseline y herramienta de capturas
+- [ ] **0.1 Verde de referencia.** Medido el 18/11: typecheck · lint · knip OK, unit 209, components 48, db 108
+  (e2e/flow no corridos). Repetir y anotar.
+- [ ] **0.2 Capturas reproducibles (propia):** `playwright.shots.config.ts` (proyectos `390` = 390×844 dpr 2 touch,
+  `1440` = 1440×900; `testDir: e2e/shots`, `reuseExistingServer`) + `scripts/e2e/shots.sh` (reusa el env local de
+  `scripts/e2e/flow.sh`, que pasa a aceptar `E2E_CONFIG` y `E2E_SKIP_BUILD=1`) + `e2e/shots/*.spec.ts` que dejan PNG
+  en `SHOTS_DIR` (scratchpad). `playwright.config.ts` ignora `shots/**`. Specs: menús (home, cómo jugar, /jugar,
+  globos, perfil, cola ranked, sala), penal (`/dev/penal` por cuadros), torneo (entre partidos, campeón).
+  **Acepta:** `bash scripts/e2e/shots.sh` genera las 2×N capturas sin tocar prod.
 
 ### F1 — Bugs y cosas a sacar
-- [ ] **1.1 (#7) Cómo jugar** sin el bloque "Torneos y Ranked" (`lib/help/howto.ts`). **Verifica:** test de
-  componentes de la hoja + captura.
-- [ ] **1.2 (#8) Globos de modo:** el "?" de Ranked pasa ADENTRO de su tarjeta (mismo lugar/estilo que Mundial y
-  Argentino); se elimina el "?" de "Con amigos" y su lógica (`PLAY_KINDS.room`). **Verifica:** test de PlayMenu
-  (3 globos, todos dentro de su card; ninguno en "Con amigos") + capturas 390/1440.
-- [ ] **1.3 (#9)** Fuera "Liga — No suma puntos de liga…" de Mundial y Argentino (`NOT_RANKED`; la sección de
-  liga queda opcional en `ModeHelp` y solo Ranked la usa). `modes_help.test.ts` ajustado.
-- [ ] **1.4 (#4) Creador de avatar** sin "Deshacer" ni su historial (`AvatarCreator.tsx`). e2e `avatar.spec`
-  ajustado; captura.
-- [ ] **1.5 (#11) Sala de espera** sin "Arranca solo cuando termine la cuenta" ni "Sala de espera · <modo>" (el
-  modo ya va en el header). Todos los modos (es un solo `Lobby`). Captura.
-- [ ] **1.6 (#13) Cola Ranked:** fuera "Solo humanos · 5 penales…" y "Buscando a alguien de tu nivel"; en su
-  lugar "N esperando" = jugadores **presentes** en la cola **sin contarte**, exacto y en tiempo real (llega en
-  cada poll de 2 s, que ya es el latido). DB eficiente: el conteo usa un índice parcial sobre `last_seen`
-  (la cola es chica y ya se purga a los 15 s); `ranked_poll` devuelve `waiting_others`. **Verifica:** test db
-  (0/1/2 esperando, excluye al propio y a los ausentes), test de componente, captura.
-- [ ] **1.7 (#16) No repetir preguntas — todos los modos.** Diagnóstico en prod (18/11): dentro de un torneo NO
-  se repite (0 duplicados por jugador); lo que se repite es **entre torneos** (Gino jugó 2 de Argentino seguidos
-  y le volvieron preguntas y temas; en Mundial jugó uno solo). Fix: historial por usuario
-  `user_seen_questions(user_id, question_id, seen_at)` (PK + índice; se escribe al abrir el penal para los
-  humanos del partido) y `take_tournament_question` recibe el partido y **prefiere** preguntas (y temas) que
-  ninguno de los humanos vio, luego la vista hace más tiempo; bots-only igual que hoy. Poda: se guardan las
-  últimas ~600 por usuario (más que una vuelta de banco) para no crecer sin límite. **Verifica:** test db por
-  modo (worldcup, arg, ranked): 2 torneos seguidos del mismo humano → 0 repetidas mientras el banco alcance;
-  test de que el invitado también; perf: `explain` con índice.
-- [ ] **Cierre F1:** verde + deploy + smoke.
+- [ ] **1.1 (#7) Cómo jugar** sin la sección "Torneos y Ranked" (`lib/help/howto.ts`). **Verifica:** `help.spec`
+  (la hoja no contiene "Torneos y Ranked") + captura.
+- [ ] **1.2 (#8) Globos de modo:** el "?" de Ranked pasa ADENTRO de su tarjeta (wrapper `relative`, botón `pr-13`,
+  "?" `absolute right-1.5 top-1/2 -translate-y-1/2`; se saca la flecha "→", como Mundial/Argentino que no la
+  tienen). Se elimina el "?" de "Con amigos" y `PLAY_KINDS.room` (`PlayKindId = "ranked"`). **Verifica:**
+  `help.spec` reescrito: 3 globos (no 4) y cada uno con su `boundingBox` dentro del de su tarjeta; capturas.
+- [ ] **1.3 (#9)** Fuera "Liga — No suma puntos de liga…" de Mundial y Argentino: `ModeHelp.ranked` opcional, se
+  borra `NOT_RANKED`, `modeHelpSections` omite secciones vacías (flatMap). Ranked conserva su "Liga".
+  **Verifica:** `help.spec` (la ayuda de Mundial no contiene "Liga"), `modes_help.test.ts` sigue verde.
+- [ ] **1.4 (#4) Creador de avatar** sin "Deshacer": se borran `history`, `undo`, el botón y la mención del doc
+  (`AvatarCreator.tsx`); "Aleatorio" queda solo en su fila. `avatar.spec`: en vez de Aleatorio→Deshacer, asserta
+  que no existe "Deshacer". Captura con usuario registrado (el invitado redirige a /perfil).
+- [ ] **1.5 (#11) Sala de espera** sin "Sala de espera · <modo>" (el modo ya está en el header "Sala · <modo>") ni
+  "Arranca solo cuando termine la cuenta". Un solo `Lobby` → todos los modos. Captura 390/1440.
+- [ ] **1.6 (#13) Cola Ranked:** fuera "Solo humanos · 5 penales + muerte súbita · Abandonar = derrota" y "Buscando
+  a alguien de tu nivel". En su lugar "N esperando" (0, 1, 2…) **sin contarte**. Decisión de diseño (eficiencia DB):
+  **Presence** de Realtime en el canal `ranked:queue` con `key = user.id` (la página pasa `userId`): estar en la
+  pantalla = estar encolado (se encola al montar, cancela al salir, al emparejar navega y la presencia se va) →
+  exacto, en tiempo real y **cero consultas**; además `ranked_poll` deja de hacer el `COUNT` de la cola en cada
+  latido (2 s por jugador) y se quita `in_queue` de `RankedPoll`. Helpers puros `lib/ranked/queue.ts`
+  (`othersWaiting(state, me)` = keys distintas de la mía con ≥1 presencia; `waitingLabel(n)`) con unit test (no te
+  cuenta, varias pestañas = 1, keys vacías no cuentan). El bloque del reloj queda con `border-t-2` solo (el borde de
+  abajo sobraba). **Verifica:** unit, captura "0 esperando", y en flow `ranked.spec` (2 jugadores) que antes de
+  emparejar alguno vea "1 esperando".
+- [ ] **1.7 (#16) No repetir preguntas — todos los modos.** Diagnóstico en prod (18/11, solo lectura): dentro de un
+  torneo NO se repite nada por jugador (36/36, 38/38 distintas); lo que se repite es **entre torneos** — Gino jugó
+  dos de Argentino seguidos (99 penales, 96 preguntas distintas, 30 temas para 23 distintos); en Mundial había jugado
+  uno solo, por eso "andaba". (Ojo: `assign_round_question` comparte la pregunta de una misma fecha/llave + idx entre
+  todos los partidos del torneo; eso es a propósito y no es repetición para el jugador.) Fix:
+  - tabla `user_seen_questions(user_id → profiles on delete cascade, question_id, seen_at, PK(user_id, question_id))`
+    + índice en `seen_at`, RLS sin policy, `revoke all` a anon/authenticated;
+  - `open_penalty_internal` inserta (on conflict actualiza `seen_at`) para el pateador y el arquero humanos;
+  - `take_tournament_question`: humanos del torneo → excluye lo que vio cualquiera de ellos y ordena por tema usado
+    en el torneo, tema ya visto, misma categoría, seed; si la dificultad (y vecinas) se agotó, toma la vista hace más
+    tiempo (`max(seen_at) nulls first`); nunca falla;
+  - poda diaria por `pg_cron` (`tanda-seen-prune`, >120 días).
+  **Verifica:** `supabase/tests/seen_questions.test.ts` — por modo (worldcup, arg, ranked) 2 torneos de 45 preguntas
+  del mismo humano → 0 preguntas y 0 temas repetidos; dos humanos → evita lo de cualquiera; invitado
+  (`is_anonymous`) igual; banco agotado → la más vieja; abrir el penal registra a los 2 humanos; el cliente no tiene
+  privilegios sobre la tabla. (Prototipo: db 116/116 verde.)
+- [ ] **1.8 (propia) Perfil:** el nombre largo del invitado (`INVITADO_773416798`) desborda a lo ancho en 390 (scroll
+  horizontal). `h2` del perfil → `text-4xl sm:text-5xl wrap-anywhere` (los dos, invitado y registrado). Captura +
+  `assertLayout` sobre /perfil en el flow.
+- [ ] **Cierre F1:** verde + deploy (front y migración) + smoke + captura en prod de /jugar y la cola.
 
 ### F2 — Revelado al final y tiempos (#2, #12)
-- [ ] **2.1 Regla:** el penal se resuelve **al vencer el tiempo** (se vuelve a la regla de CLAUDE.md: no se cierra
-  antes aunque respondan los dos) → nadie ve el resultado antes de tiempo. Aplica a 1ª y 2ª chance, todos los
-  modos. *(Revisión con Gino: revierte el cierre anticipado del 14/11; ver "Pendiente de revisión".)*
-- [ ] **2.2 Orden del revelado:** termina el tiempo → la escena juega el remate (la pelota entra / la atajan / se
-  va) **sin cartel** → recién cuando la jugada se define (`REVEAL_AT` ≈ cuando la pelota llega/queda quieta)
-  aparece el MISMO cartel de hoy (GOL/ATAJADO, motivo de velocidad, correcta) → queda **2,5 s** → próximo penal.
-  Mientras corre la jugada el audio de gol/atajada se dispara al llegar la pelota, no antes (propia).
-- [ ] **2.3 Tiempos en la fuente única:** `TIMING.betweenPenalsS` = `revealS` (jugada) + `resultCardS` (2,5) en
-  `TIMING` ↔ `game_timing()` (paridad); se admiten decimales (`numeric`) en el SQL. Entre partidos: jugada + cartel
-  + tabla. **Verifica:** unit (las pausas del cliente calzan exactas en los huecos), db (hueco entre penales =
-  exactamente `betweenPenalsS` medido sobre `round_deadline`, en un partido completo y en un torneo sin drift:
-  el hueco no se acumula ni se multiplica en muerte súbita/2ª chance/cambio de fecha), e2e del flujo con tiempos
-  medidos reales (penal N resuelto → penal N+1 abierto) con tolerancia ≤ 1 s, y que el cartel se ve ≥ 2,4 s.
-- [ ] **2.4 (#12) Fase de grupos:** entre fechas, los resultados del partido se ven **≥ 2 s** antes de la tabla
-  (`MATCH_RESULT_LINGER_MS` y `betweenMatchesS` recalculados; test de tiempos).
-- [ ] **2.5 Ranked** usa lo mismo (su `RANKED_RESULT_LINGER_MS` se reemplaza por la jugada + cartel).
-- [ ] **Cierre F2:** verde (incluye flow con tiempos medidos) + deploy + medición en prod (un torneo de invitado:
-  hueco real entre penales registrado en TODO).
+Contexto: hoy, al llegar `penal:result`, `PenalLive` pinta el cartel (GOL/ATAJADO + "Correcta: …") en el mismo
+instante en que arranca la animación, y además el server cierra el penal **antes** de los 10 s si respondieron los
+dos (`resolve_penalty`: `now() < deadline and not penalty_all_answered → too_early`) → el resultado se ve antes de
+tiempo. Línea de tiempo de la jugada (`lib/penal/shot.ts` + `rig.ts`): patada 0,3 s · pelota en el arco 1,0 s ·
+se asienta 1,6 s · reacción 1,6–2,5 s. Huecos actuales: `betweenPenalsS 3`, `betweenMatchesS 7`,
+`MATCH_RESULT_LINGER_MS 2000`, `RANKED_RESULT_LINGER_MS 2500`.
+- [ ] **2.1 Regla:** el penal (1ª fase y 2ª chance) se resuelve **solo al vencer el tiempo**: se quita el cierre
+  anticipado de `resolve_penalty` (vuelve la regla de `CLAUDE.md`). El contador sigue congelado en tu tap.
+  Tests db: `select_option` de los dos + `resolve_penalty` antes del deadline → `too_early`.
+  *(Ver "Pendiente de revisión con Gino".)*
+- [ ] **2.2 Orden del revelado** (todos los modos: es el mismo `PenalLive`): tiempo cumplido → escena juega el remate
+  **sin cartel** (y sin la correcta) → al definirse la jugada (`REVEAL_AT` ≈ 1,6 s: pelota quieta en la red / en
+  las manos / afuera) aparece el MISMO cartel de hoy (mismo contenido) → se queda **2,5 s** → próximo penal. El
+  sonido de gol/atajada se dispara en `BALL_T1` (cuando la pelota llega), no al recibir el resultado (propia). Reduced
+  motion: cuadro final y cartel a los `REVEAL_AT`. La espera visible durante la jugada no muestra texto que delate.
+- [ ] **2.3 Tiempos en la fuente única:** `TIMING` gana `revealS` (jugada) y `resultCardS: 2.5`;
+  `betweenPenalsS = revealS + resultCardS` (≈ 4,1 → redondear a décimas) en `TIMING` ↔ `game_timing()` (paridad);
+  el SQL pasa a leer `numeric` (`make_interval(secs => (…)::numeric)`) y el test "enteros" pasa a "positivos con ≤1
+  decimal". Entre partidos: jugada + cartel + `MATCH_RESULT_LINGER` + tabla. `RANKED_RESULT_LINGER_MS` desaparece
+  (ranked usa lo mismo). **Verifica (Gino pidió medirlo; ya hubo un bug de 10 s):**
+  - unit: cada pausa del cliente calza exacta en su hueco del server;
+  - db: en un partido completo y en un torneo entero con `_drive`, `round_deadline − resolución` = exactamente
+    `betweenPenalsS` en cada penal (incluye 2ª chance, muerte súbita, cambio de fecha y de fase), sin acumulación;
+  - e2e flow con reloj real: penal N `resolved` → penal N+1 `open` = `betweenPenalsS` ± 1 s en todo un partido, y el
+    cartel visible ≥ 2,4 s (timestamps del DOM).
+- [ ] **2.4 (#12) Fase de grupos:** entre fechas, el resultado del partido se ve **≥ 2 s** antes de la tabla
+  (hoy el linger compite con el poll de 1 s y a veces se ve un instante). `MATCH_RESULT_LINGER_MS` ≥ 2000 medido
+  desde que aparece el cartel del último penal, y `betweenMatchesS` recalculado para dejar ≥ 3 s de tabla. Test de
+  tiempos + e2e que mide el cartel final ≥ 2 s.
+- [ ] **Cierre F2:** verde + deploy + medición en prod (torneo de invitado: huecos reales anotados acá).
 
 ### F3 — Vista dron, arquero y arco (#1, #5)
-- [ ] **3.1 Cámara dron inclinada** (no cenital): arco arriba, área, medialuna y punto del penal; pasto a franjas
-  anchas y líneas de cal como la foto de referencia. Avatares legibles (pateador abajo de espaldas, arquero
-  arriba). Cámara fija con un leve empuje en la jugada (propia), reduced motion = cuadro final. **Verifica:**
-  capturas `/dev/penal` 390×844 y 1440×900, idle + 6 cuadros de gol/atajada/afuera.
-- [ ] **3.2 Arquero:** atajada creíble — paso de impulso, estirada lateral con el cuerpo extendido, brazos
-  hacia la pelota (según altura), caída de costado y reincorporación; cuando no llega, misma estirada sin tocar.
-  Nada de manos levantadas sin sentido. **Verifica:** capturas frame a frame (0.2–2.0 s) en `/dev/penal`, tests
-  del rig (las manos terminan cerca del `target` en la atajada).
-- [ ] **3.3 Arco:** palos y travesaño con esquinas redondeadas (un solo tubo curvado, sin "3 tubos"), postes de
-  sección redonda, red con caída y soportes atrás, sombra del arco en el pasto. **Verifica:** capturas de cerca.
-- [ ] **Cierre F3:** verde + perf budget de `/partido` + deploy + smoke de penal de invitado en prod.
+Archivos: `components/penal/PenalScene.tsx` (cámara `CAM_IDLE/CAM_SHOT`, actores), `Stadium.tsx` (`Grass`,
+`PitchLines`, `Goal`, red, tribuna), `lib/avatar/rig.ts` (`KEEPER_DIVE`, `KEEPER_CELEBRATE`), `lib/penal/shot.ts`.
+Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-chrome-stable --headless=new
+--use-angle=swiftshader`.
+- [ ] **3.1 Cámara dron inclinada** (≈ 50–60° de inclinación, no cenital), detrás y arriba del pateador mirando al
+  arco: arco arriba del cuadro, área grande, área chica, **medialuna** (falta hoy) y punto del penal; pasto a franjas
+  anchas alternadas (más contraste, como la foto) y líneas de cal más finas y prolijas. Avatares legibles (escala y
+  encuadre: pateador abajo de espaldas, arquero arriba de frente). Leve empuje de cámara en la jugada (propia);
+  reduced motion = cuadro final. En celu la tarjeta de la pregunta tapa la parte de abajo → el encuadre deja la
+  acción en el tercio superior. **Verifica:** capturas 390/1440 idle + 6 cuadros de gol, atajada y afuera
+  (alto y bajo).
+- [ ] **3.2 Arquero:** hoy en `KEEPER_DIVE` los hombros van a ±2,7–2,95 rad (manos arriba de la cabeza) → parece
+  bugueado. Nueva atajada: flexión y paso de impulso hacia el lado, estirada lateral con el cuerpo en línea, brazos
+  extendidos **hacia la altura de la pelota** (bajo/alto según `target.y`), caída de costado amortiguada y
+  reincorporación; cuando no llega, misma estirada a destiempo y sin tocar. **Verifica:** test del rig (en la
+  atajada la mano queda a < 0,3 m del `target` en `BALL_T1`; en el gol, lejos), capturas cuadro a cuadro
+  (0,2–2,0 s cada 0,2) para los 4 variants.
+- [ ] **3.3 Arco:** hoy son 3 cilindros sueltos (se notan las esquinas). Marco de un solo tubo con esquinas
+  redondeadas (curva en los ángulos, `TubeGeometry` sobre un path), sección redonda, red con caída natural
+  (`backH`) y soportes traseros, sombra del arco sobre el pasto. **Verifica:** capturas de cerca y en la vista dron.
+- [ ] **Cierre F3:** verde + `perf:budget` de `/partido` + deploy + penal de invitado en prod.
 
 ### F4 — Sin scroll en PC + tablas de Argentino (#10, #3)
-- [ ] **4.1 Layout:** el footer es parte del flujo: shell `min-h-svh` con el contenido `flex-1` y el footer al pie →
-  si entra, no hay scroll; si no, scrollea el documento. Nunca `fixed`. `GameStage` ocupa el alto restante (no un
-  viewport entero), con mínimo para el penal. Home y `/jugar` sin scroll en 1440×900 (y 1366×768, propia).
-  `docs/DESIGN-RULES.md` y `e2e/_layout.ts` reescritos: footer visible sin scroll cuando el contenido entra,
-  documento scrollea si no entra, nada fijo de más.
-- [ ] **4.2 (#3) Argentino entre partidos:** las dos zonas con el mismo tamaño y bien compuestas en PC (tu próximo
-  partido arriba, dos tablas iguales lado a lado). Mundial sigue con su grilla. Capturas 390/1440.
-- [ ] **Cierre F4:** verde + deploy.
+- [ ] **4.1 Layout:** hoy `app/layout.tsx` pone el contenido en `min-h-svh` y el footer debajo → todo scrollea. Nuevo:
+  body `min-h-svh flex-col`, contenido `flex-1`, footer al final del flujo (nunca `fixed`) → si entra, sin scroll y
+  footer visible al pie; si no entra, scrollea el documento. `GameStage` deja de medir `h-svh` y ocupa el alto
+  disponible (`flex-1` con mínimo para el penal). En PC home y `/jugar` entran sin scroll en 1440×900 (y 1366×768,
+  propia); compactar lo que haga falta (márgenes del hero, `my-auto`). Celu puede scrollear.
+  `docs/DESIGN-RULES.md` (regla y §Layout) y `e2e/_layout.ts` reescritos: "si el contenido entra, el footer se ve sin
+  scrollear y el documento no scrollea; si no, se llega scrolleando"; e2e nuevo: home y /jugar en 1440×900 con
+  `scrollHeight == innerHeight`. Lint de layout ajustado si hace falta.
+- [ ] **4.2 (#3) Argentino entre partidos:** en `Bracket.tsx` (fase de grupos) tu zona va a la izquierda en tamaño
+  normal y "la otra zona" a la derecha en `compact` y en una columna que la estira → se ven de distinto tamaño. Para
+  2 zonas: tu próximo partido arriba y **las dos tablas lado a lado, mismo componente y tamaño** (tu zona marcada).
+  Mundial (12 grupos) conserva su grilla. Capturas 390/1440 en Argentino y Mundial.
+- [ ] **Cierre F4:** verde (layout en 4 viewports) + deploy.
 
 ### F5 — Pantalla de campeón (#6)
-- [ ] Fuera el confeti que cae encima. Papelitos en el **fondo, sobre la cancha**, tirados desde la tribuna hacia
-  adentro (capa detrás del contenido), resultado y botones 100 % legibles; reduced motion = papelitos quietos en
-  el pasto. **Verifica:** capturas en 3 frames + test de capa (z-index detrás del contenido).
+- [ ] Hoy `<Confetti>` es una capa `fixed` que cae encima del resultado y los botones. Nuevo: escena de fondo con la
+  cancha (`PitchBackground`) y papelitos **detrás** del contenido, lanzados desde los bordes (tribuna) hacia adentro y
+  quedando en el pasto; resultado (copa + equipo + título) y botones con contraste perfecto. Reduced motion =
+  papelitos quietos. Revisar también `RunSummary`/`Bracket` con campeón (propia). **Verifica:** capturas en 3 cuadros
+  390/1440 + test de capa (los papelitos tienen z menor que el contenido) + `champion.spec` (E2E_SLOW).
 
 ### F6 — Reportar bugs / pedir mejoras (#17)
-- [ ] Botón flotante abajo a la derecha solo en home/menús (nunca en juego; `data-layer="overlay"` permitido),
-  hoja con tipo (Bug/Mejora) + texto, accesible, confirmación. Route handler server: valida (zod-free, manual),
-  honeypot, largo máximo, rate-limit por usuario e IP (tabla), guarda en `feedback_reports` (RLS deny-all, solo
-  service role) y manda mail por Resend con asunto exacto `[Tanda] Bug: …` / `[Tanda] Mejora: …` a
-  ginorubengiorgi@pyrux.com.ar con usuario/id/fecha AR/ruta/UA/SO/pantalla/commit. **Verifica:** unit del armado
-  del mail (asunto, escape HTML, sin datos sensibles), test db de la tabla y el límite, e2e del formulario,
-  capturas, y un reporte real de prueba en prod (Gino lo recibe una vez, marcado "[prueba]" en el texto).
+- [ ] **6.1 UI:** botón flotante abajo a la derecha, solo en home y pantallas de menú (nunca en `(game)`, sala ni
+  cola), `data-layer="overlay"` (allowlist de layout), ≥ 44 px, no tapa la acción principal. Hoja (`<dialog>`, como
+  `HelpSheet`): tipo Bug/Mejora (radio) + texto (contador, máx. 1000), honeypot oculto, enviar, estado de envío y
+  confirmación; errores claros. Accesible (axe), mobile first.
+- [ ] **6.2 Server:** route handler `POST /api/feedback` (Node): valida tipo/largo, honeypot, escapa HTML; rate-limit
+  por usuario e IP (tabla con ventana, p. ej. 5/h y 20/día); guarda en `feedback_reports` (RLS sin policy, solo
+  service role); manda mail con `lib/email/resend.ts` desde `Tanda <no-reply@tanda2026.com.ar>` a
+  ginorubengiorgi@pyrux.com.ar, asunto **exacto** `[Tanda] Bug: <primeras palabras>` / `[Tanda] Mejora: <primeras
+  palabras>`; cuerpo: usuario (o "Invitado"), id, fecha y hora America/Argentina/Buenos_Aires, tipo, mensaje, ruta,
+  dispositivo/navegador/SO (UA parseado), viewport y pantalla, versión (`VERCEL_GIT_COMMIT_SHA`), idioma y zona
+  horaria del cliente, último torneo activo si hay. Sin mail del usuario ni tokens. Si Resend falla, queda guardado.
+- [ ] **Verifica:** unit del armado (asunto exacto, truncado de palabras, escape, sin datos sensibles), db/route test
+  del límite y honeypot, e2e del formulario (flow, sin mandar mail: `RESEND_API_KEY` vacío), capturas, y **un**
+  reporte real en prod marcado "[prueba]" para validar la entrega y el filtro de Gmail.
 
 ### F7 — Ranking de hinchas (#15)
-- [ ] **7.1 DB:** `profiles.fav_club` / `fav_nation` (FK a teams del modo), contadores `fan_counts` mantenidos por
-  trigger (sin COUNT en caliente), RPC `set_favorites`, lectura del ranking.
-- [ ] **7.2 Registro obligatorio:** el alta pide club y país favoritos (selectores con escudo/bandera).
-- [ ] **7.3 Pantalla `/hinchas`:** botón en la home entre "Cómo jugar" y "Tu perfil"; dos selectores a la par
-  arriba; debajo, ranking de países y de clubes.
-- [ ] **7.4 Asignación en sala:** en `start_tournament` cada humano tiene prioridad para su favorito del modo;
-  empates por sorteo (seed); a los perdedores, un equipo que nadie de la sala tenga de favorito; invitados al azar.
-  Tests db (con 1, 2 y N humanos con el mismo favorito).
-- [ ] **7.5 Sala de espera:** escudo/bandera del favorito a la derecha del nombre (va en el track de presence).
-- [ ] **7.6 Wipe de cuentas en prod** (autorizado): export previo a `/mnt/hera/Backups/tanda-db/<fecha>/`, md5,
-  después borrar usuarios/perfiles/ranked/historial.
+- [ ] **7.1 DB:** `profiles.fav_club_id` / `fav_nation_id` (FK a `teams` del modo correspondiente, CHECK de modo
+  inline con coalesce — ver lección CHECK/permisos), tabla `fan_counts(team_id, fans)` mantenida por trigger en
+  insert/update/delete de `profiles` (nada de COUNT en caliente), RPC `set_favorites` (rate-limit) y
+  `get_fan_ranking()` (lee `fan_counts`, top por modo). Grants explícitos. Tests db (contadores exactos tras altas,
+  cambios y bajas; concurrencia).
+- [ ] **7.2 Alta obligatoria:** el registro (y el upgrade de invitado) pide club y país favoritos con selectores
+  buscables con escudo/bandera; sin favoritos no se completa. Tests de `RegisterForm`.
+- [ ] **7.3 Pantalla `/hinchas`** (`lib/nav/routes.ts`): botón "Ranking de hinchas" en la home entre "Cómo jugar" y
+  "Tu perfil"; arriba los dos selectores a la par (cambio inmediato, sin límite); debajo, ranking de países y de
+  clubes (posición, escudo, nombre, hinchas, el tuyo marcado). Invitado: ve el ranking, para elegir se le ofrece
+  crear cuenta. Capturas.
+- [ ] **7.4 Asignación en sala (server, `start_tournament`):** cada humano registrado con favorito del modo tiene
+  prioridad; si varios comparten favorito, sorteo por seed; a los que pierden (y a invitados) un equipo al azar que
+  **nadie** de la sala tenga de favorito; los bots, el resto. Tests db: 1 humano, 2 con el mismo favorito, N con
+  favoritos cruzados, invitados, sala llena.
+- [ ] **7.5 Sala de espera:** escudo/bandera del favorito del modo a la derecha del nombre (va en el `track` de
+  presence; el server lo da en `join_room`/página). Captura.
+- [ ] **7.6 Wipe de cuentas en prod** (autorizado por Gino): export previo de `auth.users`, `profiles`, ranked,
+  historial y awards a `/mnt/hera/Backups/tanda-db/<fecha>/` con md5 validado contra el Postgres local (patrón de la
+  limpieza del 17/11) → borrar usuarios (cascade) → verificar conteos en 0 y que la app arranca limpia.
+- [ ] **Cierre F7:** verde + deploy + smoke de alta con favoritos en prod.
 
 ### F8 — Escudos (#14)
-- [ ] Regla de "assets originales" de `CLAUDE.md` actualizada (parecido aceptado; FIFA sigue prohibido).
-- [ ] Escudos de los 30 clubes rehechos a mano parecidos a los reales; selecciones: revisar una por una (banderas)
-  y corregir las que estén mal. Lámina de capturas de todos contra la referencia.
+- [ ] **8.1** Actualizar la regla de "assets originales" de `CLAUDE.md` (decisión de Gino 18/11: se acepta el parecido
+  porque Tanda no genera plata; sigue prohibido logo/tipografía/mascota de FIFA) y el disclaimer de la home.
+- [ ] **8.2 Clubes (30):** hoy `scripts/crests/build_crests.py` genera un sistema genérico (silueta por hash + patrón
+  de camiseta + siglas) → "algunos son cualquier cosa". Rehacer cada uno como SVG propio parecido al real (forma,
+  colores, franjas/bandas, iniciales/elementos característicos) en `public/crests/arg/`, con el script como
+  normalizador (tamaño, viewBox, trazo). Uno por uno contra la referencia.
+- [ ] **8.3 Selecciones (48):** hoy se muestran por bandera (`public/flags`). Revisar las 48 una por una contra la
+  real y corregir las que estén mal; si Gino quiere escudos de federación en vez de banderas, queda anotado abajo.
+- [ ] **Verifica:** lámina de capturas con todos los escudos/banderas (chico y grande) comparados uno por uno;
+  `assets:check`.
 
 ### F9 — Cierre
-- [ ] Borrar HANDOFF y `docs/FEEDBACK-3.md`, TODO con el estado nuevo, línea en `gino-os/bot/diario.md`.
+- [ ] Borrar el HANDOFF y `docs/FEEDBACK-3.md`; `TODO.md` con el estado nuevo y el verde de referencia; memoria
+  actualizada; línea en `/mnt/hera/Proyectos/gino-os/bot/diario.md` (`MMDD HHMM texto`, inglés telegráfico) y
+  commit ahí.
 
 ### Pendiente de revisión con Gino
-- **Cierre anticipado del penal:** para que nadie vea el resultado "antes de tiempo", el penal vuelve a resolverse
-  solo al vencer el tiempo (aunque respondan los dos antes). Si preferís mantener el cierre anticipado y solo
-  demorar el cartel, es un cambio de una línea en `resolve_penalty`.
+- **Cierre anticipado del penal (F2.1):** para que nadie vea el resultado "antes de tiempo", el penal vuelve a
+  resolverse solo al vencer el tiempo aunque respondan los dos (deshace la regla del 14/11 "cierra cuando actuaron
+  todos"). Alternativa: mantener el cierre anticipado y solo demorar el cartel (una línea en `resolve_penalty`).
+- **Escudos de selecciones (F8.3):** hoy son banderas; el plan las revisa y corrige. ¿Querés además escudos de
+  federación parecidos a los reales?
+- **Cola ranked por Presence (F1.6):** cuenta a quien tiene abierta la pantalla de cola (= encolado). Es exacto y no
+  toca la DB; la alternativa por DB costaba un COUNT por jugador cada 2 s.
 
 ## Cómo correr / testear / deployar
 ```bash
