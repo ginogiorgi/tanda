@@ -7,7 +7,8 @@
     "**/*.test.tsx",
     "scripts/**/*.ts",
     "e2e/**/*.spec.ts",
-    "playwright.flow.config.ts"
+    "playwright.flow.config.ts",
+    "playwright.shots.config.ts"
   ],
   "project": [
     "**/*.{ts,tsx}"
