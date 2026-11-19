@@ -1,14 +1,30 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución.
-- **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (prod `2457f09`,
-  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`), F3 y F4 (solo front). Smoke prod 42 + penal de
-  invitado OK en ambas.
-- **Fase en curso:** F5 (pantalla de campeón).
-- **Último deploy:** F2 — 19/11 00:30. Hueco medido en prod (cron, sin cliente): 4,40 s.
-- **Para retomar:** `git log --oneline -15`; seguir la primera tarea sin ✅. Migraciones nuevas desde
-  `20261125000003`.
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución. Cortado el 19/11 ~01:20
+  ART por usage-guard (5 h ≥ 90%).
+- **Hecho y en prod:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (`2457f09`,
+  migraciones `20261125000000/01`), F2 (`80e72fb`, migración `20261125000002`), F3 (`4142da8`+`0372c32`), F4
+  (`c520326`). Smoke prod tras cada fase: e2e 44 + penal de invitado OK.
+- **Fase siguiente:** F5 (pantalla de campeón), **sin empezar** (ningún archivo tocado).
+- **Próximo paso concreto (F5):** el bug es de apilado: `<Confetti>` (`fixed inset-0 z-0`) está ADENTRO del
+  contenedor `relative z-10` de `RunSummary` (y en `RankedResult` sin contenedor z) → como posicionado pinta encima
+  del contenido. Plan: reescribir `components/penal/Confetti.tsx` como capa `fixed inset-0 -z-[1]` (debajo del
+  contenido, arriba de `PitchBackground` que es `-z-10`), papelitos con posición FINAL en el pasto como estilo base y
+  un keyframe nuevo en `globals.css` (`from` = offset hacia un borde vía `--dx/--dy`, `animation-fill-mode: both`,
+  sin `infinite`) → reduced motion los deja quietos en su lugar. Revisar el bloque `prefers-reduced-motion` de
+  `globals.css`. Test de capa en `e2e/flow/champion.spec.ts` (`document.elementsFromPoint` sobre el título y los
+  botones: el primero NO es un papelito). Capturas: extraer `ChampionScreen` o banco `/dev/…` para 390/1440.
+- **Ojo:** `pnpm build` suelto usa `.env.local` (prod). `flow.sh` ya reconstruye si `.next` no apunta a la API
+  local, pero `pnpm test:e2e` (puerto 3100) usa el `.next` que haya.
+- **Para retomar:**
+  ```
+  export PATH=$HOME/.npm-global/bin:$PATH
+  git log --oneline -8 && pnpm e2e:stack   # Supabase local
+  # F5 → verde: pnpm typecheck lint knip test test:components test:db · pnpm build && pnpm test:e2e · pnpm test:e2e:flow
+  # deploy: git push (Vercel) · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e + E2E_PROD_GUEST=1 … e2e/prod-guest.spec.ts
+  ```
+  Migraciones nuevas desde `20261125000003` (F6/F7 las necesitan).
 
 ## Plan — Feedback 3 (18/11)
 Fuente: `docs/FEEDBACK-3.md` (números #N = sus puntos). Vara: "app de multinacional". Todo lo visual con capturas
