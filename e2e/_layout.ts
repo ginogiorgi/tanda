@@ -1,14 +1,15 @@
 import { expect, type Page } from "@playwright/test";
 
 /**
- * Regla única de layout (feedback 2, P4 — docs/DESIGN-RULES.md §Layout), verificada en el DOM real:
+ * Regla única de layout (docs/DESIGN-RULES.md §Layout; feedback 3 #10), verificada en el DOM real:
  *  1. hay footer (uno), en todas las pantallas, juego incluido;
- *  2. el footer NO se ve al cargar (el contenido ocupa al menos el viewport);
- *  3. se llega al footer scrolleando el documento;
- *  4. nada fijo/sticky fuera de lo permitido (`data-layer` bg|overlay|header) — ni tapando contenido;
- *  5. sin scroll horizontal de página;
- *  6. en juego, el `GameStage` mide el viewport (menos el header si lo hay) y nada desborda adentro
- *     (salvo la tarjeta del penal, que tiene su propio `max-h` + scroll).
+ *  2. el footer es lo ÚLTIMO del documento y el documento mide al menos el viewport: si el contenido entra,
+ *     no hay scroll y el footer se ve al pie; si no entra, se llega al footer scrolleando;
+ *  3. nada fijo/sticky fuera de lo permitido (`data-layer` bg|overlay|header) — ni tapando contenido;
+ *  4. sin scroll horizontal de página;
+ *  5. en juego, el `GameStage`: en celu mide el viewport (menos el header); desde `md` ocupa el alto que
+ *     deja el footer (≥ 34rem) — y nada desborda adentro (salvo la tarjeta del penal, con su `max-h`).
+ *  `fits: true` exige además que la pantalla entre sin scroll (home y /jugar en PC).
  */
 export const VIEWPORTS = [
   { name: "360x640", width: 360, height: 640 },
@@ -17,7 +18,7 @@ export const VIEWPORTS = [
   { name: "1440x900", width: 1440, height: 900 },
 ] as const;
 
-export async function assertLayout(page: Page, opts: { stage?: boolean } = {}): Promise<void> {
+export async function assertLayout(page: Page, opts: { stage?: boolean; fits?: boolean } = {}): Promise<void> {
   await expect(page.locator("footer")).toHaveCount(1);
   await page.evaluate(() => window.scrollTo(0, 0));
 
@@ -40,8 +41,12 @@ export async function assertLayout(page: Page, opts: { stage?: boolean } = {}): 
           .filter((el) => ["auto", "scroll"].includes(getComputedStyle(el).overflowY))
           .map((el) => el.className.toString().slice(0, 60))
       : [];
+    const fr = footer.getBoundingClientRect();
     return {
-      footerTop: footer.getBoundingClientRect().top,
+      footerTop: fr.top,
+      footerBottom: fr.bottom + window.scrollY,
+      footerHeight: fr.height,
+      docHeight: document.documentElement.scrollHeight,
       innerHeight: window.innerHeight,
       scrollWidth: document.documentElement.scrollWidth,
       innerWidth: window.innerWidth,
@@ -54,12 +59,24 @@ export async function assertLayout(page: Page, opts: { stage?: boolean } = {}): 
     };
   });
 
-  expect(m.footerTop, "el footer no se ve al cargar").toBeGreaterThanOrEqual(m.innerHeight - 1);
+  expect(Math.abs(m.footerBottom - m.docHeight), "el footer es lo último del documento").toBeLessThanOrEqual(1);
+  expect(m.docHeight, "el documento mide al menos un viewport").toBeGreaterThanOrEqual(m.innerHeight - 1);
+  if (m.docHeight <= m.innerHeight + 1) {
+    expect(m.footerTop + m.footerHeight, "si entra, el footer se ve al pie").toBeLessThanOrEqual(m.innerHeight + 1);
+  }
+  if (opts.fits) expect(m.docHeight, "entra sin scroll").toBeLessThanOrEqual(m.innerHeight + 1);
   expect(m.strayFixed, "nada fixed/sticky fuera de bg|overlay|header").toEqual([]);
   expect(m.scrollWidth, "sin scroll horizontal").toBeLessThanOrEqual(m.innerWidth);
   if (opts.stage) {
     expect(m.stageHeight, "hay GameStage").not.toBeNull();
-    expect(Math.abs(m.stageHeight! - (m.innerHeight - m.headerHeight)), "el stage mide un viewport").toBeLessThanOrEqual(1);
+    const vw = page.viewportSize()!.width;
+    if (vw < 768) {
+      expect(Math.abs(m.stageHeight! - (m.innerHeight - m.headerHeight)), "celu: el stage mide un viewport").toBeLessThanOrEqual(1);
+    } else {
+      expect(m.stageHeight!, "PC: el stage tiene su mínimo").toBeGreaterThanOrEqual(34 * 16 - 1);
+      const fill = m.innerHeight - m.headerHeight - m.footerHeight;
+      if (fill >= 34 * 16) expect(Math.abs(m.stageHeight! - fill), "PC: el stage llena hasta el footer").toBeLessThanOrEqual(1);
+    }
     expect(m.overflowing, "nada desborda dentro del stage").toEqual([]);
   }
 

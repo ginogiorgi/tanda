@@ -20,3 +20,13 @@ for (const vp of VIEWPORTS) {
     }
   });
 }
+
+// Feedback 3 #10: en PC la home entra sin scroll y con el footer al pie (también en 1366×768).
+for (const vp of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }]) {
+  test(`home sin scroll en ${vp.width}x${vp.height}`, async ({ page }, info) => {
+    test.skip(info.project.name !== "desktop", "un solo project");
+    await page.setViewportSize(vp);
+    await page.goto("/");
+    await assertLayout(page, { fits: true });
+  });
+}

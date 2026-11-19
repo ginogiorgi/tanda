@@ -2,8 +2,8 @@ import { cn } from "@/lib/cn";
 
 /**
  * Contenedor de pantalla (feedback 2, P4 — DESIGN-RULES §Layout). La página scrollea el DOCUMENTO,
- * nunca un panel: esto solo fija el ancho según el tipo de contenido y ocupa al menos el alto visible
- * (`flex-1` dentro del shell), así el footer queda abajo y aparece al scrollear.
+ * nunca un panel: esto solo fija el ancho según el tipo de contenido y estira (`flex-1`) el alto que sobre,
+ * así el footer queda al pie: sin scroll si entra (feedback 3 #10), scrolleando si no.
  *
  *  · `form`    = max-w-sm  (login, registro, tarjetas chicas)
  *  · `content` = max-w-2xl (home, perfil, jugar, sala, cola)

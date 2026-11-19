@@ -20,8 +20,8 @@ export function GameStage({
     <div
       data-stage
       className={cn(
-        "relative w-full shrink-0 overflow-hidden",
-        header ? "h-[calc(100svh-var(--header-h))]" : "h-svh",
+        "relative w-full flex-1 shrink-0 overflow-hidden md:min-h-[34rem]",
+        header ? "max-md:min-h-[calc(100svh-var(--header-h))]" : "max-md:min-h-svh",
         className,
       )}
     >

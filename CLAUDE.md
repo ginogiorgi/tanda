@@ -44,8 +44,8 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
 ## Pantallas, navegación y layouts (feedback 14/11 — ver `docs/DESIGN-RULES.md`)
 - Mapa de pantallas en `lib/nav/routes.ts` (título, **padre**, grupo). Toda página nueva va ahí
   (`routes.test.ts` lo exige); el "volver" lo pinta `components/ui/ScreenHeader`.
-- **Layout único (feedback 2):** la página scrollea el DOCUMENTO, nunca un panel; footer en TODAS las pantallas
-  (lo monta `app/layout.tsx`, queda bajo el pliegue). Pantallas con `<Page width="form|content|wide">`; juego en
+- **Layout único (feedback 2/3):** la página scrollea el DOCUMENTO, nunca un panel; footer en TODAS las pantallas
+  (lo monta `app/layout.tsx`, en el flujo: al pie sin scroll si el contenido entra, scrolleando si no). Pantallas con `<Page width="form|content|wide">`; juego en
   `<GameStage>` (un viewport, capas `absolute` adentro). Nada `fixed`/`sticky` salvo `data-layer` bg|overlay|header
   (lint + `e2e/_layout.ts`). Route groups `app/(app)`, `app/(game)`, `(auth)`; cada uno con `loading.tsx`.
 - Navegación SOLO con `useNav()` (`lib/nav/useNav.ts`); `useRouter` está prohibido por lint fuera de `lib/nav`.

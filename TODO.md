@@ -3,9 +3,9 @@
 ## ⏸ HANDOFF
 - **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), aprobado por Gino el 18/11 y en ejecución.
 - **Hecho:** F0 (capturas: `bash scripts/e2e/shots.sh [filtro]`, PNG en `SHOTS_DIR`), F1 (prod `2457f09`,
-  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`), F3 (solo front). Smoke prod 42 + penal de
+  migraciones `20261125000000/01`), F2 (prod `80e72fb`, migración `20261125000002`), F3 y F4 (solo front). Smoke prod 42 + penal de
   invitado OK en ambas.
-- **Fase en curso:** F4 (sin scroll en PC + tablas de Argentino).
+- **Fase en curso:** F5 (pantalla de campeón).
 - **Último deploy:** F2 — 19/11 00:30. Hueco medido en prod (cron, sin cliente): 4,40 s.
 - **Para retomar:** `git log --oneline -15`; seguir la primera tarea sin ✅. Migraciones nuevas desde
   `20261125000003`.
@@ -140,7 +140,7 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   cartel se ancla también al revelado real (timer atrasado ⇒ igual dura entero).
 
 ### F4 — Sin scroll en PC + tablas de Argentino (#10, #3)
-- [ ] **4.1 Layout:** hoy `app/layout.tsx` pone el contenido en `min-h-svh` y el footer debajo → todo scrollea. Nuevo:
+- [x] **4.1 Layout:** hoy `app/layout.tsx` pone el contenido en `min-h-svh` y el footer debajo → todo scrollea. Nuevo:
   body `min-h-svh flex-col`, contenido `flex-1`, footer al final del flujo (nunca `fixed`) → si entra, sin scroll y
   footer visible al pie; si no entra, scrollea el documento. `GameStage` deja de medir `h-svh` y ocupa el alto
   disponible (`flex-1` con mínimo para el penal). En PC home y `/jugar` entran sin scroll en 1440×900 (y 1366×768,
@@ -148,11 +148,13 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   `docs/DESIGN-RULES.md` (regla y §Layout) y `e2e/_layout.ts` reescritos: "si el contenido entra, el footer se ve sin
   scrollear y el documento no scrollea; si no, se llega scrolleando"; e2e nuevo: home y /jugar en 1440×900 con
   `scrollHeight == innerHeight`. Lint de layout ajustado si hace falta.
-- [ ] **4.2 (#3) Argentino entre partidos:** en `Bracket.tsx` (fase de grupos) tu zona va a la izquierda en tamaño
+- [x] **4.2 (#3) Argentino entre partidos:** en `Bracket.tsx` (fase de grupos) tu zona va a la izquierda en tamaño
   normal y "la otra zona" a la derecha en `compact` y en una columna que la estira → se ven de distinto tamaño. Para
   2 zonas: tu próximo partido arriba y **las dos tablas lado a lado, mismo componente y tamaño** (tu zona marcada).
   Mundial (12 grupos) conserva su grilla. Capturas 390/1440 en Argentino y Mundial.
-- [ ] **Cierre F4:** verde (layout en 4 viewports) + deploy.
+- [x] **Cierre F4:** verde (unit 247 · components 50 · db 118 · e2e 44 · flow 9; layout en 4 viewports + "sin
+  scroll" en 1440×900 y 1366×768 para home y /jugar) + deploy. Home compacta el hero con `max-height:820px`.
+  Capturas: `e2e/shots/torneo.spec.ts` (Argentino/Mundial en fase de zonas).
 
 ### F5 — Pantalla de campeón (#6)
 - [ ] Hoy `<Confetti>` es una capa `fixed` que cae encima del resultado y los botones. Nuevo: escena de fondo con la

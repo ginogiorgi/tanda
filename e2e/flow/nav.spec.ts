@@ -34,6 +34,16 @@ test("app: layout de documento en 4 viewports; perfil y tabla vuelven al padre, 
       });
     }
   }
+  // Feedback 3 #10: en PC la home y /jugar entran sin scroll, con el footer al pie.
+  for (const vp of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }]) {
+    await page.setViewportSize(vp);
+    for (const path of ["/", "/jugar"]) {
+      await test.step(`sin scroll ${vp.width}x${vp.height} ${path}`, async () => {
+        await page.goto(path);
+        await assertLayout(page, { fits: true });
+      });
+    }
+  }
   await page.setViewportSize(mobile);
 
   await page.goto("/ranking");

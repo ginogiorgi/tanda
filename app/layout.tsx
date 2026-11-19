@@ -69,11 +69,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${instrument.variable} ${bigShoulders.variable}`}>
-      {/* Feedback 2 (P4): la página scrollea el DOCUMENTO. El contenido ocupa al menos el alto visible y
-          el footer va al final del flujo, en TODAS las pantallas (juego incluido): aparece al scrollear. */}
+      {/* Feedback 3 #10: la página scrollea el DOCUMENTO y el footer es parte del flujo, en TODAS las pantallas.
+          El contenido estira (`flex-1`) → si entra, no hay scroll y el footer queda al pie; si no, se scrollea. */}
       <body className="flex min-h-svh flex-col bg-bg text-fg">
         <PitchBackground />
-        <div className="flex min-h-svh w-full flex-col">{children}</div>
+        <div className="flex w-full flex-1 flex-col">{children}</div>
         <Footer />
       </body>
     </html>

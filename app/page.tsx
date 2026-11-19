@@ -43,10 +43,10 @@ export default async function Home({
   return (
     <main className="flex w-full flex-1 flex-col items-center text-center">
       <JsonLd />
-      <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16">
+      <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16 [@media(max-height:820px)]:gap-5 [@media(max-height:820px)]:py-6">
       <div className="flex flex-col items-center gap-5">
         <h1 aria-label="Tanda">
-          <Wordmark stamp={false} className="text-[6.5rem] sm:text-[10rem]" />
+          <Wordmark stamp={false} className="text-[6.5rem] sm:text-[10rem] sm:[@media(max-height:820px)]:text-[8rem]" />
         </h1>
         {/* Filete + bajada: presentación del juego, solo en la landing (logueado ya lo conocés). */}
         {!user && (

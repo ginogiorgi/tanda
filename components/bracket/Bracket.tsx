@@ -336,6 +336,36 @@ export function Bracket({ view }: { view: BracketView }) {
   // ── Fase de grupos (y arranque del torneo): tu grupo destacado + todas las tablas. ──
   const myGroup = view.groups.find((g) => g.letter === view.myGroupLetter);
   const otherGroups = view.groups.filter((g) => g.letter !== view.myGroupLetter);
+  // Feedback 3 #3 — dos zonas (Argentino): tu próximo partido arriba y las DOS tablas lado a lado, mismo
+  // componente y tamaño (antes la otra iba `compact` en una columna estirada y se veían distintas).
+  if (view.groups.length === 2) {
+    return (
+      <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
+          Fase de {view.mode.zonesLabel.toLowerCase()}
+        </span>
+        {view.myNextMatch && (
+          <div className="w-full max-w-md">
+            <VersusCard match={view.myNextMatch} mode={view.mode} />
+          </div>
+        )}
+        <div data-testid="zones-side-by-side" className="grid w-full max-w-md grid-cols-1 items-start gap-5 lg:max-w-4xl lg:grid-cols-2">
+          {view.groups.map((g) => {
+            const mine = g.letter === view.myGroupLetter;
+            return (
+              <div key={g.letter} data-zone={g.letter} data-mine={mine || undefined} className="w-full">
+                <span className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${mine ? "text-brand-ink" : "text-fg-muted"}`}>
+                  {mine ? `Tu ${view.mode.zoneNoun.toLowerCase()}` : `La otra ${view.mode.zoneNoun.toLowerCase()}`}
+                </span>
+                <GroupTable group={g} mode={view.mode} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   // Desktop (P4): tu partido y tu grupo a la izquierda; el resto en grilla de 2–3 columnas a la derecha.
   return (
     <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">

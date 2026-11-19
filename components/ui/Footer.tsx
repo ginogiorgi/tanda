@@ -1,9 +1,8 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Footer de TODAS las pantallas (feedback 2, P4): lo monta el layout raíz al final del documento. El
- * contenido ocupa al menos el alto visible, así que el footer no se ve al cargar y aparece al scrollear
- * hasta el fondo (en juego, debajo del GameStage).
+ * Footer de TODAS las pantallas: lo monta el layout raíz al final del documento, en el flujo (nunca `fixed`).
+ * Feedback 3 #10: si el contenido entra, se ve al pie sin scroll; si no, aparece al scrollear.
  */
 export function Footer({ className }: { className?: string }) {
   return (
