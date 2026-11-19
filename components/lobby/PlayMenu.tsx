@@ -130,15 +130,7 @@ export function PlayMenu({
       </section>
 
       <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <SectionTitle>Con amigos</SectionTitle>
-          <HelpSheet
-            trigger="icon"
-            label={`Cómo se juega ${PLAY_KINDS.room.name}`}
-            title={PLAY_KINDS.room.name}
-            sections={modeHelpSections(PLAY_KINDS.room.help)}
-          />
-        </div>
+        <SectionTitle>Con amigos</SectionTitle>
         <Button
           onClick={() => {
             setError(null);
@@ -190,28 +182,29 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
   const router = useNav();
   const div = divisionFor(ranked?.rating ?? 1500);
   return (
-    <div className="col-span-2 flex items-center gap-2">
-    <button
-      type="button"
-      onClick={() => router.push("/ranked")}
-      disabled={disabled}
-      className="group flex min-w-0 flex-1 items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
-    >
-      <DivisionCrest id={div.id} className="h-12" />
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
-        <span className="text-xs font-medium leading-snug opacity-75">
-          {div.name} · {ranked?.rating ?? 1500} pts · ganás o perdés puntos
+    // Feedback 3 #8: el "?" vive ADENTRO de la card, como en los modos (hermano del botón, no anidado).
+    <div className="relative col-span-2 flex">
+      <button
+        type="button"
+        onClick={() => router.push("/ranked")}
+        disabled={disabled}
+        className="group flex min-w-0 flex-1 items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 pr-13 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
+      >
+        <DivisionCrest id={div.id} className="h-12" />
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
+          <span className="text-xs font-medium leading-snug opacity-75">
+            {div.name} · {ranked?.rating ?? 1500} pts · ganás o perdés puntos
+          </span>
         </span>
-      </span>
-      <span aria-hidden className="font-display text-2xl font-black">→</span>
-    </button>
-    <HelpSheet
-      trigger="icon"
-      label={`Cómo se juega ${PLAY_KINDS.ranked.name}`}
-      title={PLAY_KINDS.ranked.name}
-      sections={modeHelpSections(PLAY_KINDS.ranked.help)}
-    />
+      </button>
+      <HelpSheet
+        trigger="icon"
+        label={`Cómo se juega ${PLAY_KINDS.ranked.name}`}
+        title={PLAY_KINDS.ranked.name}
+        sections={modeHelpSections(PLAY_KINDS.ranked.help)}
+        className="absolute right-1.5 top-1/2 -translate-y-1/2"
+      />
     </div>
   );
 }

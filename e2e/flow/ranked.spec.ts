@@ -1,5 +1,6 @@
 import type { Browser, BrowserContext, Page } from "@playwright/test";
 import { expect, test, watchCsp } from "../_csp";
+import { Client } from "pg";
 import { answerUntil, assertLocalSupabase, enterAsGuest, openPlay } from "./_helpers";
 
 /**
@@ -35,7 +36,23 @@ async function guestInQueue(browser: Browser, errors: string[], csp: string[]): 
 test("ranked 1v1: dos invitados se emparejan, juegan y se reparten los puntos", async ({ browser, csp }) => {
   test.setTimeout(420_000);
   const errors: string[] = [];
-  const [a, b] = await Promise.all([guestInQueue(browser, errors, csp), guestInQueue(browser, errors, csp)]);
+  // Feedback 3 #13: "N esperando" sin contarte. A entra solo (0 esperando); se lo aleja en rating (solo
+  // en la DB local) para que B no lo empareje al toque y los dos se vean ~20 s en la cola (1 esperando).
+  const a = await guestInQueue(browser, errors, csp);
+  await expect(a.getByTestId("ranked-waiting")).toHaveText("0 esperando", { timeout: 15_000 });
+  const db = new Client({ connectionString: process.env.E2E_DB_URL });
+  await db.connect();
+  try {
+    await expect
+      .poll(async () => (await db.query("update public.ranked_queue set rating = 2400 where rating < 2400")).rowCount ?? 0, { timeout: 10_000 })
+      .toBe(1);
+  } finally {
+    await db.end();
+  }
+  const b = await guestInQueue(browser, errors, csp);
+  await test.step("se ven en la cola: 1 esperando cada uno", async () => {
+    await Promise.all([a, b].map((p) => expect(p.getByTestId("ranked-waiting")).toHaveText("1 esperando", { timeout: 15_000 })));
+  });
 
   await test.step("emparejados → /partido", async () => {
     await Promise.all([a, b].map((p) => expect(p).toHaveURL(/\/partido$/, { timeout: 60_000 })));

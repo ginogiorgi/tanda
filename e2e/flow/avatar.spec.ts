@@ -4,7 +4,7 @@ import { assertLocalSupabase } from "./_helpers";
 
 /**
  * Creador de avatar (feedback 2, P7d): registro → punto de partida → Pelo (cámara a la cabeza) → Botines
- * (cámara a los pies) → Deshacer / Aleatorio → Guardar → al volver, persiste. Más axe.
+ * (cámara a los pies) → sin Deshacer (feedback 3 #4) → Guardar → al volver, persiste. Más axe.
  */
 
 test.beforeAll(assertLocalSupabase);
@@ -37,10 +37,9 @@ test("registro → preset → pelo y botines con cámara por pestaña → guarda
   await page.getByRole("button", { name: "Mostaza" }).click();
   await expect(page.getByRole("button", { name: "Mostaza" })).toHaveAttribute("aria-pressed", "true");
 
-  // Aleatorio cambia todo; Deshacer vuelve exactamente a lo anterior.
-  await page.getByRole("button", { name: "Aleatorio" }).click();
-  await page.getByRole("button", { name: "Deshacer" }).click();
-  await expect(page.getByRole("button", { name: "Mostaza" })).toHaveAttribute("aria-pressed", "true");
+  // Feedback 3 #4: Aleatorio queda solo, sin Deshacer.
+  await expect(page.getByRole("button", { name: "Aleatorio" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Deshacer" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Guardar jugador" }).click();
   await page.waitForURL((u) => u.pathname === "/", { timeout: 30_000 });

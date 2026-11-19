@@ -161,9 +161,6 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
     <Page center>
     <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
-        <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
-          Sala de espera · {mode.name}
-        </span>
         <button
           onClick={onCopy}
           className="font-mono text-5xl font-extrabold tracking-[0.2em] text-brand transition-opacity hover:opacity-80"
@@ -180,14 +177,9 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
         {started ? (
           <p className="text-lg font-semibold text-fg">Armando torneo…</p>
         ) : (
-          <>
-            <span data-testid="lobby-countdown" className="font-display text-5xl font-extrabold tabular-nums text-fg">
-              {formatRemaining(remaining)}
-            </span>
-            <span className="text-xs text-fg-subtle">
-              Arranca solo cuando termine la cuenta
-            </span>
-          </>
+          <span data-testid="lobby-countdown" className="font-display text-5xl font-extrabold tabular-nums text-fg">
+            {formatRemaining(remaining)}
+          </span>
         )}
       </div>
 

@@ -43,7 +43,7 @@ export default async function PerfilPage() {
 
         <div className="flex flex-col gap-1">
           <Eyebrow>Invitado</Eyebrow>
-          <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+          <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg wrap-anywhere sm:text-5xl">
             {guestProfile?.username ?? "Invitado"}
           </h2>
         </div>
@@ -95,7 +95,7 @@ export default async function PerfilPage() {
 
       <div className="flex flex-col gap-1">
         <Eyebrow>Perfil</Eyebrow>
-        <h2 className="font-display text-5xl font-black uppercase leading-[0.9] text-fg">
+        <h2 className="font-display text-4xl font-black uppercase leading-[0.9] text-fg wrap-anywhere sm:text-5xl">
           {profile?.username ?? "Jugador"}
         </h2>
       </div>

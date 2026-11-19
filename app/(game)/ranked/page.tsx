@@ -18,7 +18,7 @@ export default async function RankedPage() {
 
   return (
     <div className="flex w-full flex-1 flex-col">
-      <RankedQueue me={me} />
+      <RankedQueue me={me} userId={user.id} />
     </div>
   );
 }

@@ -20,12 +20,12 @@ const MODE_HELP_TITLES: Record<keyof ModeHelp, string> = {
   ranked: "Liga",
 };
 
-/** La ayuda de un modo, en secciones (mismo render que "Cómo jugar"). */
+/** La ayuda de un modo, en secciones (mismo render que "Cómo jugar"); las vacías no se muestran. */
 export function modeHelpSections(help: ModeHelp): HelpSection[] {
-  return (Object.keys(MODE_HELP_TITLES) as (keyof ModeHelp)[]).map((k) => ({
-    title: MODE_HELP_TITLES[k],
-    body: help[k],
-  }));
+  return (Object.keys(MODE_HELP_TITLES) as (keyof ModeHelp)[]).flatMap((k) => {
+    const body = help[k];
+    return body ? [{ title: MODE_HELP_TITLES[k], body }] : [];
+  });
 }
 
 export function HelpSheet({

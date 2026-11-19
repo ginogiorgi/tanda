@@ -22,8 +22,8 @@ export interface ModeHelp {
   players: string;
   /** Cómo se gana. */
   win: string;
-  /** Si suma o no a la liga. */
-  ranked: string;
+  /** Qué mueve en la liga (solo Ranked: los torneos no suman y no se aclara, feedback 3 #9). */
+  ranked?: string;
 }
 
 export interface ModeMeta {
@@ -48,7 +48,6 @@ export interface ModeMeta {
 
 const GROUP_KICKS = kicksPerSide("group");
 const KO_KICKS = kicksPerSide("elimination");
-const NOT_RANKED = "No suma puntos de liga: para eso está Ranked.";
 
 export const MODE_LIST: readonly ModeMeta[] = [
   {
@@ -65,7 +64,6 @@ export const MODE_LIST: readonly ModeMeta[] = [
       format: `${FORMATS.worldcup.roomSize} selecciones en ${FORMATS.worldcup.zones} grupos de ${FORMATS.worldcup.zoneSize}. Pasan las ${FORMATS.worldcup.qualifiersPerZone} primeras de cada grupo y los ${FORMATS.worldcup.bestThirds} mejores terceros a 16avos; de ahí, mata-mata hasta la final (con partido por el 3er puesto).`,
       players: `Jugás vos contra ${FORMATS.worldcup.roomSize - 1} rivales: personas o bots que completan los lugares.`,
       win: `En grupos, tanda de ${GROUP_KICKS} penales por lado (3, 1 o 0 puntos). En el mata-mata, ${KO_KICKS} por lado y, si empatan, muerte súbita.`,
-      ranked: NOT_RANKED,
     },
   },
   {
@@ -82,13 +80,12 @@ export const MODE_LIST: readonly ModeMeta[] = [
       format: `${FORMATS.arg.roomSize} clubes en ${FORMATS.arg.zones} zonas de ${FORMATS.arg.zoneSize}. Pasan los ${FORMATS.arg.qualifiersPerZone} mejores de cada zona a octavos y se define a mata-mata, sin 3er puesto.`,
       players: `Jugás vos contra ${FORMATS.arg.roomSize - 1} rivales: personas o bots que completan los lugares.`,
       win: `En la zona, tanda de ${GROUP_KICKS} penales por lado (3, 1 o 0 puntos). En el mata-mata, ${KO_KICKS} por lado y, si empatan, muerte súbita.`,
-      ranked: NOT_RANKED,
     },
   },
 ];
 
 /** Formas de jugar que no son un `game_mode` de torneo (cards de /jugar), con la misma ayuda. */
-export type PlayKindId = "ranked" | "room";
+export type PlayKindId = "ranked";
 export interface PlayKind {
   id: PlayKindId;
   name: string;
@@ -104,16 +101,6 @@ export const PLAY_KINDS: Record<PlayKindId, PlayKind> = {
       players: "Contra otra persona de nivel parecido (nunca un bot).",
       win: "Ganar suma puntos de liga y perder resta; cuánto, depende del nivel del rival. Con los puntos subís o bajás de división.",
       ranked: "Es lo único que mueve tu ranking.",
-    },
-  },
-  room: {
-    id: "room",
-    name: "Con amigos",
-    help: {
-      format: "Creá una sala eligiendo el modo y pasales el código: entran con «Unirse». El torneo es el mismo que el del modo que elegiste.",
-      players: `La sala arranca a los ${FORMATS.worldcup.lobbyS} segundos o cuando se llena; los lugares vacíos los completan bots.`,
-      win: "Igual que en el modo elegido.",
-      ranked: NOT_RANKED,
     },
   },
 };

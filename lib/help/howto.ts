@@ -31,8 +31,4 @@ export const HOWTO: readonly HelpSection[] = [
     title: "La tanda",
     body: `${kicksPerSide("group")} penales por lado en la fase de grupos y ${kicksPerSide("elimination")} en el mata-mata; si empatan en el mata-mata, muerte súbita.`,
   },
-  {
-    title: "Torneos y Ranked",
-    body: "Los torneos van de grupos o zonas al mata-mata hasta la final. Ranked es un mano a mano por puntos de liga.",
-  },
 ];

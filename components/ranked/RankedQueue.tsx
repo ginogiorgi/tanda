@@ -4,13 +4,15 @@
  * Cola ranked (Fase 4b). Al montar se encola (`ranked_enqueue`) y hace poll cada 2s (`ranked_poll`,
  * que también es el latido: sin poll el server te saca a los 15s). El emparejamiento (y su ventana de
  * rating, que se abre con la espera) lo decide el server y NO se muestra (feedback 14/11): acá solo
- * reloj, "buscando rival" y cuántos hay en la cola. Al emparejar → /partido. Al salir, cancela.
+ * reloj y cuántos OTROS esperan (feedback 3 #13: Presence en `ranked:queue`, sin consultas a la DB).
+ * Al emparejar → /partido (la presencia se va con el canal). Al salir, cancela.
  */
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { RankedMe, RankedPoll } from "@/lib/ranked/types";
+import { othersWaiting, RANKED_QUEUE_CHANNEL, waitingLabel } from "@/lib/ranked/queue";
 import { buttonVariants } from "@/components/ui/Button";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useNav } from "@/lib/nav/useNav";
@@ -29,13 +31,13 @@ function clock(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export function RankedQueue({ me }: { me: RankedMe }) {
+export function RankedQueue({ me, userId }: { me: RankedMe; userId: string }) {
   usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const { push: navPush, leave: navLeave } = useNav();
   const [supabase] = useState(() => createClient());
   const [view, setView] = useState<View>("searching");
   const [waited, setWaited] = useState(0);
-  const [inQueue, setInQueue] = useState<number | null>(null);
+  const [waiting, setWaiting] = useState(0);
   // Ancla del reloj local: espera del server + instante local en que llegó.
   const anchorRef = useRef<{ waited: number; at: number }>({ waited: 0, at: 0 });
   const matchedRef = useRef(false);
@@ -58,7 +60,6 @@ export function RankedQueue({ me }: { me: RankedMe }) {
       }
       if (r.status === "queued") {
         anchorRef.current = { waited: r.waited_ms, at: Date.now() };
-        setInQueue(r.in_queue);
       }
       return r.status === "idle";
     };
@@ -94,6 +95,19 @@ export function RankedQueue({ me }: { me: RankedMe }) {
     };
   }, [supabase, navPush]);
 
+  // Presence: estar en esta pantalla = estar en la cola. Cada uno cuenta las keys que no son la suya.
+  useEffect(() => {
+    const channel = supabase.channel(RANKED_QUEUE_CHANNEL, { config: { presence: { key: userId } } });
+    channel
+      .on("presence", { event: "sync" }, () => setWaiting(othersWaiting(channel.presenceState(), userId)))
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") void channel.track({ at: Date.now() });
+      });
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [supabase, userId]);
+
   // Cancelar navega YA; el cancel corre en paralelo (si se perdiera, el server te saca de la cola a
   // los 15s sin latido). Antes esperaba el RPC y el botón parecía colgado (feedback 14/11).
   function cancel() {
@@ -118,23 +132,17 @@ export function RankedQueue({ me }: { me: RankedMe }) {
 
         {view === "searching" || view === "matched" ? (
           <>
-            <div className="flex flex-col items-center gap-1 border-y-2 border-ink py-4">
+            <div className="flex flex-col items-center gap-1 border-t-2 border-ink pt-4">
               <span
                 className="font-display text-7xl font-black leading-none tabular-nums text-fg"
                 aria-live="off"
               >
                 {clock(waited)}
               </span>
-              <span className="text-xs font-semibold text-fg-muted" aria-live="polite">
-                Buscando a alguien de tu nivel
+              <span data-testid="ranked-waiting" className="text-sm font-semibold text-fg-muted" aria-live="polite">
+                {waitingLabel(waiting)}
               </span>
             </div>
-
-
-            <p className="text-center text-xs text-fg-muted">
-              Solo humanos · 5 penales + muerte súbita · Abandonar = derrota
-              {inQueue !== null && inQueue > 1 && ` · ${inQueue} en la cola`}
-            </p>
           </>
         ) : view === "busy" ? (
           <div className="flex flex-col items-center gap-3 text-center">

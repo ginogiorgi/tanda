@@ -28,7 +28,6 @@ export type RankedPoll =
       status: "queued";
       waited_ms: number;
       rating: number;
-      in_queue: number;
       server_now: string;
     };
 

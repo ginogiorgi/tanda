@@ -3,8 +3,8 @@
 /**
  * Creador de avatar (feedback 2, P7d). Personaje arriba (~55dvh en mobile; drag para rotar, pinch para
  * zoom) y abajo el panel con pestañas **Cuerpo · Piel · Pelo · Equipo · Botines**: cada pestaña lleva la
- * cámara a lo que edita (`data-focus` en el contenedor: head/feet/body). Siempre visibles: Aleatorio,
- * Deshacer y Guardar (la única primaria). La primera vez (`firstTime`, viniendo del registro) arriba de
+ * cámara a lo que edita (`data-focus` en el contenedor: head/feet/body). Siempre visibles: Aleatorio
+ * y Guardar (la única primaria; sin Deshacer desde el feedback 3 #4). La primera vez (`firstTime`, viniendo del registro) arriba de
  * todo, 8 puntos de partida + aleatorio. Todo lo elegible sale del catálogo (`lib/avatar/catalog`).
  */
 
@@ -68,7 +68,6 @@ interface AvatarCreatorProps {
 export function AvatarCreator({ initial = DEFAULT_AVATAR, onSave, redirectTo, firstTime = false }: AvatarCreatorProps) {
   const router = useNav();
   const [avatar, setAvatar] = useState<AvatarV2>(initial);
-  const [history, setHistory] = useState<AvatarV2[]>([]);
   const [tab, setTab] = useState<Tab>("body");
   const [rotationY, setRotationY] = useState(0.4);
   const [zoom, setZoom] = useState(1);
@@ -79,15 +78,7 @@ export function AvatarCreator({ initial = DEFAULT_AVATAR, onSave, redirectTo, fi
 
   const apply = (next: AvatarV2) => {
     setSaved(false);
-    setHistory((h) => [...h.slice(-29), avatar]);
     setAvatar(next);
-  };
-  const undo = () => {
-    const prev = history.at(-1);
-    if (!prev) return;
-    setSaved(false);
-    setHistory((h) => h.slice(0, -1));
-    setAvatar(prev);
   };
 
   const handleSave = useCallback(async () => {
@@ -179,7 +170,7 @@ export function AvatarCreator({ initial = DEFAULT_AVATAR, onSave, redirectTo, fi
           </section>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex">
           <Button type="button" variant="outline" size="sm" onClick={shuffle} className="flex-1">
             <svg aria-hidden viewBox="0 0 24 24" className="size-5 fill-none stroke-current stroke-2">
               <rect x="4" y="4" width="16" height="16" rx="3" />
@@ -189,9 +180,6 @@ export function AvatarCreator({ initial = DEFAULT_AVATAR, onSave, redirectTo, fi
               <circle cx="9" cy="15" r="1" className="fill-current" />
             </svg>
             Aleatorio
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={undo} disabled={history.length === 0} className="flex-1">
-            Deshacer
           </Button>
         </div>
 
