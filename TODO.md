@@ -1,16 +1,24 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), en ejecución autónoma. F0–F6 hechas y en prod.
-- **Fase en curso:** F7 (ranking de hinchas). El código de F7 está escrito (de la sesión del 19/11 que se cayó) y
-  guardado en `git stash` ("wip-f6f7-backup": contiene F6+F7+F8.1 juntos; F6 ya está commiteado → al aplicarlo,
-  quedarse solo con lo de F7 y F8.1). Falta: verde, wipe 7.6 (export primero), deploy y smoke.
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), en ejecución autónoma. Cortado el 19/11 ~20:00 ART por usage-guard.
+- **Hecho y en prod:** F0–F6. F6 = `5d848c0` + migración `20261125000003` (ledger OK, advisors OK) + env
+  `FEEDBACK_TO` en Vercel; smoke prod e2e 44 + penal de invitado OK; reporte "[prueba]" real con `emailed = true`.
+- **F7 a medias, en la rama `wip/f7-hinchas` (`409ca00`, sin push):** todo el código de 7.1–7.5 (migración
+  `20261125000004_fans.sql`, `/hinchas`, `FavoritePicker`, registro con favoritos, favorito en la sala,
+  `start_tournament` con prioridad) + F8.1 (CLAUDE.md y disclaimer). Verde parcial: typecheck · lint · knip ·
+  unit 267 · components 52 · db 135 (rls_audit ya con las 3 RPC nuevas; `get_fan_ranking` también para anon) ·
+  build · e2e 46. **Falta:** `pnpm test:e2e:flow` (incluye `fans.spec` nuevo), 7.6 wipe con export, deploy.
+- **Próximo paso concreto:** `git switch wip/f7-hinchas`, correr el flow; si pasa, squash a main
+  (`git switch main && git merge --squash wip/f7-hinchas`, commit `feat: F7 …`, borrar la rama), push, aplicar
+  `20261125000004` por MCP (+ ledger + advisors), smoke prod con alta y favoritos. Después 7.6 (wipe: export de
+  `auth.users`, `profiles`, ranked, historial y awards a `/mnt/hera/Backups/tanda-db/<fecha>/` con md5 → borrar →
+  conteos en 0), y F8.2/F8.3, F9. El stash `wip-f6f7-backup` quedó obsoleto (está todo en main + la rama): borrarlo.
 - **Para retomar:**
   ```
   export PATH=$HOME/.npm-global/bin:$PATH
-  git log --oneline -8 && git stash list && pnpm e2e:stack && pnpm db:reset
-  # verde: pnpm typecheck lint knip test test:components test:db · pnpm build && pnpm test:e2e · pnpm test:e2e:flow
-  # deploy: git push (Vercel) · migración por MCP + ledger · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e
+  git log --oneline -8 && git switch wip/f7-hinchas && pnpm e2e:stack && pnpm db:reset && pnpm test:e2e:flow
+  # deploy: git push (Vercel) · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e + E2E_PROD_GUEST=1 … e2e/prod-guest.spec.ts
   ```
 
 ## Plan — Feedback 3 (18/11)
