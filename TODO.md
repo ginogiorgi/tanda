@@ -29,7 +29,7 @@ Fase por fase, con verde completo + deploy + smoke de prod en cada una. Capturas
   solo el cartel (una línea en `resolve_penalty`).
 - **Escudos de selecciones (F8.3):** siguen siendo banderas (las 48 revisadas, correctas). ¿Querés además escudos de
   federación parecidos a los reales? (no lo decidiste; el commit `977de28` dice "Gino eligió banderas" por error).
-- **CI `e2e-flow` intermitente (20/11, investigado, sin arreglar):** en el runner de GitHub, `game.spec` vio una vez un
+- **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un
   hueco de 8,35 s entre penales (los otros 9: 4,5–5,1 s; un solo humano en el torneo). La traza muestra al cliente
   pokeando `open_next_round` cada 1 s con no-op durante ~4 s más de lo esperado → el server abrió tarde. Localmente
   (15 corridas de flow) y en el suite `db` (`_drive`, huecos exactos con 2ª chance y muerte súbita) no aparece.
