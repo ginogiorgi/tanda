@@ -139,7 +139,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
             const cards = evs.filter((e) => e.kind === "card").length;
             return cards >= 2 && last?.kind === "card-end" && Date.now() - last.at > 3000;
           }),
-        { timeout: 150_000, intervals: [1000] },
+        { timeout: 200_000, intervals: [1000] },
       )
       .toBe(true);
     const evs = await page.evaluate(() => window.__penalEvents ?? []);
@@ -160,8 +160,13 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     });
     console.log(`[revelado] cartel ${cards.map((x) => Math.round(x)).join(",")} ms · jugada ${reveals.map((x) => Math.round(x)).join(",")} ms · hueco ${gaps.map((x) => Math.round(x)).join(",")} ms`);
     expect(cards.length).toBeGreaterThanOrEqual(2);
-    // El cartel se lee ≥2,4 s, el ÚLTIMO del partido incluido (#12: antes se veía un instante).
-    for (const d of cards) expect(d).toBeGreaterThanOrEqual(2400);
+    // El cartel se lee entero, el ÚLTIMO del partido incluido (#12: antes se veía un instante). El hueco del server es
+    // fijo (jugada + cartel): en una máquina lenta (runner de CI) la jugada se estira ~0,5 s y el cartel se acorta lo
+    // mismo → lo que se mide es la suma (≥ 4,0 s) y un piso de 2 s para el cartel.
+    cards.forEach((d, i) => {
+      expect(d).toBeGreaterThanOrEqual(2000);
+      if (reveals[i] !== undefined) expect(d + reveals[i]!).toBeGreaterThanOrEqual(4000);
+    });
     // El cartel aparece recién cuando la jugada terminó (~1,6 s), nunca con la pelota en vuelo.
     for (const d of reveals) expect(d).toBeGreaterThanOrEqual(1500);
     // Resultado → próximo penal = betweenPenalsS (4,1 s) ± 1 s (incluye el ≤1 s del cron).

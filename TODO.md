@@ -215,14 +215,20 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
 ### F8 — Escudos (#14)
 - [x] **8.1** Actualizar la regla de "assets originales" de `CLAUDE.md` (decisión de Gino 18/11: se acepta el parecido
   porque Tanda no genera plata; sigue prohibido logo/tipografía/mascota de FIFA) y el disclaimer de la home.
-- [ ] **8.2 Clubes (30):** hoy `scripts/crests/build_crests.py` genera un sistema genérico (silueta por hash + patrón
+- [x] **8.2 Clubes (30):** hoy `scripts/crests/build_crests.py` genera un sistema genérico (silueta por hash + patrón
   de camiseta + siglas) → "algunos son cualquier cosa". Rehacer cada uno como SVG propio parecido al real (forma,
   colores, franjas/bandas, iniciales/elementos característicos) en `public/crests/arg/`, con el script como
   normalizador (tamaño, viewBox, trazo). Uno por uno contra la referencia.
-- [ ] **8.3 Selecciones (48):** hoy se muestran por bandera (`public/flags`). Revisar las 48 una por una contra la
+- [x] **8.3 Selecciones (48):** hoy se muestran por bandera (`public/flags`). Revisar las 48 una por una contra la
   real y corregir las que estén mal; si Gino quiere escudos de federación en vez de banderas, queda anotado abajo.
-- [ ] **Verifica:** lámina de capturas con todos los escudos/banderas (chico y grande) comparados uno por uno;
+- [x] **Verifica:** lámina de capturas con todos los escudos/banderas (chico y grande) comparados uno por uno;
   `assets:check`.
+- [x] **Cierre F8:** `build_crests.py` pasa a una FICHA por club (forma, campo, colores, siglas y elemento propio:
+  banda de River, V de Vélez, globo de Huracán, estrellas de Boca…) mirando el escudo real; el script normaliza
+  viewBox 64×72, borde y letras a trazos. Banderas: las 48 revisadas contra las reales, ninguna mal (Gino eligió
+  banderas, no escudos de federación). Verde (unit 267 · components 52 · db 135 · e2e 46 · flow 15 · assets 91).
+  **Propia:** `/hinchas` no tenía presupuesto de JS (rompía el CI de F7) → 167 KB; `game.spec` mide jugada + cartel
+  (el runner de CI estira la jugada y acortaba el cartel: venía fallando intermitente desde F3).
 
 ### F9 — Cierre
 - [ ] Borrar el HANDOFF y `docs/FEEDBACK-3.md`; `TODO.md` con el estado nuevo y el verde de referencia; memoria
