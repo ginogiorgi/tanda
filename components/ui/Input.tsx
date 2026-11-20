@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 
 /** Input del sistema. Reemplaza el `rounded-[4px] border … focus:border-brand` repetido en los forms. */
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean };
+export type InputProps = React.ComponentProps<"input"> & { invalid?: boolean };
 
 export function Input({ className, invalid, ...props }: InputProps) {
   return (

@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../_csp";
-import { assertLocalSupabase } from "./_helpers";
+import { assertLocalSupabase, pickFavorites } from "./_helpers";
 
 /**
  * Creador de avatar (feedback 2, P7d): registro → punto de partida → Pelo (cámara a la cabeza) → Botines
@@ -14,6 +14,7 @@ test("registro → preset → pelo y botines con cámara por pestaña → guarda
   await page.goto("/register");
   await page.getByLabel("Usuario").fill(username);
   await page.getByLabel("Contraseña").fill("tanda-test-123");
+  await pickFavorites(page);
   await page.getByRole("button", { name: "Crear cuenta" }).click();
   await page.waitForURL(/\/avatar\?from=signup/, { timeout: 30_000 });
 

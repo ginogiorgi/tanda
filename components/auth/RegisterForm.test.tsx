@@ -11,7 +11,7 @@ type SignUpResult = {
 
 const m = vi.hoisted(() => ({
   rpc: vi.fn<(fn: string, args: { check_name: string }) => Promise<{ data: boolean | null; error: AuthError }>>(),
-  signUp: vi.fn<(args: { email: string; password: string }) => Promise<SignUpResult>>(),
+  signUp: vi.fn<(args: { email: string; password: string; options?: { data?: Record<string, unknown> } }) => Promise<SignUpResult>>(),
   push: vi.fn<(href: string) => void>(),
   refresh: vi.fn<() => void>(),
 }));
@@ -26,6 +26,25 @@ vi.mock("@/lib/nav/useNav", () => ({
 const usernameInput = () => screen.getByLabelText("Usuario");
 const passwordInput = () => screen.getByLabelText("Contraseña");
 const submit = () => screen.getByRole("button", { name: /Crear cuenta|Creando…/ });
+
+/** jsdom no trae `<dialog>` modal: alcanza con abrir/cerrar. */
+if (!HTMLDialogElement.prototype.showModal) {
+  HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+    this.open = true;
+  };
+  HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
+    this.open = false;
+  };
+}
+
+/** Elige club y país en los selectores buscables (feedback 3 #15). */
+async function pickFavorites(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByTestId("fav-club"));
+  await user.type(screen.getByRole("searchbox", { name: "Buscar club" }), "boca");
+  await user.click(screen.getByRole("button", { name: /Boca Juniors/ }));
+  await user.click(screen.getByTestId("fav-nation"));
+  await user.click(screen.getByRole("button", { name: /^Argentina$|Bandera de Argentina Argentina/ }));
+}
 
 describe("RegisterForm", () => {
   beforeEach(() => {
@@ -103,12 +122,14 @@ describe("RegisterForm", () => {
     render(<RegisterForm />);
     await user.type(usernameInput(), "rosario");
     await screen.findByText("Disponible ✓");
+    await pickFavorites(user);
     await user.type(passwordInput(), "secreta1");
     await user.click(submit());
 
     const busy = await screen.findByRole("button", { name: "Creando…" });
     expect(busy).toBeDisabled();
     expect(m.signUp.mock.calls[0]?.[0].email).toMatch(/^rosario@/);
+    expect(m.signUp.mock.calls[0]?.[0].options?.data).toEqual({ username: "rosario", fav_club: "BOC", fav_nation: "ARG" });
 
     resolve({ data: { user: { identities: [{}] } }, error: null });
     await vi.waitFor(() => expect(m.push).toHaveBeenCalledWith("/avatar?from=signup"));
@@ -120,6 +141,7 @@ describe("RegisterForm", () => {
     render(<RegisterForm />);
     await user.type(usernameInput(), "rosario");
     await screen.findByText("Disponible ✓");
+    await pickFavorites(user);
     await user.type(passwordInput(), "secreta1");
     await user.click(submit());
 
@@ -133,10 +155,33 @@ describe("RegisterForm", () => {
     render(<RegisterForm />);
     await user.type(usernameInput(), "rosario");
     await screen.findByText("Disponible ✓");
+    await pickFavorites(user);
     await user.type(passwordInput(), "secreta1");
     await user.click(submit());
 
     expect(await screen.findByText(/No se pudo crear la cuenta/)).toBeInTheDocument();
     expect(m.push).not.toHaveBeenCalled();
+  });
+
+  it("sin club o país favorito: avisa, marca los selectores y no llama al alta", async () => {
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+    await user.type(usernameInput(), "rosario");
+    await screen.findByText("Disponible ✓");
+    await user.type(passwordInput(), "secreta1");
+    await user.click(submit());
+
+    expect(screen.getByText("Elegí tu club y tu país favoritos.")).toBeInTheDocument();
+    expect(screen.getByTestId("fav-club")).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByTestId("fav-nation")).toHaveAccessibleDescription(/falta elegir/);
+    expect(m.signUp).not.toHaveBeenCalled();
+  });
+
+  it("el selector muestra lo elegido (escudo + nombre)", async () => {
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+    await pickFavorites(user);
+    expect(screen.getByTestId("fav-club")).toHaveTextContent("Boca Juniors");
+    expect(screen.getByTestId("fav-nation")).toHaveTextContent("Argentina");
   });
 });

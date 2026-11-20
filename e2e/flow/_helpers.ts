@@ -18,6 +18,18 @@ export async function enterAsGuest(page: Page): Promise<void> {
   await expect(homePlay(page)).toBeVisible({ timeout: 20_000 });
 }
 
+/** Elige club y país favoritos en el registro o en /hinchas (feedback 3 #15). */
+export async function pickFavorites(page: Page, club = "Boca Juniors", nation = "Argentina"): Promise<void> {
+  for (const [kind, name, search] of [["club", club, "Buscar club"], ["nation", nation, "Buscar país"]] as const) {
+    await page.getByTestId(`fav-${kind}`).click();
+    const sheet = page.getByTestId(`fav-sheet-${kind}`);
+    await sheet.getByRole("searchbox", { name: search }).fill(name.split(" ")[0]!);
+    await sheet.getByRole("button", { name: new RegExp(`${name}$`) }).click();
+    await expect(sheet).toBeHidden();
+    await expect(page.getByTestId(`fav-${kind}`)).toContainText(name);
+  }
+}
+
 /** La acción principal de la home logueada: el link JUGAR (lleva a `/jugar`). */
 export function homePlay(page: Page): Locator {
   return page.getByRole("link", { name: "Jugar", exact: true });

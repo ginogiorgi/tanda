@@ -96,6 +96,7 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
   sigue siendo geometría propia. Animación por **rig propio** (`lib/avatar/rig.ts`, clips por keyframes) +
   jugada determinista (`lib/penal/shot.ts`); revisar en `/dev/penal`. El avatar del jugador ES el pateador/arquero
   del penal. Ver SPEC §8.2.
-- **Assets originales**: no reproducir emblemas/logos/mascotas/tipografías de FIFA. Solo
-  inspirarse en paleta y feel del Mundial 2026.
+- **Assets (decisión de Gino 18/11):** los escudos de clubes y selecciones pueden **parecerse** a los reales
+  (forma, colores, franjas, iniciales) sin ser copias exactas — Tanda no genera plata. Sigue **prohibido** el
+  logo, la tipografía, la mascota y cualquier emblema de la FIFA o del Mundial 2026; de ahí solo paleta y feel.
 - Sin secretos en el cliente (`service_role`/`SUPABASE_SECRET_KEY` solo en servidor/CI).

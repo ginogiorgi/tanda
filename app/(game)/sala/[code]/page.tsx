@@ -32,6 +32,8 @@ export default async function SalaPage({
     supabase.from("rooms").select("status, starts_at, mode_id").eq("code", code).single(),
     supabase.from("profiles").select("username").eq("id", user.id).single(),
   ]);
+  // Favorito del modo (feedback 3 #15) para mostrarlo al lado de tu nombre; los invitados no tienen.
+  const { data: fav } = room && !user.isAnonymous ? await supabase.rpc("lobby_favorite", { p_mode: room.mode_id }) : { data: null };
   if (!room) redirect("/jugar?aviso=room_not_found");
   if (room.status === "cancelled") redirect("/jugar?aviso=room_cancelled");
 
@@ -44,6 +46,7 @@ export default async function SalaPage({
         serverNow={new Date().toISOString()}
         userId={user.id}
         username={profile?.username ?? "Jugador"}
+        fav={fav ? { name: fav.name, flag: fav.flag, crest: fav.crest } : null}
       />
     </div>
   );

@@ -92,3 +92,22 @@ describe("reconcileRoster (período de gracia, anti-parpadeo)", () => {
     expect(rosterMembers(roster).map((m) => m.userId)).toEqual(["u1", "u2"]);
   });
 });
+
+describe("favorito en la sala (feedback 3 #15)", () => {
+  it("pasa el favorito del modo al miembro y descarta formas raras", () => {
+    const roster = reconcileRoster(
+      new Map(),
+      {
+        a: [{ userId: "u1", username: "Ana", online_at: 1, fav: { name: "Boca Juniors", flag: null, crest: "arg/boca" } }],
+        b: [{ userId: "u2", username: "Beto", online_at: 2, fav: { name: "X", flag: "<img>", crest: null } }],
+        c: [{ userId: "u3", username: "Caro", online_at: 3, fav: null }],
+      },
+      10,
+    );
+    expect(rosterMembers(roster)).toEqual([
+      { userId: "u1", username: "Ana", fav: { name: "Boca Juniors", flag: null, crest: "arg/boca" } },
+      { userId: "u2", username: "Beto", fav: { name: "X", flag: null, crest: null } },
+      { userId: "u3", username: "Caro" },
+    ]);
+  });
+});

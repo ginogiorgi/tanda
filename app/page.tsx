@@ -45,10 +45,10 @@ export default async function Home({
     <main className="flex w-full flex-1 flex-col items-center text-center">
       <JsonLd />
       <FeedbackButton />
-      <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16 [@media(max-height:820px)]:gap-5 [@media(max-height:820px)]:py-6">
+      <div className="my-auto flex w-full flex-col items-center gap-8 px-6 py-16 [@media(max-height:920px)]:gap-5 [@media(max-height:920px)]:py-6">
       <div className="flex flex-col items-center gap-5">
         <h1 aria-label="Tanda">
-          <Wordmark stamp={false} className="text-[6.5rem] sm:text-[10rem] sm:[@media(max-height:820px)]:text-[8rem]" />
+          <Wordmark stamp={false} className="text-[6.5rem] sm:text-[10rem] sm:[@media(max-height:920px)]:text-[8rem]" />
         </h1>
         {/* Filete + bajada: presentación del juego, solo en la landing (logueado ya lo conocés). */}
         {!user && (
@@ -106,6 +106,9 @@ export default async function Home({
             </Link>
           )}
           <HelpSheet trigger="button" label="Cómo jugar" title="Cómo jugar" sections={HOWTO} />
+          <Link href="/hinchas" className={buttonVariants({ variant: "outline", size: "lg" })}>
+            Ranking de hinchas
+          </Link>
           <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
             {isGuest ? "Perfil" : "Mi perfil"}
           </Link>
@@ -138,8 +141,8 @@ export default async function Home({
 
       <p className="mt-4 max-w-xs text-balance text-xs leading-relaxed text-fg-subtle">
         Juego original e independiente. No está afiliado, asociado ni autorizado por la FIFA ni por
-        ninguna organización futbolística. Selecciones y clubes a modo ilustrativo; los escudos son
-        diseños originales.
+        ninguna organización futbolística. Selecciones y clubes a modo ilustrativo: los escudos son
+        recreaciones propias, no los oficiales.
       </p>
       </div>
     </main>

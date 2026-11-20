@@ -10,6 +10,7 @@ import {
   formatRemaining,
   reconcileRoster,
   rosterMembers,
+  type LobbyFav,
   type LobbyMember,
   type LobbyPresence,
   type RosterEntry,
@@ -17,6 +18,7 @@ import {
 import { getMode, type ModeId } from "@/lib/modes";
 import { usePreload3D } from "@/components/penal/usePreload3D";
 import { Page } from "@/components/ui/Page";
+import { TeamMark } from "@/components/common/TeamMark";
 
 type LobbyProps = {
   code: string;
@@ -25,9 +27,11 @@ type LobbyProps = {
   serverNow: string;
   userId: string;
   username: string;
+  /** Tu favorito para este modo (club en Argentino, país en el Mundial); null = sin favorito. */
+  fav: LobbyFav | null;
 };
 
-export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: LobbyProps) {
+export function Lobby({ code, modeId, startsAt, serverNow, userId, username, fav }: LobbyProps) {
   usePreload3D(); // el primer penal no paga la descarga del 3D (F4)
   const mode = getMode(modeId);
   const { push: navPush, leave: navLeave } = useNav();
@@ -63,7 +67,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
       .on("presence", { event: "sync" }, refresh)
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await channel.track({ userId, username, online_at: Date.now() });
+          await channel.track({ userId, username, fav, online_at: Date.now() });
         }
       });
 
@@ -75,7 +79,7 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
       void supabase.removeChannel(channel);
       channelRef.current = null;
     };
-  }, [supabase, code, userId, username]);
+  }, [supabase, code, userId, username, fav]);
 
   // Countdown contra el deadline del server (offset estimado una vez al montar). El arranque
   // real del torneo lo decide el server (start_tournament, F5); acá solo se dibuja.
@@ -198,9 +202,14 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username }: L
             members.map((m) => (
               <li key={m.userId} className="flex items-center gap-2 text-sm text-fg">
                 <span className="h-2 w-2 rounded-full bg-success" aria-hidden />
-                <span>{m.username}</span>
+                <span className="min-w-0 truncate">{m.username}</span>
                 {m.userId === userId && (
                   <span className="text-xs text-fg-subtle">(vos)</span>
+                )}
+                {m.fav && (
+                  <span className="ml-auto flex shrink-0 items-center" title={`Hincha de ${m.fav.name}`}>
+                    <TeamMark flag={m.fav.flag} crest={m.fav.crest} name={m.fav.name} className="h-5" />
+                  </span>
                 )}
               </li>
             ))

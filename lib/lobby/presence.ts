@@ -4,10 +4,14 @@
  * el aplanado/dedup del estado de Presence.
  */
 
+/** Favorito del modo de la sala (feedback 3 #15): escudo o bandera a la derecha del nombre. */
+export type LobbyFav = { name: string; flag: string | null; crest: string | null };
+
 /** Un humano presente en el lobby (derivado del estado de Presence). */
 export type LobbyMember = {
   userId: string;
   username: string;
+  fav?: LobbyFav;
 };
 
 /** Lo que cada cliente trackea en el canal `room:{code}`. */
@@ -15,7 +19,15 @@ export type LobbyPresence = {
   userId: string;
   username: string;
   online_at: number;
+  fav?: LobbyFav | null;
 };
+
+/** Solo un favorito bien formado (lo manda otro cliente: no confiar en la forma). */
+function cleanFav(f: LobbyPresence["fav"]): { fav: LobbyFav } | Record<string, never> {
+  if (!f || typeof f.name !== "string") return {};
+  const str = (v: unknown) => (typeof v === "string" && /^[\w/-]{1,40}$/.test(v) ? v : null);
+  return { fav: { name: f.name.slice(0, 40), flag: str(f.flag), crest: str(f.crest) } };
+}
 
 /**
  * Formatea milisegundos restantes como `m:ss`. Clampa a `0:00` (nunca negativo): el penal
@@ -47,7 +59,7 @@ export function presenceMembers(
   }
   return [...byUser.values()]
     .sort((a, b) => a.online_at - b.online_at)
-    .map(({ userId, username }) => ({ userId, username }));
+    .map(({ userId, username, fav }) => ({ userId, username, ...cleanFav(fav) }));
 }
 
 /** Entrada del roster acumulado: el miembro + cuándo llegó (orden) y cuándo se lo vio por última vez. */
@@ -56,6 +68,7 @@ export type RosterEntry = {
   username: string;
   online_at: number;
   lastSeen: number;
+  fav?: LobbyFav;
 };
 
 /** Período de gracia: un jugador ausente del estado de Presence no se quita hasta superarlo. */
@@ -82,6 +95,7 @@ export function reconcileRoster(
       next.set(p.userId, {
         userId: p.userId,
         username: p.username,
+        ...cleanFav(p.fav),
         // conservar el online_at más viejo → orden de llegada estable aunque re-trackee.
         online_at: existing ? Math.min(existing.online_at, p.online_at) : p.online_at,
         lastSeen: now,
@@ -98,5 +112,5 @@ export function reconcileRoster(
 export function rosterMembers(roster: Map<string, RosterEntry>): LobbyMember[] {
   return [...roster.values()]
     .sort((a, b) => a.online_at - b.online_at)
-    .map(({ userId, username }) => ({ userId, username }));
+    .map(({ userId, username, fav }) => ({ userId, username, ...(fav ? { fav } : {}) }));
 }

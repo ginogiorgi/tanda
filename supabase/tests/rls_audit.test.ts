@@ -24,6 +24,7 @@ const AUTH_ALLOWLIST = [
   "get_active_match",
   "get_active_tournament",
   "get_bracket",
+  "get_fan_ranking",
   "get_match_penals",
   "get_match_scene",
   "get_penalty_result",
@@ -34,6 +35,7 @@ const AUTH_ALLOWLIST = [
   "get_tournament_history",
   "join_room",
   "leave_room",
+  "lobby_favorite",
   "open_next_round",
   "open_penalty",
   "quick_play",
@@ -42,6 +44,7 @@ const AUTH_ALLOWLIST = [
   "ranked_poll",
   "resolve_penalty",
   "select_option",
+  "set_favorites",
   "username_available",
   // helpers de pertenencia que evalúan las policies RLS
   "is_match_member",
@@ -51,12 +54,14 @@ const AUTH_ALLOWLIST = [
   "realtime_tournament_member",
 ].sort();
 
-// `anon` (sin sesión) solo necesita username_available (form de registro). Los helpers de pertenencia
-// los evalúan policies `TO authenticated` (y RPCs definer como owner): no se exponen a anon (advisor 0028).
 /** RPC tipadas que solo llama el server con la service role (`app/api/*`); nunca el cliente. */
 const SERVICE_ONLY = ["submit_feedback"];
 
+// `anon` (sin sesión) solo necesita username_available (form de registro) y get_fan_ranking (/hinchas es
+// público: lee contadores agregados, nada personal). Los helpers de pertenencia los evalúan policies
+// `TO authenticated` (y RPCs definer como owner): no se exponen a anon (advisor 0028).
 const ANON_ALLOWLIST = [
+  "get_fan_ranking",
   "username_available",
 ].sort();
 
@@ -133,7 +138,7 @@ describe("superficie ejecutable == allowlist intencional", () => {
     expect(await execNames("authenticated")).toEqual(AUTH_ALLOWLIST);
   });
 
-  it("anon solo ejecuta username_available", async () => {
+  it("anon solo ejecuta username_available y get_fan_ranking", async () => {
     expect(await execNames("anon")).toEqual(ANON_ALLOWLIST);
   });
 

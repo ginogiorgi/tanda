@@ -9,6 +9,7 @@ import type { ActiveMatch, MatchScene, PenalResultPayload } from "@/lib/realtime
 import type { BracketSnapshot } from "@/lib/bracket/bracket";
 import type { TournamentHistoryEntry } from "@/lib/profile/history";
 import type { ModeId } from "@/lib/engine/formats";
+import type { FanRanking, LobbyFavorite } from "@/lib/fans/catalog";
 import type { ProfileStats, Ranking, RankedMatchView, RankedMe, RankedPoll } from "@/lib/ranked/types";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -73,6 +74,9 @@ export type Database = {
       get_ranked_match: { Args: { p_tournament: string }; Returns: RankedMatchView };
       get_ranking: { Args: { p_limit?: number }; Returns: Ranking };
       get_profile_stats: { Args: Empty; Returns: ProfileStats };
+      set_favorites: { Args: { p_club: string; p_nation: string }; Returns: { club: string; nation: string } };
+      get_fan_ranking: { Args: Empty; Returns: FanRanking };
+      lobby_favorite: { Args: { p_mode: string }; Returns: LobbyFavorite | null };
       /** Solo service role (`POST /api/feedback`). */
       submit_feedback: {
         Args: {

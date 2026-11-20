@@ -8,6 +8,7 @@ const PAGES = [
   { path: "/register", heading: /cuenta|registr/i },
   { path: "/forgot", heading: /contraseña|clave/i },
   { path: "/ranking", heading: null },
+  { path: "/hinchas", heading: /hinchas/i },
   { path: "/una-ruta-que-no-existe", heading: null },
 ] as const;
 

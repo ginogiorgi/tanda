@@ -34,6 +34,7 @@ export const ROUTES: readonly RouteDef[] = [
   { pattern: "/perfil/historial", title: "Historial", parent: "/perfil", group: "app" },
   { pattern: "/ranking", title: "Tabla", parent: "/perfil", group: "app" },
   { pattern: "/avatar", title: "Tu jugador", parent: "/perfil", group: "app" },
+  { pattern: "/hinchas", title: "Ranking de hinchas", parent: "/", group: "app" },
   { pattern: "/sala/[code]", title: "Sala", parent: "/jugar", group: "game" },
   { pattern: "/ranked", title: "Ranked", parent: "/jugar", group: "game" },
   { pattern: "/partido", title: "Partido", parent: null, group: "game" },

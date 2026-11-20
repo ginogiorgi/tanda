@@ -7,6 +7,7 @@ import { browserClient } from "@/lib/supabase/lazy";
 import { isValidUsername, usernameToEmail } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
+import { FavoritePicker } from "@/components/fans/FavoritePicker";
 
 /** Estado del chequeo de disponibilidad del username (RPC `username_available`). */
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -18,6 +19,10 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [availability, setAvailability] = useState<Availability>("idle");
+  // Feedback 3 #15: club y país favoritos son obligatorios para crear la cuenta.
+  const [favClub, setFavClub] = useState<string | null>(null);
+  const [favNation, setFavNation] = useState<string | null>(null);
+  const [favMissing, setFavMissing] = useState(false);
 
   // Debounce + protección de carrera para el chequeo de disponibilidad, manejado desde el
   // onChange (no en un effect). La RLS no deja leer perfiles ajenos, así que usamos el RPC
@@ -66,6 +71,11 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
       setError("La contraseña necesita al menos 6 caracteres.");
       return;
     }
+    if (!favClub || !favNation) {
+      setFavMissing(true);
+      setError("Elegí tu club y tu país favoritos.");
+      return;
+    }
 
     setLoading(true);
     const supabase = await browserClient();
@@ -101,6 +111,13 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
           setError("Ese usuario ya está tomado. Probá con otro.");
           return;
         }
+        // Ya es cuenta registrada (la DB lo ve al toque): ahora sí puede tener favoritos.
+        const { error: favError } = await supabase.rpc("set_favorites", { p_club: favClub, p_nation: favNation });
+        if (favError) {
+          setLoading(false);
+          setError("Tu cuenta se creó, pero no pudimos guardar tus favoritos. Elegilos en Ranking de hinchas.");
+          return;
+        }
       }
       setLoading(false);
       router.push("/avatar?from=signup");
@@ -111,7 +128,7 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: usernameToEmail(trimmed),
       password,
-      options: { data: { username: trimmed } },
+      options: { data: { username: trimmed, fav_club: favClub, fav_nation: favNation } },
     });
     setLoading(false);
 
@@ -165,6 +182,30 @@ export function RegisterForm({ upgrade = false }: { upgrade?: boolean }) {
           placeholder="••••••••"
         />
       </Field>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FavoritePicker
+          kind="club"
+          value={favClub}
+          onChange={(code) => {
+            setFavClub(code);
+            setFavMissing(false);
+          }}
+          invalid={favMissing && !favClub}
+        />
+        <FavoritePicker
+          kind="nation"
+          value={favNation}
+          onChange={(code) => {
+            setFavNation(code);
+            setFavMissing(false);
+          }}
+          invalid={favMissing && !favNation}
+        />
+      </div>
+      <p className="-mt-2 text-xs text-fg-subtle">
+        Suman al ranking de hinchas y en las salas tenés prioridad para jugar con ellos.
+      </p>
 
       {error && <p className="text-sm font-semibold text-brand-ink">{error}</p>}
 

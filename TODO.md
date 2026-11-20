@@ -166,7 +166,7 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   2 zonas: tu próximo partido arriba y **las dos tablas lado a lado, mismo componente y tamaño** (tu zona marcada).
   Mundial (12 grupos) conserva su grilla. Capturas 390/1440 en Argentino y Mundial.
 - [x] **Cierre F4:** verde (unit 247 · components 50 · db 118 · e2e 44 · flow 9; layout en 4 viewports + "sin
-  scroll" en 1440×900 y 1366×768 para home y /jugar) + deploy. Home compacta el hero con `max-height:820px`.
+  scroll" en 1440×900 y 1366×768 para home y /jugar) + deploy. Home compacta el hero con `max-height:920px` (F7: suma "Ranking de hinchas").
   Capturas: `e2e/shots/torneo.spec.ts` (Argentino/Mundial en fase de zonas).
 
 ### F5 — Pantalla de campeón (#6)

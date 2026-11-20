@@ -27,7 +27,7 @@ test("app: layout de documento en 4 viewports; perfil y tabla vuelven al padre, 
   const mobile = page.viewportSize()!;
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    for (const path of ["/", "/jugar", "/perfil", "/ranking"]) {
+    for (const path of ["/", "/jugar", "/perfil", "/ranking", "/hinchas"]) {
       await test.step(`${vp.name} ${path}`, async () => {
         await page.goto(path);
         await assertLayout(page);
