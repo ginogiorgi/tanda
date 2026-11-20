@@ -1,25 +1,13 @@
 # TODO — TANDA ⚽
 
 ## ⏸ HANDOFF
-- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), en ejecución autónoma. Cortado el 19/11 ~20:00 ART por usage-guard.
-- **Hecho y en prod:** F0–F6. F6 = `5d848c0` + migración `20261125000003` (ledger OK, advisors OK) + env
-  `FEEDBACK_TO` en Vercel; smoke prod e2e 44 + penal de invitado OK; reporte "[prueba]" real con `emailed = true`.
-- **F7 a medias, en la rama `wip/f7-hinchas` (`409ca00`, sin push):** todo el código de 7.1–7.5 (migración
-  `20261125000004_fans.sql`, `/hinchas`, `FavoritePicker`, registro con favoritos, favorito en la sala,
-  `start_tournament` con prioridad) + F8.1 (CLAUDE.md y disclaimer). Verde parcial: typecheck · lint · knip ·
-  unit 267 · components 52 · db 135 (rls_audit ya con las 3 RPC nuevas; `get_fan_ranking` también para anon) ·
-  build · e2e 46. **Falta:** `pnpm test:e2e:flow` (incluye `fans.spec` nuevo), 7.6 wipe con export, deploy.
-- **Decisión de Gino (19/11):** el torneo con varios humanos sigue esperando al partido más lento (reloj común por
-  fecha, ~10 s en 2ª chance). No cambiar.
-- **Próximo paso concreto:** `git switch wip/f7-hinchas`, correr el flow; si pasa, squash a main
-  (`git switch main && git merge --squash wip/f7-hinchas`, commit `feat: F7 …`, borrar la rama), push, aplicar
-  `20261125000004` por MCP (+ ledger + advisors), smoke prod con alta y favoritos. Después 7.6 (wipe: export de
-  `auth.users`, `profiles`, ranked, historial y awards a `/mnt/hera/Backups/tanda-db/<fecha>/` con md5 → borrar →
-  conteos en 0), y F8.2/F8.3, F9. El stash `wip-f6f7-backup` quedó obsoleto (está todo en main + la rama): borrarlo.
+- **Plan:** Feedback 3 (`docs/FEEDBACK-3.md`), en ejecución autónoma. F0–F7 hechas y en prod; sigue F8 (escudos).
+- **Decisión de Gino (19/11):** el reloj común por fecha queda como está (no cambiar). Vista dron: tampoco.
 - **Para retomar:**
   ```
   export PATH=$HOME/.npm-global/bin:$PATH
-  git log --oneline -8 && git switch wip/f7-hinchas && pnpm e2e:stack && pnpm db:reset && pnpm test:e2e:flow
+  git log --oneline -8 && pnpm e2e:stack && pnpm db:reset
+  # verde: pnpm typecheck lint knip test test:components test:db assets:check · pnpm build && pnpm test:e2e · pnpm test:e2e:flow
   # deploy: git push (Vercel) · smoke: E2E_BASE_URL=https://tanda2026.com.ar pnpm test:e2e + E2E_PROD_GUEST=1 … e2e/prod-guest.spec.ts
   ```
 
@@ -198,30 +186,34 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   pública de un test lo levantaba el siguiente → torneo con 2 humanos y huecos de ~10 s (ver revisión con Gino).
 
 ### F7 — Ranking de hinchas (#15)
-- [ ] **7.1 DB:** `profiles.fav_club_id` / `fav_nation_id` (FK a `teams` del modo correspondiente, CHECK de modo
+- [x] **7.1 DB:** `profiles.fav_club_id` / `fav_nation_id` (FK a `teams` del modo correspondiente, CHECK de modo
   inline con coalesce — ver lección CHECK/permisos), tabla `fan_counts(team_id, fans)` mantenida por trigger en
   insert/update/delete de `profiles` (nada de COUNT en caliente), RPC `set_favorites` (rate-limit) y
   `get_fan_ranking()` (lee `fan_counts`, top por modo). Grants explícitos. Tests db (contadores exactos tras altas,
   cambios y bajas; concurrencia).
-- [ ] **7.2 Alta obligatoria:** el registro (y el upgrade de invitado) pide club y país favoritos con selectores
+- [x] **7.2 Alta obligatoria:** el registro (y el upgrade de invitado) pide club y país favoritos con selectores
   buscables con escudo/bandera; sin favoritos no se completa. Tests de `RegisterForm`.
-- [ ] **7.3 Pantalla `/hinchas`** (`lib/nav/routes.ts`): botón "Ranking de hinchas" en la home entre "Cómo jugar" y
+- [x] **7.3 Pantalla `/hinchas`** (`lib/nav/routes.ts`): botón "Ranking de hinchas" en la home entre "Cómo jugar" y
   "Tu perfil"; arriba los dos selectores a la par (cambio inmediato, sin límite); debajo, ranking de países y de
   clubes (posición, escudo, nombre, hinchas, el tuyo marcado). Invitado: ve el ranking, para elegir se le ofrece
   crear cuenta. Capturas.
-- [ ] **7.4 Asignación en sala (server, `start_tournament`):** cada humano registrado con favorito del modo tiene
+- [x] **7.4 Asignación en sala (server, `start_tournament`):** cada humano registrado con favorito del modo tiene
   prioridad; si varios comparten favorito, sorteo por seed; a los que pierden (y a invitados) un equipo al azar que
   **nadie** de la sala tenga de favorito; los bots, el resto. Tests db: 1 humano, 2 con el mismo favorito, N con
   favoritos cruzados, invitados, sala llena.
-- [ ] **7.5 Sala de espera:** escudo/bandera del favorito del modo a la derecha del nombre (va en el `track` de
+- [x] **7.5 Sala de espera:** escudo/bandera del favorito del modo a la derecha del nombre (va en el `track` de
   presence; el server lo da en `join_room`/página). Captura.
-- [ ] **7.6 Wipe de cuentas en prod** (autorizado por Gino): export previo de `auth.users`, `profiles`, ranked,
+- [x] **7.6 Wipe de cuentas en prod** (autorizado por Gino): export previo de `auth.users`, `profiles`, ranked,
   historial y awards a `/mnt/hera/Backups/tanda-db/<fecha>/` con md5 validado contra el Postgres local (patrón de la
   limpieza del 17/11) → borrar usuarios (cascade) → verificar conteos en 0 y que la app arranca limpia.
-- [ ] **Cierre F7:** verde + deploy + smoke de alta con favoritos en prod.
+- [x] **Cierre F7:** verde (unit 267 · components 52 · db 135 · e2e 46 · flow 15) + migración `20261125000004`
+  (verificada por md5 de funciones prod = local) + deploy `b33f38e` + smoke de alta con favoritos en prod ("1
+  hincha"). Wipe 7.6 hecho el 20/11: export en `/mnt/hera/Backups/tanda-db/2026-11-20/` (12 JSON + MD5SUMS + README;
+  validado cargándolo en el Postgres local) → borrados usuarios, torneos, salas y penales → todo en 0 (catálogo y
+  preguntas intactos) → smoke e2e 46 + penal de invitado OK. Home compacta el hero hasta 920 px de alto.
 
 ### F8 — Escudos (#14)
-- [ ] **8.1** Actualizar la regla de "assets originales" de `CLAUDE.md` (decisión de Gino 18/11: se acepta el parecido
+- [x] **8.1** Actualizar la regla de "assets originales" de `CLAUDE.md` (decisión de Gino 18/11: se acepta el parecido
   porque Tanda no genera plata; sigue prohibido logo/tipografía/mascota de FIFA) y el disclaimer de la home.
 - [ ] **8.2 Clubes (30):** hoy `scripts/crests/build_crests.py` genera un sistema genérico (silueta por hash + patrón
   de camiseta + siglas) → "algunos son cualquier cosa". Rehacer cada uno como SVG propio parecido al real (forma,
@@ -238,14 +230,6 @@ Revisar en `/dev/penal?shot=…&t=…` (freeze por cuadro). Headless: `google-ch
   commit ahí.
 
 ### Pendiente de revisión con Gino
-- **Reloj de ronda compartido y 2ª chance (hallado en F6, no cambiado):** si en un torneo hay 2+ humanos, todos los
-  partidos de la ronda esperan al más lento; cuando un partido va a 2ª chance (+5 s y su jugada), los demás ven el
-  cartel ~8 s y el próximo penal llega ~10 s después del anterior. Es la regla de diseño (sincronizar humanos), pero
-  se siente como el "bug de 10 s". Opciones: dejarlo, o que cada partido con humanos tenga su propio reloj intra-fecha.
-- **Datos de prueba en prod (19/11, error mío, sin daño):** un `pnpm build` suelto (env de prod) + `E2E_SKIP_BUILD=1`
-  corrió el flow contra la API de prod entre 03:32 y 03:40 UTC: 10 invitados anónimos, 1 cuenta sintética
-  `av_…@users.tanda2026.com.ar` (avatar.spec) y torneos con bots (terminan solos). Ningún dato real tocado. Se
-  van con el wipe de F7 (con export). `flow.sh` ahora verifica que `.next` apunte a la API local o reconstruye.
 - **Escena del penal (F3):** cámara dron fija con leve empuje; los avatares quedan chicos frente a la toma de atrás
   (es el costo de ver arco + área + medialuna). Si los querés más grandes: cerrar el cuadro (sin medialuna) o
   escalar los muñecos ×1,2.
