@@ -42,15 +42,13 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   (`dataCollection` todo apagado), user id como sha256 de 16 hex, sin trazas ni replays. Le llegan la pantalla de
   error / juego trabado (`sendAutoReport`) y de la telemetría solo `rpc_error:*` y `penal:stall_fatal`. Túnel propio
   `app/sentry-tunnel/route.ts` (solo nuestro DSN: ajeno → 403). Server: `instrumentation.ts` (`onRequestError`).
-  `withSentryConfig` SOLO en builds de Vercel: sube source maps y los borra del output.
+  `withSentryConfig` SOLO en builds de Vercel: sube source maps y los borra del output. Esto suma ~1,5 KB gz por
+  ruta en prod (debug ids) que `perf:budget` local no ve; Gino lo aprobó el 22/11 (stacks legibles > ese peso).
 - **SPEC.md reescrito (22/11)** al estado actual (modos, ranked, TIMING, carrera de ronda, cliente del penal,
   telemetría, cron). **G en curso:** `pnpm qa:ranked-sim` (6 cuentas `qa_*` con `qa_keep` en prod).
 - **Sigue:** cierre de G (reporte + capturas de `/ranking` y la tarjeta ranked).
 
 ## Pendiente de revisión con Gino
-- **Sentry: +~1,5 KB gz por ruta en prod.** Es el snippet de *debug id* que `withSentryConfig` mete en cada chunk
-  para leer los stacks con los source maps. `perf:budget` mide sin él (build local/CI), así que en prod cada ruta
-  pesa eso más que lo que dice el presupuesto. Si preferís el peso a los stacks legibles, se saca `withSentryConfig`.
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
 - **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un
