@@ -11,10 +11,7 @@
     "playwright.shots.config.ts"
   ],
   "project": [
-    "**/*.{ts,tsx}"
+    "**/*.{ts,tsx,mts,css}"
   ],
-  "ignoreExportsUsedInFile": true,
-  "ignoreDependencies": [
-    "tailwindcss"
-  ]
+  "ignoreExportsUsedInFile": true
 }
