@@ -9,7 +9,8 @@ export function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "w-full border-t-2 border-ink bg-bg px-6 py-6 text-center",
+        // Abajo en mobile deja lugar al botón flotante de reportar (h-11 + 1rem), que si no tapa la última línea.
+        "w-full border-t-2 border-ink bg-bg px-6 pt-6 pb-[calc(4.5rem+env(safe-area-inset-bottom))] text-center sm:pb-6",
         className,
       )}
     >

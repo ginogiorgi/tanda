@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cn } from "@/lib/cn";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/supabase/session";
@@ -51,7 +52,7 @@ export default async function RankingPage() {
             {data ? seasonName(data.season_id) : "Temporada"}
           </h2>
         </div>
-        <Link href="/ranked" className={buttonVariants({ variant: "primary", size: "sm" })}>
+        <Link href="/ranked" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "shrink-0 whitespace-nowrap")}>
           Jugar ranked
         </Link>
       </div>

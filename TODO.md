@@ -49,11 +49,9 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   (Potrero, Barrio, Primera, Libertadores). Reporte en `artifacts/qa/ranked-sim.md` (gitignored). Cuentas `qa_*` quedan.
 - **Plan Feedback 4: TERMINADO (23/11).** Capturas de G con `pnpm tsx scripts/qa/ranked-shots.mts [Perfil]`
   (`artifacts/qa/ranked-{ranking,jugar}-{mobile,desktop}.png`, prod logueado como `qa_*`). Gino pausó Tanda por otro
-  proyecto: no arrancar nada sin su OK. Hallazgos visuales de las capturas (sin arreglar, para la próxima):
-  - `/ranking` mobile: el botón "JUGAR RANKED" parte el texto en 2 líneas y se sale del botón por arriba.
-  - Footer mobile: el botón flotante de reportar tapa el final de "Todos los derechos reservados".
-  - Tarjeta ranked de `/jugar`: con 1759 (Libertadores) la barra va de PRIMERA a LEYENDA y casi toda en tinta;
-    revisar si la escala/relleno se lee bien (¿debería ir de LIBERTADORES a LEYENDA?).
+  proyecto: no arrancar nada sin su OK. Hallazgos de las capturas (23/11): botón "JUGAR RANKED" de `/ranking`
+  partido en 2 líneas → `shrink-0 whitespace-nowrap`; footer tapado por el botón flotante en mobile → `pb` extra
+  debajo de `sm`. La barra de la tarjeta ranked (división de abajo → de arriba) es el diseño de #7, no un bug.
 ## Pendiente de revisión con Gino
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
