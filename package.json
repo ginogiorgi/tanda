@@ -30,6 +30,9 @@
     "catalog:check": "tsx scripts/catalog/build-seed.ts",
     "catalog:build": "tsx scripts/catalog/build-seed.ts",
     "avatar:build": "tsx scripts/avatar/build-glb.mts",
+    "brand:icons": "python3 scripts/brand/build_icons.py assets/fonts/BigShouldersDisplay-Black.ttf",
+    "brand:divisions": "python3 scripts/brand/build_divisions.py assets/fonts/BigShouldersDisplay-Black.ttf",
+    "crests:build": "python3 scripts/crests/build_crests.py assets/fonts/BigShouldersDisplay-Black.ttf",
     "questions:check": "tsx scripts/questions/check.ts",
     "questions:topics": "tsx scripts/questions/check.ts --report --write-topics",
     "qa:avatar": "tsx scripts/avatar/qa.mts"
