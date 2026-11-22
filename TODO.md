@@ -35,7 +35,8 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   fases más nuevas (`isNewerPhase`) desde broadcast/rehidratación/poll del padre (`serverPenal`), resuscribe el
   canal con backoff ante CHANNEL_ERROR/TIMED_OUT/CLOSED, `setAuth` en TOKEN_REFRESHED y watchdog (hueco + 3 s o
   deadline + 3 s → rehidrata y pokea; 45 s sin avanzar con el partido vivo → pantalla de error). e2e
-  `e2e/flow/chaos.spec.ts` (apagón de 9 s a mitad del cartel).
+  `e2e/flow/chaos.spec.ts` (apagón de 9 s a mitad del cartel). En prod: pg_net no estaba creado (drift, migración
+  `pg_net`), Vault `ops_notify_url` configurado; verificado el mail del watchdog y 5 reportes auto = 1 mail.
 - **Sigue:** Sentry (falta que Gino apruebe la integración, ver abajo) → G (6 invitados) → SPEC.
 
 ## Pendiente de revisión con Gino
@@ -45,7 +46,6 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   hasheado) enganchado a `setExternalReporter`. Mientras tanto, la telemetría propia + mails cubren lo mismo.
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
-- **OPS (dashboard):** activar "Leaked password protection" en Supabase Auth.
 - **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un
   hueco de 8,35 s entre penales (los otros 9: 4,5–5,1 s; un solo humano en el torneo). La traza muestra al cliente
   pokeando `open_next_round` cada 1 s con no-op durante ~4 s más de lo esperado → el server abrió tarde. Localmente
@@ -82,6 +82,6 @@ pnpm brand:icons | brand:divisions | crests:build   # generadores de SVG (Python
   `components/ui/`), `e2e/` (Playwright), `scripts/` (assets, catálogo, preguntas, QA, perf).
 - Docs: `docs/BRIEF.md` (producto), `SPEC.md` (arquitectura/contratos), `docs/DESIGN-RULES.md`, `docs/AUDIT.md` (auditoría 22/11).
 
-## Verde de referencia (20/11)
-typecheck · lint · knip · assets 91 · unit 267 · components 52 · db 135 · build · perf:budget · e2e 46 · flow 15 ·
-smoke prod 46 + penal de invitado en prod.
+## Verde de referencia (22/11, fase F)
+typecheck · lint · knip · assets 91 · unit 325 · components 63 · db 149 · build · perf:budget · e2e 46 · flow 16 ·
+smoke prod 46.
