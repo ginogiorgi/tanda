@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 // CSP ENFORCED (antes Report-Only; validada con los e2e + /dev/avatar y /dev/penal, 0 violaciones).
 // - connect-src: SOLO el Supabase del build (REST + realtime por ws/wss), derivado de la env → en prod el
@@ -62,4 +63,19 @@ const nextConfig: NextConfig = {
 // `ANALYZE=true pnpm build` abre el reporte de tamaño de bundles.
 const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
-export default withBundleAnalyzer(nextConfig);
+const config = withBundleAnalyzer(nextConfig);
+
+// Sentry (feedback 4 F) SOLO en los builds de Vercel: sube los source maps (stacks legibles en Sentry) y
+// los borra del output, así no se publican. En local y en CI el config queda intacto.
+export default process.env.VERCEL === "1"
+  ? withSentryConfig(config, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: true,
+      telemetry: false,
+      sourcemaps: { deleteSourcemapsAfterUpload: true },
+      // El mapa de rutas sirve para agrupar trazas (no usamos) y pesaba en cada ruta.
+      routeManifestInjection: false,
+    })
+  : config;

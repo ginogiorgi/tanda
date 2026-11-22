@@ -26,7 +26,7 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   uno por penal según `penalty_id` (igual en todos los clientes). Rig con tobillos. En el gol la cámara se acerca al
   pateador (`celebrationCamera`): de lejos medía ~30 px. Guards FK con el GLB real + test de cámara; QA con
   `pnpm qa:celebrations`, `/dev/penal?celebration=` y `shots.sh` (`SHOTS_CEL`). Detalle en `docs/celebrations.md`.
-- **F (hecho salvo Sentry):** telemetría propia (`client_events` + `log_client_event` con rate limit, poda 30 d;
+- **F (hecho):** telemetría propia (`client_events` + `log_client_event` con rate limit, poda 30 d;
   `fire(req, label)` registra los errores de PostgREST/red con muestreo en `lib/telemetry/client.ts`). Pantalla de
   error de marca (`components/feedback/ErrorScreen`: `app/error.tsx`, `app/global-error.tsx` y el juego trabado) que
   reporta sola (`POST /api/feedback` `kind:"auto"` → `submit_auto_report`: una fila por fingerprint, mail ≤ 1 cada
@@ -37,15 +37,20 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   deadline + 3 s → rehidrata y pokea; 45 s sin avanzar con el partido vivo → pantalla de error). e2e
   `e2e/flow/chaos.spec.ts` (apagón de 9 s a mitad del cartel). En prod: pg_net no estaba creado (drift, migración
   `pg_net`), Vault `ops_notify_url` configurado; verificado el mail del watchdog y 5 reportes auto = 1 mail.
+  **Sentry (22/11):** integración Marketplace (plan Developer, USD 0). Cliente PEREZOSO (`lib/telemetry/sentry.ts`, el
+  SDK se baja recién al primer error: 0 KB en la carga inicial), solo en Vercel (`NEXT_PUBLIC_VERCEL_ENV`), sin PII
+  (`dataCollection` todo apagado), user id como sha256 de 16 hex, sin trazas ni replays. Le llegan la pantalla de
+  error / juego trabado (`sendAutoReport`) y de la telemetría solo `rpc_error:*` y `penal:stall_fatal`. Túnel propio
+  `app/sentry-tunnel/route.ts` (solo nuestro DSN: ajeno → 403). Server: `instrumentation.ts` (`onRequestError`).
+  `withSentryConfig` SOLO en builds de Vercel: sube source maps y los borra del output.
 - **SPEC.md reescrito (22/11)** al estado actual (modos, ranked, TIMING, carrera de ronda, cliente del penal,
   telemetría, cron). **G en curso:** `pnpm qa:ranked-sim` (6 cuentas `qa_*` con `qa_keep` en prod).
-- **Sigue:** cierre de G (reporte + capturas de `/ranking` y la tarjeta ranked) y Sentry (ver abajo).
+- **Sigue:** cierre de G (reporte + capturas de `/ranking` y la tarjeta ranked).
 
 ## Pendiente de revisión con Gino
-- **Sentry (Fase F):** instalar la integración necesita tu OK (el modo auto me bloqueó `vercel integration add
-  sentry`). Corré `! npx vercel@latest link --yes --project tanda && npx vercel@latest integration add sentry` y
-  aceptá los términos; después cableo `@sentry/nextjs` (tunnel `/monitoring` → sin tocar la CSP, sin PII, user id
-  hasheado) enganchado a `setExternalReporter`. Mientras tanto, la telemetría propia + mails cubren lo mismo.
+- **Sentry: +~1,5 KB gz por ruta en prod.** Es el snippet de *debug id* que `withSentryConfig` mete en cada chunk
+  para leer los stacks con los source maps. `perf:budget` mide sin él (build local/CI), así que en prod cada ruta
+  pesa eso más que lo que dice el presupuesto. Si preferís el peso a los stacks legibles, se saca `withSentryConfig`.
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
 - **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un

@@ -27,6 +27,11 @@ export function sendAutoReport(error: ReportableError, source: AutoReportSource)
   const key = `${source}|${route}|${error.digest ?? ""}|${error.message ?? ""}`;
   if (sentKeys.has(key)) return false;
   sentKeys.add(key);
+  // Sentry entero (puente + SDK) se baja recién acá: no suma a la carga inicial de ninguna ruta.
+  import("@/lib/telemetry/sentry").then(
+    (m) => m.captureErrorToSentry(error, source),
+    () => undefined,
+  );
   try {
     void fetch("/api/feedback", {
       method: "POST",

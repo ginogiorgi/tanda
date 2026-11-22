@@ -400,8 +400,11 @@ Diagnóstico: `pg_stat_statements` ordenado por `total_exec_time`.
 
 - **`client_events`** (`log_client_event`, rate limit): pokes que fallan (`rpc_error:<rpc>`), canal caído
   (`realtime:channel_down`), watchdog del penal (`penal:watchdog`, `penal:stall_fatal`). Muestreo en el cliente
-  (`lib/telemetry/client.ts`): mismo tipo ≤1 por minuto, ≤20 por sesión. `setExternalReporter` es el gancho
-  para Sentry.
+  (`lib/telemetry/client.ts`): mismo tipo ≤1 por minuto, ≤20 por sesión.
+- **Sentry** (`lib/telemetry/sentry.ts`, perezoso: el SDK se baja al primer error; solo en Vercel; sin PII, user
+  id hasheado, sin trazas): la pantalla de error y, de la telemetría, `rpc_error:*` y `penal:stall_fatal`. Envía por
+  `/sentry-tunnel` (mismo origen, solo nuestro DSN). Server: `instrumentation.ts` (`onRequestError`). Source maps
+  subidos y borrados en los builds de Vercel.
 - **Pantalla de error de marca** (`components/feedback/ErrorScreen`, `app/error.tsx`, `app/global-error.tsx`
   mínimo, juego trabado): "Hubo un error, perdón", Reintentar, Volver al inicio. **Reporta sola** al montarse
   (`POST /api/feedback` con `kind: "auto"`): `submit_auto_report` guarda una fila por **fingerprint** (mensaje

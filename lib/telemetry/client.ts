@@ -16,9 +16,26 @@ type ExternalReporter = (kind: string, detail: Detail) => void;
 
 const lastByKind = new Map<string, number>();
 let sent = 0;
-let external: ExternalReporter | null = null;
+/**
+ * Por defecto, a Sentry van solo los eventos que son errores de verdad (un poke que falló, el juego
+ * trabado del todo). Un canal caído o un watchdog que recuperó quedan solo en `client_events`: son
+ * frecuentes en redes móviles y gastarían la cuota sin decir nada nuevo.
+ */
+export function isSentryWorthy(kind: string): boolean {
+  return kind.startsWith("rpc_error:") || kind === "penal:stall_fatal";
+}
 
-/** Lo registra el init de Sentry del cliente; sin Sentry, solo queda la telemetría propia. */
+const sentryReporter: ExternalReporter = (kind, detail) => {
+  if (!isSentryWorthy(kind)) return;
+  import("./sentry").then(
+    (m) => m.captureEventToSentry(kind, detail),
+    () => undefined,
+  );
+};
+
+let external: ExternalReporter | null = sentryReporter;
+
+/** Reemplaza el reporter externo (tests, o `null` para apagarlo). */
 export function setExternalReporter(r: ExternalReporter | null): void {
   external = r;
 }
