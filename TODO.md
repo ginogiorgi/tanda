@@ -37,7 +37,9 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   deadline + 3 s → rehidrata y pokea; 45 s sin avanzar con el partido vivo → pantalla de error). e2e
   `e2e/flow/chaos.spec.ts` (apagón de 9 s a mitad del cartel). En prod: pg_net no estaba creado (drift, migración
   `pg_net`), Vault `ops_notify_url` configurado; verificado el mail del watchdog y 5 reportes auto = 1 mail.
-- **Sigue:** Sentry (falta que Gino apruebe la integración, ver abajo) → G (6 invitados) → SPEC.
+- **SPEC.md reescrito (22/11)** al estado actual (modos, ranked, TIMING, carrera de ronda, cliente del penal,
+  telemetría, cron). **G en curso:** `pnpm qa:ranked-sim` (6 cuentas `qa_*` con `qa_keep` en prod).
+- **Sigue:** cierre de G (reporte + capturas de `/ranking` y la tarjeta ranked) y Sentry (ver abajo).
 
 ## Pendiente de revisión con Gino
 - **Sentry (Fase F):** instalar la integración necesita tu OK (el modo auto me bloqueó `vercel integration add
