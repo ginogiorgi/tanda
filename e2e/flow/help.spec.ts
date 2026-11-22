@@ -25,6 +25,8 @@ test("home: Cómo jugar abre la hoja; Esc / tap afuera cierran y el foco vuelve"
   await expect(sheet).toContainText("10 segundos");
   await expect(sheet).not.toContainText("Torneos y Ranked"); // feedback 3 #7
 
+  // axe con la hoja quieta: a mitad de la entrada el texto está semitransparente y el contraste da mal.
+  await sheet.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)));
   const axe = await new AxeBuilder({ page }).include("dialog[open]").withTags(["wcag2a", "wcag2aa"]).analyze();
   expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
 

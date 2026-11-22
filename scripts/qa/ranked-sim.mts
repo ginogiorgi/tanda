@@ -19,58 +19,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { applyResult, divisionFor, queueWindow, type RankedState } from "../../lib/engine/ranked";
+import { type ActiveMatch, latencyTable, loadEnv, numArg, outDir, type Penal, pickOption, rand, rpc, sleep } from "./_shared.mjs";
 
-const root = join(import.meta.dirname, "..", "..");
-const outDir = join(root, "artifacts", "qa");
 const sessionsFile = join(outDir, "ranked-sim.sessions.json");
 const reportFile = join(outDir, "ranked-sim.md");
+const MAX_MINUTES = numArg("minutes", 90);
+const TARGET_DIVISIONS = numArg("target-divisions", 4);
 
-const arg = (name: string, def: number) => {
-  const i = process.argv.indexOf(`--${name}`);
-  return i > 0 ? Number(process.argv[i + 1]) : def;
-};
-const MAX_MINUTES = arg("minutes", 90);
-const TARGET_DIVISIONS = arg("target-divisions", 4);
-
-// ───────────── env (solo las claves públicas: el script juega como un cliente más) ─────────────
-function loadEnv(): { url: string; key: string } {
-  const env: Record<string, string> = {};
-  for (const f of [".env.local", ".env"]) {
-    const p = join(root, f);
-    if (!existsSync(p)) continue;
-    for (const line of readFileSync(p, "utf8").split("\n")) {
-      const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
-      if (m && !(m[1]! in env)) env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
-    }
-  }
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error("Faltan NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
-  return { url, key };
-}
-
-// ───────────── oráculo (catálogo del repo) ─────────────
-type CatalogQ = { prompt: string; options: [string, string, string]; answer: number };
-const oracle = new Map<string, string>();
-for (const f of ["worldcup.json", "arg.json"]) {
-  for (const q of JSON.parse(readFileSync(join(root, "data", "questions", f), "utf8")) as CatalogQ[]) {
-    oracle.set(q.prompt.trim(), q.options[q.answer]!.trim());
-  }
-}
-
-// ───────────── tipos mínimos de las RPC ─────────────
-type Penal = {
-  penalty_id: string;
-  idx: number;
-  prompt: string;
-  options: string[];
-  started_at: string;
-  deadline: string;
-  server_now: string;
-  removed_option?: number;
-  my_option?: number | null;
-};
-type ActiveMatch = { tournament_id: string; match_id: string; penal: Penal | null } | null;
 type Poll =
   | { status: "idle" }
   | { status: "matched"; tournament_id: string }
@@ -109,8 +64,6 @@ interface Player {
   history: string[];
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const failures: string[] = [];
 const notes: string[] = [];
 const matchLog: string[] = [];
@@ -118,17 +71,6 @@ function check(ok: boolean, msg: string) {
   if (!ok) {
     failures.push(msg);
     console.error(`✗ ${msg}`);
-  }
-}
-
-async function rpc<T>(sb: SupabaseClient, fn: string, args?: Record<string, unknown>): Promise<T> {
-  for (let attempt = 0; ; attempt++) {
-    const { data, error } = await sb.rpc(fn, args);
-    if (!error) return data as T;
-    if (attempt >= 3 || /already_answered|out_of_window|not_open|rate_limited/.test(error.message)) {
-      throw new Error(`${fn}: ${error.message}`);
-    }
-    await sleep(500 * (attempt + 1));
   }
 }
 
@@ -191,14 +133,9 @@ async function playMatch(p: Player, tournamentId: string): Promise<MatchView> {
 
 async function answerLater(p: Player, pen: Penal, delayMs: number) {
   await sleep(Math.max(0, delayMs));
-  const visible = pen.options.map((text, i) => ({ text: text.trim(), i })).filter((o) => o.i !== pen.removed_option);
-  const correct = oracle.get(pen.prompt.trim());
-  if (correct == null) notes.push(`pregunta fuera del catálogo: "${pen.prompt}"`);
-  const right = visible.find((o) => o.text === correct);
-  const wrong = visible.filter((o) => o.text !== correct);
-  const wantRight = Math.random() < p.profile.accuracy;
-  const pick = (wantRight && right) || wrong[Math.floor(Math.random() * wrong.length)] || visible[0]!;
-  const { error } = await p.sb.rpc("select_option", { p_penalty: pen.penalty_id, p_option: pick.i });
+  const pick = pickOption(pen, p.profile.accuracy);
+  if (pick.unknown) notes.push(`pregunta fuera del catálogo: "${pen.prompt}"`);
+  const { error } = await p.sb.rpc("select_option", { p_penalty: pen.penalty_id, p_option: pick.index });
   if (error && !/already_answered|out_of_window/.test(error.message)) notes.push(`${p.profile.label} select_option: ${error.message}`);
 }
 
@@ -328,6 +265,9 @@ async function main() {
     "",
     `## Notas (${notes.length})`,
     ...[...new Set(notes)].slice(0, 60).map((n) => `- ${n}`),
+    "",
+    "## Latencia de RPC",
+    ...latencyTable(),
     "",
     "## Partidos",
     ...matchLog.map((l) => `- ${l}`),

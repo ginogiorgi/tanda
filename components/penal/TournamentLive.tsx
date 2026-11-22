@@ -11,7 +11,7 @@
  * 6.5) mergeado con `applyScoreUpdate`. El penal lo resuelve `<PenalLive>` por su canal `match:{id}`.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -21,7 +21,6 @@ import { RunSummary } from "@/components/penal/RunSummary";
 import { Button } from "@/components/ui/Button";
 import { TeamReveal } from "@/components/penal/TeamReveal";
 import { Bracket } from "@/components/bracket/Bracket";
-import { LATE_RESULT_GRACE_MS, lingerWaitMs } from "@/lib/engine/timing";
 import { buildBracketView, type BracketSnapshot } from "@/lib/bracket/bracket";
 import {
   applyScoreUpdate,
@@ -31,12 +30,10 @@ import {
 import {
   clockOffset,
   remainingMs,
-  samePhase,
-  type ActiveMatch,
-  type PenalStartPayload,
   type RoundNextPayload,
 } from "@/lib/realtime/penal";
 import { usePreload3D } from "@/components/penal/usePreload3D";
+import { useActiveMatch } from "@/components/penal/useActiveMatch";
 import { Page } from "@/components/ui/Page";
 import { Confetti } from "@/components/penal/Confetti";
 import { getMode, phaseInText } from "@/lib/modes";
@@ -63,33 +60,17 @@ export function TournamentLive({
   const [loadError, setLoadError] = useState(false);
   const [retry, setRetry] = useState(0);
   const [live, setLive] = useState<ScoreboardState>({});
-  const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
-  // Feedback 4 F: el penal abierto que ve el poll; `PenalLive` lo adopta si se perdió el broadcast.
-  const [serverPenal, setServerPenal] = useState<PenalStartPayload | null>(null);
-  const [showPenal, setShowPenal] = useState(false);
+  const { matchId: currentMatchId, serverPenal, showPenal, everPlayed, onResult, pollNow } = useActiveMatch(supabase, tournamentId);
   const [revealExpired, setRevealExpired] = useState(false);
-  // B5.2: ¿ya jugué al menos un penal en este torneo? Distingue "espera entre rondas" (mi tanda
-  // resolvió, faltan otros) de la presentación inicial (todavía nadie pateó → no es espera).
-  const [everPlayed, setEverPlayed] = useState(false);
   // P5: relojes de la máquina de estados (lib/tournament/flow) — cruces mínimos tras quedar afuera,
   // pantalla de campeón, y "Ver cómo sigue" (espectador).
   const [crossingsElapsed, setCrossingsElapsed] = useState(false);
   const [championElapsed, setChampionElapsed] = useState(false);
   const [spectating, setSpectating] = useState(false);
-  const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Feedback 3 #12: el último cartel del partido se ve completo (jugada + 2,5 s) contando desde que LLEGÓ
-  // su resultado, no desde que el poll notó el fin del partido.
-  const lastResultAtRef = useRef(0);
-  const onResult = useCallback((at: number) => {
-    lastResultAtRef.current = Math.max(lastResultAtRef.current, at);
-  }, []);
-  const showPenalRef = useRef(false);
   const hasSnapshotRef = useRef(false);
   const revealTimerRef = useRef(false);
-  // Poke PRECISO de la próxima ronda (agendado por el broadcast `round:next`) + puente al `poll()` de
-  // get_active_match para detectar el match nuevo sin esperar el intervalo de 1500ms.
+  // Poke PRECISO de la próxima ronda (agendado por el broadcast `round:next`).
   const nextPokeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollRef = useRef<(() => void) | null>(null);
   // Refetch puntual del bracket (T11): tras el poke de `round:next` el server pudo flipear de fase
   // (grupos→round_of_32). Forzamos la recarga del snapshot para que el reveal del árbol se vea en el
   // lead-in de 2s en vez de esperar el refresco periódico de 5s.
@@ -128,7 +109,7 @@ export function TournamentLive({
           nextPokeRef.current = setTimeout(() => {
             fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
             setTimeout(() => {
-              pollRef.current?.();
+              pollNow();
               bracketLoadRef.current?.(); // reflejar el flip de fase (grupos→KO) sin esperar 5s
             }, 200);
           }, delay);
@@ -140,7 +121,7 @@ export function TournamentLive({
       if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
       if (channel) void supabase.removeChannel(channel);
     };
-  }, [supabase, tournamentId]);
+  }, [supabase, tournamentId, pollNow]);
 
   // Foto del bracket: al montar y refrescada (placement/eliminated_phase no vienen por score:live).
   // Si la carga INICIAL falla (red/RPC), mostramos un estado de error con reintento en vez de quedar
@@ -170,66 +151,6 @@ export function TournamentLive({
       clearInterval(id);
     };
   }, [supabase, tournamentId, retry]);
-
-  // Decide la escena con `get_active_match`:
-  //  • `am != null` → MI partido está vivo: hay penal abierto O estoy en el hueco corto ENTRE penales
-  //    del mismo match. En ambos casos me quedo en la escena de penal y NO muestro el bracket (10.2:
-  //    no flashear el grupo entre penal y penal). `<PenalLive>` (mismo `key`) espera el próximo
-  //    `penal:start` por su canal sin remontarse.
-  //  • `am == null` → terminó mi partido / tiempo muerto entre rondas: dejo ver el resultado un toque
-  //    (linger corto) y después caigo a la tabla del grupo (Bracket "tu camino"), que se ve durante el
-  //    tiempo muerto (10.3). Además pokeo `open_next_round` para abrir la próxima ronda apenas vence el
-  //    `round_deadline` (el `tick()` server es backstop ≤10s).
-  useEffect(() => {
-    let active = true;
-    const poll = async () => {
-      const { data } = await supabase.rpc("get_active_match");
-      if (!active) return;
-      const am = data as ActiveMatch | null;
-      // Backstop del poke preciso (`round:next`): si NO hay penal abierto (hueco intra-partido O entre
-      // partidos) y ya venció el tiempo muerto, abrir la próxima ronda (idempotente, no-op si no). Sin
-      // esto, intra-partido nadie pokeaba open_next_round y el penal lo abría recién el cron (≤10s).
-      if (am?.penal == null) {
-        fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
-      }
-      if (am != null && am.match_id) {
-        if (lingerRef.current) {
-          clearTimeout(lingerRef.current);
-          lingerRef.current = null;
-        }
-        setCurrentMatchId(am.match_id);
-        setServerPenal((prev) => samePhase(prev, am.penal) ? prev : am.penal);
-        setShowPenal(true);
-        showPenalRef.current = true;
-        setEverPlayed(true);
-      } else {
-        // Terminó mi partido → soltar la escena de penal tras el linger (los ~3s de animación).
-        if (showPenalRef.current && !lingerRef.current) {
-          const release = () => {
-            const wait = lingerWaitMs(lastResultAtRef.current, Date.now());
-            if (wait > 0) {
-              lingerRef.current = setTimeout(release, wait);
-              return;
-            }
-            setShowPenal(false);
-            showPenalRef.current = false;
-            lingerRef.current = null;
-          };
-          lingerRef.current = setTimeout(release, LATE_RESULT_GRACE_MS);
-        }
-      }
-    };
-    pollRef.current = poll;
-    void poll();
-    // Poll de 1s: detecta el fin del partido y la apertura del próximo penal con ≤1s de latencia
-    // (clave para que el grupo entre jornadas se vea ~3s y no de refilón).
-    const id = setInterval(() => void poll(), 1000);
-    return () => {
-      active = false;
-      clearInterval(id);
-      if (lingerRef.current) clearTimeout(lingerRef.current);
-    };
-  }, [supabase, tournamentId]);
 
   // B2.3: la revelación de nación (~2s) vive una sola vez al entrar. El effect solo agenda el fin de
   // la ventana al cargar el primer snapshot; QUÉ mostrar se deriva en el render (abajo).

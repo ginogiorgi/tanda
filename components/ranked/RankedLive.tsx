@@ -11,18 +11,17 @@
  * `open_next_round` (idempotente) arranca la tanda apenas vence la presentación (pg_cron = backstop).
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { fire } from "@/lib/supabase/fire";
 import { PenalLive } from "@/components/penal/PenalLive";
-import { clockOffset, remainingMs, samePhase, type ActiveMatch, type PenalStartPayload } from "@/lib/realtime/penal";
+import { clockOffset, remainingMs } from "@/lib/realtime/penal";
 import { divisionFor } from "@/lib/engine/ranked";
 import { signed, type RankedMatchView } from "@/lib/ranked/types";
 import { Eyebrow } from "@/components/ui/Typography";
 import { DivisionCrest } from "./DivisionCrest";
 import { RankedResult } from "./RankedResult";
 import { usePreload3D } from "@/components/penal/usePreload3D";
-import { LATE_RESULT_GRACE_MS, lingerWaitMs } from "@/lib/engine/timing";
+import { useActiveMatch } from "@/components/penal/useActiveMatch";
 import { Page } from "@/components/ui/Page";
 
 
@@ -74,21 +73,9 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
   const [supabase] = useState(() => createClient());
   const [view, setView] = useState<RankedMatchView | null>(null);
   const [loadError, setLoadError] = useState(false);
-  const [matchId, setMatchId] = useState<string | null>(null);
-  // Feedback 4 F: el penal abierto que ve el poll; `PenalLive` lo adopta si se perdió el broadcast.
-  const [serverPenal, setServerPenal] = useState<PenalStartPayload | null>(null);
-  const [showPenal, setShowPenal] = useState(false);
-  const [everPlayed, setEverPlayed] = useState(false);
+  const { matchId, serverPenal, showPenal, everPlayed, onResult } = useActiveMatch(supabase, tournamentId);
   const [now, setNow] = useState(() => Date.now());
   const [offset, setOffset] = useState(0);
-  const showPenalRef = useRef(false);
-  const lingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Feedback 3 #12: el último cartel del partido se ve completo (jugada + 2,5 s) contando desde que LLEGÓ
-  // su resultado, no desde que el poll notó el fin del partido.
-  const lastResultAtRef = useRef(0);
-  const onResult = useCallback((at: number) => {
-    lastResultAtRef.current = Math.max(lastResultAtRef.current, at);
-  }, []);
   const settledRef = useRef(false);
 
   // Vista del partido (fichas, apuesta y, al final, el resultado aplicado). Se deja de pedir al asentarse.
@@ -111,47 +98,6 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
     return () => {
       active = false;
       clearInterval(id);
-    };
-  }, [supabase, tournamentId]);
-
-  // ¿Hay penal? (misma lógica que TournamentLive: me quedo en la escena entre penales del match).
-  useEffect(() => {
-    let active = true;
-    const poll = async () => {
-      const { data } = await supabase.rpc("get_active_match");
-      if (!active) return;
-      const am = data as ActiveMatch | null;
-      if (am?.penal == null) fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
-      if (am?.match_id) {
-        if (lingerRef.current) {
-          clearTimeout(lingerRef.current);
-          lingerRef.current = null;
-        }
-        setMatchId(am.match_id);
-        setServerPenal((prev) => samePhase(prev, am.penal) ? prev : am.penal);
-        setShowPenal(true);
-        setEverPlayed(true);
-        showPenalRef.current = true;
-      } else if (showPenalRef.current && !lingerRef.current) {
-        const release = () => {
-          const wait = lingerWaitMs(lastResultAtRef.current, Date.now());
-          if (wait > 0) {
-            lingerRef.current = setTimeout(release, wait);
-            return;
-          }
-          setShowPenal(false);
-          showPenalRef.current = false;
-          lingerRef.current = null;
-        };
-        lingerRef.current = setTimeout(release, LATE_RESULT_GRACE_MS);
-      }
-    };
-    void poll();
-    const id = setInterval(() => void poll(), 1000);
-    return () => {
-      active = false;
-      clearInterval(id);
-      if (lingerRef.current) clearTimeout(lingerRef.current);
     };
   }, [supabase, tournamentId]);
 

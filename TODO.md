@@ -52,7 +52,7 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   proyecto: no arrancar nada sin su OK. Hallazgos de las capturas (22/11): botón "JUGAR RANKED" de `/ranking`
   partido en 2 líneas → `shrink-0 whitespace-nowrap`; footer tapado por el botón flotante en mobile → `pb` extra
   debajo de `sm`. La barra de la tarjeta ranked (división de abajo → de arriba) es el diseño de #7, no un bug.
-## Plan 5 — Operación gratis, carga, analytics, tipos y limpieza (22/11, en curso)
+## Plan 5 — Operación gratis, carga, analytics, tipos y limpieza (22/11, TERMINADO)
 Decisiones de Gino (22/11): solo pagaría Supabase Pro cuando haya gente; ranked con poca gente y calidad de
 experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orden:
 - **O — Operación gratis:** (O1) keepalive diario para que Supabase free no pause el proyecto (cron de Vercel →
@@ -72,6 +72,16 @@ experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orde
   de prod jugando un torneo entero por API + Realtime; mide huecos entre penales, latencia de RPC (p50/p95), pokes
   no-op y trabas; reporte en `artifacts/qa/load-sim.md`. Cualquier hallazgo → arreglo con test de DB. Incluye
   investigar el hueco de 8,35 s del CI.
+  **L hecho (22/11):** `pnpm qa:load-sim [--players N --minutes M]` (comparte `scripts/qa/_shared.mts` con
+  `ranked-sim`: env, oráculo, `rpc` con latencias, `poke`, `pickOption`). Imita al cliente (poll 1 s, Realtime
+  `penal:start` + `round:next` con poke preciso, poke de `resolve_penalty` al deadline, watchdog) y parte cada hueco en
+  cierre de ronda (deadline → `round:next`) y apertura (`open_at` → penal). Local (2 jugadores): hueco
+  4,13–4,17 s (esperado 4,1), apertura 0,01 s. **Prod, 20 invitados `qa_load_*` (qa_keep) en UNA sala:** torneo
+  completo, 0 trabas, 0 errores; `get_active_match` p50 54 ms / p95 84, `open_next_round` 203/474,
+  `resolve_penalty` 151/394, broadcast `penal:start` p50 162 ms. **Hallazgo:** la barrera por penal (una segunda
+  chance en cualquier partido de la ronda hace esperar a todos) lleva el hueco típico a **9,5 s** con 10 partidos
+  humanos → ver "Pendiente de revisión con Gino". Lección: el "segundo de más" que medía el sim era el propio script
+  (`void sb.rpc()` perezoso → abría `tick()`); el cliente usa `fire()`.
 - **T — Tipos y drift:** `database.types.ts` generado (`supabase gen types`) + chequeo en CI; huella del esquema
   (`pnpm db:fingerprint`) para comparar local vs prod y atrapar drift (pg_net, grants).
   **T hecho (22/11):** `database.types.ts` sigue a mano (tipa los jsonb), pero `database.types.check.ts` lo compara
@@ -83,8 +93,23 @@ experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orde
 - **Z — Limpieza:** revisar TODOS los tests, archivos, funciones y scripts: sacar lo que sobra (código muerto,
   tests duplicados o triviales, scripts sin uso, páginas dev viejas), simplificar y acelerar la suite. Medir antes
   y después (archivos, líneas, tiempo de cada suite, KB por ruta).
+  **Z hecho (22/11):** relevamiento completo: knip limpio; 0 funciones SQL sin uso (las únicas sin llamador SQL son
+  las RPC del cliente + el event trigger `rls_auto_enable`); 0 clases/keyframes de `globals.css` sin uso; páginas
+  `/dev/*` y scripts de `package.json` todos referenciados; assets dinámicos (escudos/banderas/copas) verificados por
+  `assets:check`. Lo duplicado real: el poll de `get_active_match` + linger estaba copiado en `TournamentLive` y
+  `RankedLive` → `components/penal/useActiveMatch.ts` (con test), y de paso el poke de respaldo a
+  `open_next_round` ya no sale cada segundo de cada hueco (solo tras `betweenPenalsS - 1` sin penal: el preciso es
+  `round:next` y `tick()` corre cada 1 s) → ~4 RPC no-op menos por hueco y por jugador. `ranked-sim` usa el módulo
+  compartido (−78 líneas). Suites: unit 1,1 s · components 9,4 s · db 15 s (149) · flow 7,8 min; KB por ruta sin
+  cambios (todas dentro del presupuesto). Flake corregido: `help.spec` corría axe a mitad de la animación de la hoja.
+  No se borraron tests: los "chicos" (`cn`, `Button`, `palette`, `modes_help`…) cubren regresiones reales.
 
 ## Pendiente de revisión con Gino
+- **Barrera por penal con muchas personas (Plan 5 L, 22/11):** con 20 humanos en una sala (10 partidos), el penal
+  `k+1` espera a que TODOS cierren el `k`; casi siempre algún partido va a segunda chance (+5 s), así que el hueco
+  típico entre penales fue 9,5 s en vez de 4,1. Opciones: (a) dejarlo (sincronía total, simple); (b) barrera solo
+  entre partidos/jornadas y reloj propio por partido dentro del partido (cambia `resolve_round`/`open_round_penals`
+  y el reloj de ronda compartido: arquitectura → necesita tu OK). Mi recomendación: (b) antes de tener tráfico real.
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
 - **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un

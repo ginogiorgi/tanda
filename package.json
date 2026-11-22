@@ -41,7 +41,8 @@
     "db:backup": "tsx scripts/db/backup.mts",
     "qa:ranked-shots": "tsx scripts/qa/ranked-shots.mts",
     "db:types": "supabase gen types typescript --local > lib/supabase/database.generated.ts",
-    "db:fingerprint": "tsx scripts/db/fingerprint.mts"
+    "db:fingerprint": "tsx scripts/db/fingerprint.mts",
+    "qa:load-sim": "tsx scripts/qa/load-sim.mts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
