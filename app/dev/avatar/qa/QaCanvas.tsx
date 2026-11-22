@@ -7,6 +7,7 @@ import type { AvatarV2 } from "@/lib/avatar/schema";
 import { CELEBRATE, KICK, KICKER_READY, keeperDive, samplePose, type Clip } from "@/lib/avatar/rig";
 import { GlbAvatar } from "@/components/avatar/GlbAvatar";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
+import { CELEBRATIONS, isCelebrationId } from "@/lib/avatar/celebrations";
 
 /** Pose clave → (clip, instante). */
 const POSES: Record<string, readonly [Clip, number]> = {
@@ -28,21 +29,38 @@ const VIEWS: Record<string, { pos: [number, number, number]; target: [number, nu
   headside: { pos: [1.25, 1.68, -0.05], target: [0, 1.6, -0.05], fov: 30 },
   feet: { pos: [0.25, 0.25, 0.9], target: [0, 0.06, 0.05], fov: 35 },
   low: { pos: [0.3, 0.02, 0.7], target: [0, 0.1, 0], fov: 40 },
+  /** Festejos (feedback 4 #16): de frente y abierta (el rodillazo se acerca 1,6 m) y "dron" (≈49° como el juego, más cerca). */
+  wide: { pos: [0, 1.5, 6.2], target: [0, 0.85, 0.8], fov: 38 },
+  wideq34: { pos: [4.0, 1.6, 5.0], target: [0, 0.85, 0.8], fov: 38 },
+  drone: { pos: [0, 4.6, 4.6], target: [0, 0.5, 0.4], fov: 42 },
 };
 
-function Posed({ config, pose, onReady }: { config: AvatarV2; pose: string; onReady: () => void }) {
+/** `cel-<id>` + `t` → festejo en ese instante; el resto, las poses clave fijas. */
+function clipFor(pose: string, t: number | null): readonly [Clip, number] {
+  const cel = pose.startsWith("cel-") ? pose.slice(4) : null;
+  if (cel && isCelebrationId(cel)) return [CELEBRATIONS[cel], t ?? CELEBRATIONS[cel].duration];
+  return POSES[pose] ?? POSES.ready!;
+}
+
+function Posed({ config, pose, t: at, onReady }: { config: AvatarV2; pose: string; t: number | null; onReady: () => void }) {
   const { handles, register } = useRig();
-  const [clip, t] = POSES[pose] ?? POSES.ready!;
+  const [clip, t] = clipFor(pose, at);
+  // Los festejos se miran como en el juego: el pateador de espaldas (mirando al arco) que gira hacia la cámara.
+  const flip = pose.startsWith("cel-");
   const frames = useRef(0);
   useFrame(() => {
     applyPose(handles.current, samplePose(clip, t));
     if (++frames.current === 3) onReady();
   }, -1);
-  return <GlbAvatar config={config} rig={register} grounded />;
+  return (
+    <group rotation={[0, flip ? Math.PI : 0, 0]}>
+      <GlbAvatar config={config} rig={register} grounded />
+    </group>
+  );
 }
 
 /** Canvas determinista de la galería: DPR 1, 768×768, luz de estudio fija, sin animación. */
-export function QaCanvas({ config, view, pose }: { config: AvatarV2; view: string; pose: string }) {
+export function QaCanvas({ config, view, pose, t = null }: { config: AvatarV2; view: string; pose: string; t?: number | null }) {
   const [ready, setReady] = useState(false);
   const v = VIEWS[view] ?? VIEWS.front!;
   return (
@@ -58,7 +76,7 @@ export function QaCanvas({ config, view, pose }: { config: AvatarV2; view: strin
         <directionalLight position={[2.5, 4, 3]} intensity={1.35} color="#fff1dc" />
         <directionalLight position={[-3, 1.5, 2]} intensity={0.4} color="#dfe6ff" />
         <directionalLight position={[0, 3, -4]} intensity={0.9} color="#ffffff" />
-        <Posed config={config} pose={pose} onReady={() => setReady(true)} />
+        <Posed config={config} pose={pose} t={t} onReady={() => setReady(true)} />
       </Canvas>
     </div>
   );

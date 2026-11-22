@@ -35,7 +35,8 @@
     "crests:build": "python3 scripts/crests/build_crests.py assets/fonts/BigShouldersDisplay-Black.ttf",
     "questions:check": "tsx scripts/questions/check.ts",
     "questions:topics": "tsx scripts/questions/check.ts --report --write-topics",
-    "qa:avatar": "tsx scripts/avatar/qa.mts"
+    "qa:avatar": "tsx scripts/avatar/qa.mts",
+    "qa:celebrations": "tsx scripts/avatar/celebrations-qa.mts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

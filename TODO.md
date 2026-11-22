@@ -22,9 +22,15 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   Cartel `PenaltyResultBalloon`: papel 70 % + trama, talón opaco con la correcta (AA), comparado en `/dev/penal?card=`.
   `cn` declara las utilidades propias a tailwind-merge (`bg-halftone` se comía el color de fondo) + test que lee
   globals.css. axe de página completa vía `e2e/_axe.ts` (espera el `<title>` de la navegación cliente).
-- **Sigue:** D festejos → F (Sentry + telemetría + pantalla de error + robustez cliente) → G (6 invitados) → SPEC.
+- **D (hecho):** 5 festejos de gol (Siuuu, cielo, brazos cruzados, cuna, rodillazo) en `lib/avatar/celebrations.ts`,
+  uno por penal según `penalty_id` (igual en todos los clientes). Rig con tobillos. En el gol la cámara se acerca al
+  pateador (`celebrationCamera`): de lejos medía ~30 px. Guards FK con el GLB real + test de cámara; QA con
+  `pnpm qa:celebrations`, `/dev/penal?celebration=` y `shots.sh` (`SHOTS_CEL`). Detalle en `docs/celebrations.md`.
+- **Sigue:** F (Sentry + telemetría + pantalla de error + robustez cliente) → G (6 invitados) → SPEC.
 
 ## Pendiente de revisión con Gino
+- **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
+  plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
 - **OPS (dashboard):** activar "Leaked password protection" en Supabase Auth.
 - **CI `e2e-flow` (20/11):** el runner suma ~1 s a los huecos (tolerancia ±1,5 s en CI). Además, una vez `game.spec` vio un
   hueco de 8,35 s entre penales (los otros 9: 4,5–5,1 s; un solo humano en el torneo). La traza muestra al cliente

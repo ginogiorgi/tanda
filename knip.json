@@ -13,5 +13,9 @@
   "project": [
     "**/*.{ts,tsx,mts,css}"
   ],
-  "ignoreExportsUsedInFile": true
+  "ignoreExportsUsedInFile": true,
+  "ignoreBinaries": [
+    "ffmpeg",
+    "montage"
+  ]
 }

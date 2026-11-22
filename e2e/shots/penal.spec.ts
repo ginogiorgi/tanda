@@ -42,3 +42,20 @@ for (const s of ["goal-0", "save-3"]) {
     }
   });
 }
+
+/**
+ * Feedback 4 #16: los cinco festejos del gol con la cámara del juego, desde que arranca la reacción
+ * (`REACTION_AT` 1,6 s) hasta que aparece el próximo penal (~4 s). `SHOTS_CEL=siu,slide` filtra.
+ */
+const CELS = (process.env.SHOTS_CEL ?? "siu,sky,crossed,cradle,slide").split(",");
+const CEL_TIMES = ["1.6", "2.0", "2.4", "2.8", "3.2", "4.0"];
+for (const c of CELS) {
+  test(`penal: festejo ${c}`, async ({ page }) => {
+    for (const t of CEL_TIMES) {
+      await page.goto(devUrl(`/dev/penal?shot=goal-1&celebration=${c}&t=${t}`));
+      await expect(page.locator("canvas")).toHaveCount(1, { timeout: 60_000 });
+      await page.waitForTimeout(2000);
+      await shot(page, `festejo-${c}-t${t}`);
+    }
+  });
+}

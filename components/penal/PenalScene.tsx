@@ -22,8 +22,8 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { GlbAvatar } from "@/components/avatar/GlbAvatar";
 import { applyPose, useRig } from "@/components/avatar/rigPose";
+import { CELEBRATIONS, celebrationFor, type CelebrationId } from "@/lib/avatar/celebrations";
 import {
-  CELEBRATE,
   DEJECTED,
   KICKER_READY,
   KEEPER_READY,
@@ -50,7 +50,11 @@ const SKY = "#d9d3c5";
 /** `id` = penalty_id: identidad ESTABLE de la animación. El reset del cronómetro se keya por `id`
  * (no por identidad de objeto) → la animación corre UNA vez por penal, sin reinicios por re-render
  * del padre (B3.2). `reason`+`variant` definen la colocación (shotPlan). */
-export type PenalAnimation = { id: string; reason: PenaltyReason; variant: number };
+/**
+ * `celebration` fuerza el festejo (harness `/dev/penal`); si falta sale de `id` (determinista: todos los
+ * clientes ven el mismo, feedback 4 #16).
+ */
+export type PenalAnimation = { id: string; reason: PenaltyReason; variant: number; celebration?: CelebrationId };
 
 const KICKER_X = -0.095; // el pie derecho del pateador (mirando al arco) queda detrás de la pelota
 const KICKER_Z0 = 1.3;
@@ -105,6 +109,10 @@ function Actors({
   const plan = useMemo(() => (anim ? shotPlan(anim.reason, anim.variant) : null), [anim]);
   // Estirada armada para ESTA pelota (la mano llega a `plan.reach`); si ataja, se levanta festejando.
   const keeperAnim = useMemo(() => (plan ? keeperClips(plan) : null), [plan]);
+  const reaction = useMemo(
+    () => (anim && plan?.reason === "goal" ? CELEBRATIONS[anim.celebration ?? celebrationFor(anim.id)] : DEJECTED),
+    [anim, plan],
+  );
 
   // Colores del público: las camisetas de los dos equipos (estables por valor, no por identidad).
   const crowdKey = [kicker.kitTop, kicker.kitSash, keeper.kitTop, keeper.kitSash].join("|");
@@ -139,12 +147,15 @@ function Actors({
 
     // ── Pateador ──
     let kz = KICKER_Z0;
+    let kickerRoot: { x: number; z: number } = { x: 0, z: 0 };
     if (!plan) {
       applyPose(kickerRig.handles.current, samplePose(KICKER_READY, idleT));
     } else {
       const idle = samplePose(KICKER_READY, 0);
       const action = (tt: number) => blendPose(idle, samplePose(KICK, tt), smoothstep(tt / 0.1));
-      applyPose(kickerRig.handles.current, sequencePose(action, plan.reason === "goal" ? CELEBRATE : DEJECTED, t));
+      const kp = sequencePose(action, reaction, t);
+      applyPose(kickerRig.handles.current, kp);
+      kickerRoot = kp.root;
       kz =
         t < BALL_T0
           ? KICKER_Z0 + (KICKER_Z_CONTACT - KICKER_Z0) * smoothstep(t / BALL_T0)
@@ -205,7 +216,9 @@ function Actors({
 
     // ── Cámara dron (lib/penal/camera.ts) ──
     const cam = state.camera;
-    const shot = droneCamera(state.size.width / Math.max(1, state.size.height), plan, t, plan?.reason === "save" ? keeperX : bp[0]);
+    // Pies del pateador en el mundo (el grupo está girado π → el root local se invierte) para el primer plano del festejo.
+    const kickerFeet = [KICKER_X - kickerRoot.x, 0, kz - kickerRoot.z] as const;
+    const shot = droneCamera(state.size.width / Math.max(1, state.size.height), plan, t, plan?.reason === "save" ? keeperX : bp[0], kickerFeet);
     cam.position.set(shot.pos[0], shot.pos[1], shot.pos[2]);
     cam.lookAt(shot.look[0], shot.look[1], shot.look[2]);
     if (cam instanceof THREE.PerspectiveCamera && cam.fov !== shot.fov) {

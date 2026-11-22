@@ -9,8 +9,7 @@
  *
  * con `D` = producto de las rotaciones del rig a lo largo de su cadena (hips → … → articulación),
  * `C` = corrección de brazo (de T-pose a colgando) en upperarm/lowerarm, y `Wbind` = orientación del
- * hueso en bind (espacio del modelo). Los huesos no mapeados (spine_01/03, cuello, manos, pies,
- * dedos) conservan su local de bind y siguen al padre. Misma convención en ambos: +X izquierda,
+ * hueso en bind (espacio del modelo). Los huesos no mapeados (spine_01/03, cuello, manos, dedos) conservan su local de bind y siguen al padre. Misma convención en ambos: +X izquierda,
  * mira a +Z, metros. `root` (traslación + giro del cuerpo) mueve el `wrapper`.
  */
 
@@ -33,6 +32,8 @@ const BONE_OF: readonly (readonly [Joint, string])[] = [
   ["kneeL", "calf_l"],
   ["hipR", "thigh_r"],
   ["kneeR", "calf_r"],
+  ["ankleL", "foot_l"],
+  ["ankleR", "foot_r"],
 ];
 
 /** Cadena del rig (de la cadera a la articulación), igual a la jerarquía de pivotes del rig (`rigPose`). */
@@ -48,6 +49,8 @@ const CHAIN: Record<Joint, readonly Joint[]> = {
   kneeL: ["hips", "hipL", "kneeL"],
   hipR: ["hips", "hipR"],
   kneeR: ["hips", "hipR", "kneeR"],
+  ankleL: ["hips", "hipL", "kneeL", "ankleL"],
+  ankleR: ["hips", "hipR", "kneeR", "ankleR"],
 };
 
 /** Cuánto bajan los brazos desde la T-pose (rad). <π/2 deja aire entre brazo y torso. */

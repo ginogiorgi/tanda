@@ -10,6 +10,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  *
  *   ?body=male|female&hair=parted&sk=%23A06B45&view=front|q34|side|back|top|feet|low&pose=ready|kick|dive|celebrate
  *   ?sheet=swatches   lámina de paletas (+ ropa vs piel, ΔE)
+ *   ?pose=cel-siu&t=1.2&view=wide|wideq34|drone   festejo en el instante t (feedback 4 #16)
  */
 export default async function AvatarQaPage({
   searchParams,
@@ -28,6 +29,7 @@ export default async function AvatarQaPage({
       skin={one("sk") ?? "#A06B45"}
       view={one("view") ?? "front"}
       pose={one("pose") ?? "ready"}
+      t={one("t") != null && Number.isFinite(Number(one("t"))) ? Number(one("t")) : null}
     />
   );
 }

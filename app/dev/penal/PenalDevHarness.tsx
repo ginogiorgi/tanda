@@ -6,6 +6,7 @@ import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 import type { PenalAnimation } from "@/components/penal/PenalScene";
 import { Button } from "@/components/ui/Button";
 import { PenaltyResultBalloon } from "@/components/penal/PenaltyResultBalloon";
+import { CELEBRATION_IDS, CELEBRATION_NAMES, isCelebrationId, type CelebrationId } from "@/lib/avatar/celebrations";
 import type { SceneRole } from "@/lib/penal/scene";
 import type { PenaltyReason } from "@/lib/realtime/penal";
 
@@ -25,10 +26,10 @@ const KEEPER: SceneRole = {
 
 const REASONS: PenaltyReason[] = ["goal", "save", "miss_wide"];
 
-function parseShot(raw: string | null): PenalAnimation | null {
+function parseShot(raw: string | null, celebration: CelebrationId | undefined): PenalAnimation | null {
   const m = raw ? /^(goal|save|miss_wide)-([0-3])$/.exec(raw) : null;
   const reason = REASONS.find((r) => r === m?.[1]);
-  return m && reason ? { id: "dev-url", reason, variant: Number(m[2]) } : null;
+  return m && reason ? { id: "dev-url", reason, variant: Number(m[2]), celebration } : null;
 }
 
 /** Variantes de papel del cartel (feedback 4 #11) para comparar con capturas: `?card=70|80|88|100`. */
@@ -41,18 +42,26 @@ const CARD_PAPER: Record<string, string> = {
 
 /**
  * `?shot=goal-1&t=0.6` dispara la jugada y la congela en t (para screenshots headless).
+ * `&celebration=siu|sky|crossed|cradle|slide` fuerza el festejo del gol (feedback 4 #16).
  * `&card=80` superpone el cartel de resultado (`default` = el de producción) para estudiar su transparencia.
  */
 export function PenalDevHarness() {
   const params = useSearchParams();
   const freezeRaw = params.get("t");
   const freezeAt = freezeRaw !== null && Number.isFinite(Number(freezeRaw)) ? Number(freezeRaw) : undefined;
-  const [anim, setAnim] = useState<PenalAnimation | null>(() => parseShot(params.get("shot")));
+  const celRaw = params.get("celebration");
+  const [celebration, setCelebration] = useState<CelebrationId | undefined>(isCelebrationId(celRaw) ? celRaw : undefined);
+  const [anim, setAnim] = useState<PenalAnimation | null>(() => parseShot(params.get("shot"), celebration));
   const [n, setN] = useState(0);
   const card = params.get("card");
   const fire = (reason: PenaltyReason, variant: number) => {
     setN((x) => x + 1);
-    setAnim({ id: `dev-${n}`, reason, variant });
+    setAnim({ id: `dev-${n}`, reason, variant, celebration });
+  };
+  const celebrate = (c: CelebrationId) => {
+    setCelebration(c);
+    setN((x) => x + 1);
+    setAnim({ id: `dev-${n}`, reason: "goal", variant: anim?.variant ?? 1, celebration: c });
   };
   return (
     <main className="flex min-h-dvh flex-col gap-3 bg-bg p-4">
@@ -82,6 +91,13 @@ export function PenalDevHarness() {
             </Button>
           )),
         )}
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        {CELEBRATION_IDS.map((c) => (
+          <Button key={c} variant={c === celebration ? "primary" : "outline"} size="sm" onClick={() => celebrate(c)}>
+            {CELEBRATION_NAMES[c]}
+          </Button>
+        ))}
       </div>
     </main>
   );

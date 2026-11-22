@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { droneCamera, idleCamera, isPortrait, type CameraShot } from "./camera";
+import { CELEBRATION_IDS, CELEBRATIONS } from "@/lib/avatar/celebrations";
+import { REACTION_AT, samplePose } from "@/lib/avatar/rig";
+import { CELEBRATION_CAM_T, droneCamera, idleCamera, isPortrait, type CameraShot } from "./camera";
 import { GOAL_H, GOAL_HALF_W, GOAL_Z, KEEPER_Z, ballAt, shotPlan } from "./shot";
 import type { PenaltyReason } from "@/lib/realtime/penal";
 
@@ -44,6 +46,31 @@ describe("cámara dron (feedback 3 #1)", () => {
           expect(kickerFeet.y, `pateador ${tag}`).toBeGreaterThan(isPortrait(a) ? -0.4 : -0.9);
           const keeper = project(shot, a, [0, 1.85, KEEPER_Z]).y - project(shot, a, [0, 0, KEEPER_Z]).y;
           expect(keeper, `arquero legible ${tag}`).toBeGreaterThan(0.17);
+        }
+      }
+    }
+  });
+
+  it.each(Object.entries(ASPECTS))("%s: en el gol la cámara se acerca al festejo y lo sigue entero", (_, a) => {
+    const plan = shotPlan("goal", 1);
+    for (const id of CELEBRATION_IDS) {
+      const clip = CELEBRATIONS[id];
+      for (let t = CELEBRATION_CAM_T; t <= REACTION_AT + clip.duration + 1; t += 0.1) {
+        const root = samplePose(clip, Math.min(clip.duration, t - REACTION_AT)).root;
+        // El grupo del pateador está girado π: su +z local es -z del mundo.
+        const feet = [-root.x, 0, 0.2 - root.z] as const;
+        const shot = droneCamera(a, plan, t, 0, feet);
+        const tag = `${id} @${t.toFixed(1)}`;
+        const [foot, head] = [project(shot, a, feet), project(shot, a, [feet[0], 1.95, feet[2]])];
+        for (const p of [foot, head]) {
+          expect(Math.abs(p.x), `x ${tag}`).toBeLessThan(0.85);
+          expect(Math.abs(p.y), `y ${tag}`).toBeLessThan(0.95);
+        }
+        if (t >= CELEBRATION_CAM_T + 0.9) {
+          // Primer plano: el cuerpo ocupa ≥ 35% del alto del cuadro (antes ~6%).
+          expect(head.y - foot.y, `tamaño ${tag}`).toBeGreaterThan(0.7);
+          // En celu queda abajo de la mitad (arriba va el cartel).
+          if (isPortrait(a)) expect(head.y, `debajo del cartel ${tag}`).toBeLessThan(0.25);
         }
       }
     }

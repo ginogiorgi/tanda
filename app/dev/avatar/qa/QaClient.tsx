@@ -72,6 +72,8 @@ export function QaClient(props: {
   skin: string;
   view: string;
   pose: string;
+  /** Instante (s) del festejo (`pose=cel-<id>`). */
+  t?: number | null;
 }) {
   const { status } = useGlbReady([props.body]);
   if (props.sheet === "swatches") {
@@ -96,7 +98,7 @@ export function QaClient(props: {
   });
   return (
     <main className="size-[768px] bg-bg">
-      {status === "ready" ? <QaCanvas config={config} view={props.view} pose={props.pose} /> : <p>{status}</p>}
+      {status === "ready" ? <QaCanvas config={config} view={props.view} pose={props.pose} t={props.t ?? null} /> : <p>{status}</p>}
     </main>
   );
 }

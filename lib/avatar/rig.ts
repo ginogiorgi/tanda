@@ -1,5 +1,5 @@
 /**
- * Rig del avatar (Fase 6): esqueleto propio de 11 articulaciones + poses + clips por keyframes. TS
+ * Rig del avatar (Fase 6): esqueleto propio de 13 articulaciones + poses + clips por keyframes. TS
  * puro (sin three) → testeable y determinista. `GlbAvatar` registra pivotes con estos nombres (y los
  * traduce a huesos del GLB) y la escena aplica `samplePose(clip, t)` por frame.
  *
@@ -26,6 +26,10 @@ export const JOINTS = [
   "hipR",
   "kneeL",
   "kneeR",
+  // Feedback 4 #16: tobillos (`foot_l/r` del GLB). `x` positivo = punta del pie hacia abajo (empeine plano en el
+  // rodillazo). En 0 el pie sigue a la tibia como antes (sin cambio en los clips viejos).
+  "ankleL",
+  "ankleR",
 ] as const;
 
 export type Joint = (typeof JOINTS)[number];
@@ -122,6 +126,8 @@ const MIRROR: Record<Joint, Joint> = {
   hipR: "hipL",
   kneeL: "kneeR",
   kneeR: "kneeL",
+  ankleL: "ankleR",
+  ankleR: "ankleL",
 };
 
 /** Espejo izquierda↔derecha (plano X=0): para la estirada del arquero hacia el otro palo. */
