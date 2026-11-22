@@ -1,5 +1,12 @@
 # TODO — TANDA ⚽
 
+## Feedback 4 — en curso (22/11)
+Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C → D → E → F → G).
+- **F0 (hecho, en prod):** torneo congelado `2d39f332` → carrera en el cierre de ronda (dos `resolve_penalty`
+  concurrentes, ninguno fijaba `round_deadline`). Advisory lock de ronda en `resolve_penalty`/`resolve_round` +
+  watchdog en `tick()` que destraba y registra en `ops_events` (`round_stall_healed`, `tick_error`). Test
+  `supabase/tests/round_race.test.ts` (2 conexiones reales, pausa el cron local). Prod destrabado solo al aplicar.
+
 ## Feedback 3 — hecho (18–20/11, en prod)
 Fase por fase, con verde completo + deploy + smoke de prod en cada una. Capturas reproducibles:
 `bash scripts/e2e/shots.sh [filtro]` (PNG en `artifacts/shots/`, 390×844 y 1440×900).
