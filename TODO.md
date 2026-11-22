@@ -67,7 +67,7 @@ experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orde
 - **W — Vercel Web Analytics** (Hobby, gratis): `@vercel/analytics`, sin PII, dentro del presupuesto de JS.
   **W hecho (22/11):** script oficial `defer` + `beforeSend` inline (`lib/analytics/web.ts`, sin query, salas como
   `/sala/:code`) en el layout raíz, solo en Vercel: 0 KB en el presupuesto (el paquete `@vercel/analytics` sumaba
-  ~1,7 KB/ruta). **Activado en Vercel (22/11, Hobby gratis).** Falta un redeploy de producción para que `/_vercel/insights/script.js` deje de dar 404.
+  ~1,7 KB/ruta). **Activado en Vercel (22/11, Hobby gratis) + redeploy de prod: script 200, W cerrado.**
 - **L — Prueba de carga:** `scripts/qa/load-sim.mts`, N invitados `qa_load_*` (persistentes, `qa_keep`) en UNA sala
   de prod jugando un torneo entero por API + Realtime; mide huecos entre penales, latencia de RPC (p50/p95), pokes
   no-op y trabas; reporte en `artifacts/qa/load-sim.md`. Cualquier hallazgo → arreglo con test de DB. Incluye
