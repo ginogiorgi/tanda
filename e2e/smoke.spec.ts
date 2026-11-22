@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "./_csp";
 import { visiblePrimaries } from "./_primary";
+import { expectNoSeriousA11y } from "./_axe";
 
 const PAGES = [
   { path: "/", heading: /tanda/i },
@@ -24,9 +24,7 @@ for (const p of PAGES) {
     expect(overflow).toBeLessThanOrEqual(1);
     // Una sola acción principal por pantalla (docs/DESIGN-RULES.md).
     expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
-    const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
-    const bad = axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-    expect(bad.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
+    await expectNoSeriousA11y(page);
     expect(errors).toEqual([]);
   });
 }

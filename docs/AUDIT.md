@@ -14,6 +14,7 @@ Barridos automáticos de las reglas del proyecto (sobre todo el árbol, no por m
 | `style={{…}}` | OG image, colores de avatar elegidos por el usuario, anchos de barras (valor dinámico) | Excepciones legítimas: el valor es dato, no estilo. |
 | `console.*` | Solo server (logs de Vercel) y `app/error.tsx` | El de `error.tsx` se reemplaza por Sentry + reporte automático (Fase F). |
 | Remontes por posición en el árbol | `PenalView` devuelve la escena en posiciones distintas por fase | Causa de los puntos 12 y 14 → Fase C (escena en posición fija + test de montajes). |
+| `cn()` y utilidades propias | `tailwind-merge` tomaba `bg-halftone`/`bg-pitch`/`bg-stripes-*` por colores y borraba el `bg-<color>` vecino (placeholder 3D sin fondo, cartel sin papel) | `lib/cn.ts` las declara en su grupo; `lib/cn.test.ts` falla si globals.css suma una utilidad sin declararla. |
 | `fire()` traga errores | Sí, sin registro | Fase F: los fallos van a Sentry + `client_events`. |
 
 ## Dependencias y toolchain

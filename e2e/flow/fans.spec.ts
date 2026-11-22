@@ -1,7 +1,7 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../_csp";
 import { assertLayout } from "../_layout";
 import { assertLocalSupabase, enterAsGuest, openPlay, pickFavorites } from "./_helpers";
+import { expectNoSeriousA11y } from "../_axe";
 
 /**
  * Ranking de hinchas (feedback 3 #15): el registro exige favoritos; /hinchas los muestra marcados y los
@@ -40,8 +40,7 @@ test("registro con favoritos → /hinchas marcado → cambio inmediato", async (
   await expect(clubs.locator("li[aria-current=true]")).toContainText("River Plate");
   await expect(nations.locator("li[aria-current=true]")).toContainText("Uruguay");
   await expect(nations.locator("li[aria-current=true]")).toContainText(/[1-9]\d* hincha/);
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
-  expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);
+  await expectNoSeriousA11y(page);
 
   await pickFavorites(page, "Boca Juniors", "Uruguay");
   await expect(page.getByText("Listo, ya sumás para tus favoritos.")).toBeVisible();

@@ -44,10 +44,11 @@ pnpm test:e2e   # Playwright + axe sobre las páginas públicas (Chrome del sist
 ## Pantallas, navegación y layouts (feedback 14/11 — ver `docs/DESIGN-RULES.md`)
 - Mapa de pantallas en `lib/nav/routes.ts` (título, **padre**, grupo). Toda página nueva va ahí
   (`routes.test.ts` lo exige); el "volver" lo pinta `components/ui/ScreenHeader`.
-- **Layout único (feedback 2/3):** la página scrollea el DOCUMENTO, nunca un panel; footer en TODAS las pantallas
-  (lo monta `app/layout.tsx`, en el flujo: al pie sin scroll si el contenido entra, scrolleando si no). Pantallas con `<Page width="form|content|wide">`; juego en
+- **Layout único (feedback 2/3/4):** la página scrollea el DOCUMENTO, nunca un panel; footer en las pantallas de
+  menú/sitio (lo montan los layouts `(app)`/`(auth)`/`(site)`, la 404 y error, en el flujo: al pie sin scroll si el
+  contenido entra, scrolleando si no) y **nunca en juego** `(game)`. Subárboles pesados (Canvas) en posición fija del árbol. Pantallas con `<Page width="form|content|wide">`; juego en
   `<GameStage>` (un viewport, capas `absolute` adentro). Nada `fixed`/`sticky` salvo `data-layer` bg|overlay|header
-  (lint + `e2e/_layout.ts`). Route groups `app/(app)`, `app/(game)`, `(auth)`; cada uno con `loading.tsx`.
+  (lint + `e2e/_layout.ts`). Route groups `app/(app)`, `app/(game)`, `(auth)`, `(site)`.
 - Navegación SOLO con `useNav()` (`lib/nav/useNav.ts`); `useRouter` está prohibido por lint fuera de `lib/nav`.
 - Sesión en el server SOLO con `getSession()` (`lib/supabase/session.ts`, `getClaims` local); `auth.getUser()`
   prohibido por lint. Funciones de Vercel en `gru1` (`vercel.json`) = misma región que la DB (sa-east-1).

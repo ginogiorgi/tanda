@@ -18,6 +18,7 @@ import { PenalSceneViewer } from "@/components/penal/PenalSceneViewer";
 import type { PenalAnimation } from "@/components/penal/PenalScene";
 import { PenalHud, type PenalDot } from "@/components/penal/PenalHud";
 import { TimeBar } from "@/components/penal/TimeBar";
+import { PenaltyResultBalloon } from "@/components/penal/PenaltyResultBalloon";
 import {
   playGood,
   playBad,
@@ -504,39 +505,23 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     return (
       <>
         {sceneLayer}
-        {/* El globo de resultado va ANCLADO ARRIBA del stage (encima del arco), no centrado: si no,
-            tapaba la animación de la pateada. En mobile arranca debajo del globo de sonido. */}
-        <div data-testid="penal-result-card" className="fade-in absolute left-1/2 top-16 md:top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
-          <div className="flex w-full flex-col items-center gap-3 rounded-[6px] border-2 border-ink bg-bg-elevated px-5 py-5 shadow-pop">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
-              Penal {result.idx} · {result.home_score}–{result.away_score}
-            </span>
-            <p
-              className={`font-display text-6xl font-black uppercase leading-[0.85] ${
-                result.scored ? "text-brand" : "text-blue"
-              }`}
-            >
-              {result.scored ? "¡GOL!" : "ATAJADO"}
-            </p>
-            {/* 10.7: motivo cuando empatan en aciertos y gana el más rápido. */}
-            {result.won_by_speed && deltaMs != null && (
-              <p className="text-sm font-semibold text-fg-muted">
-                {amWinner
-                  ? `Ganaste por velocidad: respondiste ${(deltaMs / 1000).toFixed(1)}s antes`
-                  : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`}
-              </p>
-            )}
-            {/* T4: globo simple — solo la correcta, en verde si el jugador acertó, rojo si erró
-                (o no respondió). Sin repetir la pregunta ni "Tu respuesta". */}
-            <p
-              className={`border-t-2 border-ink pt-2 text-base font-semibold ${
-                selected === result.correct_index ? "text-success" : "text-brand-ink"
-              }`}
-            >
-              Correcta: {penal.options[result.correct_index]}
-            </p>
-          </div>
-        </div>
+        {/* El globo de resultado va ANCLADO ARRIBA del stage (encima del arco), no centrado: si no, tapaba la
+            pateada. Es papel translúcido (feedback 4 #11): el arco y el arquero se ven a través. */}
+        <PenaltyResultBalloon
+          idx={result.idx}
+          homeScore={result.home_score}
+          awayScore={result.away_score}
+          scored={result.scored}
+          note={
+            result.won_by_speed && deltaMs != null
+              ? amWinner
+                ? `Ganaste por velocidad: respondiste ${(deltaMs / 1000).toFixed(1)}s antes`
+                : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`
+              : null
+          }
+          correctText={penal.options[result.correct_index] ?? ""}
+          answeredRight={selected === result.correct_index}
+        />
         {muteBalloon}
       </>
     );

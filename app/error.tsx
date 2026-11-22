@@ -10,6 +10,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/Button";
+import { Footer } from "@/components/ui/Footer";
 
 export default function Error({
   error,
@@ -24,6 +25,7 @@ export default function Error({
   }, [error]);
 
   return (
+    <>
     <main className="flex w-full flex-1 flex-col items-center justify-center gap-6 px-6 py-16 text-center">
       <div className="flex flex-col items-center gap-2">
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
@@ -51,5 +53,8 @@ export default function Error({
         </Link>
       </div>
     </main>
+    {/* Feedback 4 #10: el boundary reemplaza a los layouts de grupo → monta su propio footer. */}
+    <Footer />
+    </>
   );
 }

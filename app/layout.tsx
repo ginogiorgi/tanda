@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Instrument_Sans } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
-import { Footer } from "@/components/ui/Footer";
 import { PitchBackground } from "@/components/ui/PitchBackground";
 import "./globals.css";
 
@@ -69,12 +68,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${instrument.variable} ${bigShoulders.variable}`}>
-      {/* Feedback 3 #10: la página scrollea el DOCUMENTO y el footer es parte del flujo, en TODAS las pantallas.
-          El contenido estira (`flex-1`) → si entra, no hay scroll y el footer queda al pie; si no, se scrollea. */}
+      {/* Feedback 3 #10: la página scrollea el DOCUMENTO y el footer es parte del flujo. Feedback 4 #10: el footer
+          lo montan los layouts de menú/sitio ((app), (auth), (site), 404 y error), NUNCA el de juego. El contenido
+          estira (`flex-1`) → si entra, no hay scroll y el footer queda al pie; si no, se scrollea. */}
       <body className="flex min-h-svh flex-col bg-bg text-fg">
         <PitchBackground />
         <div className="flex w-full flex-1 flex-col">{children}</div>
-        <Footer />
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../_csp";
 import { assertLocalSupabase, pickFavorites } from "./_helpers";
+import { expectNoSeriousA11y } from "../_axe";
 
 /**
  * Creador de avatar (feedback 2, P7d): registro → punto de partida → Pelo (cámara a la cabeza) → Botines
@@ -22,8 +22,7 @@ test("registro → preset → pelo y botines con cámara por pestaña → guarda
   await expect(stage).toHaveAttribute("data-focus", "body");
   await expect(page.locator("canvas")).toHaveCount(1, { timeout: 30_000 });
 
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
-  expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
+  await expectNoSeriousA11y(page);
 
   await page.getByRole("button", { name: /la 10/i }).click();
 

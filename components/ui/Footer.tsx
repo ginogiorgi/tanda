@@ -1,7 +1,8 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Footer de TODAS las pantallas: lo monta el layout raíz al final del documento, en el flujo (nunca `fixed`).
+ * Footer de las pantallas de menú/sitio, al final del documento y en el flujo (nunca `fixed`). Lo montan los
+ * layouts `(app)`, `(auth)`, `(site)`, la 404 y la de error; el juego `(game)` no lleva (feedback 4 #10).
  * Feedback 3 #10: si el contenido entra, se ve al pie sin scroll; si no, aparece al scrollear.
  */
 export function Footer({ className }: { className?: string }) {

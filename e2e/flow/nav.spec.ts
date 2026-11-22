@@ -64,7 +64,7 @@ test("app: layout de documento en 4 viewports; perfil y tabla vuelven al padre, 
   expect(toHome).toBeLessThan(1500);
 });
 
-test("juego: sala y cola ranked con el layout único (footer abajo del pliegue), y salir vuelve a Jugar sin esperar al server", async ({ page }) => {
+test("juego: sala y cola ranked con el layout único (sin footer en juego), y salir vuelve a Jugar sin esperar al server", async ({ page }) => {
   await enterAsGuest(page);
   await openPlay(page);
 
@@ -78,7 +78,7 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   const mobile = page.viewportSize()!;
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await assertLayout(page);
+    await assertLayout(page, { game: true });
   }
   await page.setViewportSize(mobile);
   expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
@@ -94,7 +94,7 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   await expect(page).toHaveURL(/\/ranked$/);
   await expect(page.getByText(/Buscando/).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Tabla" })).toHaveCount(0);
-  await assertLayout(page);
+  await assertLayout(page, { game: true });
   const cancelar = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
     await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
     // Feedback 4 #7: la ficha de liga vive en la tarjeta de Ranked (antes en el perfil).

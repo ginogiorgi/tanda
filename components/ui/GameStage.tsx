@@ -3,8 +3,8 @@ import { cn } from "@/lib/cn";
 /**
  * Escenario de juego (feedback 2, P4 — DESIGN-RULES §Layout): exactamente un viewport (menos el
  * header si la pantalla lo tiene), `relative`. Escena 3D, tarjeta, globo y HUD van `absolute`
- * ADENTRO del stage: mientras jugás se ven fijos, y si scrolleás aparece el footer debajo. Es
- * "pegado lo que tiene que estar pegado" sin `fixed`.
+ * ADENTRO del stage: se ven fijos sin `fixed`. El juego no lleva footer (feedback 4 #10) → en el celu la
+ * pantalla del partido es exactamente un viewport, sin scroll.
  */
 export function GameStage({
   header = false,

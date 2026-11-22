@@ -17,7 +17,12 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   "Ir a mi grupo" en Mundial). Pantallazo/reinicio (#12/#14): la escena vive en una posición fija de `PenalView`
   (test de montajes + mismo `<canvas>` en game.spec), `useGlbReady` sincrónico si el GLB ya cargó, placeholder
   color cielo. `hydrate()` descarta el cartel de un penal viejo. Opciones del penal con `data-option` (selector e2e).
-- **Sigue:** C (#10 footer fuera del juego, #11 cartel translúcido) → D festejos → F → G.
+- **C (hecho):** footer fuera del juego por estructura (lo montan `(app)`/`(auth)`/`(site)`/404/error; la home y
+  `/auth/reset` pasaron al grupo `(site)`), `assertLayout` exige 0 footers y sin scroll en celu en juego (`game`/`stage`).
+  Cartel `PenaltyResultBalloon`: papel 70 % + trama, talón opaco con la correcta (AA), comparado en `/dev/penal?card=`.
+  `cn` declara las utilidades propias a tailwind-merge (`bg-halftone` se comía el color de fondo) + test que lee
+  globals.css. axe de página completa vía `e2e/_axe.ts` (espera el `<title>` de la navegación cliente).
+- **Sigue:** D festejos → F (Sentry + telemetría + pantalla de error + robustez cliente) → G (6 invitados) → SPEC.
 
 ## Pendiente de revisión con Gino
 - **OPS (dashboard):** activar "Leaked password protection" en Supabase Auth.

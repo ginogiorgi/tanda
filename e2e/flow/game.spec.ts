@@ -124,7 +124,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     await expect(page.locator('[data-dot="scored"], [data-dot="missed"]')).toHaveCount(1, { timeout: 10_000 });
   });
 
-  await test.step("penal (resultado y el que sigue): GameStage de un viewport (360, mobile y 1440), footer abajo del pliegue", async () => {
+  await test.step("penal (resultado y el que sigue): GameStage de un viewport (360, mobile y 1440), sin footer ni scroll en el celu", async () => {
     // Después de responder: con el cierre temprano, chequear antes cambiaba el timing del penal.
     const mobile = page.viewportSize()!;
     for (const vp of [VIEWPORTS[0], VIEWPORTS[3]]) {

@@ -25,3 +25,20 @@ for (const s of SHOTS) {
     }
   });
 }
+
+/**
+ * Feedback 4 #11: transparencia del cartel de resultado sobre la escena (papel sin blur). `default` = la de
+ * producción; el resto, variantes para comparar. Gol y atajada congelados con el arquero ya jugado.
+ */
+const CARDS = (process.env.SHOTS_CARD ?? "default,70,80,88,100").split(",");
+for (const s of ["goal-0", "save-3"]) {
+  test(`penal: cartel sobre ${s}`, async ({ page }) => {
+    for (const c of CARDS) {
+      await page.goto(devUrl(`/dev/penal?shot=${s}&t=2.0&card=${c}`));
+      await expect(page.locator("canvas")).toHaveCount(1, { timeout: 60_000 });
+      await expect(page.getByTestId("penal-result-card")).toBeVisible();
+      await page.waitForTimeout(2000);
+      await shot(page, `cartel-${s}-${c}`);
+    }
+  });
+}

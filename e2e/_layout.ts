@@ -2,13 +2,13 @@ import { expect, type Page } from "@playwright/test";
 
 /**
  * Regla única de layout (docs/DESIGN-RULES.md §Layout; feedback 3 #10), verificada en el DOM real:
- *  1. hay footer (uno), en todas las pantallas, juego incluido;
+ *  1. hay footer (uno) en las pantallas de menú/sitio; en JUEGO (`stage`) no hay ninguno (feedback 4 #10);
  *  2. el footer es lo ÚLTIMO del documento y el documento mide al menos el viewport: si el contenido entra,
  *     no hay scroll y el footer se ve al pie; si no entra, se llega al footer scrolleando;
  *  3. nada fijo/sticky fuera de lo permitido (`data-layer` bg|overlay|header) — ni tapando contenido;
  *  4. sin scroll horizontal de página;
- *  5. en juego, el `GameStage`: en celu mide el viewport (menos el header); desde `md` ocupa el alto que
- *     deja el footer (≥ 34rem) — y nada desborda adentro (salvo la tarjeta del penal, con su `max-h`).
+ *  5. en juego, el `GameStage` mide el viewport (menos el header) — en celu exacto y sin scroll de página;
+ *     desde `md`, con piso de 34rem — y nada desborda adentro (salvo la tarjeta del penal, con su `max-h`).
  *  `fits: true` exige además que la pantalla entre sin scroll (home y /jugar en PC).
  */
 export const VIEWPORTS = [
@@ -18,12 +18,19 @@ export const VIEWPORTS = [
   { name: "1440x900", width: 1440, height: 900 },
 ] as const;
 
-export async function assertLayout(page: Page, opts: { stage?: boolean; fits?: boolean } = {}): Promise<void> {
-  await expect(page.locator("footer")).toHaveCount(1);
+export async function assertLayout(
+  page: Page,
+  opts: { stage?: boolean; fits?: boolean; /** Pantalla del grupo de juego (sala, cola, partido): sin footer. */ game?: boolean } = {},
+): Promise<void> {
+  const game = opts.game === true || opts.stage === true;
+  await expect(page.locator("footer")).toHaveCount(game ? 0 : 1);
+  // El footer vive en los layouts de grupo (dentro del Suspense del loading raíz): con streaming llega primero en
+  // un contenedor oculto y después se mueve a su lugar → se mide recién cuando está visible.
+  if (!game) await expect(page.locator("footer")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
 
   const m = await page.evaluate(() => {
-    const footer = document.querySelector("footer")!;
+    const footer = document.querySelector("footer");
     const allowed = new Set(["bg", "overlay", "header"]);
     const strayFixed: string[] = [];
     for (const el of document.body.querySelectorAll<HTMLElement>("*")) {
@@ -41,11 +48,11 @@ export async function assertLayout(page: Page, opts: { stage?: boolean; fits?: b
           .filter((el) => ["auto", "scroll"].includes(getComputedStyle(el).overflowY))
           .map((el) => el.className.toString().slice(0, 60))
       : [];
-    const fr = footer.getBoundingClientRect();
+    const fr = footer?.getBoundingClientRect() ?? null;
     return {
-      footerTop: fr.top,
-      footerBottom: fr.bottom + window.scrollY,
-      footerHeight: fr.height,
+      footerTop: fr?.top ?? 0,
+      footerBottom: fr ? fr.bottom + window.scrollY : 0,
+      footerHeight: fr?.height ?? 0,
       docHeight: document.documentElement.scrollHeight,
       innerHeight: window.innerHeight,
       scrollWidth: document.documentElement.scrollWidth,
@@ -59,9 +66,9 @@ export async function assertLayout(page: Page, opts: { stage?: boolean; fits?: b
     };
   });
 
-  expect(Math.abs(m.footerBottom - m.docHeight), "el footer es lo último del documento").toBeLessThanOrEqual(1);
+  if (!game) expect(Math.abs(m.footerBottom - m.docHeight), "el footer es lo último del documento").toBeLessThanOrEqual(1);
   expect(m.docHeight, "el documento mide al menos un viewport").toBeGreaterThanOrEqual(m.innerHeight - 1);
-  if (m.docHeight <= m.innerHeight + 1) {
+  if (!game && m.docHeight <= m.innerHeight + 1) {
     expect(m.footerTop + m.footerHeight, "si entra, el footer se ve al pie").toBeLessThanOrEqual(m.innerHeight + 1);
   }
   if (opts.fits) expect(m.docHeight, "entra sin scroll").toBeLessThanOrEqual(m.innerHeight + 1);
@@ -72,15 +79,19 @@ export async function assertLayout(page: Page, opts: { stage?: boolean; fits?: b
     const vw = page.viewportSize()!.width;
     if (vw < 768) {
       expect(Math.abs(m.stageHeight! - (m.innerHeight - m.headerHeight)), "celu: el stage mide un viewport").toBeLessThanOrEqual(1);
+      // Feedback 4 #10: sin footer en juego, la pantalla del partido NO scrollea en el celu.
+      expect(m.docHeight, "celu: el juego no scrollea").toBeLessThanOrEqual(m.innerHeight + 1);
     } else {
       expect(m.stageHeight!, "PC: el stage tiene su mínimo").toBeGreaterThanOrEqual(34 * 16 - 1);
-      const fill = m.innerHeight - m.headerHeight - m.footerHeight;
-      if (fill >= 34 * 16) expect(Math.abs(m.stageHeight! - fill), "PC: el stage llena hasta el footer").toBeLessThanOrEqual(1);
+      const fill = m.innerHeight - m.headerHeight;
+      if (fill >= 34 * 16) expect(Math.abs(m.stageHeight! - fill), "PC: el stage llena el viewport").toBeLessThanOrEqual(1);
     }
     expect(m.overflowing, "nada desborda dentro del stage").toEqual([]);
   }
 
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await expect(page.locator("footer")).toBeInViewport();
-  await page.evaluate(() => window.scrollTo(0, 0));
+  if (!game) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(page.locator("footer")).toBeInViewport();
+    await page.evaluate(() => window.scrollTo(0, 0));
+  }
 }
