@@ -8,10 +8,10 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         neutral: "border-ink bg-bg-elevated text-fg",
-        brand: "border-brand bg-brand text-white",
-        accent: "border-ink bg-accent text-white",
-        blue: "border-blue bg-blue text-white",
-        success: "border-success bg-success text-white",
+        brand: "border-brand bg-brand text-on-fill",
+        accent: "border-ink bg-accent text-on-fill",
+        blue: "border-blue bg-blue text-on-fill",
+        success: "border-success bg-success text-on-fill",
         danger: "border-ink bg-ink text-bg",
       },
     },

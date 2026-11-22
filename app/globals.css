@@ -24,6 +24,7 @@
   --brand: #d7261e;
   --brand-ink: #a51a14; /* rojo para texto chico sobre papel (AA) */
   --blue: #1f3fa8;
+  --on-fill: #ffffff; /* texto/ícono sobre relleno saturado (brand, blue, accent, success) */
 
   /* Bordes: `ink` = línea dura de imprenta; `border` = filete suave; `ring` = filete visible. */
   --ink: #141414;
@@ -75,6 +76,7 @@
   --color-brand-ink: var(--brand-ink);
   --color-blue: var(--blue);
   --color-ink: var(--ink);
+  --color-on-fill: var(--on-fill);
 
   --color-border: var(--border);
   --color-ring: var(--ring);

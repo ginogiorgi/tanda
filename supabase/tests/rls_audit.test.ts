@@ -37,7 +37,6 @@ const AUTH_ALLOWLIST = [
   "leave_room",
   "lobby_favorite",
   "open_next_round",
-  "open_penalty",
   "quick_play",
   "ranked_cancel",
   "ranked_enqueue",
@@ -102,6 +101,10 @@ const INTERNAL_DENYLIST = [
   "engine_advance_match",
   "bot_penalty_scored",
   "tanda_penalty_difficulty",
+  // operación del server (feedback 4): registro, watchdog y podas
+  "ops_log",
+  "prune_inactive_guests",
+  "prune_ops_tables",
 ];
 
 // Nombres (distinct) de funciones NO-trigger de `public` ejecutables por el rol dado.

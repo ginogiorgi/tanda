@@ -16,9 +16,9 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         // Rojo de imprenta: CTA primario.
-        primary: `${PRINTED} bg-brand text-white hover:bg-brand-ink`,
+        primary: `${PRINTED} bg-brand text-on-fill hover:bg-brand-ink`,
         // Acento del partido/equipo (se tiñe en runtime via --accent).
-        accent: `${PRINTED} bg-accent text-white hover:brightness-95`,
+        accent: `${PRINTED} bg-accent text-on-fill hover:brightness-95`,
         // Papel con tinta: acción secundaria.
         outline: `${PRINTED} bg-bg-elevated text-fg hover:bg-bg-raised`,
         ghost: "font-sans font-semibold normal-case tracking-normal text-fg-muted underline-offset-4 hover:text-fg hover:underline",

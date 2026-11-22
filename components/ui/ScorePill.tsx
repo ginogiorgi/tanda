@@ -8,8 +8,8 @@ export const scorePillVariants = cva(
     variants: {
       tone: {
         neutral: "border-2 border-ink bg-bg-raised text-fg",
-        accent: "border-2 border-ink bg-accent text-white",
-        brand: "border-2 border-ink bg-brand text-white",
+        accent: "border-2 border-ink bg-accent text-on-fill",
+        brand: "border-2 border-ink bg-brand text-on-fill",
         muted: "border-2 border-border bg-bg-elevated text-fg-muted",
       },
       size: {

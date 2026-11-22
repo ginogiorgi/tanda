@@ -72,6 +72,13 @@ const eslintConfig = defineConfig([
       { selector: `JSXAttribute[name.name='className'] Literal[value=${LAYOUT}]`, message: layoutMsg },
       { selector: `JSXAttribute[name.name='className'] TemplateElement[value.raw=${LAYOUT}]`, message: layoutMsg },
     ];
+    // Marca (CLAUDE.md): colores SIEMPRE por token. `white/black` de Tailwind no siguen la paleta (feedback 4).
+    const COLOR = "/(^|\\s|:)(text|bg|border|fill|stroke|ring|outline|from|to|via)-(white|black)(\\/\\d+)?(\\s|$)/";
+    const colorMsg = "Color por token (bg-bg, text-fg, text-on-fill…), nunca white/black de Tailwind.";
+    const color = [
+      { selector: `TemplateElement[value.raw=${COLOR}]`, message: colorMsg },
+      { selector: `Literal[value=${COLOR}]`, message: colorMsg },
+    ];
     const layoutAllow = [
       "components/ui/PitchBackground.tsx", // fondo decorativo (data-layer=bg)
       "components/penal/Confetti.tsx", // papelitos de fondo del campeón (data-layer=bg)
@@ -89,20 +96,20 @@ const eslintConfig = defineConfig([
       {
         files: ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
         ignores: layoutAllow,
-        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc, ...layout] },
+        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc, ...layout, ...color] },
       },
       {
         files: ["components/**/*.{ts,tsx}"],
         ignores: layoutAllow,
-        rules: { "no-restricted-syntax": ["error", ...lazyRpc, ...layout] },
+        rules: { "no-restricted-syntax": ["error", ...lazyRpc, ...layout, ...color] },
       },
       {
         files: layoutAllow.filter((f) => f.startsWith("components/")),
-        rules: { "no-restricted-syntax": ["error", ...lazyRpc] },
+        rules: { "no-restricted-syntax": ["error", ...lazyRpc, ...color] },
       },
       {
         files: layoutAllow.filter((f) => f.startsWith("app/")),
-        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc] },
+        rules: { "no-restricted-syntax": ["error", getUser, ...lazyRpc, ...color] },
       },
     ];
   })(),

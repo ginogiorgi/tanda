@@ -4,6 +4,9 @@
   "private": true,
   "license": "UNLICENSED",
   "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install
@@ -97,7 +97,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install
@@ -111,6 +111,11 @@ jobs:
 
       - name: E2E de flujo (local)
         run: pnpm test:e2e:flow
+
+      # Smoke + layout + axe de las páginas públicas (feedback 4: antes no corría en CI). Reusa el build
+      # local que dejó el paso anterior; flow.sh verifica que apunte a la API local.
+      - name: E2E smoke + axe (local)
+        run: E2E_SKIP_BUILD=1 E2E_CONFIG=playwright.config.ts bash scripts/e2e/flow.sh
 
       - name: Trazas de Playwright (si falla)
         if: failure()

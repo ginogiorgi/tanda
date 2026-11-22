@@ -589,7 +589,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
 
       {/* 10.13: banner prominente — que se note que entraste en otra fase del penal. */}
       {isSecondChance && (
-        <div className="fade-in rounded-[4px] border-2 border-ink bg-accent-orange px-4 py-3 text-center text-white">
+        <div className="fade-in rounded-[4px] border-2 border-ink bg-accent-orange px-4 py-3 text-center text-on-fill">
           <p className="font-display text-2xl font-black uppercase leading-none">
             Segunda chance
           </p>

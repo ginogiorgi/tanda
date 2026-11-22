@@ -15,7 +15,7 @@ export type Difficulty = "easy" | "medium" | "hard" | "very_hard";
 export type PenaltyReason = "goal" | "save" | "miss_wide";
 
 /**
- * Payload de `penal:start` (emite `open_penalty`) y de `penal:second_chance` (emite
+ * Payload de `penal:start` (emite `open_penalty_internal`) y de `penal:second_chance` (emite
  * `resolve_penalty` al entrar en segunda chance). **Nunca** incluye `correct_index`
  * (anti-trampa, SPEC §7): la pregunta viaja sin la correcta hasta que el penal está `resolved`.
  */
