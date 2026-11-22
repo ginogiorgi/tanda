@@ -1,7 +1,7 @@
 /**
- * Tipos de la base para el cliente de Supabase. El CLI nuevo exige login de plataforma para
- * `gen types`, así que este `Database` se mantiene a mano (es chico: 3 tablas consultadas por
- * `.from` + las RPC del cliente). Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
+ * Tipos de la base para el cliente de Supabase, A MANO (chico: las tablas consultadas por `.from` + las RPC
+ * del cliente). `database.types.check.ts` lo compara contra `database.generated.ts` (`pnpm db:types`): una
+ * RPC, argumento o columna que no exista en la DB rompe el typecheck. Tiparlo hace que `supabase.rpc("...")` valide el NOMBRE y los
  * ARGS en compilación, y tipa el `data` con nuestros shapes reales (los `jsonb` se mapean a los
  * tipos de `lib/...`, no a `Json` genérico). Fuente de verdad del esquema: `supabase/migrations/`.
  */

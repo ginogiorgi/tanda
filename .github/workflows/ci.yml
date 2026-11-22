@@ -79,6 +79,9 @@ jobs:
       - name: Aplicar migraciones desde archivos
         run: pnpm db:reset
 
+      - name: Tipos generados al día (database.generated.ts = DB de las migraciones)
+        run: pnpm db:types && git diff --exit-code lib/supabase/database.generated.ts
+
       - name: DB tests (SQL/RPC)
         run: pnpm test:db
 

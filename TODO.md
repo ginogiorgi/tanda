@@ -74,6 +74,12 @@ experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orde
   investigar el hueco de 8,35 s del CI.
 - **T — Tipos y drift:** `database.types.ts` generado (`supabase gen types`) + chequeo en CI; huella del esquema
   (`pnpm db:fingerprint`) para comparar local vs prod y atrapar drift (pg_net, grants).
+  **T hecho (22/11):** `database.types.ts` sigue a mano (tipa los jsonb), pero `database.types.check.ts` lo compara
+  a nivel de tipos contra `database.generated.ts` (`pnpm db:types`; CI lo regenera y exige que no cambie): RPC,
+  argumentos, tablas o columnas inexistentes rompen `typecheck` (probado renombrando un arg). Huella del esquema
+  `scripts/db/fingerprint.sql` (8 secciones: funciones sin comentarios —el MCP los saca en prod—, grants, tablas,
+  RLS, policies, triggers, extensiones, cron): `pnpm db:fingerprint` local + el mismo SQL por MCP en prod.
+  22/11: las 8 secciones iguales → sin drift.
 - **Z — Limpieza:** revisar TODOS los tests, archivos, funciones y scripts: sacar lo que sobra (código muerto,
   tests duplicados o triviales, scripts sin uso, páginas dev viejas), simplificar y acelerar la suite. Medir antes
   y después (archivos, líneas, tiempo de cada suite, KB por ruta).

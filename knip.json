@@ -8,7 +8,8 @@
     "scripts/**/*.ts",
     "e2e/**/*.spec.ts",
     "playwright.flow.config.ts",
-    "playwright.shots.config.ts"
+    "playwright.shots.config.ts",
+    "lib/supabase/database.types.check.ts"
   ],
   "project": [
     "**/*.{ts,tsx,mts,css}"
@@ -17,5 +18,8 @@
   "ignoreBinaries": [
     "ffmpeg",
     "montage"
+  ],
+  "ignore": [
+    "lib/supabase/database.generated.ts"
   ]
 }

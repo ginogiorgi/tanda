@@ -39,7 +39,9 @@
     "qa:celebrations": "tsx scripts/avatar/celebrations-qa.mts",
     "qa:ranked-sim": "tsx scripts/qa/ranked-sim.mts",
     "db:backup": "tsx scripts/db/backup.mts",
-    "qa:ranked-shots": "tsx scripts/qa/ranked-shots.mts"
+    "qa:ranked-shots": "tsx scripts/qa/ranked-shots.mts",
+    "db:types": "supabase gen types typescript --local > lib/supabase/database.generated.ts",
+    "db:fingerprint": "tsx scripts/db/fingerprint.mts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
