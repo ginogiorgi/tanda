@@ -25,6 +25,8 @@
   --brand-ink: #a51a14; /* rojo para texto chico sobre papel (AA) */
   --blue: #1f3fa8;
   --on-fill: #ffffff; /* texto/ícono sobre relleno saturado (brand, blue, accent, success) */
+  /* Cielo de la escena 3D (PenalScene `SKY`): fondo del placeholder → sin pantallazo claro (feedback 4 #12). */
+  --scene-sky: #d9d3c5;
 
   /* Bordes: `ink` = línea dura de imprenta; `border` = filete suave; `ring` = filete visible. */
   --ink: #141414;
@@ -77,6 +79,7 @@
   --color-blue: var(--blue);
   --color-ink: var(--ink);
   --color-on-fill: var(--on-fill);
+  --color-scene-sky: var(--scene-sky);
 
   --color-border: var(--border);
   --color-ring: var(--ring);
@@ -111,6 +114,13 @@
 .bg-halftone {
   background-image: var(--halftone);
   background-size: 6px 6px;
+}
+/* Rayado de imprenta (cortes duros, no degradé): zonas de ascenso/descenso de la escalera de liga. */
+.bg-stripes-success {
+  background-image: repeating-linear-gradient(-45deg, var(--success) 0 3px, transparent 3px 6px);
+}
+.bg-stripes-danger {
+  background-image: repeating-linear-gradient(-45deg, var(--danger) 0 3px, transparent 3px 6px);
 }
 
 /* Cifras y siglas: tabulares y con un poco de aire (reemplaza a la mono de la v1). */

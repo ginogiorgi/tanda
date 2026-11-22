@@ -138,6 +138,39 @@ export function progressToNext(rating: number): DivisionProgress {
   return { division, next, toNext: next.min - rating, fraction };
 }
 
+/**
+ * Lo que mueve una partida pareja (mismo rating): ±K/2. Es el umbral de las "zonas": a menos de esto
+ * de la próxima división, una victoria pareja te sube; a menos de esto del piso (sin escudo), una
+ * derrota pareja te baja.
+ */
+export const EVEN_SWING = K / 2;
+
+export interface Ladder extends DivisionProgress {
+  /** División de abajo (null en Potrero). */
+  prev: Division | null;
+  /** Puntos por encima del piso de la división (null en Potrero: no se desciende). */
+  aboveFloor: number | null;
+  /** Una victoria pareja te sube de división. */
+  promotionZone: boolean;
+  /** Una derrota pareja te baja de división (el escudo lo evita). */
+  relegationZone: boolean;
+}
+
+/** Dónde estás en la escalera de divisiones: lo que pinta la tarjeta de Ranked en /jugar (feedback 4 #7). */
+export function ladder(rating: number, shield: number): Ladder {
+  const p = progressToNext(rating);
+  const i = divisionIndex(rating);
+  const prev = i > 0 ? DIVISIONS[i - 1]! : null;
+  const aboveFloor = prev ? rating - p.division.min : null;
+  return {
+    ...p,
+    prev,
+    aboveFloor,
+    promotionZone: p.next !== null && p.toNext <= EVEN_SWING,
+    relegationZone: aboveFloor !== null && shield === 0 && aboveFloor < EVEN_SWING,
+  };
+}
+
 /** Reset suave de fin de temporada: a mitad de camino de 1500, sin escudo. */
 export function seasonReset(s: RankedState): RankedState {
   return { rating: BASE_RATING + Math.trunc((s.rating - BASE_RATING) / 2), shield: 0 };

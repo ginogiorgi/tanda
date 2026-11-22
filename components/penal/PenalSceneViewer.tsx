@@ -18,7 +18,7 @@ import type { PenalAnimation } from "./PenalScene";
 
 const PenalScene = dynamic(() => import("./PenalScene").then((m) => m.PenalScene), {
   ssr: false,
-  loading: () => <Scene3DSkeleton />,
+  loading: () => <Scene3DSkeleton className="bg-scene-sky" />,
 });
 
 interface PenalSceneViewerProps {
@@ -40,7 +40,7 @@ export function PenalSceneViewer({ kicker, keeper, result, className, freezeAt }
       ) : status === "error" ? (
         <Scene3DError onRetry={retry} />
       ) : (
-        <Scene3DSkeleton />
+        <Scene3DSkeleton className="bg-scene-sky" />
       )}
     </div>
   );

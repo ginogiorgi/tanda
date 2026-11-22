@@ -17,7 +17,6 @@ const MODE_HELP_TITLES: Record<keyof ModeHelp, string> = {
   format: "Formato",
   players: "Rivales",
   win: "Cómo se gana",
-  ranked: "Liga",
 };
 
 /** La ayuda de un modo, en secciones (mismo render que "Cómo jugar"); las vacías no se muestran. */

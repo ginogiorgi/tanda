@@ -28,7 +28,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
       const now = {
         playing: !!document.querySelector("[data-testid=penal-playing]"),
         card: !!document.querySelector("[data-testid=penal-result-card]"),
-        question: !!document.querySelector("button[aria-pressed]"),
+        question: !!document.querySelector("button[data-option]"),
       };
       const at = performance.timeOrigin + performance.now();
       if (now.playing && !state.playing) evs.push({ at, kind: "playing" });
@@ -95,7 +95,7 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   });
 
   await test.step("responde el primer penal", async () => {
-    const options = page.locator("button[aria-pressed]");
+    const options = page.locator("button[data-option]");
     await expect(options.first()).toBeEnabled({ timeout: 90_000 });
     // P5: el tablero arranca con los 3+3 slots de grupos, todos pendientes.
     const dots = page.getByTestId("penalty-dots");
@@ -105,6 +105,9 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
     collecting = false;
     expect(payloads.length).toBeGreaterThan(0);
     expect(payloads.filter((p) => p.includes("correct_index"))).toEqual([]);
+    // Feedback 4 #12/#14: marca el <canvas> de la escena; tiene que ser el MISMO nodo en la jugada y en el cartel
+    // (antes cada fase remontaba el Canvas: pantallazo claro + la jugada arrancaba de nuevo).
+    await page.locator("canvas").evaluate((c) => c.setAttribute("data-e2e-canvas", "penal-1"));
     await options.first().click();
     // Feedback 3 #2: el penal no se cierra antes de los 10 s → la respuesta queda fija y a la vista.
     await expect(page.getByText(/respondiste a los/i)).toBeVisible({ timeout: 10_000 });
@@ -112,7 +115,11 @@ test("invitado → sala → partido → penal resuelto", async ({ page }) => {
   });
 
   await test.step("resolución a los 10s", async () => {
+    await expect(page.getByTestId("penal-playing")).toBeAttached({ timeout: 30_000 });
+    await expect(page.locator("canvas[data-e2e-canvas=penal-1]")).toHaveCount(1);
     await expect(page.getByText(/¡GOL!|ATAJADO/)).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("canvas[data-e2e-canvas=penal-1]")).toHaveCount(1);
+    await expect(page.getByTestId("scene-skeleton")).toHaveCount(0);
     // El slot de ese penal se pinta al resolverse (verde gol / rojo errado).
     await expect(page.locator('[data-dot="scored"], [data-dot="missed"]')).toHaveCount(1, { timeout: 10_000 });
   });

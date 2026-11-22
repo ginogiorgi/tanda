@@ -42,21 +42,33 @@ function snap(mode: "arg" | "worldcup", groups: string[]): BracketSnapshot {
   };
 }
 
-describe("Bracket — fase de zonas (feedback 3 #3)", () => {
-  it("Argentino: las dos zonas lado a lado, mismo componente completo, la tuya marcada", () => {
-    render(<Bracket view={buildBracketView(snap("arg", ["A", "B"]), {})} />);
-    const grid = screen.getByTestId("zones-side-by-side");
-    const zones = grid.querySelectorAll("[data-zone]");
-    expect(zones).toHaveLength(2);
-    // Ninguna en versión compacta: las dos muestran la columna de puntos y el W-D-L.
-    for (const z of zones) expect(within(z as HTMLElement).getByText("Pts")).toBeTruthy();
+describe("Bracket — fase de zonas/grupos (feedback 3 #3, feedback 4 #17–19)", () => {
+  it("Argentino: las dos zonas lado a lado como Zona A y Zona B, sin rótulos de fase, la tuya marcada", () => {
+    render(<Bracket view={buildBracketView(snap("arg", ["B", "A"]), {})} />);
+    const grid = screen.getByTestId("zones-grid");
+    const zones = Array.from(grid.querySelectorAll<HTMLElement>("[data-zone]"));
+    expect(zones.map((z) => z.dataset.zone)).toEqual(["A", "B"]);
+    for (const z of zones) expect(within(z).getByText("Pts")).toBeTruthy();
     expect(grid.querySelectorAll("[data-mine]")).toHaveLength(1);
-    expect(within(grid).getByText(/^Tu zona$/i)).toBeTruthy();
-    expect(within(grid).getByText(/^La otra zona$/i)).toBeTruthy();
+    expect(within(grid).getByText(/^Zona A/)).toBeTruthy();
+    expect(within(grid).getByText(/^Zona B/)).toBeTruthy();
+    expect(screen.queryByText(/tu zona|la otra zona|fase de zonas/i)).toBeNull();
+    expect(screen.queryByRole("link", { name: /ir a mi/i })).toBeNull();
   });
 
-  it("Mundial (muchos grupos) conserva su grilla", () => {
-    render(<Bracket view={buildBracketView(snap("worldcup", ["A", "B", "C"]), {})} />);
-    expect(screen.queryByTestId("zones-side-by-side")).toBeNull();
+  it("Mundial: los 12 grupos iguales (todos con Pts), A→L, el tuyo marcado y atajo a tu grupo", () => {
+    const letters = ["L", "K", "J", "I", "H", "G", "F", "E", "D", "C", "B", "A"];
+    render(<Bracket view={buildBracketView(snap("worldcup", letters), {})} />);
+    const grid = screen.getByTestId("zones-grid");
+    const zones = Array.from(grid.querySelectorAll<HTMLElement>("[data-zone]"));
+    expect(zones.map((z) => z.dataset.zone)).toEqual([...letters].reverse());
+    for (const z of zones) expect(within(z).getByText("Pts")).toBeTruthy();
+    const mine = grid.querySelectorAll<HTMLElement>("[data-mine]");
+    expect(mine).toHaveLength(1);
+    expect(screen.getByRole("link", { name: `Ir a mi grupo (${mine[0]!.dataset.zone})` })).toHaveAttribute(
+      "href",
+      `#zona-${mine[0]!.dataset.zone}`,
+    );
+    expect(screen.queryByText(/otros grupos|fase de grupos/i)).toBeNull();
   });
 });

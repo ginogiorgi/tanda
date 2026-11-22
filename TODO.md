@@ -9,6 +9,15 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
 - **A (hecho, en prod):** deps a latest (TS 7 para typecheck, TS 6 lado a lado), tokens de color con lint, auditoría
   de DB (índices FK, podas de invitados 14 d / rate_limits / bot_intents / ops_events, fuera `open_penalty`),
   CI en Node 24 + smoke/axe en CI. Detalle en `docs/AUDIT.md`. SPEC.md se reescribe al cierre (B–F cambian contratos).
+- **B + E + parte de C (hecho):** `ExpandableList` (botón al final, sin fila duplicada) en /hinchas; taglines sin
+  16avos/octavos; ayuda Ranked sin "Liga"; ficha de liga fuera del perfil → tarjeta Ranked de /jugar con
+  `LeagueLadder` (escudos de la división de abajo/arriba, zonas de ascenso/descenso por `ladder()` = ±K/2, posición,
+  escudo); "Ranking de jugadores" en la home (`/ranking`, padre `/`); sala sin Compartir; sin "Penal Nº · Elegí";
+  globo de sonido arriba a la derecha; zonas/grupos todos iguales A→L ("Zona A/B", la tuya con borde de marca,
+  "Ir a mi grupo" en Mundial). Pantallazo/reinicio (#12/#14): la escena vive en una posición fija de `PenalView`
+  (test de montajes + mismo `<canvas>` en game.spec), `useGlbReady` sincrónico si el GLB ya cargó, placeholder
+  color cielo. `hydrate()` descarta el cartel de un penal viejo. Opciones del penal con `data-option` (selector e2e).
+- **Sigue:** C (#10 footer fuera del juego, #11 cartel translúcido) → D festejos → F → G.
 
 ## Pendiente de revisión con Gino
 - **OPS (dashboard):** activar "Leaked password protection" en Supabase Auth.

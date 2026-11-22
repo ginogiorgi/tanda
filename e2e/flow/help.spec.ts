@@ -72,7 +72,10 @@ test("/jugar: un ? adentro de cada card de modo y de Ranked; nada en Con amigos"
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();
   await page.getByRole("button", { name: "Cómo se juega Ranked 1v1" }).click();
-  await expect(page.getByRole("dialog", { name: "Ranked 1v1" })).toContainText("Liga");
+  const rankedSheet = page.getByRole("dialog", { name: "Ranked 1v1" });
+  await expect(rankedSheet).toContainText("mano a mano");
+  // Feedback 4 #5: sin la sección "Liga · Es lo único que mueve tu ranking".
+  await expect(rankedSheet).not.toContainText("Es lo único que mueve");
   await page.keyboard.press("Escape");
   // Abrir la ayuda no arrancó una partida.
   await expect(page).toHaveURL(/\/jugar$/);

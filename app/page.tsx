@@ -109,6 +109,9 @@ export default async function Home({
           <Link href="/hinchas" className={buttonVariants({ variant: "outline", size: "lg" })}>
             Ranking de hinchas
           </Link>
+          <Link href="/ranking" className={buttonVariants({ variant: "outline", size: "lg" })}>
+            Ranking de jugadores
+          </Link>
           <Link href="/perfil" className={buttonVariants({ variant: "outline", size: "lg" })}>
             {isGuest ? "Perfil" : "Mi perfil"}
           </Link>

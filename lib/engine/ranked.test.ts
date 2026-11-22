@@ -15,6 +15,8 @@ import {
   DIVISIONS,
   K,
   MIN_DELTA,
+  ladder,
+  EVEN_SWING,
 } from "./ranked";
 import { makeRng } from "./rng";
 
@@ -149,5 +151,37 @@ describe("ranked: temporadas, cola y preguntas", () => {
     expect(rankedDifficulty(1500, 9)).toBe("medium");
     expect(rankedDifficulty(1700, 2)).toBe("medium");
     expect(rankedDifficulty(1950, 12)).toBe("very_hard");
+  });
+});
+
+describe("ranked: escalera de divisiones (feedback 4 #7)", () => {
+  it("medio de Ascenso: anterior Barrio, siguiente Primera, sin zonas", () => {
+    const l = ladder(1520, 0);
+    expect(l.prev?.id).toBe("barrio");
+    expect(l.next?.id).toBe("primera");
+    expect(l.aboveFloor).toBe(70);
+    expect(l.promotionZone).toBe(false);
+    expect(l.relegationZone).toBe(false);
+  });
+
+  it("a menos de una victoria pareja de subir → zona de ascenso", () => {
+    expect(ladder(1600 - EVEN_SWING, 0).promotionZone).toBe(true);
+    expect(ladder(1600 - EVEN_SWING - 1, 0).promotionZone).toBe(false);
+  });
+
+  it("cerca del piso sin escudo → zona de descenso; con escudo, no", () => {
+    expect(ladder(1450 + EVEN_SWING - 1, 0).relegationZone).toBe(true);
+    expect(ladder(1450 + EVEN_SWING - 1, 2).relegationZone).toBe(false);
+    expect(ladder(1450 + EVEN_SWING, 0).relegationZone).toBe(false);
+  });
+
+  it("Potrero no desciende y Leyenda no asciende", () => {
+    const low = ladder(900, 0);
+    expect(low.prev).toBeNull();
+    expect(low.aboveFloor).toBeNull();
+    expect(low.relegationZone).toBe(false);
+    const top = ladder(2100, 0);
+    expect(top.next).toBeNull();
+    expect(top.promotionZone).toBe(false);
   });
 });

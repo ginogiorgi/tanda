@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useNav } from "@/lib/nav/useNav";
 import { browserClient } from "@/lib/supabase/lazy";
 import { roomErrorMessage, GENERIC_RETRY_MESSAGE } from "@/lib/errors";
@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { MODE_LIST, PLAY_KINDS, type ModeId } from "@/lib/modes";
 import { HelpSheet, modeHelpSections } from "@/components/ui/HelpSheet";
-import { divisionFor } from "@/lib/engine/ranked";
+import { BASE_RATING, divisionFor } from "@/lib/engine/ranked";
 import type { RankedMe } from "@/lib/ranked/types";
 import { DivisionCrest } from "@/components/ranked/DivisionCrest";
+import { LeagueLadder } from "@/components/ranked/LeagueLadder";
 import { SectionTitle } from "@/components/ui/Typography";
 
 /** Las RPC de matchmaking devuelven `TABLE(room_id, tournament_id, code)`. */
@@ -177,10 +178,16 @@ export function PlayMenu({
   );
 }
 
-/** Tercera cola, solo en Jugar: ranked 1v1 con la división y los puntos del jugador. */
+/**
+ * Tercera cola, solo en Jugar: ranked 1v1. Feedback 4 #7: la tarjeta-botón trae la ficha de liga que antes
+ * vivía en el perfil (división, puntos, posición, escudo) + la escalera hacia la división de abajo y la de
+ * arriba con las zonas de descenso/ascenso. Todo es el botón (entra a la cola); el "?" es su hermano.
+ */
 function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: boolean }) {
   const router = useNav();
-  const div = divisionFor(ranked?.rating ?? 1500);
+  const ladderId = useId();
+  const rating = ranked?.rating ?? BASE_RATING;
+  const div = divisionFor(rating);
   return (
     // Feedback 3 #8: el "?" vive ADENTRO de la card, como en los modos (hermano del botón, no anidado).
     <div className="relative col-span-2 flex">
@@ -188,22 +195,27 @@ function RankedCard({ ranked, disabled }: { ranked: RankedMe | null; disabled: b
         type="button"
         onClick={() => router.push("/ranked")}
         disabled={disabled}
-        className="group flex min-w-0 flex-1 items-center gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 pr-13 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
+        aria-describedby={ladderId}
+        data-testid="ranked-card"
+        className="group flex min-w-0 flex-1 flex-col gap-3 rounded-[4px] border-2 border-ink bg-ink p-3 text-left text-bg shadow-card transition-colors hover:bg-bg-elevated hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press disabled:cursor-not-allowed disabled:opacity-45"
       >
-        <DivisionCrest id={div.id} className="h-12" />
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
-          <span className="text-xs font-medium leading-snug opacity-75">
-            {div.name} · {ranked?.rating ?? 1500} pts · ganás o perdés puntos
+        <span className="flex items-center gap-3 pr-11">
+          <DivisionCrest id={div.id} className="h-12" />
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="font-display text-2xl font-extrabold uppercase leading-[0.9]">Ranked 1v1</span>
+            <span className="text-xs font-medium leading-snug opacity-75">
+              {div.name} · <span className="font-mono font-bold">{rating}</span> pts
+            </span>
           </span>
         </span>
+        <LeagueLadder rating={rating} shield={ranked?.shield ?? 0} position={ranked?.position ?? null} id={ladderId} />
       </button>
       <HelpSheet
         trigger="icon"
         label={`Cómo se juega ${PLAY_KINDS.ranked.name}`}
         title={PLAY_KINDS.ranked.name}
         sections={modeHelpSections(PLAY_KINDS.ranked.help)}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2"
+        className="absolute right-1.5 top-1.5"
       />
     </div>
   );

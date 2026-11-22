@@ -27,8 +27,10 @@ test("registro con favoritos → /hinchas marcado → cambio inmediato", async (
   await register(page, "River Plate", "Uruguay");
 
   await page.goto("/");
-  const buttons = page.locator("main a, main button").filter({ hasText: /^(Cómo jugar|Ranking de hinchas|Mi perfil)$/ });
-  await expect(buttons).toHaveText(["Cómo jugar", "Ranking de hinchas", "Mi perfil"]);
+  const buttons = page.locator("main a, main button").filter({
+    hasText: /^(Cómo jugar|Ranking de hinchas|Ranking de jugadores|Mi perfil)$/,
+  });
+  await expect(buttons).toHaveText(["Cómo jugar", "Ranking de hinchas", "Ranking de jugadores", "Mi perfil"]);
   await page.getByRole("link", { name: "Ranking de hinchas" }).click();
   await expect(page).toHaveURL(/\/hinchas$/);
   await assertLayout(page);

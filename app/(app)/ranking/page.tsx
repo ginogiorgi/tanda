@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Typography";
 import { Page } from "@/components/ui/Page";
 
-export const metadata: Metadata = { title: "Tabla ranked", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Ranking de jugadores", robots: { index: false, follow: false } };
 
 function Row({ r }: { r: RankingRow }) {
   return (

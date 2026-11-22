@@ -50,7 +50,7 @@ async function answerLoop(page: Page, pick: Pick, done: RegExp, timeoutMs: numbe
   let answered = 0;
   while (Date.now() < deadline) {
     if (await page.getByText(done).first().isVisible()) return answered;
-    const options = page.locator("button[aria-pressed]:enabled");
+    const options = page.locator("button[data-option]:enabled");
     if ((await options.count()) > 0) {
       await (await pick(page, options)).click({ timeout: 2_000 }).then(
         () => answered++,
@@ -91,7 +91,7 @@ export async function answerCorrectUntil(
   await db.connect();
   const correct = new Map<string, string>(); // prompt → texto de la correcta
   const pickCorrect: Pick = async (p, options) => {
-    const prompt = (await p.locator("button[aria-pressed] >> xpath=../preceding-sibling::p[1]").first().textContent())?.trim() ?? "";
+    const prompt = (await p.locator("button[data-option] >> xpath=../preceding-sibling::p[1]").first().textContent())?.trim() ?? "";
     if (!correct.has(prompt)) {
       const { rows } = await db.query<{ answer: string }>(
         "select options ->> correct_index as answer from public.questions where prompt = $1",

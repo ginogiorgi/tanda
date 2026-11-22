@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/Button";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useNav } from "@/lib/nav/useNav";
 import {
@@ -137,24 +136,6 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username, fav
     }
   }
 
-  // Compartir sala (8.9): Web Share API nativa; fallback a copiar el código.
-  async function onShare() {
-    const url = `${window.location.origin}/sala/${code}`;
-    if (typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: "TANDA",
-          text: `Sumate a mi partida de TANDA. Código ${code}`,
-          url,
-        });
-        return;
-      } catch {
-        // El usuario canceló el diálogo o no se pudo: caemos a copiar.
-      }
-    }
-    void onCopy();
-  }
-
   return (
     <>
     <ScreenHeader
@@ -166,14 +147,16 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username, fav
     <div className="flex w-full max-w-md flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
         <button
+          type="button"
           onClick={onCopy}
           className="font-mono text-5xl font-extrabold tracking-[0.2em] text-brand transition-opacity hover:opacity-80"
           title="Copiar código"
+          aria-label={`Código de sala ${code}. Copiar`}
         >
           {code}
         </button>
         <span className="text-xs text-fg-subtle">
-          {copied ? "¡Código copiado!" : "Tocá el código para copiarlo y compartilo"}
+          {copied ? "¡Código copiado!" : "Tocá el código para copiarlo"}
         </span>
       </div>
 
@@ -216,10 +199,6 @@ export function Lobby({ code, modeId, startsAt, serverNow, userId, username, fav
           )}
         </ul>
       </div>
-
-      <Button onClick={onShare} size="lg" block>
-        Compartir
-      </Button>
     </div>
     </Page>
     </>

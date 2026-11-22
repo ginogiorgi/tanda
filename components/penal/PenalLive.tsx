@@ -210,6 +210,13 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
           // 10.12: penales por lado según fase del match (grupos 3 / eliminación 5) para "Penal N de M".
           setKicksPerSide(am.phase === "group" ? 3 : 5);
           if (am.penal) {
+            // Punto 20: si el server ya va por OTRO penal, el resultado viejo no puede seguir tapando la
+            // pantalla (el render mira `result` antes que `penal`) → se descarta y se arranca la fase nueva.
+            if (resultRef.current && resultRef.current.penalty_id !== am.penal.penalty_id) {
+              resultRef.current = null;
+              setResult(null);
+              setFrozenRemaining(null);
+            }
             setPenal(am.penal);
             // 10.11: si ya había respondido (reconexión), retomo la selección y la dejo fija.
             const mine = am.penal.my_option ?? null;
@@ -423,26 +430,6 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     return <p className="grid h-full place-items-center text-sm text-fg-subtle">Esperando el penal…</p>;
   }
 
-  // Escena 3D detrás de la tarjeta: cancha/arco/pelota + avatares pateador/arquero (§8.2). Durante
-  // el penal va atenuada/desenfocada; al resolver se juega la animación según el `reason` (8.4/4.9)
-  // con la escena casi sin atenuar. `null` si el partido no tiene datos de escena (p. ej. dev harness
-  // sin nación) → degrada a solo la tarjeta.
-  const sceneRoles = resolveSceneRoles(penal, scene);
-  const sceneBg = (soft: boolean, anim: PenalAnimation | null = null) =>
-    sceneRoles ? (
-      <div className="absolute inset-0 z-0">
-        <PenalSceneViewer
-          kicker={sceneRoles.kicker}
-          keeper={sceneRoles.keeper}
-          result={anim}
-          className="h-full w-full"
-        />
-        <div
-          className={`pointer-events-none absolute inset-0 ${soft ? "bg-bg/10" : "bg-bg/45"}`}
-        />
-      </div>
-    ) : null;
-
   // Mi rol en este penal (pateo/atajo), para el HUD, el audio por perspectiva (10.8) y el motivo
   // del resultado (10.7). `null` si no juego este penal (no debería pasar con datos de escena).
   const myId = scene?.my_participant_id ?? null;
@@ -461,10 +448,39 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     return null;
   };
 
-  // Resuelto, jugada en curso: solo la escena (nada que delate el resultado hasta que la pelota se quede
-  // quieta). Reduced motion: la escena ya muestra el cuadro final; el cartel llega igual a REVEAL_MS.
-  if (result && revealedId !== result.penalty_id) {
-    return <div data-testid="penal-playing" className="contents">{sceneBg(true, anim)}</div>;
+  // Fase visual. Feedback 4 #12/#14: las fases NO devuelven árboles distintos (fragment ↔ div) — eso
+  // remontaba el Canvas (pantallazo + la jugada arrancaba de nuevo al aparecer el cartel). La escena vive
+  // siempre en la misma posición (primer hijo) y lo que cambia por fase es el overlay hermano.
+  //  - question: tarjeta de la pregunta, escena atenuada.
+  //  - playing: resuelto, jugada en curso: solo la escena (nada que delate el resultado hasta que la
+  //    pelota se quede quieta). Reduced motion: la escena ya muestra el cuadro final.
+  //  - result: GOL/ATAJADO + la correcta (§8.11), hasta que abra el próximo penal.
+  const phase: "question" | "playing" | "result" = !result
+    ? "question"
+    : revealedId !== result.penalty_id
+      ? "playing"
+      : "result";
+  const sceneRoles = resolveSceneRoles(penal, scene);
+  const sceneLayer = sceneRoles ? (
+    <div className="absolute inset-0 z-0">
+      <PenalSceneViewer kicker={sceneRoles.kicker} keeper={sceneRoles.keeper} result={anim} className="h-full w-full" />
+      <div
+        className={`pointer-events-none absolute inset-0 transition-colors duration-300 ${
+          phase === "question" ? "bg-bg/45" : "bg-bg/10"
+        }`}
+      />
+    </div>
+  ) : null;
+  const muteBalloon = <MuteBalloon muted={muted} onToggle={toggleMute} />;
+
+  if (phase === "playing") {
+    return (
+      <>
+        {sceneLayer}
+        <span data-testid="penal-playing" hidden />
+        {muteBalloon}
+      </>
+    );
   }
 
   // Resuelto y revelado: GOL/ATAJADO + la correcta (§8.11), hasta que abra el próximo penal.
@@ -487,10 +503,10 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
         : null;
     return (
       <>
-        {sceneBg(true, anim)}
+        {sceneLayer}
         {/* El globo de resultado va ANCLADO ARRIBA del stage (encima del arco), no centrado: si no,
-            tapaba la animación de la pateada. */}
-        <div data-testid="penal-result-card" className="fade-in absolute left-1/2 top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
+            tapaba la animación de la pateada. En mobile arranca debajo del globo de sonido. */}
+        <div data-testid="penal-result-card" className="fade-in absolute left-1/2 top-16 md:top-[8%] z-10 flex w-full max-w-md -translate-x-1/2 flex-col items-center px-6 text-center">
           <div className="flex w-full flex-col items-center gap-3 rounded-[6px] border-2 border-ink bg-bg-elevated px-5 py-5 shadow-pop">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
               Penal {result.idx} · {result.home_score}–{result.away_score}
@@ -521,6 +537,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
             </p>
           </div>
         </div>
+        {muteBalloon}
       </>
     );
   }
@@ -540,12 +557,12 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
 
   return (
     <>
-      {sceneBg(false)}
+      {sceneLayer}
       {/* La tarjeta del penal activo va ANCLADA ARRIBA del stage (encima del arco), mismo criterio que
           el globo. El ancla ocupa el alto del stage (para que `max-h-full` tenga referencia) pero no
           recibe toques: solo la tarjeta. Si no entra (360×640), scrollea SOLO la tarjeta. */}
       <div
-        className="fade-in pointer-events-none absolute inset-x-0 bottom-[4%] top-[4%] z-10 mx-auto flex w-full max-w-md flex-col px-4"
+        className="fade-in pointer-events-none absolute inset-x-0 bottom-[4%] top-16 md:top-[4%] z-10 mx-auto flex w-full max-w-md flex-col px-4"
       >
       {/* Hoja del programa: papel con borde de tinta sobre la escena (se lee siempre, sin blur). */}
       <div
@@ -565,25 +582,13 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
         kicksPerSide={kicksPerSide}
         flip={myId != null && myId === scene?.away?.participant_id}
       />
-      <div className="flex items-center justify-between text-sm">
-        <span
-          className={`text-xs font-bold uppercase tracking-[0.18em] ${
-            isSecondChance ? "text-accent-orange" : "text-brand-ink"
-          }`}
-        >
-          {isSecondChance ? "2ª chance" : `Penal Nº ${penal.idx} · Elegí`}
-        </span>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-            className="text-fg-subtle transition-colors hover:text-fg-muted"
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
-          <span className="font-display text-4xl font-black leading-none tabular-nums text-fg">{seconds}</span>
-        </div>
+      {/* Feedback 4 #13: sin "Penal Nº N · Elegí" (el HUD ya dice qué penal es); queda el aviso de 2ª chance.
+          Feedback 4 #15: el sonido es un globo arriba a la derecha (MuteBalloon), no va en esta fila. */}
+      <div className="flex items-center justify-between">
+        {isSecondChance && (
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-accent-orange">2ª chance</span>
+        )}
+        <span className="ml-auto font-display text-4xl font-black leading-none tabular-nums text-fg">{seconds}</span>
       </div>
       <TimeBar fraction={displayRemaining / totalMs} />
 
@@ -624,6 +629,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
               onClick={() => onSelect(i)}
               disabled={disabled}
               aria-pressed={isSelected}
+              data-option={i}
               className={`flex items-center rounded-[4px] border-2 border-ink px-4 py-3 text-left font-semibold transition-[background-color,color,transform,box-shadow] duration-100 disabled:cursor-not-allowed ${
                 isSelected
                   ? "translate-x-[2px] translate-y-[2px] bg-ink text-bg shadow-press"
@@ -671,6 +677,33 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
       )}
       </div>
       </div>
+      {muteBalloon}
     </>
+  );
+}
+
+/**
+ * Globo de sonido (feedback 4 #15): redondo, arriba a la derecha del stage, en todas las fases del
+ * partido. `absolute` dentro del `GameStage` (nada `fixed`).
+ */
+function MuteBalloon({ muted, onToggle }: { muted: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={muted ? "Activar sonido" : "Silenciar"}
+      aria-pressed={muted}
+      data-testid="mute-balloon"
+      className="absolute right-3 top-3 z-20 grid size-11 place-items-center rounded-full border-2 border-ink bg-bg-elevated text-fg shadow-card transition-colors hover:bg-bg-overlay focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue motion-safe:active:translate-x-[2px] motion-safe:active:translate-y-[2px] active:shadow-press"
+    >
+      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" />
+        {muted ? (
+          <path d="M16 9.5l5 5M21 9.5l-5 5" />
+        ) : (
+          <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+        )}
+      </svg>
+    </button>
   );
 }

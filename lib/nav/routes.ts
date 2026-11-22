@@ -32,7 +32,7 @@ export const ROUTES: readonly RouteDef[] = [
   { pattern: "/jugar", title: "Jugar", parent: "/", group: "app" },
   { pattern: "/perfil", title: "Perfil", parent: "/", group: "app" },
   { pattern: "/perfil/historial", title: "Historial", parent: "/perfil", group: "app" },
-  { pattern: "/ranking", title: "Tabla", parent: "/perfil", group: "app" },
+  { pattern: "/ranking", title: "Ranking de jugadores", parent: "/", group: "app" },
   { pattern: "/avatar", title: "Tu jugador", parent: "/perfil", group: "app" },
   { pattern: "/hinchas", title: "Ranking de hinchas", parent: "/", group: "app" },
   { pattern: "/sala/[code]", title: "Sala", parent: "/jugar", group: "game" },

@@ -22,8 +22,6 @@ export interface ModeHelp {
   players: string;
   /** Cómo se gana. */
   win: string;
-  /** Qué mueve en la liga (solo Ranked: los torneos no suman y no se aclara, feedback 3 #9). */
-  ranked?: string;
 }
 
 export interface ModeMeta {
@@ -53,7 +51,7 @@ export const MODE_LIST: readonly ModeMeta[] = [
   {
     id: "worldcup",
     name: "Mundial",
-    tagline: "48 selecciones · 12 grupos · 16avos",
+    tagline: "48 selecciones · 12 grupos",
     zoneNoun: "Grupo",
     zonesLabel: "Grupos",
     teamNoun: "selección",
@@ -69,7 +67,7 @@ export const MODE_LIST: readonly ModeMeta[] = [
   {
     id: "arg",
     name: "Fútbol argentino",
-    tagline: "30 clubes · 2 zonas · octavos",
+    tagline: "30 clubes · 2 zonas",
     zoneNoun: "Zona",
     zonesLabel: "Zonas",
     teamNoun: "club",
@@ -100,7 +98,6 @@ export const PLAY_KINDS: Record<PlayKindId, PlayKind> = {
       format: `Un mano a mano: una tanda de ${KO_KICKS} penales por lado y, si empatan, muerte súbita.`,
       players: "Contra otra persona de nivel parecido (nunca un bot).",
       win: "Ganar suma puntos de liga y perder resta; cuánto, depende del nivel del rival. Con los puntos subís o bajás de división.",
-      ranked: "Es lo único que mueve tu ranking.",
     },
   },
 };

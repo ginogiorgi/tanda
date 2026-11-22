@@ -46,19 +46,21 @@ test("app: layout de documento en 4 viewports; perfil y tabla vuelven al padre, 
   }
   await page.setViewportSize(mobile);
 
+  // Feedback 4 #8: el Ranking de jugadores cuelga de la home (antes, del perfil).
   await page.goto("/ranking");
   const back = page.locator("[data-nav=back]");
   await expect(back).toBeVisible();
 
-  const toPerfil = await timedNav(page, () => back.click(), /\/perfil$/, async () => {
-    await expect(page.getByRole("heading", { level: 1, name: "Perfil" })).toBeVisible();
+  const toHomeFromRanking = await timedNav(page, () => back.click(), /\/$/, async () => {
+    await expect(homePlay(page)).toBeVisible();
   });
+  await page.goto("/perfil");
   const toHome = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/$/, async () => {
     await expect(homePlay(page)).toBeVisible();
   });
-  console.log(`[nav] tabla→perfil ${toPerfil} ms · perfil→inicio ${toHome} ms`);
+  console.log(`[nav] ranking→inicio ${toHomeFromRanking} ms · perfil→inicio ${toHome} ms`);
   // El header (layout) y el loading pintan al toque; el presupuesto fino lo mide la medición de prod.
-  expect(toPerfil).toBeLessThan(1500);
+  expect(toHomeFromRanking).toBeLessThan(1500);
   expect(toHome).toBeLessThan(1500);
 });
 
@@ -71,6 +73,8 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   await page.getByRole("button", { name: "Crear sala" }).click();
   await page.getByRole("group", { name: /crear sala/i }).getByRole("button", { name: /^mundial/i }).click();
   await expect(page).toHaveURL(/\/sala\/[A-Z0-9]{6}$/, { timeout: 20_000 });
+  // Feedback 4 #9: la sala no tiene "Compartir" (se comparte el código, que se copia al tocarlo).
+  await expect(page.getByRole("button", { name: "Compartir" })).toHaveCount(0);
   const mobile = page.viewportSize()!;
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
@@ -81,6 +85,8 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   await glb; // precarga 3D arrancó en la sala, antes de cualquier penal
   const salir = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
     await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
+    // Feedback 4 #7: la ficha de liga vive en la tarjeta de Ranked (antes en el perfil).
+    await expect(page.getByTestId("ranked-card").getByRole("img", { name: /^División / }).first()).toBeVisible();
   });
 
   // Cola ranked: sin "Tabla", Cancelar en el header, layout único.
@@ -91,13 +97,15 @@ test("juego: sala y cola ranked con el layout único (footer abajo del pliegue),
   await assertLayout(page);
   const cancelar = await timedNav(page, () => page.locator("[data-nav=back]").click(), /\/jugar$/, async () => {
     await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
+    // Feedback 4 #7: la ficha de liga vive en la tarjeta de Ranked (antes en el perfil).
+    await expect(page.getByTestId("ranked-card").getByRole("img", { name: /^División / }).first()).toBeVisible();
   });
   console.log(`[nav] salir de sala ${salir} ms · cancelar cola ${cancelar} ms`);
   expect(salir).toBeLessThan(1500);
   expect(cancelar).toBeLessThan(1500);
 });
 
-test("información: home con una sola acción, Jugar con los caminos, perfil con posición y tabla", async ({ page }) => {
+test("información: home con una sola acción, Jugar con los caminos y la liga, ranking de jugadores en el menú", async ({ page }) => {
   await enterAsGuest(page);
 
   await test.step("home: sin volanta, sin sello, sin código ni Tabla; JUGAR es la única principal", async () => {
@@ -113,6 +121,8 @@ test("información: home con una sola acción, Jugar con los caminos, perfil con
     const quick = page.getByRole("group", { name: /elegí el modo para jugar/i });
     await expect(quick.getByRole("button", { name: /^mundial/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /^(?!cómo).*ranked 1v1/i })).toBeVisible();
+    // Feedback 4 #7: la ficha de liga vive en la tarjeta de Ranked (antes en el perfil).
+    await expect(page.getByTestId("ranked-card").getByRole("img", { name: /^División / }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Crear sala" })).toBeVisible();
     await expect(page.getByPlaceholder("CÓDIGO")).toBeVisible();
     expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
@@ -120,13 +130,17 @@ test("información: home con una sola acción, Jugar con los caminos, perfil con
     await expect(homePlay(page)).toBeVisible();
   });
 
-  await test.step("perfil: posición en la liga + Ver tabla (la tabla cuelga del perfil)", async () => {
+  await test.step("perfil sin ficha de liga; Ranking de jugadores desde la home (feedback 4 #6/#8)", async () => {
     await page.getByRole("link", { name: "Perfil", exact: true }).click();
     await expect(page).toHaveURL(/\/perfil$/);
-    await expect(page.getByTestId("ranked-position")).toBeVisible();
+    await expect(page.getByTestId("ranked-position")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Ver tabla" })).toHaveCount(0);
     expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
-    await page.getByRole("link", { name: "Ver tabla" }).click();
+    await page.locator("[data-nav=back]").click();
+    await page.getByRole("link", { name: "Ranking de jugadores" }).click();
     await expect(page).toHaveURL(/\/ranking$/);
     expect((await visiblePrimaries(page)).length).toBeLessThanOrEqual(1);
+    await page.locator("[data-nav=back]").click();
+    await expect(page).toHaveURL(/\/$/);
   });
 });

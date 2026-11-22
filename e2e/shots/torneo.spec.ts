@@ -18,7 +18,7 @@ for (const mode of MODES) {
     await openPlay(page);
     await page.getByRole("group", { name: /elegí el modo para jugar/i }).getByRole("button", { name: BUTTON[mode]! }).click();
     await expect(page).toHaveURL(/\/partido$/, { timeout: 120_000 });
-    await expect(page.getByText(/Fase de (zonas|grupos)/i)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("zones-grid")).toBeVisible({ timeout: 30_000 });
     await shot(page, `torneo-${mode}-zonas`);
     await shot(page, `torneo-${mode}-zonas-full`, { fullPage: true });
   });

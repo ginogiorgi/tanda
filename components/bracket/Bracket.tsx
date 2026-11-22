@@ -55,17 +55,27 @@ function TeamChip({
   );
 }
 
-function GroupTable({ group, compact, mode }: { group: GroupView; compact?: boolean; mode: ModeMeta }) {
+function GroupTable({
+  group,
+  mine = false,
+  mode,
+}: {
+  group: GroupView;
+  /** La zona/grupo del jugador: borde de marca (feedback 4 #19: se nombra "Zona A", no "Tu zona"). */
+  mine?: boolean;
+  mode: ModeMeta;
+}) {
   // Zonas largas (AR: 15) → filas más densas para que la tabla entre en mobile sin scrollear tanto.
   const long = group.rows.length > 6;
   const cutoff = mode.format.qualifiersPerZone;
   return (
-    <div className="rounded-[6px] border-2 border-ink bg-bg-elevated p-3">
+    <div className={`rounded-[6px] border-2 bg-bg-elevated p-3 ${mine ? "border-brand shadow-card" : "border-ink"}`}>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
+        <span className={`text-xs font-semibold uppercase tracking-wider ${mine ? "text-brand-ink" : "text-fg-muted"}`}>
           {mode.zoneNoun} {group.letter}
+          {mine && <span className="sr-only"> (la tuya)</span>}
         </span>
-        {!compact && <span className="text-xs text-fg-subtle">Pts</span>}
+        <span className="text-xs text-fg-subtle">Pts</span>
       </div>
       <ul className={`flex flex-col ${long ? "gap-0.5" : "gap-1.5"}`}>
         {group.rows.map((row) => (
@@ -86,11 +96,9 @@ function GroupTable({ group, compact, mode }: { group: GroupView; compact?: bool
               <TeamChip brief={row.team} isMe={row.isMe} dim={row.outcome === "out"} />
             </span>
             <span className="flex items-center gap-2 font-mono text-xs tabular-nums text-fg-muted">
-              {!compact && (
-                <span className="text-fg-subtle">
-                  {row.standing.won}-{row.standing.drawn}-{row.standing.lost}
-                </span>
-              )}
+              <span className="text-fg-subtle">
+                {row.standing.won}-{row.standing.drawn}-{row.standing.lost}
+              </span>
               <span className="font-bold text-fg">{row.standing.points}</span>
             </span>
           </li>
@@ -105,8 +113,8 @@ function VersusCard({ match, mode }: { match: ScoreLivePayload; mode: ModeMeta }
   const live = match.status === "in_progress" || match.status === "sudden_death";
   return (
     <div
-      className={`w-full rounded-[6px] border bg-bg-elevated/70 p-5 text-center shadow-card backdrop-blur-md ${
-        live ? "border-danger/50" : "border-brand/40"
+      className={`w-full rounded-[6px] border-2 bg-bg-elevated p-5 text-center shadow-card ${
+        live ? "border-danger" : "border-ink"
       }`}
     >
       <span
@@ -333,69 +341,50 @@ export function Bracket({ view }: { view: BracketView }) {
     );
   }
 
-  // ── Fase de grupos (y arranque del torneo): tu grupo destacado + todas las tablas. ──
-  const myGroup = view.groups.find((g) => g.letter === view.myGroupLetter);
-  const otherGroups = view.groups.filter((g) => g.letter !== view.myGroupLetter);
-  // Feedback 3 #3 — dos zonas (Argentino): tu próximo partido arriba y las DOS tablas lado a lado, mismo
-  // componente y tamaño (antes la otra iba `compact` en una columna estirada y se veían distintas).
-  if (view.groups.length === 2) {
-    return (
-      <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">
-        <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
-          Fase de {view.mode.zonesLabel.toLowerCase()}
-        </span>
-        {view.myNextMatch && (
-          <div className="w-full max-w-md">
-            <VersusCard match={view.myNextMatch} mode={view.mode} />
-          </div>
-        )}
-        <div data-testid="zones-side-by-side" className="grid w-full max-w-md grid-cols-1 items-start gap-5 lg:max-w-4xl lg:grid-cols-2">
-          {view.groups.map((g) => {
-            const mine = g.letter === view.myGroupLetter;
-            return (
-              <div key={g.letter} data-zone={g.letter} data-mine={mine || undefined} className="w-full">
-                <span className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${mine ? "text-brand-ink" : "text-fg-muted"}`}>
-                  {mine ? `Tu ${view.mode.zoneNoun.toLowerCase()}` : `La otra ${view.mode.zoneNoun.toLowerCase()}`}
-                </span>
-                <GroupTable group={g} mode={view.mode} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop (P4): tu partido y tu grupo a la izquierda; el resto en grilla de 2–3 columnas a la derecha.
+  // ── Fase de grupos/zonas (y arranque del torneo). Feedback 4 #17–19: TODAS las tablas iguales (mismo
+  // componente completo, sin versión compacta), en orden alfabético y nombradas por su letra ("Zona A",
+  // "Grupo C"); la del jugador se distingue por el borde de marca, no por moverla de lugar. Arriba, tu
+  // próximo partido; con muchos grupos (Mundial), un atajo a la tuya. Sin rótulos de fase (#18).
+  const groups = [...view.groups].sort((x, y) => x.letter.localeCompare(y.letter));
+  const two = groups.length === 2;
+  const myLetter = view.myGroupLetter;
   return (
     <div className="fade-in relative z-10 flex w-full flex-col items-center gap-5">
-      <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-ink">
-        Fase de {view.mode.zonesLabel.toLowerCase()}
-      </span>
-      <div className="flex w-full max-w-md flex-col gap-5 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <div className="flex w-full flex-col gap-5">
-          {view.myNextMatch && <VersusCard match={view.myNextMatch} mode={view.mode} />}
-          {myGroup && (
-            <div className="w-full">
-              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand">
-                Tu {view.mode.zoneNoun.toLowerCase()}
-              </span>
-              <GroupTable group={myGroup} mode={view.mode} />
-            </div>
-          )}
+      {view.myNextMatch && (
+        <div className="w-full max-w-md">
+          <VersusCard match={view.myNextMatch} mode={view.mode} />
         </div>
-        {otherGroups.length > 0 && (
-          <div className="flex w-full flex-col gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-fg-muted">
-              {otherGroups.length === 1 ? `La otra ${view.mode.zoneNoun.toLowerCase()}` : `Otros ${view.mode.zonesLabel.toLowerCase()}`}
-            </span>
-            <div className={`grid gap-2 ${otherGroups.length === 1 ? "grid-cols-1" : "grid-cols-2 xl:grid-cols-3"}`}>
-              {otherGroups.map((g) => (
-                <GroupTable key={g.letter} group={g} compact mode={view.mode} />
-              ))}
+      )}
+      {!two && myLetter && (
+        <a
+          href={`#zona-${myLetter}`}
+          className="text-xs font-bold uppercase tracking-[0.14em] text-brand-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          Ir a mi {view.mode.zoneNoun.toLowerCase()} ({myLetter})
+        </a>
+      )}
+      <div
+        data-testid="zones-grid"
+        className={
+          two
+            ? "grid w-full max-w-md grid-cols-1 items-start gap-5 lg:max-w-4xl lg:grid-cols-2"
+            : "grid w-full grid-cols-1 items-start gap-4 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        }
+      >
+        {groups.map((g) => {
+          const mine = g.letter === myLetter;
+          return (
+            <div
+              key={g.letter}
+              id={`zona-${g.letter}`}
+              data-zone={g.letter}
+              data-mine={mine || undefined}
+              className="w-full scroll-mt-4"
+            >
+              <GroupTable group={g} mine={mine} mode={view.mode} />
             </div>
-          </div>
-        )}
+          );
+        })}
       </div>
     </div>
   );
