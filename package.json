@@ -37,7 +37,9 @@
     "questions:topics": "tsx scripts/questions/check.ts --report --write-topics",
     "qa:avatar": "tsx scripts/avatar/qa.mts",
     "qa:celebrations": "tsx scripts/avatar/celebrations-qa.mts",
-    "qa:ranked-sim": "tsx scripts/qa/ranked-sim.mts"
+    "qa:ranked-sim": "tsx scripts/qa/ranked-sim.mts",
+    "db:backup": "tsx scripts/db/backup.mts",
+    "qa:ranked-shots": "tsx scripts/qa/ranked-shots.mts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

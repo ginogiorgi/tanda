@@ -47,18 +47,23 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
 - **SPEC.md reescrito (22/11)** al estado actual (modos, ranked, TIMING, carrera de ronda, cliente del penal,
   telemetría, cron). **G (22/11):** `pnpm qa:ranked-sim` en prod: 166 partidos, **0 fallas**, 4 divisiones
   (Potrero, Barrio, Primera, Libertadores). Reporte en `artifacts/qa/ranked-sim.md` (gitignored). Cuentas `qa_*` quedan.
-- **Plan Feedback 4: TERMINADO (23/11).** Capturas de G con `pnpm tsx scripts/qa/ranked-shots.mts [Perfil]`
+- **Plan Feedback 4: TERMINADO (22/11).** Capturas de G con `pnpm qa:ranked-shots [Perfil]`
   (`artifacts/qa/ranked-{ranking,jugar}-{mobile,desktop}.png`, prod logueado como `qa_*`). Gino pausó Tanda por otro
-  proyecto: no arrancar nada sin su OK. Hallazgos de las capturas (23/11): botón "JUGAR RANKED" de `/ranking`
+  proyecto: no arrancar nada sin su OK. Hallazgos de las capturas (22/11): botón "JUGAR RANKED" de `/ranking`
   partido en 2 líneas → `shrink-0 whitespace-nowrap`; footer tapado por el botón flotante en mobile → `pb` extra
   debajo de `sm`. La barra de la tarjeta ranked (división de abajo → de arriba) es el diseño de #7, no un bug.
-## Plan 5 — Operación gratis, carga, analytics, tipos y limpieza (23/11, en curso)
-Decisiones de Gino (23/11): solo pagaría Supabase Pro cuando haya gente; ranked con poca gente y calidad de
+## Plan 5 — Operación gratis, carga, analytics, tipos y limpieza (22/11, en curso)
+Decisiones de Gino (22/11): solo pagaría Supabase Pro cuando haya gente; ranked con poca gente y calidad de
 experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orden:
 - **O — Operación gratis:** (O1) keepalive diario para que Supabase free no pause el proyecto (cron de Vercel →
   ruta que hace una lectura real a la DB); (O2) backup semanal propio (`pnpm db:backup` → dump + md5 a
   `/mnt/hestia/Backup/tanda-db`, timer de systemd en cronos); (O3) Realtime lleno (200 conexiones del free): el canal
   que no puede suscribirse avisa claro en vez de quedar mudo.
+  **O hecho (22/11):** O1 `app/api/cron/keepalive` + cron diario en `vercel.json` (sin `CRON_SECRET`: el modo auto
+  no me deja crear envs en Vercel; la ruta solo lee, es opcional). O2 `pnpm db:backup` (`scripts/db/backup.mts`:
+  tablas por PostgREST + `auth.users`, gz + md5, rota los últimos 8 `*-auto`) en `/mnt/hera/Backups/tanda-db` (no
+  tengo acceso a hestia); timer `systemctl --user tanda-backup.timer`, domingos 11:00. O3 ya cubierto por la Fase F
+  (poll del padre + watchdog sin Realtime; e2e `chaos`): sin código nuevo.
 - **W — Vercel Web Analytics** (Hobby, gratis): `@vercel/analytics`, sin PII, dentro del presupuesto de JS.
 - **L — Prueba de carga:** `scripts/qa/load-sim.mts`, N invitados `qa_load_*` (persistentes, `qa_keep`) en UNA sala
   de prod jugando un torneo entero por API + Realtime; mide huecos entre penales, latencia de RPC (p50/p95), pokes

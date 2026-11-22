@@ -1,7 +1,7 @@
 /**
  * Capturas de la fase G: `/ranking` y la tarjeta ranked de `/jugar`, logueado como una cuenta `qa_*` de
  * `pnpm qa:ranked-sim` (refresh token en artifacts/qa/ranked-sim.sessions.json; se reescribe rotado).
- * Uso: pnpm tsx scripts/qa/ranked-shots.mts [Perfil] → artifacts/qa/ranked-*.png (mobile y desktop).
+ * Uso: pnpm qa:ranked-shots [Perfil] → artifacts/qa/ranked-*.png (mobile y desktop).
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
