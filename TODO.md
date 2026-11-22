@@ -52,6 +52,24 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   proyecto: no arrancar nada sin su OK. Hallazgos de las capturas (23/11): botón "JUGAR RANKED" de `/ranking`
   partido en 2 líneas → `shrink-0 whitespace-nowrap`; footer tapado por el botón flotante en mobile → `pb` extra
   debajo de `sm`. La barra de la tarjeta ranked (división de abajo → de arriba) es el diseño de #7, no un bug.
+## Plan 5 — Operación gratis, carga, analytics, tipos y limpieza (23/11, en curso)
+Decisiones de Gino (23/11): solo pagaría Supabase Pro cuando haya gente; ranked con poca gente y calidad de
+experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orden:
+- **O — Operación gratis:** (O1) keepalive diario para que Supabase free no pause el proyecto (cron de Vercel →
+  ruta que hace una lectura real a la DB); (O2) backup semanal propio (`pnpm db:backup` → dump + md5 a
+  `/mnt/hestia/Backup/tanda-db`, timer de systemd en cronos); (O3) Realtime lleno (200 conexiones del free): el canal
+  que no puede suscribirse avisa claro en vez de quedar mudo.
+- **W — Vercel Web Analytics** (Hobby, gratis): `@vercel/analytics`, sin PII, dentro del presupuesto de JS.
+- **L — Prueba de carga:** `scripts/qa/load-sim.mts`, N invitados `qa_load_*` (persistentes, `qa_keep`) en UNA sala
+  de prod jugando un torneo entero por API + Realtime; mide huecos entre penales, latencia de RPC (p50/p95), pokes
+  no-op y trabas; reporte en `artifacts/qa/load-sim.md`. Cualquier hallazgo → arreglo con test de DB. Incluye
+  investigar el hueco de 8,35 s del CI.
+- **T — Tipos y drift:** `database.types.ts` generado (`supabase gen types`) + chequeo en CI; huella del esquema
+  (`pnpm db:fingerprint`) para comparar local vs prod y atrapar drift (pg_net, grants).
+- **Z — Limpieza:** revisar TODOS los tests, archivos, funciones y scripts: sacar lo que sobra (código muerto,
+  tests duplicados o triviales, scripts sin uso, páginas dev viejas), simplificar y acelerar la suite. Medir antes
+  y después (archivos, líneas, tiempo de cada suite, KB por ruta).
+
 ## Pendiente de revisión con Gino
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
