@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Instrument_Sans } from "next/font/google";
 import { canonicalSiteUrl } from "@/lib/env";
 import { PitchBackground } from "@/components/ui/PitchBackground";
+import { WEB_ANALYTICS_INIT, WEB_ANALYTICS_SRC, webAnalyticsEnabled } from "@/lib/analytics/web";
 import "./globals.css";
 
 // Rebrand "B · Programa": Instrument Sans para leer (UI, preguntas) y Big Shoulders Display para
@@ -74,6 +75,12 @@ export default function RootLayout({
       <body className="flex min-h-svh flex-col bg-bg text-fg">
         <PitchBackground />
         <div className="flex w-full flex-1 flex-col">{children}</div>
+        {webAnalyticsEnabled() && (
+          <>
+            <script dangerouslySetInnerHTML={{ __html: WEB_ANALYTICS_INIT }} />
+            <script defer src={WEB_ANALYTICS_SRC} />
+          </>
+        )}
       </body>
     </html>
   );

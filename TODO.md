@@ -65,6 +65,9 @@ experiencia (tutorial, reportar pregunta, peso de `/partido`) quedan fuera. Orde
   tengo acceso a hestia); timer `systemctl --user tanda-backup.timer`, domingos 11:00. O3 ya cubierto por la Fase F
   (poll del padre + watchdog sin Realtime; e2e `chaos`): sin código nuevo.
 - **W — Vercel Web Analytics** (Hobby, gratis): `@vercel/analytics`, sin PII, dentro del presupuesto de JS.
+  **W hecho (22/11):** script oficial `defer` + `beforeSend` inline (`lib/analytics/web.ts`, sin query, salas como
+  `/sala/:code`) en el layout raíz, solo en Vercel: 0 KB en el presupuesto (el paquete `@vercel/analytics` sumaba
+  ~1,7 KB/ruta). **Falta que Gino lo active:** Vercel → tanda → Analytics → Enable (no hay API).
 - **L — Prueba de carga:** `scripts/qa/load-sim.mts`, N invitados `qa_load_*` (persistentes, `qa_keep`) en UNA sala
   de prod jugando un torneo entero por API + Realtime; mide huecos entre penales, latencia de RPC (p50/p95), pokes
   no-op y trabas; reporte en `artifacts/qa/load-sim.md`. Cualquier hallazgo → arreglo con test de DB. Incluye
