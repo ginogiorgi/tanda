@@ -26,9 +26,23 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   uno por penal según `penalty_id` (igual en todos los clientes). Rig con tobillos. En el gol la cámara se acerca al
   pateador (`celebrationCamera`): de lejos medía ~30 px. Guards FK con el GLB real + test de cámara; QA con
   `pnpm qa:celebrations`, `/dev/penal?celebration=` y `shots.sh` (`SHOTS_CEL`). Detalle en `docs/celebrations.md`.
-- **Sigue:** F (Sentry + telemetría + pantalla de error + robustez cliente) → G (6 invitados) → SPEC.
+- **F (hecho salvo Sentry):** telemetría propia (`client_events` + `log_client_event` con rate limit, poda 30 d;
+  `fire(req, label)` registra los errores de PostgREST/red con muestreo en `lib/telemetry/client.ts`). Pantalla de
+  error de marca (`components/feedback/ErrorScreen`: `app/error.tsx`, `app/global-error.tsx` y el juego trabado) que
+  reporta sola (`POST /api/feedback` `kind:"auto"` → `submit_auto_report`: una fila por fingerprint, mail ≤ 1 cada
+  24 h); "Avisar" solo agradece. Aviso del watchdog del server: cron `tanda-ops-notify` → pg_net →
+  `/api/ops/notify` (URL en Vault `ops_notify_url`), un mail por tipo+torneo+paso cada 24 h. `PenalLive`: adopta solo
+  fases más nuevas (`isNewerPhase`) desde broadcast/rehidratación/poll del padre (`serverPenal`), resuscribe el
+  canal con backoff ante CHANNEL_ERROR/TIMED_OUT/CLOSED, `setAuth` en TOKEN_REFRESHED y watchdog (hueco + 3 s o
+  deadline + 3 s → rehidrata y pokea; 45 s sin avanzar con el partido vivo → pantalla de error). e2e
+  `e2e/flow/chaos.spec.ts` (apagón de 9 s a mitad del cartel).
+- **Sigue:** Sentry (falta que Gino apruebe la integración, ver abajo) → G (6 invitados) → SPEC.
 
 ## Pendiente de revisión con Gino
+- **Sentry (Fase F):** instalar la integración necesita tu OK (el modo auto me bloqueó `vercel integration add
+  sentry`). Corré `! npx vercel@latest link --yes --project tanda && npx vercel@latest integration add sentry` y
+  aceptá los términos; después cableo `@sentry/nextjs` (tunnel `/monitoring` → sin tocar la CSP, sin PII, user id
+  hasheado) enganchado a `setExternalReporter`. Mientras tanto, la telemetría propia + mails cubren lo mismo.
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
   plano miden 2–3 px). Y en el gol la cámara pasa a primer plano del pateador desde 1,7 s (el arco queda arriba).
 - **OPS (dashboard):** activar "Leaked password protection" en Supabase Auth.

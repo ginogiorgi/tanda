@@ -92,7 +92,7 @@ export function RankedQueue({ me, userId }: { me: RankedMe; userId: string }) {
       active = false;
       clearInterval(poll);
       clearInterval(tick);
-      if (!matchedRef.current) fire(supabase.rpc("ranked_cancel"));
+      if (!matchedRef.current) fire(supabase.rpc("ranked_cancel"), "ranked_cancel");
     };
   }, [supabase, navPush]);
 

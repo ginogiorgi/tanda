@@ -33,7 +33,10 @@ vi.mock("@/lib/nav/useNav", () => ({ useNav: () => ({ push: vi.fn(), leave: vi.f
 type Handler = (msg: { payload: unknown }) => void;
 const handlers = new Map<string, Handler>();
 let onStatus: ((status: string) => void) | null = null;
-let active: { penal: PenalStartPayload | null } = { penal: null };
+let active: { penal: PenalStartPayload | null; gone?: boolean } = { penal: null };
+const rpcCalls: string[] = [];
+let channelsCreated = 0;
+let pendingResult: PenalResultPayload | null = null;
 
 const brief = (id: string): ParticipantBrief => ({
   participant_id: id,
@@ -77,15 +80,27 @@ vi.mock("@/lib/supabase/client", () => ({
       if (name === "get_match_scene") return scene;
       if (name === "get_match_penals") return [];
       if (name === "get_active_match")
-        return { tournament_id: "t", match_id: "m1", phase: "group", home_score: 0, away_score: 0, penal: active.penal };
+        return active.gone
+          ? null
+          : { tournament_id: "t", match_id: "m1", phase: "group", home_score: 0, away_score: 0, penal: active.penal };
+      if (name === "get_penalty_result") return pendingResult;
       return null;
     };
     return {
-      auth: { getSession: async () => ({ data: { session: null } }) },
+      auth: {
+        getSession: async () => ({ data: { session: null } }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => undefined } } }),
+      },
       realtime: { setAuth: async () => undefined },
-      channel: () => channel,
+      channel: () => {
+        channelsCreated++;
+        return channel;
+      },
       removeChannel: async () => undefined,
-      rpc: (name: string) => Promise.resolve({ data: rpcResult(name), error: null }),
+      rpc: (name: string) => {
+        rpcCalls.push(name);
+        return Promise.resolve({ data: rpcResult(name), error: null });
+      },
     };
   },
 }));
@@ -136,6 +151,9 @@ beforeEach(() => {
   mounts.results = [];
   handlers.clear();
   active = { penal: start("pen1", 1) };
+  rpcCalls.length = 0;
+  channelsCreated = 0;
+  pendingResult = null;
 });
 afterEach(() => vi.useRealTimers());
 
@@ -178,5 +196,95 @@ describe("PenalLive: la escena no se remonta entre fases (feedback 4 #12/#14)", 
     });
     await screen.findByText("Pregunta 2");
     expect(screen.queryByTestId("penal-result-card")).toBeNull();
+  });
+});
+
+describe("PenalLive: robustez (feedback 4 F)", () => {
+  it("el penal del poll del padre se adopta si es más nuevo; uno viejo no pisa el cartel", async () => {
+    const { rerender } = render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    act(() => handlers.get("penal:result")!({ payload: result("pen1", 1) }));
+    // Poll que salió antes del resultado: trae el penal 1 todavía abierto → se ignora.
+    rerender(<PenalLive matchId="m1" serverPenal={start("pen1", 1)} />);
+    expect(screen.getByTestId("penal-playing")).toBeInTheDocument();
+    // Se perdió el `penal:start` del 2: lo trae el poll.
+    rerender(<PenalLive matchId="m1" serverPenal={start("pen2", 2)} />);
+    await screen.findByText("Pregunta 2");
+  });
+
+  it("canal caído → se vuelve a suscribir con backoff y rehidrata", async () => {
+    render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    expect(channelsCreated).toBe(1);
+    active = { penal: start("pen2", 2) };
+    await act(async () => {
+      onStatus!("CHANNEL_ERROR");
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1100);
+    });
+    expect(channelsCreated).toBe(2);
+    await screen.findByText("Pregunta 2");
+  });
+
+  it("watchdog: sin penal:start pasado el hueco + 3 s, rehidrata y pokea open_next_round", async () => {
+    render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    act(() => handlers.get("penal:result")!({ payload: result("pen1", 1) }));
+    active = { penal: null }; // el server todavía no abrió el 2
+    rpcCalls.length = 0;
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(8600);
+    });
+    expect(rpcCalls).toContain("get_active_match");
+    expect(rpcCalls).toContain("open_next_round");
+    active = { penal: start("pen2", 2) };
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3100);
+    });
+    await screen.findByText("Pregunta 2");
+  });
+
+  it("watchdog: vencido el deadline sin resultado, resuelve y trae el resultado por RPC", async () => {
+    render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    pendingResult = null;
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(16_000); // el fallback de 5 intentos ya se rindió
+    });
+    pendingResult = result("pen1", 1);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(4500);
+    });
+    expect(rpcCalls.filter((n) => n === "resolve_penalty").length).toBeGreaterThanOrEqual(2);
+    expect(mounts.results.at(-1)).toBe("pen1"); // la jugada del resultado traído por el watchdog
+    expect(screen.queryByText("Pregunta 1")).toBeNull();
+  });
+
+  it("trabado sin arreglo (el server dice partido vivo y nada avanza) → pantalla de error", async () => {
+    const fetchMock = vi.fn(() => Promise.resolve(new Response("{}")));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    act(() => handlers.get("penal:result")!({ payload: result("pen1", 1) }));
+    active = { penal: null };
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(47_000);
+    });
+    expect(await screen.findByTestId("error-screen")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith("/api/feedback", expect.objectContaining({ method: "POST" }));
+    vi.unstubAllGlobals();
+  });
+
+  it("si el partido terminó (get_active_match null), el watchdog no muestra error", async () => {
+    render(<PenalLive matchId="m1" />);
+    await screen.findByText("Pregunta 1");
+    act(() => handlers.get("penal:result")!({ payload: result("pen1", 1) }));
+    active = { penal: null, gone: true };
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(50_000);
+    });
+    expect(screen.queryByTestId("error-screen")).toBeNull();
+    expect(rpcCalls).not.toContain("open_next_round");
   });
 });

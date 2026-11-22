@@ -31,7 +31,9 @@ import {
 import {
   clockOffset,
   remainingMs,
+  samePhase,
   type ActiveMatch,
+  type PenalStartPayload,
   type RoundNextPayload,
 } from "@/lib/realtime/penal";
 import { usePreload3D } from "@/components/penal/usePreload3D";
@@ -62,6 +64,8 @@ export function TournamentLive({
   const [retry, setRetry] = useState(0);
   const [live, setLive] = useState<ScoreboardState>({});
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
+  // Feedback 4 F: el penal abierto que ve el poll; `PenalLive` lo adopta si se perdió el broadcast.
+  const [serverPenal, setServerPenal] = useState<PenalStartPayload | null>(null);
   const [showPenal, setShowPenal] = useState(false);
   const [revealExpired, setRevealExpired] = useState(false);
   // B5.2: ¿ya jugué al menos un penal en este torneo? Distingue "espera entre rondas" (mi tanda
@@ -94,7 +98,7 @@ export function TournamentLive({
   // B2.1: arrancar la ventana de presentación AL ENTRAR a /partido (no en start_tournament). Idempotente
   // en el server (1ª llamada de un humano comprime el backstop a ~6s; las siguientes son no-op).
   useEffect(() => {
-    fire(supabase.rpc("begin_presentation", { p_tournament: tournamentId }));
+    fire(supabase.rpc("begin_presentation", { p_tournament: tournamentId }), "begin_presentation");
   }, [supabase, tournamentId]);
 
   // Canal privado del torneo: marcadores en vivo (score:live, 6.5).
@@ -122,7 +126,7 @@ export function TournamentLive({
           const delay = remainingMs(p.open_at, clockOffset(p.server_now));
           if (nextPokeRef.current) clearTimeout(nextPokeRef.current);
           nextPokeRef.current = setTimeout(() => {
-            fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
+            fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
             setTimeout(() => {
               pollRef.current?.();
               bracketLoadRef.current?.(); // reflejar el flip de fase (grupos→KO) sin esperar 5s
@@ -186,7 +190,7 @@ export function TournamentLive({
       // partidos) y ya venció el tiempo muerto, abrir la próxima ronda (idempotente, no-op si no). Sin
       // esto, intra-partido nadie pokeaba open_next_round y el penal lo abría recién el cron (≤10s).
       if (am?.penal == null) {
-        fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
+        fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
       }
       if (am != null && am.match_id) {
         if (lingerRef.current) {
@@ -194,6 +198,7 @@ export function TournamentLive({
           lingerRef.current = null;
         }
         setCurrentMatchId(am.match_id);
+        setServerPenal((prev) => samePhase(prev, am.penal) ? prev : am.penal);
         setShowPenal(true);
         showPenalRef.current = true;
         setEverPlayed(true);
@@ -271,7 +276,7 @@ export function TournamentLive({
   });
 
   if (view === "penal" && currentMatchId) {
-    return <PenalLive key={currentMatchId} matchId={currentMatchId} onResult={onResult} />;
+    return <PenalLive key={currentMatchId} matchId={currentMatchId} onResult={onResult} serverPenal={serverPenal} />;
   }
 
   if (view === "error") {

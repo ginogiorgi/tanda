@@ -33,9 +33,16 @@ export type Database = {
         Relationships: [];
       };
       feedback_reports: {
-        Row: { id: string; emailed: boolean };
+        Row: { id: string; emailed: boolean; emailed_at: string | null };
         Insert: never;
-        Update: { emailed?: boolean };
+        Update: { emailed?: boolean; emailed_at?: string };
+        Relationships: [];
+      };
+      /** Solo service role (`/api/ops/notify`): avisos del watchdog del server. */
+      ops_events: {
+        Row: { id: number; created_at: string; kind: string; tournament_id: string | null; detail: Json; notified_at: string | null; mailed: boolean };
+        Insert: never;
+        Update: { notified_at?: string; mailed?: boolean };
         Relationships: [];
       };
       game_modes: {
@@ -77,6 +84,8 @@ export type Database = {
       set_favorites: { Args: { p_club: string; p_nation: string }; Returns: { club: string; nation: string } };
       get_fan_ranking: { Args: Empty; Returns: FanRanking };
       lobby_favorite: { Args: { p_mode: string }; Returns: LobbyFavorite | null };
+      /** Telemetría propia (feedback 4 F): la manda `lib/telemetry/client.ts`, con rate limit server. */
+      log_client_event: { Args: { p_kind: string; p_route: string | null; p_detail: Json }; Returns: undefined };
       /** Solo service role (`POST /api/feedback`). */
       submit_feedback: {
         Args: {
@@ -89,6 +98,18 @@ export type Database = {
           p_ip_hash: string;
         };
         Returns: string;
+      };
+      /** Solo service role (`POST /api/feedback`, `kind: "auto"`): una fila por fingerprint, mail ≤ 1 cada 24 h. */
+      submit_auto_report: {
+        Args: {
+          p_fingerprint: string;
+          p_user: string | null;
+          p_message: string;
+          p_route: string | null;
+          p_meta: Json;
+          p_ip_hash: string;
+        };
+        Returns: { id: string; notify: boolean; occurrences: number }[];
       };
     };
     Enums: { [_ in never]: never };

@@ -36,6 +36,7 @@ const AUTH_ALLOWLIST = [
   "join_room",
   "leave_room",
   "lobby_favorite",
+  "log_client_event",
   "open_next_round",
   "quick_play",
   "ranked_cancel",
@@ -54,7 +55,7 @@ const AUTH_ALLOWLIST = [
 ].sort();
 
 /** RPC tipadas que solo llama el server con la service role (`app/api/*`); nunca el cliente. */
-const SERVICE_ONLY = ["submit_feedback"];
+const SERVICE_ONLY = ["submit_feedback", "submit_auto_report"];
 
 // `anon` (sin sesión) solo necesita username_available (form de registro) y get_fan_ranking (/hinchas es
 // público: lee contadores agregados, nada personal). Los helpers de pertenencia los evalúan policies
@@ -105,6 +106,8 @@ const INTERNAL_DENYLIST = [
   "ops_log",
   "prune_inactive_guests",
   "prune_ops_tables",
+  "ops_notify_kinds",
+  "ops_notify_poke",
 ];
 
 // Nombres (distinct) de funciones NO-trigger de `public` ejecutables por el rol dado.

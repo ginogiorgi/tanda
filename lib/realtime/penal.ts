@@ -151,3 +151,28 @@ export function remainingMs(
 ): number {
   return Math.max(0, new Date(deadline).getTime() - (now + offset));
 }
+
+type PhaseRef = Pick<PenalStartPayload, "penalty_id" | "idx" | "started_at">;
+
+/**
+ * ¿La fase `incoming` es posterior a la que muestra el cliente? (feedback 4 F). Las fases llegan por tres
+ * caminos que se pueden pisar (broadcast, rehidratación al reconectar y el poll del padre): un poll que
+ * salió ANTES de un broadcast puede volver DESPUÉS con la fase vieja. Solo se adopta lo más nuevo:
+ * otro penal con `idx` mayor, o el mismo penal con una fase que arrancó después (la 2ª chance).
+ */
+export function isNewerPhase(current: PhaseRef | null, incoming: PhaseRef): boolean {
+  if (!current) return true;
+  if (incoming.penalty_id !== current.penalty_id) return incoming.idx > current.idx;
+  return new Date(incoming.started_at).getTime() > new Date(current.started_at).getTime();
+}
+
+/** Backoff de resuscripción del canal: 1 s, 2 s, 4 s, 8 s y tope 15 s. */
+export function resubscribeDelayMs(attempt: number): number {
+  return Math.min(15_000, 1000 * 2 ** Math.max(0, attempt));
+}
+
+/** Misma fase (mismo penal y mismo arranque): el padre no re-renderiza `PenalLive` con cada poll. */
+export function samePhase(a: PhaseRef | null, b: PhaseRef | null): boolean {
+  if (!a || !b) return a === b;
+  return a.penalty_id === b.penalty_id && a.started_at === b.started_at;
+}

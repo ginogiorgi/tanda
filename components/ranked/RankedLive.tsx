@@ -15,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { fire } from "@/lib/supabase/fire";
 import { PenalLive } from "@/components/penal/PenalLive";
-import { clockOffset, remainingMs, type ActiveMatch } from "@/lib/realtime/penal";
+import { clockOffset, remainingMs, samePhase, type ActiveMatch, type PenalStartPayload } from "@/lib/realtime/penal";
 import { divisionFor } from "@/lib/engine/ranked";
 import { signed, type RankedMatchView } from "@/lib/ranked/types";
 import { Eyebrow } from "@/components/ui/Typography";
@@ -75,6 +75,8 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
   const [view, setView] = useState<RankedMatchView | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [matchId, setMatchId] = useState<string | null>(null);
+  // Feedback 4 F: el penal abierto que ve el poll; `PenalLive` lo adopta si se perdió el broadcast.
+  const [serverPenal, setServerPenal] = useState<PenalStartPayload | null>(null);
   const [showPenal, setShowPenal] = useState(false);
   const [everPlayed, setEverPlayed] = useState(false);
   const [now, setNow] = useState(() => Date.now());
@@ -119,13 +121,14 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
       const { data } = await supabase.rpc("get_active_match");
       if (!active) return;
       const am = data as ActiveMatch | null;
-      if (am?.penal == null) fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }));
+      if (am?.penal == null) fire(supabase.rpc("open_next_round", { p_tournament: tournamentId }), "open_next_round");
       if (am?.match_id) {
         if (lingerRef.current) {
           clearTimeout(lingerRef.current);
           lingerRef.current = null;
         }
         setMatchId(am.match_id);
+        setServerPenal((prev) => samePhase(prev, am.penal) ? prev : am.penal);
         setShowPenal(true);
         setEverPlayed(true);
         showPenalRef.current = true;
@@ -159,7 +162,7 @@ export function RankedLive({ tournamentId }: { tournamentId: string }) {
     return () => clearInterval(id);
   }, [everPlayed]);
 
-  if (showPenal && matchId) return <PenalLive key={matchId} matchId={matchId} ranked onResult={onResult} />;
+  if (showPenal && matchId) return <PenalLive key={matchId} matchId={matchId} ranked onResult={onResult} serverPenal={serverPenal} />;
 
   return <Page center>{rankedBody(view, loadError, everPlayed, offset, now)}</Page>;
 }

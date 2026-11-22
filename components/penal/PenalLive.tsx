@@ -7,7 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 import { fire } from "@/lib/supabase/fire";
 import {
   clockOffset,
+  isNewerPhase,
   remainingMs,
+  resubscribeDelayMs,
   type PenalStartPayload,
   type PenalResultPayload,
   type ActiveMatch,
@@ -28,8 +30,13 @@ import {
 } from "@/lib/audio";
 import { loadPrefs, savePrefs } from "@/lib/prefs";
 import { GameStage } from "@/components/ui/GameStage";
-import { REVEAL_MS } from "@/lib/engine/timing";
+import { REVEAL_MS, TIMING } from "@/lib/engine/timing";
+import { logClientEvent } from "@/lib/telemetry/client";
 import { BALL_T1 } from "@/lib/penal/shot";
+import dynamic from "next/dynamic";
+
+// Solo se baja si el partido se traba sin arreglo (perf:budget de /partido).
+const ErrorScreen = dynamic(() => import("@/components/feedback/ErrorScreen").then((m) => m.ErrorScreen));
 
 type PenalLiveProps = {
   matchId: string;
@@ -41,7 +48,19 @@ type PenalLiveProps = {
    */
   /** Ancla del último cartel: al llegar el resultado y otra vez al revelarlo (`Date.now() - REVEAL_MS`, por si el timer se atrasó). */
   onResult?: (receivedAt: number) => void;
+  /**
+   * Penal abierto según el poll del padre (`get_active_match` cada 1 s). Si es más nuevo que el que se ve
+   * (se perdió el broadcast), `PenalLive` lo adopta (feedback 4 F).
+   */
+  serverPenal?: PenalStartPayload | null;
 };
+
+// Watchdog del cliente (feedback 4 F), en ms.
+const BETWEEN_STALL_MS = Math.round(TIMING.betweenPenalsS * 1000) + 3000;
+const DEADLINE_STALL_MS = 3000;
+const WAITING_STALL_MS = 8000;
+const RECOVER_EVERY_MS = 3000;
+const STALL_FATAL_MS = 45_000;
 
 /**
  * Suscripción al canal privado `match:{id}` y render del penal en vivo. Es la base de la
@@ -67,7 +86,7 @@ export function PenalLive(props: PenalLiveProps) {
   );
 }
 
-function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
+function PenalView({ matchId, ranked = false, onResult, serverPenal = null }: PenalLiveProps) {
   const router = useNav();
   const [supabase] = useState(() => createClient());
   const [penal, setPenal] = useState<PenalStartPayload | null>(null);
@@ -85,6 +104,8 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
   const [dots, setDots] = useState<PenalDot[]>([]);
   const [kicksPerSide, setKicksPerSide] = useState(5);
   const [muted, setMuted] = useState(false);
+  // Feedback 4 F: el penal quedó trabado y ni la rehidratación ni los pokes lo destraban.
+  const [fatal, setFatal] = useState(false);
 
   // Mute persistente (8.7/8.12): cargar la preferencia al montar. Estado inicial false (evita
   // mismatch de hidratación, localStorage es client-only); el effect lo corrige tras montar.
@@ -111,7 +132,6 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
   const [abandoning, setAbandoning] = useState(false);
   const [abandonError, setAbandonError] = useState(false);
-  const channelRef = useRef<RealtimeChannel | null>(null);
   // Espejo de `scene` para leer mi rol dentro del handler de `penal:result` (closure del subscribe,
   // que se arma una sola vez antes de que `scene` cargue) → audio por perspectiva (10.8).
   const sceneRef = useRef<MatchScene | null>(null);
@@ -125,6 +145,13 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
   // (reconexión), buscamos el resultado por RPC para no quedar colgados en la animación.
   const resultRef = useRef<PenalResultPayload | null>(null);
   const fallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Feedback 4 F: espejo de la fase en pantalla (las tres fuentes —broadcast, rehidratación y poll del
+  // padre— la comparan antes de adoptar), offset del reloj al recibirla, y último avance del partido
+  // (fase nueva o resultado) para el watchdog.
+  const penalRef = useRef<PenalStartPayload | null>(null);
+  const offsetRef = useRef(0);
+  const lastProgressRef = useRef(0);
+  const aliveRef = useRef(true);
 
   useEffect(() => {
     resultRef.current = result;
@@ -146,6 +173,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
   const applyResult = useCallback((r: PenalResultPayload) => {
     if (resultRef.current?.penalty_id === r.penalty_id) return;
     resultRef.current = r;
+    lastProgressRef.current = Date.now();
     onResultRef.current?.(Date.now());
     setResult(r);
     setScore({ home: r.home_score, away: r.away_score });
@@ -179,113 +207,152 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     [],
   );
 
-  useEffect(() => {
-    let active = true;
+  // Adopta una fase del penal SOLO si es posterior a la que se ve (`isNewerPhase`) y reconcilia TODO el
+  // estado de la anterior: resultado, cartel, selección y contador congelado (feedback 4 F). Un poll que
+  // trae el penal que ya se resolvió (salió antes del resultado) se ignora. Si es la MISMA fase y viene
+  // del server (reconexión), solo retoma mi selección para dejarla fija (10.11).
+  const adoptPhase = useCallback((next: PenalStartPayload, source: "broadcast" | "server") => {
+    if (resultRef.current?.penalty_id === next.penalty_id) return;
+    const cur = penalRef.current;
+    if (!isNewerPhase(cur, next)) {
+      const mine = next.my_option ?? null;
+      if (source === "server" && cur?.penalty_id === next.penalty_id && mine != null && !answeredRef.current) {
+        answeredRef.current = true;
+        setSelected(mine);
+      }
+      return;
+    }
+    penalRef.current = next;
+    offsetRef.current = clockOffset(next.server_now);
+    lastProgressRef.current = Date.now();
+    if (source === "broadcast" && next.phase !== "second_chance") playWhistle(); // silbato al abrir (8.7)
+    if (resultRef.current) {
+      resultRef.current = null;
+      setResult(null);
+    }
+    setPenal(next);
+    const mine = source === "server" ? (next.my_option ?? null) : null;
+    setSelected(mine);
+    answeredRef.current = mine != null;
+    setFrozenRemaining(null);
+  }, []);
 
+  // Rehidrata el partido desde el server (`get_active_match`): al montar, al reconectar el canal, desde el
+  // watchdog y al reintentar. Devuelve lo que vio (`undefined` = no se pudo preguntar).
+  const hydrate = useCallback(async (): Promise<ActiveMatch | null | undefined> => {
+    const { data, error } = await supabase.rpc("get_active_match");
+    if (!aliveRef.current || error) return undefined;
+    const am = data;
+    if (am && am.match_id === matchId) {
+      setScore({ home: am.home_score, away: am.away_score });
+      // 10.12: penales por lado según fase del match (grupos 3 / eliminación 5) para "Penal N de M".
+      setKicksPerSide(am.phase === "group" ? 3 : 5);
+      if (am.penal) adoptPhase(am.penal, "server");
+    }
+    return am;
+  }, [supabase, matchId, adoptPhase]);
+
+  // El poll del padre (TournamentLive/RankedLive) también ve el penal abierto: si es más nuevo que el que
+  // se ve (se perdió el broadcast y el canal todavía no se dio cuenta), se adopta (feedback 4 F).
+  useEffect(() => {
+    if (serverPenal && serverPenal.match_id === matchId) adoptPhase(serverPenal, "server");
+  }, [serverPenal, matchId, adoptPhase]);
+
+  useEffect(() => {
+    aliveRef.current = true;
+    lastProgressRef.current = Date.now();
+    let active = true;
+    let channel: RealtimeChannel | null = null;
+    let attempt = 0;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
     let subscribedOnce = false;
 
-    async function subscribe() {
-      // Canal privado: el socket de Realtime necesita el access token del usuario para que
-      // la policy de `realtime.messages` lo deje recibir.
+    const onNewPhase = ({ payload }: { payload: unknown }) => {
+      const next = payload as PenalStartPayload;
+      const prev = penalRef.current;
+      // `penal:second_chance` no trae pateador/arquero (mismo penalty_id que el `penal:start` previo): los
+      // arrastramos del penal en curso para no perder la colocación de avatares.
+      const kickerId = next.kicker_participant_id ?? prev?.kicker_participant_id;
+      const keeperId = next.keeper_participant_id ?? prev?.keeper_participant_id;
+      // Tarea 10: el broadcast de 2ª chance trae la opción quitada de cada lado; normalizamos a la del rol
+      // propio (la que YO elegí) para el resto del componente.
+      const myId = sceneRef.current?.my_participant_id ?? null;
+      const myRemoved =
+        myId != null && myId === kickerId
+          ? next.removed_option_kicker
+          : myId != null && myId === keeperId
+            ? next.removed_option_keeper
+            : next.removed_option;
+      const merged =
+        !next.kicker_participant_id && prev?.penalty_id === next.penalty_id
+          ? { ...next, kicker_participant_id: kickerId, keeper_participant_id: keeperId }
+          : next;
+      adoptPhase({ ...merged, removed_option: myRemoved }, "broadcast");
+    };
+
+    // Canal caído (CHANNEL_ERROR/TIMED_OUT/CLOSED): se descarta y se vuelve a suscribir con backoff y el
+    // token vigente; al volver a SUBSCRIBED se rehidrata por si nos perdimos un broadcast (feedback 4 F).
+    const scheduleReconnect = (status: string) => {
+      if (!active || retryTimer) return;
+      logClientEvent("realtime:channel_down", { status, attempt });
+      const old = channel;
+      channel = null;
+      if (old) void supabase.removeChannel(old);
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        attempt++;
+        void connect();
+      }, resubscribeDelayMs(attempt));
+    };
+
+    async function connect() {
+      // Canal privado: el socket de Realtime necesita el access token del usuario para que la policy de
+      // `realtime.messages` lo deje recibir.
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!active) return;
-      if (session?.access_token) {
-        await supabase.realtime.setAuth(session.access_token);
-      }
-
-      const channel = supabase.channel(`match:${matchId}`, {
-        config: { private: true },
-      });
-      channelRef.current = channel;
-
-      // Rehidrata el estado del penal en curso desde el server (get_active_match): se usa al montar y
-      // tras una reconexión del canal, por si nos perdimos un Broadcast mientras estábamos caídos (9.5).
-      const hydrate = async () => {
-        const { data } = await supabase.rpc("get_active_match");
-        if (!active) return;
-        const am = data as ActiveMatch | null;
-        if (am && am.match_id === matchId) {
-          setScore({ home: am.home_score, away: am.away_score });
-          // 10.12: penales por lado según fase del match (grupos 3 / eliminación 5) para "Penal N de M".
-          setKicksPerSide(am.phase === "group" ? 3 : 5);
-          if (am.penal) {
-            // Punto 20: si el server ya va por OTRO penal, el resultado viejo no puede seguir tapando la
-            // pantalla (el render mira `result` antes que `penal`) → se descarta y se arranca la fase nueva.
-            if (resultRef.current && resultRef.current.penalty_id !== am.penal.penalty_id) {
-              resultRef.current = null;
-              setResult(null);
-              setFrozenRemaining(null);
-            }
-            setPenal(am.penal);
-            // 10.11: si ya había respondido (reconexión), retomo la selección y la dejo fija.
-            const mine = am.penal.my_option ?? null;
-            setSelected(mine);
-            answeredRef.current = mine != null;
-          }
-        }
-      };
-
-      const onNewPhase = ({ payload }: { payload: unknown }) => {
-        const next = payload as PenalStartPayload;
-        if (next.phase !== "second_chance") playWhistle(); // silbato al abrir el penal (8.7)
-        // `penal:second_chance` no trae pateador/arquero (mismo penalty_id que el `penal:start`
-        // previo): los arrastramos del penal en curso para no perder la colocación de avatares.
-        setPenal((prev) => {
-          const kickerId = next.kicker_participant_id ?? prev?.kicker_participant_id;
-          const keeperId = next.keeper_participant_id ?? prev?.keeper_participant_id;
-          // Tarea 10: el broadcast de 2ª chance trae la opción quitada de cada lado; normalizamos a la
-          // del rol propio (la que YO elegí) para el resto del componente.
-          const myId = sceneRef.current?.my_participant_id ?? null;
-          const myRemoved =
-            myId != null && myId === kickerId
-              ? next.removed_option_kicker
-              : myId != null && myId === keeperId
-                ? next.removed_option_keeper
-                : next.removed_option;
-          const merged =
-            !next.kicker_participant_id && prev?.penalty_id === next.penalty_id
-              ? { ...next, kicker_participant_id: kickerId, keeper_participant_id: keeperId }
-              : next;
-          return { ...merged, removed_option: myRemoved };
-        });
-        // Fase nueva → arranca sin selección y con la respuesta des-bloqueada (10.11).
-        setSelected(null);
-        setFrozenRemaining(null);
-        answeredRef.current = false;
-        setResult(null);
-      };
-
-      channel
-        .on("broadcast", { event: "penal:start" }, onNewPhase)
+      if (session?.access_token) await supabase.realtime.setAuth(session.access_token);
+      if (!active) return;
+      const ch = supabase.channel(`match:${matchId}`, { config: { private: true } });
+      channel = ch;
+      ch.on("broadcast", { event: "penal:start" }, onNewPhase)
         .on("broadcast", { event: "penal:second_chance" }, onNewPhase)
         .on("broadcast", { event: "penal:result" }, ({ payload }) => {
           // 10.8/10.12: marcador + audio por perspectiva + tablero (idempotente por penalty_id).
           applyResult(payload as PenalResultPayload);
         })
         .subscribe((status) => {
-          // Reconexión (9.5): al volver a SUBSCRIBED tras una caída, resincronizamos por si nos
-          // perdimos un Broadcast. supabase-js reaplica el auth del canal privado automáticamente.
+          if (!active || channel !== ch) return; // un canal ya descartado no decide nada
           if (status === "SUBSCRIBED") {
+            attempt = 0;
             if (subscribedOnce) void hydrate();
             subscribedOnce = true;
+          } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+            scheduleReconnect(status);
           }
         });
+    }
 
+    // El token se renueva cada hora: el socket de Realtime tiene que enterarse o el canal privado se cae.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "TOKEN_REFRESHED" && session?.access_token) void supabase.realtime.setAuth(session.access_token);
+    });
+
+    async function loadStatic() {
       // Datos estáticos de la escena 3D (naciones/kits + avatares de ambos): se piden una vez.
-      const { data: sceneData } = await supabase.rpc("get_match_scene", {
-        p_match: matchId,
-      });
+      const { data: sceneData } = await supabase.rpc("get_match_scene", { p_match: matchId });
       if (!active) return;
-      const sc = (sceneData as MatchScene | null) ?? null;
+      const sc = sceneData ?? null;
       setScene(sc);
       sceneRef.current = sc;
 
       // 10.12: siembra el tablero con los penales ya resueltos del match (para refresh/reconexión).
       const { data: penalsData } = await supabase.rpc("get_match_penals", { p_match: matchId });
       if (!active) return;
-      const seeded = (penalsData as { idx: number; scored: boolean }[] | null) ?? [];
+      const seeded = penalsData ?? [];
       if (seeded.length > 0) {
         setDots((prev) => {
           const have = new Set(prev.map((d) => d.idx));
@@ -299,14 +366,69 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
       await hydrate();
     }
 
-    void subscribe();
+    void connect();
+    void loadStatic();
 
     return () => {
       active = false;
-      if (channelRef.current) void supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
+      aliveRef.current = false;
+      subscription.unsubscribe();
+      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) void supabase.removeChannel(channel);
+      channel = null;
     };
-  }, [supabase, matchId, applyResult]);
+  }, [supabase, matchId, applyResult, adoptPhase, hydrate]);
+
+  // Watchdog del cliente (feedback 4 F): si el partido no avanza cuando debería —sin `penal:start` pasado
+  // el hueco entre penales + 3 s, o sin resultado 3 s después del deadline— rehidrata y pokea al server
+  // (abrir la ronda o resolver el penal: idempotentes). Si el server sigue diciendo que el partido está
+  // vivo y nada avanza en `STALL_FATAL_MS`, muestra la pantalla de error (que reporta sola).
+  useEffect(() => {
+    let lastRecover = 0;
+    let busy = false;
+    const check = async () => {
+      if (busy || !aliveRef.current) return;
+      const now = Date.now();
+      const cur = penalRef.current;
+      const res = resultRef.current;
+      const since = now - lastProgressRef.current;
+      const state = !cur ? "waiting" : res?.penalty_id === cur.penalty_id ? "between" : "question";
+      const due =
+        state === "waiting"
+          ? since > WAITING_STALL_MS
+          : state === "between"
+            ? since > BETWEEN_STALL_MS
+            : cur != null && now - (new Date(cur.deadline).getTime() - offsetRef.current) > DEADLINE_STALL_MS;
+      if (!due || now - lastRecover < RECOVER_EVERY_MS) return;
+      lastRecover = now;
+      busy = true;
+      try {
+        logClientEvent("penal:watchdog", { state, since_ms: since });
+        const am = await hydrate();
+        if (am === undefined || !aliveRef.current) return; // sin red: reintenta en el próximo tick
+        if (!am || am.match_id !== matchId) return; // el partido terminó: lo resuelve el padre
+        if (!am.penal) {
+          fire(supabase.rpc("open_next_round", { p_tournament: am.tournament_id }), "open_next_round");
+        } else if (resultRef.current?.penalty_id !== am.penal.penalty_id) {
+          // `adoptPhase` ya dejó este penal como el actual: su offset es el estimado al recibirlo.
+          const deadlineLocal = new Date(am.penal.deadline).getTime() - offsetRef.current;
+          if (Date.now() >= deadlineLocal) {
+            fire(supabase.rpc("resolve_penalty", { p_penalty: am.penal.penalty_id }), "resolve_penalty");
+            const { data } = await supabase.rpc("get_penalty_result", { p_penalty: am.penal.penalty_id });
+            if (data && aliveRef.current) applyResult(data);
+          }
+        }
+        if (Date.now() - lastProgressRef.current > STALL_FATAL_MS) {
+          logClientEvent("penal:stall_fatal", { state });
+          setFatal(true);
+        }
+      } finally {
+        busy = false;
+      }
+    };
+    const id = setInterval(() => void check(), 1000);
+    return () => clearInterval(id);
+  }, [supabase, matchId, hydrate, applyResult]);
 
   // Contador contra el `deadline` server, corregido por el offset estimado al recibir la fase
   // (SPEC §1.3). Al llegar a 0, el cliente hace el "poke": llama `resolve_penalty` una sola vez
@@ -325,7 +447,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
       pokedRef.current = phaseKey;
       setRemaining(0);
       remainingRef.current = 0;
-      fire(supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id }));
+      fire(supabase.rpc("resolve_penalty", { p_penalty: penal.penalty_id }), "resolve_penalty");
       // Tarea 5: respaldo si se pierde el broadcast `penal:result` (reconexión) → buscamos el
       // resultado por RPC y lo aplicamos igual, así no quedamos colgados en la animación. Reintenta
       // mientras el server todavía está resolviendo (devuelve null hasta que el penal está `resolved`).
@@ -427,6 +549,25 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
     router.push("/");
   }
 
+  if (fatal) {
+    return (
+      <div className="absolute inset-0 z-30 flex overflow-y-auto bg-bg">
+        <ErrorScreen
+          error={{ message: "penal_stall: el partido no avanzó" }}
+          source="game"
+          title="Se trabó el partido, perdón"
+          detail="Ya nos llegó el aviso. Probá reintentar: el partido sigue en el server."
+          onRetry={() => {
+            lastProgressRef.current = Date.now();
+            setFatal(false);
+            void hydrate();
+            router.refresh();
+          }}
+        />
+      </div>
+    );
+  }
+
   if (!penal) {
     return <p className="grid h-full place-items-center text-sm text-fg-subtle">Esperando el penal…</p>;
   }
@@ -519,7 +660,7 @@ function PenalView({ matchId, ranked = false, onResult }: PenalLiveProps) {
                 : `${winnerNation} respondió ${(deltaMs / 1000).toFixed(1)}s más rápido`
               : null
           }
-          correctText={penal.options[result.correct_index] ?? ""}
+          correctText={penal.penalty_id === result.penalty_id ? (penal.options[result.correct_index] ?? "") : ""}
           answeredRight={selected === result.correct_index}
         />
         {muteBalloon}
