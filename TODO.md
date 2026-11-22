@@ -45,8 +45,11 @@ Plan: auditoría integral + 20 correcciones (F0 → A1 → A2–A5 → B → C �
   `withSentryConfig` SOLO en builds de Vercel: sube source maps y los borra del output. Esto suma ~1,5 KB gz por
   ruta en prod (debug ids) que `perf:budget` local no ve; Gino lo aprobó el 22/11 (stacks legibles > ese peso).
 - **SPEC.md reescrito (22/11)** al estado actual (modos, ranked, TIMING, carrera de ronda, cliente del penal,
-  telemetría, cron). **G en curso:** `pnpm qa:ranked-sim` (6 cuentas `qa_*` con `qa_keep` en prod).
-- **Sigue:** cierre de G (reporte + capturas de `/ranking` y la tarjeta ranked).
+  telemetría, cron). **G (22/11):** `pnpm qa:ranked-sim` en prod: 166 partidos, **0 fallas**, 4 divisiones
+  (Potrero, Barrio, Primera, Libertadores). Reporte en `artifacts/qa/ranked-sim.md` (gitignored). Cuentas `qa_*` quedan.
+- **Sigue (handoff 22/11, cortado por usage):** sacar las capturas de `/ranking` y de la tarjeta ranked de `/jugar`
+  (logueado como una cuenta `qa_*`, tokens en `artifacts/qa/ranked-sim.sessions.json`) → cerrar G. Después Plan
+  Feedback 4 queda terminado. Gino pidió pausar Tanda por otro proyecto urgente: no arrancar nada más sin su OK.
 
 ## Pendiente de revisión con Gino
 - **Festejos (#16):** el gesto de los índices de Messi se expresa con los brazos al cielo (sin dedos: con el primer
